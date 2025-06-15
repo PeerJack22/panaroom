@@ -11,7 +11,7 @@ export const Register = () => {
 
     const registro = async (data) => {
         try {
-            const url = "https://da-backend-cr95.onrender.com/api/registro";
+            const url = "https://bakend-alquiler.onrender.com/api/registro";
             const respuesta = await axios.post(url, data);
             toast.success(respuesta.data.msg);
         } catch (error) {
