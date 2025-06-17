@@ -79,19 +79,6 @@ const Login = () => {
                         </div>
                     </form>
 
-                    {/* Separador */}
-                    <div className="mt-6 grid grid-cols-3 items-center text-gray-400">
-                        <hr className="border-gray-300" />
-                        <p className="text-center text-sm">O</p>
-                        <hr className="border-gray-300" />
-                    </div>
-
-                    {/* Inicio con Google */}
-                    <button className="bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm hover:bg-cyan-500 hover:text-white transition duration-300">
-                        <img className="w-5 mr-2" src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google icon" />
-                        Iniciar con Google
-                    </button>
-
                     {/* Olvidaste tu contraseña */}
                     <div className="mt-6 text-xs text-center">
                         <Link to="/forgot/id" className="text-gray-500 underline hover:text-blue-700">¿Olvidaste tu contraseña?</Link>
