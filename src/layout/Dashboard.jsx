@@ -7,36 +7,7 @@ const Dashboard = () => {
     return (
         <div className="md:flex md:min-h-screen bg-gray-100">
 
-            {/* Área principal (contenido y barra superior) */}
-            <div className="flex-1 flex flex-col justify-between h-screen">
-
-                {/* Barra superior - estilo oscuro */}
-                <header className="bg-gray-800 px-6 py-3 flex justify-end items-center gap-4 shadow">
-                    <img
-                        src="https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
-                        alt="Usuario"
-                        className="w-10 h-10 border-2 border-gray-600"
-                    />
-                    <Link
-                        to="/"
-                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5 rounded-full transition-all"
-                    >
-                        Salir
-                    </Link>
-                </header>
-
-                {/* Contenido dinámico */}
-                <main className="flex-1 overflow-y-auto p-6 bg-gray-100">
-                    <Outlet />
-                </main>
-
-                {/* Footer oscuro */}
-                <footer className="bg-gray-900 py-3 text-center text-sm text-gray-300 shadow-inner">
-                    © {new Date().getFullYear()} PanaRoom - Todos los derechos reservados
-                </footer>
-            </div>
-
-            {/* Sidebar derecho oscuro */}
+            {/* Sidebar izquierdo oscuro */}
             <aside className="md:w-64 bg-gray-900 text-white shadow-md px-6 py-8 flex flex-col items-center justify-between">
                 <div className="w-full">
                     <h2 className="text-2xl font-bold text-white text-center mb-6">PanaRoom</h2>
@@ -67,6 +38,35 @@ const Dashboard = () => {
                     </nav>
                 </div>
             </aside>
+
+            {/* Área principal (contenido y barra superior) */}
+            <div className="flex-1 flex flex-col justify-between h-screen">
+
+                {/* Barra superior - estilo oscuro */}
+                <header className="bg-gray-800 px-6 py-3 flex justify-end items-center gap-4 shadow">
+                    <img
+                        src="https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
+                        alt="Usuario"
+                        className="w-10 h-10 border-2 border-gray-600"
+                    />
+                    <Link
+                        to="/"
+                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5 rounded-full transition-all"
+                    >
+                        Salir
+                    </Link>
+                </header>
+
+                {/* Contenido dinámico */}
+                <main className="flex-1 overflow-y-auto p-6 bg-gray-100">
+                    <Outlet />
+                </main>
+
+                {/* Footer oscuro */}
+                <footer className="bg-gray-900 py-3 text-center text-sm text-gray-300 shadow-inner">
+                    © {new Date().getFullYear()} PanaRoom - Todos los derechos reservados
+                </footer>
+            </div>
         </div>
     );
 };
