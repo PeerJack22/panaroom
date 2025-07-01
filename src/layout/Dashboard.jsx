@@ -1,8 +1,12 @@
 import { Link, Outlet, useLocation } from 'react-router';
+import storeAuth from '../context/storeAuth'
+import storeProfile from '../context/storeProfile'
 
 const Dashboard = () => {
     const location = useLocation();
     const urlActual = location.pathname;
+    const { clearToken } = storeAuth()
+    const{user} = storeProfile()
 
     return (
         <div className="md:flex md:min-h-screen bg-gray-100">
@@ -52,6 +56,7 @@ const Dashboard = () => {
                     <Link
                         to="/"
                         className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5 rounded-full transition-all"
+                        onClick={() => clearToken()}
                     >
                         Salir
                     </Link>

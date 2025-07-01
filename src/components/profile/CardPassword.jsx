@@ -1,6 +1,25 @@
+import { useForm } from "react-hook-form"
+import { ToastContainer} from 'react-toastify';
+import storeProfile from "../../context/storeProfile";
+import storeAuth from "../../context/storeAuth";
+
 const CardPassword = () => {
+
+    const { register, handleSubmit, formState: { errors } } = useForm()
+    const {user,updatePasswordProfile} = storeProfile()
+    const { clearToken } = storeAuth()
+
+    const updatePassword = async (data) => {
+        const response = await updatePasswordProfile(data, user._id)
+        if(response){
+            clearToken()
+        }
+    }
+
     return (
-        <div className="bg-gray-900 p-6 rounded-xl shadow-lg text-white max-w-xl mx-auto mt-10">
+        <>
+            <ToastContainer />
+            <div className="bg-gray-900 p-6 rounded-xl shadow-lg text-white max-w-xl mx-auto mt-10">
 
             <h1 className="text-2xl font-bold text-slate-200 mb-4">Actualizar contraseña</h1>
             <hr className="border-gray-600 mb-6" />
@@ -14,7 +33,9 @@ const CardPassword = () => {
                         type="password"
                         placeholder="Ingresa tu contraseña actual"
                         className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        {...register("passwordactual", { required: "La contraseña actual es obligatoria" })}
                     />
+                    {errors.passwordactual && <p className="text-red-800">{errors.passwordactual.message}</p>}
                 </div>
 
                 <div className="mb-6">
@@ -25,7 +46,9 @@ const CardPassword = () => {
                         type="password"
                         placeholder="Ingresa la nueva contraseña"
                         className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        {...register("passwordnuevo", { required: "La nueva contraseña es obligatoria" })}
                     />
+                    {errors.passwordnuevo && <p className="text-red-800">{errors.passwordnuevo.message}</p>}
                 </div>
 
                 <input
@@ -35,6 +58,7 @@ const CardPassword = () => {
                 />
             </form>
         </div>
+        </>
     );
 };
 

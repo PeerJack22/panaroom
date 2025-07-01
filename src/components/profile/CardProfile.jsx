@@ -1,4 +1,7 @@
+import storeProfile from "../../context/storeProfile"
+
 export const CardProfile = () => {
+    const {user} = storeProfile() 
     return (
         <div className="bg-gray-900 border border-gray-700 h-auto p-6 
                         flex flex-col items-center justify-between shadow-lg rounded-xl text-white">
@@ -19,23 +22,23 @@ export const CardProfile = () => {
 
             <div className="self-start mb-2">
                 <b className="text-gray-300">Nombre:</b>
-                <p className="inline-block ml-3 text-white">—</p>
+                <p className="inline-block ml-3 text-white">{user?.nombre}</p>
             </div>
             <div className="self-start mb-2">
                 <b className="text-gray-300">Apellido:</b>
-                <p className="inline-block ml-3 text-white">—</p>
+                <p className="inline-block ml-3 text-white">{user?.apellido}</p>
             </div>
             <div className="self-start mb-2">
                 <b className="text-gray-300">Dirección:</b>
-                <p className="inline-block ml-3 text-white">—</p>
+                <p className="inline-block ml-3 text-white">{user?.direccion}</p>
             </div>
             <div className="self-start mb-2">
                 <b className="text-gray-300">Teléfono:</b>
-                <p className="inline-block ml-3 text-white">—</p>
+                <p className="inline-block ml-3 text-white">{user?.celular}</p>
             </div>
             <div className="self-start">
                 <b className="text-gray-300">Correo:</b>
-                <p className="inline-block ml-3 text-white">—</p>
+                <p className="inline-block ml-3 text-white">{user?.email}</p>
             </div>
         </div>
     );
