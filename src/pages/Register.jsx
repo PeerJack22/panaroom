@@ -11,7 +11,7 @@ export const Register = () => {
 
     const registro = async (data) => {
         try {
-            const url = "https://bakend-alquiler.onrender.com/api/registro";
+            const url = `${import.meta.env.VITE_BACKEND_URL}/registro`;
             const respuesta = await axios.post(url, data);
             toast.success(respuesta.data.msg);
         } catch (error) {
