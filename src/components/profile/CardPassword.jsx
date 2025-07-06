@@ -24,7 +24,7 @@ const CardPassword = () => {
             <h1 className="text-2xl font-bold text-slate-200 mb-4">Actualizar contraseña</h1>
             <hr className="border-gray-600 mb-6" />
 
-            <form>
+            <form onSubmit={handleSubmit(updatePassword)}>
                 <div className="mb-5">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                         Contraseña actual
