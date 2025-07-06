@@ -29,7 +29,7 @@ const storeProfile = create((set) => ({
         },
         updateProfile:async(data,id)=>{
             try {
-                const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/${id}`
+                const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`
                 const respuesta = await axios.put(url, data,getAuthHeaders())
                 set({ user: respuesta.data })
                 toast.success("Perfil actualizado correctamente")
@@ -40,7 +40,7 @@ const storeProfile = create((set) => ({
         },
         updatePasswordProfile:async(data,id)=>{
             try {
-                const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/actualizarpassword/${id}`
+                const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/actualizarpassword/${id}`
                 const respuesta = await axios.put(url, data,getAuthHeaders())
                 toast.success(respuesta?.data?.msg)
                 return respuesta
