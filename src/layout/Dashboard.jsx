@@ -24,7 +24,7 @@ const Dashboard = () => {
 
                     <div className="text-center text-sm text-gray-400">
                         <span className="inline-flex items-center gap-1">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Conectado
+                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Bienvenido - {user?.nombre}
                         </span>
                     </div>
 
