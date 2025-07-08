@@ -28,18 +28,23 @@ const Dashboard = () => {
                         </span>
                     </div>
 
-                    <nav className="mt-8 space-y-4">
-                        <Link
-                            to="/dashboard"
-                            className={`block px-4 py-2 rounded-lg text-center font-medium transition-all duration-300 ${
-                                urlActual === '/dashboard'
-                                    ? 'bg-blue-600 text-white shadow'
-                                    : 'text-gray-300 hover:bg-gray-700'
-                            }`}
-                        >
-                            Perfil
-                        </Link>
-                    </nav>
+                    <ul className="mt-5">
+                    <li className="text-center">
+                        <Link to='/dashboard' className={`${urlActual === '/dashboard' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Perfil</Link>
+                    </li>
+
+                    <li className="text-center">
+                        <Link to='/dashboard/listar' className={`${urlActual === '/dashboard/listar' ? 'text-slate-200 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Listar</Link>
+                    </li>
+
+                    <li className="text-center">
+                        <Link to='/dashboard/crear' className={`${urlActual === '/dashboard/crear' ? 'text-slate-100 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Crear</Link>
+                    </li>
+
+                    <li className="text-center">
+                        <Link to='/dashboard/chat' className={`${urlActual === '/dashboard/chat' ? 'text-slate-100 bg-gray-900 px-3 py-2 rounded-md text-center' : 'text-slate-600'} text-xl block mt-2 hover:text-slate-600`}>Chat</Link>
+                    </li>
+                </ul>
                 </div>
             </aside>
 
