@@ -14,6 +14,7 @@ import Create from './pages/Create'
 import Update from './pages/Update'
 import Chat from './pages/Chat'
 import Reset from './pages/Reset'
+import Users from './pages/Users'
 import PublicRoute from './routes/PublicRoute'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { useEffect } from 'react'
@@ -59,7 +60,7 @@ function App() {
                   <Route path='crear' element={<Create />} />
                   <Route path='actualizar/:id' element={<Update />} />
                   <Route path='chat' element={<Chat />} />
-                  <Route path='usuarios' element={<Update />} />
+                  <Route path='usuarios' element={<Users/>} />
                 </Route>
               </Routes>
             </ProtectedRoute>
