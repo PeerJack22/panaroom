@@ -59,6 +59,7 @@ function App() {
                   <Route path='crear' element={<Create />} />
                   <Route path='actualizar/:id' element={<Update />} />
                   <Route path='chat' element={<Chat />} />
+                  <Route path='usuarios' element={<Update />} />
                 </Route>
               </Routes>
             </ProtectedRoute>
