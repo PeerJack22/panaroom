@@ -19,9 +19,9 @@ export const Home = () => {
                 <div className="flex flex-col md:flex-row items-center gap-4">
                     <ul className="flex gap-6 justify-center flex-wrap">
                         <li><a href="#" className="hover:text-cyan-400 transition-colors">Inicio</a></li>
-                        <li><a href="#" className="hover:text-cyan-400 transition-colors">Acerca de</a></li>
-                        <li><a href="#" className="hover:text-cyan-400 transition-colors">Servicios</a></li>
-                        <li><a href="#" className="hover:text-cyan-400 transition-colors">Contacto</a></li>
+                        <li><a href="#acerca" className="hover:text-cyan-400 transition-colors">Acerca de</a></li>
+                        <li><a href="#servicios" className="hover:text-cyan-400 transition-colors">Servicios</a></li>
+                        <li><a href="#contacto" className="hover:text-cyan-400 transition-colors">Contacto</a></li>
                     </ul>
                     <Link to="/login" className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-2 px-6 rounded-full transition-colors">
                         Ingresar
@@ -56,7 +56,7 @@ export const Home = () => {
             </main>
 
             {/* Sección Acerca de */}
-            <section className="px-6 py-12 bg-white">
+            <section id="acerca" className="px-6 py-12 bg-white">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">Acerca de</h2>
                 <p className="text-gray-700 text-md leading-relaxed">
                     PanaRoom es un sistema web diseñado para facilitar la gestión de residencias estudiantiles, permitiendo a propietarios publicar sus habitaciones y a los estudiantes encontrar su mejor opción de alojamiento de manera rápida y segura. Nuestro objetivo es conectar personas y crear experiencias de vivienda confiables, modernas y accesibles para toda la comunidad.
@@ -98,7 +98,7 @@ export const Home = () => {
                 </div>
             </section>
 
-            <section className='container mx-auto px-6 py-10'>
+            <section id="servicios" className='container mx-auto px-6 py-10'>
                 <h2 className='text-center text-3xl font-bold text-blue-800 mb-10'>SERVICIOS</h2>
                 <div className='grid gap-6 sm:grid-cols-2 md:grid-cols-4'>
                     {[
@@ -121,10 +121,11 @@ export const Home = () => {
                 </div>
             </section>
 
-            <footer className='bg-slate-800 text-white py-10 px-6 rounded-tr-3xl rounded-tl-3xl'>
+            <footer id="contacto" className='bg-slate-800 text-white py-10 px-6 rounded-tr-3xl rounded-tl-3xl'>
                 <div className='flex flex-col sm:flex-row justify-between items-center mb-8'>
                     <p className='text-center text-white-400'>© 2025 PanaRoom - Todos los derechos reservados</p>
                     <div className='flex gap-4 mt-4 sm:mt-0'>
+                        <p className='text-center text-white-400'>Correo: contacto@panaroom.com</p>
                         <FaSquareInstagram className='text-2xl hover:text-cyan-400' />
                         <FaYoutube className='text-2xl hover:text-cyan-400' />
                         <FaGithub className='text-2xl hover:text-cyan-400' />
