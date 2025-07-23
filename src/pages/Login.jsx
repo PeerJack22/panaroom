@@ -96,7 +96,7 @@ const Login = () => {
                                 className="py-2 w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-gray-100 transition duration-300"
                             >
                                 <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+                                    src="https://developers.google.com/identity/images/g-logo.png"
                                     alt="Logo Google"
                                     className="w-6 h-6"
                                 />
