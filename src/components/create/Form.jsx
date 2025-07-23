@@ -72,13 +72,13 @@ export const Form = () => {
                 </div>
             </fieldset>
 
-            {/* Información de la mascota */}
+            {/* Información de la residencia */}
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg mt-10">
                 <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
-                    Información de la mascota
+                    Información de la residencia
                 </legend>
 
-                {/* Nombre de la mascota */}
+                {/* Nombre de la residencia */}
                 <div>
                     <label className="mb-2 block text-sm font-semibold">Nombre</label>
                     <input
@@ -88,8 +88,8 @@ export const Form = () => {
                     />
                 </div>
 
-                {/* Imagen de la mascota*/}
-                <label className="mb-2 block text-sm font-semibold">Imagen de la mascota</label>
+                {/* Imagen de la residencia */}
+                <label className="mb-2 block text-sm font-semibold">Imagen de la residencia</label>
                 <div className="flex gap-4 mb-2">
                     {/* Opción: Imagen con IA */}
                     <label className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export const Form = () => {
                     </div>
                 )}
 
-                {/* Tipo de mascota */}
+                {/* Tipo de residencia */}
                 <div>
                     <label className="mb-2 block text-sm font-semibold">Tipo</label>
                     <select
@@ -155,8 +155,8 @@ export const Form = () => {
                         className='block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5'
                     >
                         <option value="">--- Seleccionar ---</option>
-                        <option value="gato">Gato</option>
-                        <option value="perro">Perro</option>
+                        <option value="apt_p">Apartamento pequeño</option>
+                        <option value="apt_g">Apartamento grande</option>
                         <option value="otro">Otro</option>
                     </select>
                 </div>
@@ -170,11 +170,11 @@ export const Form = () => {
                     />
                 </div>
 
-                {/* Síntomas */}
+                {/* Descripción */}
                 <div>
-                    <label className="mb-2 block text-sm font-semibold">Síntoma u observación</label>
+                    <label className="mb-2 block text-sm font-semibold">Descripción</label>
                     <textarea
-                        placeholder="Ingresa el síntoma u observación de forma general"
+                        placeholder="Ingresa la descripción de forma general"
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                     />
                 </div>
