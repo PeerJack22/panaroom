@@ -4,7 +4,7 @@ import { useState } from "react";
 export const Form = () => {
 
     const [stateAvatar, setStateAvatar] = useState({
-        generatedImage: "https://cdn-icons-png.flaticon.com/512/2138/2138440.png",
+        generatedImage: "https://darwinsdata.com/wp-content/uploads/2023/09/ab15dcbbe1660b5ac94e320424cdd322.jpg",
         prompt: "",
         loading: false
     })
