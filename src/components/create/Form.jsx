@@ -94,75 +94,43 @@ export const Form = () => {
 
                 {/* Imagen de la residencia */}
                 <label className="mb-2 block text-sm font-semibold">Imagen de la residencia</label>
-                <div className="flex gap-4 mb-2">
-                    {/* Opción: Imagen con IA */}
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="radio"
-                            value="ia"
-                        />
-                        Generar con IA
-                    </label>
-
-                    {/* Opción: Subir Imagen */}
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="radio"
-                            value="upload"
-                        />
-                        Subir Imagen
-                    </label>
+                {/* Subir Imagen */}
+                <div className="mt-5">
+                    <label className="mb-2 block text-sm font-semibold">Subir Imagen</label>
+                    <input
+                        type="file"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
                 </div>
 
-                {/* Imagen con IA */}
-                {selectedOption === "ia" && (
-                    <div className="mt-5">
-                        <label className="mb-2 block text-sm font-semibold">Imagen con IA</label>
-                        <div className="flex items-center gap-10 mb-5">
-                            <input
-                                type="text"
-                                placeholder="Ingresa el prompt"
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                                value={stateAvatar.prompt}
-                                onChange={(e) => setStateAvatar(prev => ({ ...prev, prompt: e.target.value }))}
-                            />
-                            <button
-                                type="button"
-                                className="py-1 px-8 bg-gray-600 text-slate-300 border rounded-xl hover:scale-110 duration-300 hover:bg-gray-900 hover:text-white sm:w-80"
-                                disabled={stateAvatar.loading}
-                            >
-                                {stateAvatar.loading ? "Generando..." : "Generar con IA"}
-                            </button>
-                        </div>
-                        {stateAvatar.generatedImage && (
-                            <img src={stateAvatar.generatedImage} alt="Avatar IA" width={100} height={100} />
-                        )}
-                    </div>
-                )}
-
-                {/* Subir Imagen */}
-                {selectedOption === "upload" && (
-                    <div className="mt-5">
-                        <label className="mb-2 block text-sm font-semibold">Subir Imagen</label>
-                        <input
-                            type="file"
-                            className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                        />
-                    </div>
-                )}
-
-                {/* Tipo de residencia */}
+                {/* Servicios */}
                 <div>
-                    <label className="mb-2 block text-sm font-semibold">Tipo</label>
-                    <select
-                        id='prioridad'
-                        className='block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5'
-                    >
-                        <option value="">--- Seleccionar ---</option>
-                        <option value="apt_p">Apartamento pequeño</option>
-                        <option value="apt_g">Apartamento grande</option>
-                        <option value="otro">Otro</option>
-                    </select>
+                    <label className="mb-2 block text-sm font-semibold">Servicios incluidos</label>
+                    {/* Agua */}
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="radio"
+                            value="Agua"
+                        />
+                        Agua
+                    </label>
+                    {/* Luz */}
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="radio"
+                            value="Luz"
+                        />
+                        Luz
+                    </label>
+                    {/* Internet */}
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="radio"
+                            value="Internet"
+                        />
+                        Internet
+                    </label>
+
                 </div>
                 
             </fieldset>
