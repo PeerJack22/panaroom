@@ -15,180 +15,179 @@ export const Form = () => {
     
 
     return (
-        <form className="space-y-6">
+        <form>
+            
 
+            {/* Información del propietario */}
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg">
                 <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
-                    Información del Departamento
+                    Información del propietario
                 </legend>
 
+                {/* Cédula */}
                 <div>
-                    <label className="mb-2 block text-sm font-semibold">Título</label>
-                    <input
-                        type="text"
-                        name="titulo"
-                        value={formData.titulo}
-                        onChange={handleChange}
-                        placeholder="Nombre del departamento"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Descripción</label>
-                    <textarea
-                        name="descripcion"
-                        value={formData.descripcion}
-                        onChange={handleChange}
-                        placeholder="Descripción general"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Dirección</label>
-                    <input
-                        type="text"
-                        name="direccion"
-                        value={formData.direccion}
-                        onChange={handleChange}
-                        placeholder="Dirección exacta"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Ciudad</label>
-                    <input
-                        type="text"
-                        name="ciudad"
-                        value={formData.ciudad}
-                        onChange={handleChange}
-                        placeholder="Ciudad"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Precio mensual (USD)</label>
-                    <input
-                        type="number"
-                        name="precioMensual"
-                        value={formData.precioMensual}
-                        onChange={handleChange}
-                        placeholder="0.00"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Número de habitaciones</label>
-                    <input
-                        type="number"
-                        name="numeroHabitaciones"
-                        value={formData.numeroHabitaciones}
-                        onChange={handleChange}
-                        min={1}
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Número de baños</label>
-                    <input
-                        type="number"
-                        name="numeroBanos"
-                        value={formData.numeroBanos}
-                        onChange={handleChange}
-                        min={1}
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Servicios incluidos</label>
-                    <div className="flex flex-wrap gap-4 mb-5">
-                        {["Agua", "Luz", "Internet", "TV por cable"].map(servicio => (
-                            <label key={servicio} className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    value={servicio}
-                                    checked={formData.serviciosIncluidos.includes(servicio)}
-                                    onChange={handleCheck}
-                                />
-                                {servicio}
-                            </label>
-                        ))}
+                    <label className="mb-2 block text-sm font-semibold">Cédula</label>
+                    <div className="flex items-center gap-10 mb-5">
+                        <input
+                            type="number"
+                            placeholder="Ingresa la cédula"
+                            className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                        />
+                        <button className="py-1 px-8 bg-gray-600 text-slate-300 border rounded-xl hover:scale-110 duration-300 hover:bg-gray-900 hover:text-white sm:w-80"
+                        
+                        >
+                            Consultar
+                        </button>
                     </div>
+                </div>
+
+                {/* Nombre completo */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Nombres completos</label>
+                    <input
+                        type="text"
+                        placeholder="Ingresa nombre y apellido"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Correo electrónico */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Correo electrónico</label>
+                    <input
+                        type="email"
+                        placeholder="Ingresa el correo electrónico"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Celular */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Celular</label>
+                    <input
+                        type="number"
+                        placeholder="Ingresa el celular"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
                 </div>
             </fieldset>
 
+            {/* Información de la residencia */}
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg mt-10">
                 <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
-                    Imagen de la residencia
+                    Información de la residencia
                 </legend>
 
+                {/* Nombre de la residencia */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Nombre</label>
+                    <input
+                        type="text"
+                        placeholder="Ingresar nombre"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Imagen de la residencia */}
+                <label className="mb-2 block text-sm font-semibold">Imagen de la residencia</label>
                 <div className="flex gap-4 mb-2">
+                    {/* Opción: Imagen con IA */}
                     <label className="flex items-center gap-2">
                         <input
                             type="radio"
                             value="ia"
-                            checked={selectedOption === "ia"}
-                            onChange={() => setSelectedOption("ia")}
                         />
                         Generar con IA
                     </label>
 
+                    {/* Opción: Subir Imagen */}
                     <label className="flex items-center gap-2">
                         <input
                             type="radio"
                             value="upload"
-                            checked={selectedOption === "upload"}
-                            onChange={() => setSelectedOption("upload")}
                         />
                         Subir Imagen
                     </label>
                 </div>
 
+                {/* Imagen con IA */}
                 {selectedOption === "ia" && (
                     <div className="mt-5">
-                        <label className="mb-2 block text-sm font-semibold">Prompt para IA</label>
-                        <input
-                            type="text"
-                            placeholder="Ingresa el prompt"
-                            className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                            value={stateAvatar.prompt}
-                            onChange={(e) => setStateAvatar(prev => ({ ...prev, prompt: e.target.value }))}
-                        />
-                        <button
-                            type="button"
-                            className="mt-2 py-1 px-8 bg-gray-600 text-slate-300 border rounded-xl hover:scale-105 hover:bg-gray-900 hover:text-white"
-                        >
-                            Generar con IA
-                        </button>
-                        <div className="mt-4">
-                            <img src={stateAvatar.generatedImage} alt="IA imagen" width={100} height={100} />
+                        <label className="mb-2 block text-sm font-semibold">Imagen con IA</label>
+                        <div className="flex items-center gap-10 mb-5">
+                            <input
+                                type="text"
+                                placeholder="Ingresa el prompt"
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                                value={stateAvatar.prompt}
+                                onChange={(e) => setStateAvatar(prev => ({ ...prev, prompt: e.target.value }))}
+                            />
+                            <button
+                                type="button"
+                                className="py-1 px-8 bg-gray-600 text-slate-300 border rounded-xl hover:scale-110 duration-300 hover:bg-gray-900 hover:text-white sm:w-80"
+                                disabled={stateAvatar.loading}
+                            >
+                                {stateAvatar.loading ? "Generando..." : "Generar con IA"}
+                            </button>
                         </div>
+                        {stateAvatar.generatedImage && (
+                            <img src={stateAvatar.generatedImage} alt="Avatar IA" width={100} height={100} />
+                        )}
                     </div>
                 )}
 
+                {/* Subir Imagen */}
                 {selectedOption === "upload" && (
                     <div className="mt-5">
                         <label className="mb-2 block text-sm font-semibold">Subir Imagen</label>
                         <input
                             type="file"
-                            className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                            className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                         />
                     </div>
                 )}
+
+                {/* Tipo de residencia */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Tipo</label>
+                    <select
+                        id='prioridad'
+                        className='block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5'
+                    >
+                        <option value="">--- Seleccionar ---</option>
+                        <option value="apt_p">Apartamento pequeño</option>
+                        <option value="apt_g">Apartamento grande</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                {/* Fecha de nacimiento */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Fecha de nacimiento</label>
+                    <input
+                        type="date"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Descripción */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Descripción</label>
+                    <textarea
+                        placeholder="Ingresa la descripción de forma general"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
             </fieldset>
 
+            {/* Botón de submit */}
             <input
                 type="submit"
-                className="bg-gray-800 w-full p-2 mt-5 text-slate-300 uppercase font-bold rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
+                className="bg-gray-800 w-full p-2 mt-5 text-slate-300 uppercase font-bold rounded-lg 
+                hover:bg-gray-600 cursor-pointer transition-all"
                 value="Registrar"
             />
         </form>
 
     )
-}
+} 
