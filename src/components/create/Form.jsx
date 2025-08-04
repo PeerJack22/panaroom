@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import storeAuth from "../../store/storeAuth"; // ✅ Importamos el store de Zustand
 
 export const Form = () => {
     const navigate = useNavigate();
@@ -13,24 +14,15 @@ export const Form = () => {
         formState: { errors },
     } = useForm();
     const { fetchDataBackend } = useFetch();
-    const [userId, setUserId] = useState(null);
 
-    // Obtener el ID del usuario del localStorage al cargar el componente
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("auth-token"));
-        if (storedUser && storedUser.state && storedUser.state.user) {
-            setUserId(storedUser.state.user._id);
-        } else {
-            // Si no hay usuario, redirigir al login
-            toast.error("Debes iniciar sesión para registrar una residencia.");
-            navigate("/login"); 
-        }
-    }, [navigate]);
+    // ✅ Usamos el store para obtener la información del usuario de forma reactiva
+    const { user, token } = storeAuth();
 
     const registerResidencia = async (data) => {
-        // Validación temprana para asegurar que el ID del usuario existe
-        if (!userId) {
+        // ✅ La validación se hace directamente con el estado del store
+        if (!user || !user.user || !user.user._id) {
             toast.error("Error: ID de usuario no disponible. Por favor, reinicia la sesión.");
+            navigate("/login"); // Redirigimos si no hay un usuario válido
             return;
         }
 
@@ -42,8 +34,8 @@ export const Form = () => {
 
         const formData = new FormData();
         
-        // Adjuntar el ID del arrendatario al FormData
-        formData.append("arrendatario", userId);
+        // ✅ Adjuntamos el ID del usuario directamente del objeto user del store
+        formData.append("arrendatario", user.user._id);
 
         // Recorrer los datos del formulario y añadirlos
         Object.keys(data).forEach((key) => {
@@ -61,9 +53,8 @@ export const Form = () => {
         
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
-            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const headers = {
-                Authorization: `Bearer ${storedUser.state.token}`,
+                Authorization: `Bearer ${user.token}`, // ✅ Usamos el token del store
             };
 
             const response = await fetchDataBackend(url, formData, "POST", headers);
@@ -74,6 +65,7 @@ export const Form = () => {
                 }, 2000);
             }
         } catch (error) {
+            console.error("Error al registrar residencia:", error);
             toast.error(
                 "Hubo un error al registrar la residencia. Inténtalo de nuevo."
             );
