@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom'; // ✅ CORREGIDO: Importa de 'react-router-dom'
+import { Link, useNavigate } from 'react-router'; 
 import useFetch from '../hooks/useFetch';
 import { ToastContainer } from 'react-toastify';
 import storeAuth from '../context/storeAuth'; // Asegúrate que la ruta sea correcta
 
 const Login = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const { fetchDataBackend } = useFetch();
-    // ✅ Ahora obtenemos setUser del store de Zustand
-    const { setToken, setRol, setUser } = storeAuth(); 
+    const { register, handleSubmit, formState: { errors } } = useForm()
+    const { fetchDataBackend } = useFetch()
+    const { setToken, setRol } = storeAuth() // Solo se obtienen setToken y setRol
 
     const loginUser = async (data) => {
         const isAdmin = data.email === 'admin@gmail.com';
@@ -23,9 +22,8 @@ const Login = () => {
             if (response) {
                 setToken(response.token);
                 setRol(response.rol);
-                // ✅ GUARDAMOS EL OBJETO USER COMPLETO EN EL STORE
-                // Asumimos que la respuesta del backend incluye un campo 'user' con los datos del usuario.
-                setUser(response.user); 
+                // ❌ Falta guardar el objeto 'user' completo aquí
+                // response.user no se está pasando a 'setUser'
 
                 // Redirige dependiendo del rol
                 if (isAdmin) {
