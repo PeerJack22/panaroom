@@ -23,13 +23,72 @@ export const Form = () => {
                     Información de la residencia
                 </legend>
 
-                {/* Nombre de la residencia */}
+                {/* Titulo de la residencia */}
                 <div>
-                    <label className="mb-2 block text-sm font-semibold">Nombre</label>
+                    <label className="mb-2 block text-sm font-semibold">Título</label>
                     <input
                         type="text"
-                        placeholder="Ingresar nombre"
+                        placeholder="Ingresar título"
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Descripción */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Descripción</label>
+                    <textarea
+                        placeholder="Ingresa la descripción de forma general"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Dirección */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Dirección</label>
+                    <input
+                        type="text"
+                        placeholder="Ingresar dirección"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Ciudad */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Ciudad</label>
+                    <input
+                        type="text"
+                        placeholder="Ingresar ciudad"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Preciomensual */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Precio mensual</label>
+                    <input
+                        type="number"
+                        placeholder="Ingresar precio mensual"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                    />
+                </div>
+
+                {/* Numero de habitaciones */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Número de habitaciones</label>
+                    <input 
+                        type="number"
+                        placeholder="Ingrese el número de habitaciones"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                    />
+                </div>
+                
+                {/* Numero de banos */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold">Número de baños</label>
+                    <input 
+                        type="number"
+                        placeholder="Ingrese el número de baños"
+                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
                     />
                 </div>
 
@@ -105,24 +164,7 @@ export const Form = () => {
                         <option value="otro">Otro</option>
                     </select>
                 </div>
-
-                {/* Fecha de nacimiento */}
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Fecha de nacimiento</label>
-                    <input
-                        type="date"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                {/* Descripción */}
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Descripción</label>
-                    <textarea
-                        placeholder="Ingresa la descripción de forma general"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
+                
             </fieldset>
 
             {/* Botón de submit */}
