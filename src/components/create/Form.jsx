@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
@@ -13,8 +13,27 @@ export const Form = () => {
         formState: { errors },
     } = useForm();
     const { fetchDataBackend } = useFetch();
+    const [userId, setUserId] = useState(null);
+
+    // Obtener el ID del usuario del localStorage al cargar el componente
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+        if (storedUser && storedUser.state && storedUser.state.user) {
+            setUserId(storedUser.state.user._id);
+        } else {
+            // Si no hay usuario, redirigir al login
+            toast.error("Debes iniciar sesión para registrar una residencia.");
+            navigate("/login"); 
+        }
+    }, [navigate]);
 
     const registerResidencia = async (data) => {
+        // Validación temprana para asegurar que el ID del usuario existe
+        if (!userId) {
+            toast.error("Error: ID de usuario no disponible. Por favor, reinicia la sesión.");
+            return;
+        }
+
         // Verificar que al menos un servicio esté seleccionado
         if (!data.servicios || data.servicios.length === 0) {
             toast.error("Debes seleccionar al menos un servicio.");
@@ -22,8 +41,11 @@ export const Form = () => {
         }
 
         const formData = new FormData();
+        
+        // Adjuntar el ID del arrendatario al FormData
+        formData.append("arrendatario", userId);
 
-        // Recorre todos los datos del formulario y los añade al formData
+        // Recorrer los datos del formulario y añadirlos
         Object.keys(data).forEach((key) => {
             if (key === "imagen" && data.imagen[0]) {
                 formData.append("imagen", data.imagen[0]);
@@ -36,7 +58,7 @@ export const Form = () => {
                 formData.append(key, data[key]);
             }
         });
-
+        
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
