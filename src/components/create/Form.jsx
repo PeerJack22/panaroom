@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import storeAuth from "../../store/storeAuth"; // ✅ Importamos el store de Zustand
+import storeAuth from "../../context/storeAuth.jsx";
 
 export const Form = () => {
     const navigate = useNavigate();
