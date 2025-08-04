@@ -1,36 +1,45 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom'; // Asegúrate de que Link sea de 'react-router-dom'
 import useFetch from '../hooks/useFetch';
 import { ToastContainer } from 'react-toastify';
-import storeAuth from '../context/storeAuth';
+import storeAuth from '../context/storeAuth'; // Asegúrate que la ruta sea correcta
 
 const Login = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm()
-    const { fetchDataBackend } = useFetch()
-    const { setToken, setRol } = storeAuth()
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { fetchDataBackend } = useFetch();
+    // ✅ Ahora obtenemos setUser del store
+    const { setToken, setRol, setUser } = storeAuth(); 
 
-const loginUser = async (data) => {
-    const isAdmin = data.email === 'admin@gmail.com';
-    const url = `${import.meta.env.VITE_BACKEND_URL}/${isAdmin ? 'loginAd' : 'login'}`;
+    const loginUser = async (data) => {
+        const isAdmin = data.email === 'admin@gmail.com';
+        const url = `${import.meta.env.VITE_BACKEND_URL}/${isAdmin ? 'loginAd' : 'login'}`;
 
-    const response = await fetchDataBackend(url, data, 'POST');
+        try {
+            const response = await fetchDataBackend(url, data, 'POST');
 
-    if (response) {
-        setToken(response.token);
-        setRol(response.rol);
+            if (response) {
+                setToken(response.token);
+                setRol(response.rol);
+                // ✅ GUARDAMOS EL OBJETO USER COMPLETO EN EL STORE
+                // Asumiendo que la respuesta del backend incluye un campo 'user' con los datos del usuario.
+                setUser(response.user); 
 
-        // Redirige dependiendo del rol
-        if (isAdmin) {
-            navigate('/dashboard');
-        } else {
-            navigate('/dashboard');
+                // Redirige dependiendo del rol
+                if (isAdmin) {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/dashboard');
+                }
+            }
+        } catch (error) {
+            // El useFetch ya maneja el toast.error, pero si quieres un mensaje específico aquí:
+            console.error("Error en el login:", error);
+            // toast.error("Credenciales incorrectas o error de servidor."); 
         }
-    }
-};
-
+    };
 
     return (
         <div className="flex flex-col sm:flex-row h-screen">
@@ -110,7 +119,7 @@ const loginUser = async (data) => {
                                     alt="Logo Google"
                                     className="w-6 h-6"
                                 />
-                            <span className="text-gray-700 font-medium">Iniciar sesión con Google</span>
+                                <span className="text-gray-700 font-medium">Iniciar sesión con Google</span>
                             </button>
                         </div>
                     </form>
