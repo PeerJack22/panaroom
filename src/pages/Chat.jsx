@@ -32,13 +32,21 @@ const Chat = () => {
     }
 
     useEffect(() => {
-        const newSocket = io("https://da-backend-cr95.onrender.com/");
-        setSocket(newSocket)
-        newSocket.on("enviar-mensaje-front-back", (payload) => {
-            setResponses((prev) => [...prev, payload])
-        })
-        return () => newSocket.disconnect()
-    }, [])
+    const newSocket = io("https://da-backend-cr95.onrender.com", {
+        transports: ['websocket'], // evita el intento de polling
+        secure: true, // asegura conexión HTTPS
+        reconnectionAttempts: 5, // intenta reconectar si hay fallos
+        reconnectionDelay: 1000 // tiempo entre intentos
+    });
+
+    setSocket(newSocket);
+
+    newSocket.on("enviar-mensaje-front-back", (payload) => {
+        setResponses((prev) => [...prev, payload]);
+    });
+
+    return () => newSocket.disconnect();
+    }, []);
 
 
     return (
