@@ -32,7 +32,7 @@ const Chat = () => {
     }
 
     useEffect(() => {
-        const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`);
+        const newSocket = io("https://da-backend-cr95.onrender.com/");
         setSocket(newSocket)
         newSocket.on("enviar-mensaje-front-back", (payload) => {
             setResponses((prev) => [...prev, payload])
