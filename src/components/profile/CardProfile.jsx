@@ -10,7 +10,7 @@ export const CardProfile = () => {
                 <img
                     src={user?.imagen || "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"}
                     alt="img-client"
-                    className="m-auto border-4 border-gray-600 rounded-full object-cover"
+                    className="m-auto border-4 border-gray-600 object-cover"
                     width={120}
                     height={120}
                 />
