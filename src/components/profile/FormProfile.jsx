@@ -82,6 +82,16 @@ const FormularioPerfil = () => {
                 {errors.email && <p className="text-red-800">{errors.email.message}</p>}
             </div>
 
+            // Subir imagen normal o con ia para perfil
+            <div className="mb-6">
+                <label className="mb-2 block text-sm font-medium text-gray-300">Imagen de perfil</label>
+                <input
+                    type="file"
+                    accept="image/*"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
             <input
                 type="submit"
                 value="Actualizar"

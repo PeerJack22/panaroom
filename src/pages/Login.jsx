@@ -102,7 +102,7 @@ const loginUser = async (data) => {
                         {/* Botón de Google */}
                         <div className="my-4">
                             <button
-                                type="button"
+                                onClick={() => window.location.href = "http://localhost:5000/auth/google"}
                                 className="py-2 w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-gray-100 transition duration-300"
                             >
                                 <img
@@ -110,7 +110,7 @@ const loginUser = async (data) => {
                                     alt="Logo Google"
                                     className="w-6 h-6"
                                 />
-                                <span className="text-gray-700 font-medium">Iniciar sesión con Google</span>
+                            <span className="text-gray-700 font-medium">Iniciar sesión con Google</span>
                             </button>
                         </div>
                     </form>

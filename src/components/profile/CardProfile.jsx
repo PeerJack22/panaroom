@@ -14,10 +14,6 @@ export const CardProfile = () => {
                     width={120}
                     height={120}
                 />
-                <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 cursor-pointer hover:bg-cyan-500 shadow-md">
-                    📷
-                    <input type="file" accept="image/*" className="hidden" />
-                </label>
             </div>
 
             <div className="self-start mb-2">
