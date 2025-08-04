@@ -17,61 +17,6 @@ export const Form = () => {
     return (
         <form>
             
-
-            {/* Información del propietario */}
-            <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg">
-                <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
-                    Información del propietario
-                </legend>
-
-                {/* Cédula */}
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Cédula</label>
-                    <div className="flex items-center gap-10 mb-5">
-                        <input
-                            type="number"
-                            placeholder="Ingresa la cédula"
-                            className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                        />
-                        <button className="py-1 px-8 bg-gray-600 text-slate-300 border rounded-xl hover:scale-110 duration-300 hover:bg-gray-900 hover:text-white sm:w-80"
-                        
-                        >
-                            Consultar
-                        </button>
-                    </div>
-                </div>
-
-                {/* Nombre completo */}
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Nombres completos</label>
-                    <input
-                        type="text"
-                        placeholder="Ingresa nombre y apellido"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                {/* Correo electrónico */}
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Correo electrónico</label>
-                    <input
-                        type="email"
-                        placeholder="Ingresa el correo electrónico"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-
-                {/* Celular */}
-                <div>
-                    <label className="mb-2 block text-sm font-semibold">Celular</label>
-                    <input
-                        type="number"
-                        placeholder="Ingresa el celular"
-                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                    />
-                </div>
-            </fieldset>
-
             {/* Información de la residencia */}
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg mt-10">
                 <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
