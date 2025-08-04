@@ -1,21 +1,43 @@
 import { useState } from "react";
+import useFetch from "../../hooks/useFetch"
+import { useNavigate } from "react-router"
+import { useForm } from "react-hook-form"
+import { toast, ToastContainer } from "react-toastify"
 
 
 export const Form = () => {
 
-    const [stateAvatar, setStateAvatar] = useState({
-        generatedImage: "https://darwinsdata.com/wp-content/uploads/2023/09/ab15dcbbe1660b5ac94e320424cdd322.jpg",
-        prompt: "",
-        loading: false
-    })
+    const navigate = useNavigate()
+    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm()
+    const { fetchDataBackend } = useFetch()
 
-    const [selectedOption , setSelectedOption ] = useState("ia")
+    const registerResidencia = (data) => {
+        const formData = new FormData();
+        Object.keys(data).forEach((key) => {
+            if (key == "imagen"){
+                formData.append("imagen", data.imagen[0])   
+            } else {
+                formData.append(key, data[key]);
+            }
+        })
+        const url = `${import.meta.env.VITE_API_URL}/departamento/registro`;
+        const storedUser = JSON.parse(localStorage.getItem('auth-token'));
+        const headers = {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${storedUser.state.token}`
+        }
 
-
-    
+        const response = fetchDataBackend(url, formData, "POST", headers);
+        if (response){
+            setTimeout(() => {
+                navigate("/dashboard/listar");
+            }, 2000);
+        }
+    }
 
     return (
-        <form>
+        <form onSubmit={handleSubmit(registerResidencia)} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <ToastContainer />
             
             {/* Información de la residencia */}
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg mt-10">
