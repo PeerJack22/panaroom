@@ -12,15 +12,25 @@ const Login = () => {
     const { fetchDataBackend } = useFetch()
     const { setToken, setRol } = storeAuth()
 
-    const loginUser = async(data) => {
-        const url = `${import.meta.env.VITE_BACKEND_URL}/login`
-        const response = await fetchDataBackend(url, data,'POST')
-        setToken(response.token)
-        setRol(response.rol)
-        if(response){
-            navigate('/dashboard')
+const loginUser = async (data) => {
+    const isAdmin = data.email === 'admin@gmail.com';
+    const url = `${import.meta.env.VITE_BACKEND_URL}/${isAdmin ? 'loginAd' : 'login'}`;
+
+    const response = await fetchDataBackend(url, data, 'POST');
+
+    if (response) {
+        setToken(response.token);
+        setRol(response.rol);
+
+        // Redirige dependiendo del rol
+        if (isAdmin) {
+            navigate('/dashboard');
+        } else {
+            navigate('/dashboard');
         }
     }
+};
+
 
     return (
         <div className="flex flex-col sm:flex-row h-screen">

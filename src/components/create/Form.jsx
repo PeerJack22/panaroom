@@ -15,7 +15,7 @@ export const Form = () => {
     
 
     return (
-         <form className="space-y-6">
+        <form className="space-y-6">
 
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg">
                 <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
@@ -138,7 +138,7 @@ export const Form = () => {
                         />
                         Generar con IA
                     </label>
-                    
+
                     <label className="flex items-center gap-2">
                         <input
                             type="radio"
