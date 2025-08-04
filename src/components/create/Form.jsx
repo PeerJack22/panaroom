@@ -81,6 +81,8 @@ export const Form = () => {
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
                     />
                 </div>
+
+                <br />
                 
                 {/* Numero de banos */}
                 <div>
@@ -91,6 +93,8 @@ export const Form = () => {
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
                     />
                 </div>
+
+                <br />
 
                 {/* Imagen de la residencia */}
                 <label className="mb-2 block text-sm font-semibold">Imagen de la residencia</label>
@@ -106,32 +110,37 @@ export const Form = () => {
                 {/* Servicios */}
                 <div>
                     <label className="mb-2 block text-sm font-semibold">Servicios incluidos</label>
-                    {/* Agua */}
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="radio"
-                            value="Agua"
-                        />
-                        Agua
-                    </label>
-                    {/* Luz */}
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="radio"
-                            value="Luz"
-                        />
-                        Luz
-                    </label>
-                    {/* Internet */}
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="radio"
-                            value="Internet"
-                        />
-                        Internet
-                    </label>
-
+                    <div className="flex gap-6">
+                        {/* Agua */}
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                value="Agua"
+                                name="servicio"
+                            />
+                            Agua
+                        </label>
+                        {/* Luz */}
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                value="Luz"
+                                name="servicio"
+                            />
+                            Luz
+                        </label>
+                        {/* Internet */}
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                value="Internet"
+                                name="servicio"
+                            />
+                            Internet
+                        </label>
+                    </div>
                 </div>
+
                 
             </fieldset>
 
