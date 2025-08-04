@@ -32,7 +32,7 @@ const Chat = () => {
     }
 
     useEffect(() => {
-        const newSocket = io("http://localhost:3000");  // Cambiar a tu URL del servidor
+        const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`);
         setSocket(newSocket)
         newSocket.on("enviar-mensaje-front-back", (payload) => {
             setResponses((prev) => [...prev, payload])
