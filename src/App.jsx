@@ -20,6 +20,7 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import { useEffect } from 'react'
 import storeProfile from './context/storeProfile'
 import storeAuth from './context/storeAuth'
+import PrivateRouteWithRole from './routes/PrivateRouteWithRole';
 
 
 
@@ -57,10 +58,18 @@ function App() {
                   <Route index element={<Profile />} />
                   <Route path='listar' element={<List />} />
                   <Route path='visualizar/:id' element={<Details />} />
-                  <Route path='crear' element={<Create />} />
+                  <Route path='crear' element={
+                    <PrivateRouteWithRole>
+                    <Create />
+                    </PrivateRouteWithRole>
+                    } />
                   <Route path='actualizar/:id' element={<Update />} />
                   <Route path='chat' element={<Chat />} />
-                  <Route path='usuarios' element={<Users/>} />
+                  <Route path='usuarios' element={
+                    <PrivateRouteWithRole>
+                    <Users/>
+                    </PrivateRouteWithRole>
+                    } />
                 </Route>
               </Routes>
             </ProtectedRoute>

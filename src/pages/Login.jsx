@@ -102,7 +102,7 @@ const loginUser = async (data) => {
                         {/* Botón de Google */}
                         <div className="my-4">
                             <button
-                                onClick={() => window.location.href = "http://localhost:5000/auth/google"}
+                                onClick={() => window.location.href = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/auth/google/callback`}
                                 className="py-2 w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-gray-100 transition duration-300"
                             >
                                 <img
