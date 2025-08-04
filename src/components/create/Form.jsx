@@ -15,12 +15,13 @@ export const Form = () => {
     } = useForm();
     const { fetchDataBackend } = useFetch();
 
-    // ✅ Usamos el store para obtener la información del usuario de forma reactiva
+    // ✅ Obtenemos el objeto 'user' directamente del store de Zustand
+    // Este 'user' ya contiene el '_id', 'nombre', 'email', etc.
     const { user, token } = storeAuth();
 
     const registerResidencia = async (data) => {
-        // ✅ La validación se hace directamente con el estado del store
-        if (!user || !user.user || !user.user._id) {
+        // ✅ Validamos que el objeto 'user' y su '_id' existan
+        if (!user || !user._id) { // Cambiado de user.user._id a user._id
             toast.error("Error: ID de usuario no disponible. Por favor, reinicia la sesión.");
             navigate("/login"); // Redirigimos si no hay un usuario válido
             return;
@@ -34,8 +35,8 @@ export const Form = () => {
 
         const formData = new FormData();
         
-        // ✅ Adjuntamos el ID del usuario directamente del objeto user del store
-        formData.append("arrendatario", user.user._id);
+        // ✅ Adjuntamos el ID del arrendatario usando user._id
+        formData.append("arrendatario", user._id); // Cambiado de user.user._id a user._id
 
         // Recorrer los datos del formulario y añadirlos
         Object.keys(data).forEach((key) => {
@@ -54,7 +55,7 @@ export const Form = () => {
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
             const headers = {
-                Authorization: `Bearer ${user.token}`, // ✅ Usamos el token del store
+                Authorization: `Bearer ${token}`, // Usamos el token del store
             };
 
             const response = await fetchDataBackend(url, formData, "POST", headers);
@@ -229,9 +230,9 @@ export const Form = () => {
 
             <input
                 type="submit"
+                value="Registrar"
                 className="bg-gray-800 w-full p-2 mt-5 text-slate-300 uppercase font-bold rounded-lg 
                             hover:bg-gray-600 cursor-pointer transition-all"
-                value="Registrar"
             />
         </form>
     );
