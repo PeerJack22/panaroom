@@ -82,7 +82,7 @@ const FormularioPerfil = () => {
                 {errors.email && <p className="text-red-800">{errors.email.message}</p>}
             </div>
 
-            // Subir imagen normal o con ia para perfil
+            {/* Subir imagen normal o con ia para perfil */}
             <div className="mb-6">
                 <label className="mb-2 block text-sm font-medium text-gray-300">Imagen de perfil</label>
                 <input
