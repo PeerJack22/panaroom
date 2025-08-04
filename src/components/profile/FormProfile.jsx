@@ -11,6 +11,13 @@ const FormularioPerfil = () => {
         updateProfile(data,user._id)
     }
 
+    const [selectedProfileOption, setSelectedProfileOption] = useState("");
+    const [stateProfileAvatar, setStateProfileAvatar] = useState({
+        prompt: "",
+        loading: false,
+        generatedImage: null,
+    });
+
     useEffect(() => {
         if (user) {
             reset({
@@ -82,14 +89,76 @@ const FormularioPerfil = () => {
                 {errors.email && <p className="text-red-800">{errors.email.message}</p>}
             </div>
 
-            {/* Subir imagen normal o con ia para perfil */}
+            {/* Subir imagen normal o con IA para perfil */}
             <div className="mb-6">
                 <label className="mb-2 block text-sm font-medium text-gray-300">Imagen de perfil</label>
-                <input
-                    type="file"
-                    accept="image/*"
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+
+                {/* Opción: IA o subida */}
+                <div className="flex gap-4 mb-2">
+                    <label className="flex items-center gap-2 text-gray-300">
+                        <input
+                            type="radio"
+                            name="profileImageOption"
+                            value="ia"
+                            checked={selectedProfileOption === "ia"}
+                            onChange={() => setSelectedProfileOption("ia")}
+                        />
+                        Generar con IA
+                    </label>
+
+                    <label className="flex items-center gap-2 text-gray-300">
+                        <input
+                            type="radio"
+                            name="profileImageOption"
+                            value="upload"
+                            checked={selectedProfileOption === "upload"}
+                            onChange={() => setSelectedProfileOption("upload")}
+                        />
+                        Subir Imagen
+                    </label>
+                </div>
+
+                {/* Imagen generada con IA */}
+                {selectedProfileOption === "ia" && (
+                    <div className="mt-4">
+                        <label className="mb-2 block text-sm font-semibold text-gray-300">Prompt</label>
+                        <div className="flex items-center gap-4">
+                            <input
+                                type="text"
+                                placeholder="Ej. mujer joven con gafas"
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-700"
+                                value={stateProfileAvatar.prompt}
+                                onChange={(e) => setStateProfileAvatar(prev => ({ ...prev, prompt: e.target.value }))}
+                            />
+                            <button
+                                type="button"
+                                className="py-1 px-6 bg-blue-600 text-white rounded-xl hover:bg-blue-700 duration-300"
+                                disabled={stateProfileAvatar.loading}
+                            >
+                                {stateProfileAvatar.loading ? "Generando..." : "Generar"}
+                            </button>
+                        </div>
+
+                        {stateProfileAvatar.generatedImage && (
+                            <img
+                                src={stateProfileAvatar.generatedImage}
+                                alt="Avatar Generado"
+                                className="mt-4 w-24 h-24 object-cover rounded-full"
+                            />
+                        )}
+                    </div>
+                )}
+
+                {/* Subida manual de imagen */}
+                {selectedProfileOption === "upload" && (
+                    <div className="mt-4">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                )}
             </div>
 
             <input
