@@ -38,7 +38,7 @@ export const Form = () => {
         });
 
         try {
-        const url = `${import.meta.env.VITE_API_URL}/departamento/registro`;
+        const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
         const storedUser = JSON.parse(localStorage.getItem("auth-token"));
         const headers = {
             Authorization: `Bearer ${storedUser.state.token}`,
