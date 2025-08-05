@@ -33,7 +33,7 @@ const Chat = () => {
 
     useEffect(() => {
     const newSocket = io("https://da-backend-cr95.onrender.com", {
-        transports: ['websocket'], // evita el intento de polling
+  transports: ['polling', 'websocket'], // permite fallback
         secure: true, // asegura conexión HTTPS
         reconnectionAttempts: 5, // intenta reconectar si hay fallos
         reconnectionDelay: 1000 // tiempo entre intentos
