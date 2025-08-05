@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import useFetch from "../hooks/useFetch";
-import DepartamentoPaymentBox from "../components/DepartamentoPaymentBox"; // Ajusta la ruta si es diferente
+import DepartamentoPaymentBox from "../components/treatments/DepartamentoPaymentBox";
 
 const Details = () => {
     const { id } = useParams();
