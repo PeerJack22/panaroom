@@ -51,8 +51,8 @@ export const Form = () => {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
             const headers = {
                 Authorization: `Bearer ${token}`,
+                // NO pongas "Content-Type": "application/json"
             };
-
             const response = await fetchDataBackend(url, formData, "POST", headers);
             if (response) {
                 toast.success("Residencia registrada exitosamente!");
