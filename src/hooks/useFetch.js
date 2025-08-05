@@ -5,16 +5,20 @@ function useFetch() {
     const fetchDataBackend = async (url, data = null, method = "GET", headers = {}) => {
         const loadingToast = toast.loading("Procesando solicitud...");
         try {
-            // Detecta si data es FormData
             const isFormData = data instanceof FormData;
+            const isDelete = method === "DELETE";
+
+            const finalHeaders = isFormData
+                ? { ...headers }
+                : isDelete && !data
+                    ? { ...headers } // No agregues Content-Type en DELETE sin body
+                    : { "Content-Type": "application/json", ...headers };
 
             const options = {
                 method,
                 url,
-                headers: isFormData
-                    ? { ...headers } // NO agregues Content-Type si es FormData
-                    : { "Content-Type": "application/json", ...headers },
-                data,
+                headers: finalHeaders,
+                ...(data && { data }),
             };
 
             const response = await axios(options);
