@@ -1,12 +1,14 @@
 import { MdDeleteForever, MdInfo, MdPublishedWithChanges } from "react-icons/md";
 import useFetch from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Table = () => {
     const { fetchDataBackend } = useFetch();
     const [departamentos, setDepartamentos] = useState([]);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const listarDepartamentos = async () => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
@@ -23,6 +25,25 @@ const Table = () => {
         listarDepartamentos();
     }, []);
 
+    const deleteDepartamento = async (id) => {
+        const confirmDelete = confirm("¿Estás seguro de eliminar este departamento?");
+        if (confirmDelete) {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/eliminarDepa/${id}`;
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${storedUser.state.token}`,
+            };
+            try {
+                await fetchDataBackend(url, null, "DELETE", headers);
+                setDepartamentos((prev) => prev.filter(dep => dep._id !== id));
+                toast.success("Departamento eliminado correctamente");
+            } catch (error) {
+                toast.error("Error al eliminar el departamento");
+            }
+        }
+    };
+
     if (!departamentos.length) {
         return (
             <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
@@ -33,6 +54,7 @@ const Table = () => {
 
     return (
         <table className="w-full mt-5 table-auto shadow-lg bg-white">
+            <ToastContainer />
             <thead className="bg-gray-800 text-slate-400">
                 <tr>
                     {["N°", "Título", "Descripción", "Dirección", "Precio", "Habitaciones", "Baños", "Estado", "Acciones"].map((header) => (
@@ -68,6 +90,7 @@ const Table = () => {
                             <MdDeleteForever
                                 title="Eliminar"
                                 className="h-7 w-7 text-red-900 cursor-pointer inline-block hover:text-red-600"
+                                onClick={() => deleteDepartamento(dep._id)}
                             />
                         </td>
                     </tr>
