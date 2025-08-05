@@ -31,7 +31,6 @@ const Table = () => {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/eliminar/${id}`;
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const headers = {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${storedUser.state.token}`,
             };
             try {
