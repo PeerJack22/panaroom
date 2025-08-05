@@ -1,119 +1,55 @@
-/* eslint-disable no-unused-vars */
-import { useState } from "react"
-import TableTreatments from "../components/treatments/Table"
-import ModalTreatments from "../components/treatments/Modal"
-
-
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import useFetch from "../hooks/useFetch";
 
 const Details = () => {
-    
+    const { id } = useParams(); // Obtiene el id de la URL
+    const { fetchDataBackend } = useFetch();
+    const [departamento, setDepartamento] = useState(null);
 
-    const [treatments, setTreatments] = useState(["demo"])
+    useEffect(() => {
+        const fetchDepartamento = async () => {
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${storedUser.state.token}`,
+            };
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos/${id}`;
+            const response = await fetchDataBackend(url, null, "GET", headers);
+            setDepartamento(response);
+        };
+        fetchDepartamento();
+    }, [id]);
 
-
+    if (!departamento) {
+        return (
+            <div className="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50" role="alert">
+                <span className="font-medium">Cargando datos del departamento...</span>
+            </div>
+        );
+    }
 
     return (
-        <>
-            <div>
-                <h1 className='font-black text-4xl text-gray-500'>Visualizar</h1>
-                <hr className='my-4 border-t-2 border-gray-300' />
-                <p className='mb-8'>Este módulo te permite visualizar todos los datos</p>
-            </div>
-            <div>
+        <div>
+            <h1 className='font-black text-4xl text-gray-500 mb-4'>Detalles del Departamento</h1>
+            <ul className="list-disc pl-5">
+                <li><span className="font-bold">Título:</span> {departamento.titulo}</li>
+                <li><span className="font-bold">Descripción:</span> {departamento.descripcion}</li>
+                <li><span className="font-bold">Dirección:</span> {departamento.direccion}</li>
+                <li><span className="font-bold">Precio mensual:</span> $ {departamento.precioMensual}</li>
+                <li><span className="font-bold">Habitaciones:</span> {departamento.numeroHabitaciones}</li>
+                <li><span className="font-bold">Baños:</span> {departamento.numeroBanos}</li>
+                <li><span className="font-bold">Ciudad:</span> {departamento.ciudad}</li>
+                <li>
+                    <span className="font-bold">Estado:</span>
+                    <span className="ml-2 bg-blue-100 text-green-500 text-xs font-medium px-2.5 py-0.5 rounded">
+                        {departamento.disponible ? "Disponible" : "No disponible"}
+                    </span>
+                </li>
+                {/* Agrega más campos si lo necesitas */}
+            </ul>
+        </div>
+    );
+};
 
-                <div className='m-5 flex justify-between'>
-
-                    <div>
-                        <ul className="list-disc pl-5">
-
-                            {/* Datos del paciente */}
-                            <li className="text-md text-gray-00 mt-4 font-bold text-xl">Datos del dueño</li>
-
-                            <ul className="pl-5">
-                                <li className="text-md text-gray-00 mt-2">
-                                    <span className="text-gray-600 font-bold">Cédula: </span>
-                                </li>
-
-                                <li className="text-md text-gray-00 mt-2">
-                                    <span className="text-gray-600 font-bold">Nombres completos: </span>
-                                </li>
-
-                                <li className="text-md text-gray-00 mt-2">
-                                    <span className="text-gray-600 font-bold">Correo electrónico: </span>
-                                </li>
-
-                                <li className="text-md text-gray-00 mt-2">
-                                <span className="text-gray-600 font-bold">Celular: </span>
-                                </li>
-                            </ul>
-
-
-                            {/* Datos del dueño */}
-                            <li className="text-md text-gray-00 mt-4 font-bold text-xl">Datos del paciente</li>
-
-                            <ul className="pl-5">
-                                <li className="text-md text-gray-00 mt-2">
-                                    <span className="text-gray-600 font-bold">Nombre: </span>
-                                </li>
-
-                                <li className="text-md text-gray-00 mt-2">
-                                    <span className="text-gray-600 font-bold">Tipo: </span>
-                                </li>
-
-                                <li className="text-md text-gray-00 mt-2">
-                                    <span className="text-gray-600 font-bold">Fecha de nacimiento: </span>
-                                </li>
-
-                                <li className="text-md text-gray-00 mt-2">
-                                    <span className="text-gray-600 font-bold">Estado: </span>
-                                    <span className="bg-blue-100 text-green-500 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                                    </span>
-                                </li>
-
-                                <li className="text-md text-gray-00 mt-4">
-                                    <span className="text-gray-600 font-bold">Síntoma u Observación: </span>
-                                </li>
-
-                            </ul>
-                        </ul>
-                    </div>
-
-                    <div>
-                    <img src="https://cdn-icons-png.flaticon.com/512/2138/2138440.png" alt="dogandcat" className='h-80 w-80' />
-                    </div>
-                </div>
-
-                <hr className='my-4 border-t-2 border-gray-300' />
-
-                <div className='flex justify-between items-center'>
-
-                    <p>Este módulo te permite gestionar tratamientos</p>
-                    {
-                        true &&
-                        (
-                            <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700">
-                                Registrar
-                            </button>
-                        )
-                    }
-
-                    {false  && (<ModalTreatments/>)}
-
-                </div>
-
-                {
-                    treatments.length == 0
-                        ?
-                        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                            <span className="font-medium">No existen registros</span>
-                        </div>
-                        :
-                        <TableTreatments treatments={treatments} />
-                }
-            </div>
-        </>
-
-    )
-}
-
-export default Details
+export default Details;
