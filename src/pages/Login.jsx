@@ -18,6 +18,7 @@ const loginUser = async (data) => {
 
     try {
         const response = await fetchDataBackend(url, data, 'POST');
+        console.log(response);
 
         if (response) {
             setToken(response.token);
