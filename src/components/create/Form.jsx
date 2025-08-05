@@ -15,35 +15,28 @@ export const Form = () => {
     } = useForm();
     const { fetchDataBackend } = useFetch();
 
-    // ✅ Obtenemos el objeto 'user' directamente del store de Zustand
-    // Este 'user' ya contiene el '_id', 'nombre', 'email', etc.
     const { user, token } = storeAuth();
 
     const registerResidencia = async (data) => {
-        // ✅ Validamos que el objeto 'user' y su '_id' existan
-        if (!user || !user._id) { // Cambiado de user.user._id a user._id
+        if (!user || !user._id) {
             toast.error("Error: ID de usuario no disponible. Por favor, reinicia la sesión.");
-            navigate("/login"); // Redirigimos si no hay un usuario válido
+            navigate("/login");
             return;
         }
 
-        // Verificar que al menos un servicio esté seleccionado
         if (!data.servicios || data.servicios.length === 0) {
             toast.error("Debes seleccionar al menos un servicio.");
             return;
         }
 
         const formData = new FormData();
-        
-        // ✅ Adjuntamos el ID del arrendatario usando user._id
-        formData.append("arrendatario", user._id); // Cambiado de user.user._id a user._id
+        formData.append("arrendatario", user._id);
 
-        // Recorrer los datos del formulario y añadirlos
         Object.keys(data).forEach((key) => {
             if (key === "imagen" && data.imagen[0]) {
-                formData.append("imagen", data.imagen[0]);
+                // Cambiado: el campo debe llamarse 'imagenes' (en plural)
+                formData.append("imagenes", data.imagen[0]);
             } else if (key === "servicios") {
-                // Para servicios, crea un arreglo de strings
                 data.servicios.forEach((servicio) => {
                     formData.append("serviciosIncluidos[]", servicio);
                 });
@@ -51,11 +44,11 @@ export const Form = () => {
                 formData.append(key, data[key]);
             }
         });
-        
+
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
             const headers = {
-                Authorization: `Bearer ${token}`, // Usamos el token del store
+                Authorization: `Bearer ${token}`,
             };
 
             const response = await fetchDataBackend(url, formData, "POST", headers);
@@ -235,5 +228,3 @@ export const Form = () => {
                             hover:bg-gray-600 cursor-pointer transition-all"
             />
         </form>
-    );
-};
