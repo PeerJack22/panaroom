@@ -26,6 +26,7 @@ const Table = () => {
     }, []);
 
     const deleteDepartamento = async (id) => {
+        console.log("ID a eliminar:", id);
         const confirmDelete = confirm("¿Estás seguro de eliminar este departamento?");
         if (confirmDelete) {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/eliminar/${id}`;
