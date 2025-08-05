@@ -14,6 +14,7 @@ const Table = () => {
             Authorization: `Bearer ${storedUser.state.token}`,
         };
         const response = await fetchDataBackend(url, null, "GET", headers);
+        console.log("Respuesta departamentos:", response);
         setDepartamentos(response || []);
     };
 
