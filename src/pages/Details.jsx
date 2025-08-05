@@ -61,13 +61,13 @@ const Details = () => {
                     <div>
                         <h2 className="text-lg font-semibold text-gray-700 mb-2">📷 Imágenes del Departamento</h2>
                         <div className="grid grid-cols-2 gap-4">
-                            {departamento.imagenes.map((url, index) => (
-                                <img
-                                    key={index}
-                                    src={url}
-                                    alt={`Imagen ${index + 1}`}
-                                    className="w-full h-40 object-cover rounded shadow"
-                                />
+                            {departamento.imagenes.map((img, index) => (
+                            <img
+                                key={index}
+                                src={img.url} 
+                                alt={`Imagen ${index + 1}`}
+                                className="w-full h-40 object-cover rounded shadow"
+                            />
                             ))}
                         </div>
                     </div>
