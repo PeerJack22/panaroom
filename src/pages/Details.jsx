@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import useFetch from "../hooks/useFetch";
-import DepartamentoPaymentBox from "../treatments/DepartamentoPaymentBox";
+import DepartamentoPaymentBox from "../components/treatments/DepartamentoPaymentBox";
 
 
 const Details = () => {
