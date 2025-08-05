@@ -74,7 +74,7 @@ function ModalPayment({ departamento, onClose, onSuccess }) {
                 className="px-6 py-2 rounded-lg bg-green-600 hover:bg-green-800 text-white transition duration-300"
                 disabled={loading}
                 >
-                {loading ? "Procesando..." : "Pagar"}
+                {loading ? "Procesando....." : "Pagar"}
                 </button>
 
                 <button
