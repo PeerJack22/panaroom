@@ -2,13 +2,13 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
 import ModalPayment from "./ModalPayment"; // Asegúrate de que esté adaptado para departamentos
-import storeRent from "../../store/storeRent";
+import storeDepartamento from "../../store/storeRent";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRAPI_KEY);
 
 const DepartamentoPaymentBox = ({ departamento }) => {
     const [showModal, setShowModal] = useState(false);
-    const { payDepartamento } = storeRent();
+    const { payDepartamento } = storeDepartamento();
 
     const handlePaymentClick = () => {
         setShowModal(true);
