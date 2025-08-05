@@ -228,3 +228,5 @@ export const Form = () => {
                             hover:bg-gray-600 cursor-pointer transition-all"
             />
         </form>
+    );
+};
