@@ -23,14 +23,22 @@ const loginUser = async (data) => {
         if (response) {
             setToken(response.token);
             setRol(response.rol);
-            setUser(response.user); // Guarda el usuario en el store
 
-            // Redirige dependiendo del rol
+            // Construye el objeto user manualmente
+            const user = {
+                _id: response._id,
+                nombre: response.nombre,
+                apellido: response.apellido,
+                direccion: response.direccion,
+                celular: response.celular,
+                // agrega aquí cualquier otro dato que necesites
+            };
+            setUser(user);
+
             navigate('/dashboard');
         }
     } catch (error) {
         console.error("Error en el login:", error);
-        // toast.error("Credenciales incorrectas o error de servidor."); 
     }
 };
 
