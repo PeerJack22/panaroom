@@ -3,41 +3,35 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router'; 
 import useFetch from '../hooks/useFetch';
 import { ToastContainer } from 'react-toastify';
-import storeAuth from '../context/storeAuth'; // Asegúrate que la ruta sea correcta
+import storeAuth from '../context/storeAuth';
 
 const Login = () => {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm()
     const { fetchDataBackend } = useFetch()
-    const { setToken, setRol } = storeAuth() // Solo se obtienen setToken y setRol
+    const { setToken, setRol, setUser } = storeAuth(); 
 
-    const loginUser = async (data) => {
-        const isAdmin = data.email === 'admin@gmail.com';
-        const url = `${import.meta.env.VITE_BACKEND_URL}/${isAdmin ? 'loginAd' : 'login'}`;
+const loginUser = async (data) => {
+    const isAdmin = data.email === 'admin@gmail.com';
+    const url = `${import.meta.env.VITE_BACKEND_URL}/${isAdmin ? 'loginAd' : 'login'}`;
 
-        try {
-            const response = await fetchDataBackend(url, data, 'POST');
+    try {
+        const response = await fetchDataBackend(url, data, 'POST');
 
-            if (response) {
-                setToken(response.token);
-                setRol(response.rol);
-                // ❌ Falta guardar el objeto 'user' completo aquí
-                // response.user no se está pasando a 'setUser'
+        if (response) {
+            setToken(response.token);
+            setRol(response.rol);
+            setUser(response.user); // Guarda el usuario en el store
 
-                // Redirige dependiendo del rol
-                if (isAdmin) {
-                    navigate('/dashboard');
-                } else {
-                    navigate('/dashboard');
-                }
-            }
-        } catch (error) {
-            // El useFetch ya maneja el toast.error, pero si quieres un mensaje específico aquí:
-            console.error("Error en el login:", error);
-            // toast.error("Credenciales incorrectas o error de servidor."); 
+            // Redirige dependiendo del rol
+            navigate('/dashboard');
         }
-    };
+    } catch (error) {
+        console.error("Error en el login:", error);
+        // toast.error("Credenciales incorrectas o error de servidor."); 
+    }
+};
 
     return (
         <div className="flex flex-col sm:flex-row h-screen">
