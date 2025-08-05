@@ -7,14 +7,13 @@ const Table = () => {
     const [departamentos, setDepartamentos] = useState([]);
 
     const listarDepartamentos = async () => {
-        const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`; // Ajusta el endpoint según tu backend
+        const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
         const storedUser = JSON.parse(localStorage.getItem("auth-token"));
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${storedUser.state.token}`,
         };
         const response = await fetchDataBackend(url, null, "GET", headers);
-        console.log("Respuesta departamentos:", response);
         setDepartamentos(response || []);
     };
 
@@ -34,7 +33,7 @@ const Table = () => {
         <table className="w-full mt-5 table-auto shadow-lg bg-white">
             <thead className="bg-gray-800 text-slate-400">
                 <tr>
-                    {["N°", "Nombre de arriendo", "Nombre propietario", "Email", "Celular", "Estado", "Acciones"].map((header) => (
+                    {["N°", "Título", "Descripción", "Dirección", "Precio", "Habitaciones", "Baños", "Estado", "Acciones"].map((header) => (
                         <th key={header} className="p-2">{header}</th>
                     ))}
                 </tr>
@@ -43,13 +42,15 @@ const Table = () => {
                 {departamentos.map((dep, index) => (
                     <tr className="hover:bg-gray-300 text-center" key={dep._id}>
                         <td>{index + 1}</td>
-                        <td>{dep.nombreArriendo}</td>
-                        <td>{dep.arrendatario?.nombre}</td>
-                        <td>{dep.arrendatario?.email}</td>
-                        <td>{dep.arrendatario?.celular}</td>
+                        <td>{dep.titulo}</td>
+                        <td>{dep.descripcion}</td>
+                        <td>{dep.direccion}</td>
+                        <td>{dep.precioMensual}</td>
+                        <td>{dep.numeroHabitaciones}</td>
+                        <td>{dep.numeroBanos}</td>
                         <td>
                             <span className="bg-blue-100 text-green-500 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-                                {dep.estado ? "Activo" : "Inactivo"}
+                                {dep.disponible ? "Disponible" : "No disponible"}
                             </span>
                         </td>
                         <td className="py-2 text-center">
