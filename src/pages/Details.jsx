@@ -14,7 +14,7 @@ const Details = () => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${storedUser.state.token}`,
             };
-            const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos/${id}`;
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/${id}`;
             const response = await fetchDataBackend(url, null, "GET", headers);
             setDepartamento(response);
         };

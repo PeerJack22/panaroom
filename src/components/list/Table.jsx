@@ -79,9 +79,9 @@ const Table = () => {
                         </td>
                         <td className="py-2 text-center">
                             <MdInfo
-                            title="Más información"
-                            className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-green-600"
-                            onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)}
+                                title="Más información"
+                                className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-green-600"
+                                onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)} 
                             />
                             <MdPublishedWithChanges
                                 title="Actualizar"
