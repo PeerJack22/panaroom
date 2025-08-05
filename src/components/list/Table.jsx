@@ -45,7 +45,7 @@ const Table = () => {
                         <td>{dep.titulo}</td>
                         <td>{dep.descripcion}</td>
                         <td>{dep.direccion}</td>
-                        <td>{dep.precioMensual}</td>
+                        <td>$ {dep.precioMensual}</td>
                         <td>{dep.numeroHabitaciones}</td>
                         <td>{dep.numeroBanos}</td>
                         <td>
