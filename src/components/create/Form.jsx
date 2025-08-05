@@ -33,9 +33,11 @@ export const Form = () => {
         formData.append("arrendatario", user._id);
 
         Object.keys(data).forEach((key) => {
-            if (key === "imagen" && data.imagen[0]) {
-                // Cambiado: el campo debe llamarse 'imagenes' (en plural)
-                formData.append("imagenes", data.imagen[0]);
+            if (key === "imagen" && data.imagen.length > 0) {
+                // Permitir varias imágenes
+                Array.from(data.imagen).forEach((img) => {
+                    formData.append("imagenes", img);
+                });
             } else if (key === "servicios") {
                 data.servicios.forEach((servicio) => {
                     formData.append("serviciosIncluidos[]", servicio);
@@ -174,11 +176,12 @@ export const Form = () => {
 
                 <br />
 
-                {/* Imagen de la residencia */}
+                {/* Imágenes de la residencia */}
                 <div>
-                    <label className="mb-2 block text-sm font-semibold">Imagen de la residencia</label>
+                    <label className="mb-2 block text-sm font-semibold">Imágenes de la residencia</label>
                     <input
                         type="file"
+                        multiple
                         className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                         {...register("imagen", { required: "Debes subir al menos una imagen." })}
                     />
