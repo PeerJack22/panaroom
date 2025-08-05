@@ -2,7 +2,8 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
 import ModalPayment from "./ModalPayment"; // Asegúrate de que esté adaptado para departamentos
-import storeDepartamento from "../../store/storeRent";
+import storeDepartamento from "../../context/store/storeRent";
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRAPI_KEY);
 
