@@ -1,9 +1,8 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useState } from "react";
-import ModalPayment from "./ModalPayment"; // Asegúrate de que esté adaptado para departamentos
+import ModalPayment from "./ModalPayment";
 import storeDepartamento from "../../context/store/storeRent";
-
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRAPI_KEY);
 
@@ -38,12 +37,13 @@ const DepartamentoPaymentBox = ({ departamento }) => {
             <ModalPayment
                 departamento={departamento}
                 onClose={() => setShowModal(false)}
-                onSuccess={() => {
+                onSuccess={(paymentMethodId) => {
                 setShowModal(false);
                 payDepartamento({
+                    paymentMethodId: paymentMethodId,
                     departamentoId: departamento._id,
-                    monto: departamento.precioMensual,
-                    metodoPago: "Stripe",
+                    cantidad: departamento.precioMensual * 100, // Stripe usa centavos
+                    motivo: "Pago de alquiler mensual"
                 });
                 }}
             />
@@ -51,6 +51,6 @@ const DepartamentoPaymentBox = ({ departamento }) => {
         )}
         </div>
     );
-    };
+};
 
 export default DepartamentoPaymentBox;

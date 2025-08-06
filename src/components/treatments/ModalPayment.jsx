@@ -31,8 +31,8 @@ function ModalPayment({ departamento, onClose, onSuccess }) {
 
         console.log("Método de pago creado:", paymentMethod);
 
-        // Simula éxito
-        onSuccess();
+        // ✅ Envía el paymentMethodId al componente padre
+        onSuccess(paymentMethod.id);
         } catch (err) {
         console.error("Error en el pago:", err);
         } finally {
