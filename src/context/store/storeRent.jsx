@@ -13,6 +13,9 @@ const storeDepartamento = create(() => ({
             Authorization: `Bearer ${storedUser.state.token}`,
             },
         };
+
+        console.log("Datos enviados al backend:", data);
+        
         const respuesta = await axios.post(url, data, options);
         toast.success(respuesta.data.msg);
         } catch (error) {
