@@ -3,7 +3,7 @@ import edificio from '../assets/edificio.png';
 import { Link, useNavigate } from 'react-router';
 import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch";
+import useFetch from '../hooks/useFetch';
 
 export const Home = () => {
     const { fetchDataBackend } = useFetch();
