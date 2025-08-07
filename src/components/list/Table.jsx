@@ -11,7 +11,7 @@ const Table = () => {
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(localStorage.getItem("auth-token"));
-    const userRol = storedUser?.state?.user?.rol;
+    const userRol = storedUser?.state?.user?.rol || "";
 
     const listarDepartamentos = async () => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
@@ -28,11 +28,6 @@ const Table = () => {
     }, []);
 
     const deleteDepartamento = async (id) => {
-        if (userRol === "arrendatario") {
-            toast.error("No tienes permisos para eliminar departamentos.");
-            return;
-        }
-
         const confirmDelete = confirm("¿Estás seguro de eliminar este departamento?");
         if (confirmDelete) {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/eliminar/${id}`;
@@ -92,16 +87,11 @@ const Table = () => {
                                 title="Actualizar"
                                 className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-blue-600"
                             />
-                            {userRol !== "arrendatario" ? (
+                            {userRol !== "arrendatario" && (
                                 <MdDeleteForever
                                     title="Eliminar"
                                     className="h-7 w-7 text-red-900 cursor-pointer inline-block hover:text-red-600"
                                     onClick={() => deleteDepartamento(dep._id)}
-                                />
-                            ) : (
-                                <MdDeleteForever
-                                    title="No tienes permiso para eliminar"
-                                    className="h-7 w-7 text-gray-400 inline-block cursor-not-allowed"
                                 />
                             )}
                         </td>
