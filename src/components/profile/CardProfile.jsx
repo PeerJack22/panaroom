@@ -7,7 +7,6 @@ export const CardProfile = () => {
     const imagenPerfil =
         user?.avatarArren ||
         user?.avatarArrenIA ||
-        user?.avatarArrenID ||
         "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
 
     return (

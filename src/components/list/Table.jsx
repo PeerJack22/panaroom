@@ -10,9 +10,11 @@ const Table = () => {
     const [departamentos, setDepartamentos] = useState([]);
     const navigate = useNavigate();
 
+    const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+    const userRol = storedUser?.state?.user?.rol;
+
     const listarDepartamentos = async () => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
-        const storedUser = JSON.parse(localStorage.getItem("auth-token"));
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${storedUser.state.token}`,
@@ -26,11 +28,14 @@ const Table = () => {
     }, []);
 
     const deleteDepartamento = async (id) => {
-        console.log("ID a eliminar:", id);
+        if (userRol === "arrendatario") {
+            toast.error("No tienes permisos para eliminar departamentos.");
+            return;
+        }
+
         const confirmDelete = confirm("¿Estás seguro de eliminar este departamento?");
         if (confirmDelete) {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/eliminar/${id}`;
-            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const headers = {
                 Authorization: `Bearer ${storedUser.state.token}`,
             };
@@ -73,7 +78,7 @@ const Table = () => {
                         <td>{dep.numeroHabitaciones}</td>
                         <td>{dep.numeroBanos}</td>
                         <td>
-                            <span className="bg-blue-100 text-green-500 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                            <span className={`text-xs font-medium mr-2 px-2.5 py-0.5 rounded ${dep.disponible ? "bg-blue-100 text-green-500" : "bg-red-100 text-red-500"}`}>
                                 {dep.disponible ? "Disponible" : "No disponible"}
                             </span>
                         </td>
@@ -87,11 +92,18 @@ const Table = () => {
                                 title="Actualizar"
                                 className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-blue-600"
                             />
-                            <MdDeleteForever
-                                title="Eliminar"
-                                className="h-7 w-7 text-red-900 cursor-pointer inline-block hover:text-red-600"
-                                onClick={() => deleteDepartamento(dep._id)}
-                            />
+                            {userRol !== "arrendatario" ? (
+                                <MdDeleteForever
+                                    title="Eliminar"
+                                    className="h-7 w-7 text-red-900 cursor-pointer inline-block hover:text-red-600"
+                                    onClick={() => deleteDepartamento(dep._id)}
+                                />
+                            ) : (
+                                <MdDeleteForever
+                                    title="No tienes permiso para eliminar"
+                                    className="h-7 w-7 text-gray-400 inline-block cursor-not-allowed"
+                                />
+                            )}
                         </td>
                     </tr>
                 ))}
