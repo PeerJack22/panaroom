@@ -11,7 +11,7 @@ const Table = () => {
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(localStorage.getItem("auth-token"));
-    const userRol = storedUser?.state?.user?.rol || "";
+    const userRol = storedUser?.state?.rol || "";
 
     const listarDepartamentos = async () => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
