@@ -18,7 +18,7 @@ export const CardProfile = () => {
             <img
             src={imagenPerfil}
             alt="img-client"
-            className="m-auto border-4 border-gray-600 object-cover rounded-full"
+            className="m-auto border-4 border-gray-600 object-cover"
             width={120}
             height={120}
             />
