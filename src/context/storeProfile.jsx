@@ -34,10 +34,11 @@ const storeProfile = create((set) => ({
                 const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`
                 const respuesta = await axios.put(url, data,getAuthHeaders())
                 set({ user: respuesta.data })
-                toast.success("Perfil actualizado correctamente")
+                return respuesta; // Añadir return para poder manejar la respuesta
             } catch (error) {
                 console.log(error)
                 toast.error(error.response?.data?.msg)
+                throw error; // Re-lanzar el error para manejarlo en el componente
             }
         },
         updatePasswordProfile:async(data,id)=>{
