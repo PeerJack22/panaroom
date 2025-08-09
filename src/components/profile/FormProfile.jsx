@@ -25,9 +25,21 @@ const FormularioPerfil = () => {
 
     // Estado para controlar el envío del formulario
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Estado para la previsualización de la imagen subida
+    const [uploadedImagePreview, setUploadedImagePreview] = useState(null);
 
     // Solo observamos la opción seleccionada que sí usamos
     const selectedOption = watch("profileImageOption");
+
+    // Manejar cambio de archivo para mostrar previsualización
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setUploadedImagePreview(imageUrl);
+        }
+    };
 
     const handleGenerateImage = async () => {
         if (!stateProfileAvatar.prompt) {
@@ -106,9 +118,25 @@ const FormularioPerfil = () => {
                     generatedImage: user.avatarUrl,
                 }));
                 setValue("avatarProfileIA", user.avatarUrl);
+            } else if (user?.avatarType === "upload" && user?.avatarUrl) {
+                // Mostrar la imagen existente del usuario
+                setUploadedImagePreview(user.avatarUrl);
             }
         }
     }, [user, reset, setValue]);
+
+    // Limpiar URL de objetos cuando el componente se desmonte
+    useEffect(() => {
+        return () => {
+            // Limpiar URLs creadas con createObjectURL
+            if (uploadedImagePreview && !uploadedImagePreview.includes('http')) {
+                URL.revokeObjectURL(uploadedImagePreview);
+            }
+            if (stateProfileAvatar.generatedImage && !stateProfileAvatar.generatedImage.includes('http')) {
+                URL.revokeObjectURL(stateProfileAvatar.generatedImage);
+            }
+        };
+    }, [uploadedImagePreview, stateProfileAvatar.generatedImage]);
 
     return (
         <form
@@ -244,10 +272,22 @@ const FormularioPerfil = () => {
                                     validate: {
                                         lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
                                         acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
-                                    }
+                                    },
+                                    onChange: handleFileChange
                                 })}
                             />
                             {errors.imagenPerfil && <p className="text-red-800">{errors.imagenPerfil.message}</p>}
+                            
+                            {/* Previsualización de la imagen subida */}
+                            {uploadedImagePreview && (
+                                <div className="mt-4">
+                                    <img
+                                        src={uploadedImagePreview}
+                                        alt="Imagen subida"
+                                        className="w-24 h-24 object-cover rounded-full"
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
