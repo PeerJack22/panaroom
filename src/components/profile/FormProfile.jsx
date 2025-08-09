@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import storeProfile from "../../context/storeProfile";
 import { useForm } from "react-hook-form";
 import { generateAvatar, convertBlobToBase64 } from "../../helpers/consultarIA";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const FormularioPerfil = () => {
@@ -308,13 +308,6 @@ const FormularioPerfil = () => {
                 className="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold uppercase rounded-lg transition-all disabled:opacity-50"
             />
             
-            <ToastContainer 
-                position="bottom-right" 
-                theme="dark"
-                limit={3} 
-                newestOnTop={true} 
-                autoClose={3000} 
-            />
         </form>
     );
 };

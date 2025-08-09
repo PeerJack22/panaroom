@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { Home } from './pages/Home'
 import Login from './pages/Login'
@@ -21,8 +20,8 @@ import { useEffect } from 'react'
 import storeProfile from './context/storeProfile'
 import storeAuth from './context/storeAuth'
 import PrivateRouteWithRole from './routes/PrivateRouteWithRole';
-
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
@@ -74,6 +73,15 @@ function App() {
 
       </Routes>
     </BrowserRouter>
+    
+    {/* ToastContainer único para toda la aplicación */}
+    <ToastContainer 
+      position="bottom-right" 
+      theme="dark"
+      limit={3} 
+      newestOnTop={true} 
+      autoClose={3000}
+    />
     </>
   )
 }
