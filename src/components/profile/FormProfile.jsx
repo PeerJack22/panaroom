@@ -16,16 +16,18 @@ const FormularioPerfil = () => {
         watch,
     } = useForm();
 
-    const [selectedProfileOption, setSelectedProfileOption] = useState("");
+    // Estado para el avatar generado por IA
     const [stateProfileAvatar, setStateProfileAvatar] = useState({
         prompt: "",
         loading: false,
         generatedImage: null,
     });
 
+    // Estado para controlar el envío del formulario
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Solo observamos la opción seleccionada que sí usamos
     const selectedOption = watch("profileImageOption");
-    const avatarGenerated = watch("avatarProfileIA");
-    const uploadedImage = watch("imagenPerfil");
 
     const handleGenerateImage = async () => {
         if (!stateProfileAvatar.prompt) {
@@ -47,12 +49,7 @@ const FormularioPerfil = () => {
                 setValue("avatarProfileIA", base64Image);
                 toast.success("Imagen generada con éxito!");
             } else {
-                toast.error("Error al generar la imagen. Inténtalo de nuevo más tarde.");
-                setStateProfileAvatar((prev) => ({
-                    ...prev,
-                    generatedImage: null,
-                    loading: false,
-                }));
+                throw new Error("Error al generar la imagen");
             }
         } catch (error) {
             console.error("Error generating avatar:", error);
@@ -66,21 +63,30 @@ const FormularioPerfil = () => {
     };
 
     const updateUser = async (data) => {
-        const formData = new FormData();
+        setIsSubmitting(true);
+        try {
+            const formData = new FormData();
 
-        Object.keys(data).forEach((key) => {
-            if (key === "imagenPerfil" && data.profileImageOption === "upload") {
-                if (data.imagenPerfil[0]) {
-                    formData.append("avatarArren", data.imagenPerfil[0]);
+            Object.keys(data).forEach((key) => {
+                if (key === "imagenPerfil" && data.profileImageOption === "upload") {
+                    if (data.imagenPerfil[0]) {
+                        formData.append("avatarArren", data.imagenPerfil[0]);
+                    }
+                } else if (key === "avatarProfileIA" && data.profileImageOption === "ia") {
+                    formData.append("avatarArrenIA", data[key]);
+                } else {
+                    formData.append(key, data[key]);
                 }
-            } else if (key === "avatarProfileIA" && data.profileImageOption === "ia") {
-                formData.append("avatarArrenIA", data[key]);
-            } else {
-                formData.append(key, data[key]);
-            }
-        });
+            });
 
-        updateProfile(formData, user._id);
+            await updateProfile(formData, user._id);
+            toast.success("Perfil actualizado correctamente");
+        } catch (error) {
+            console.error("Error al actualizar el perfil:", error);
+            toast.error("Error al actualizar el perfil. Inténtalo de nuevo más tarde.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     useEffect(() => {
@@ -101,8 +107,6 @@ const FormularioPerfil = () => {
                 }));
                 setValue("avatarProfileIA", user.avatarUrl);
             }
-
-            setSelectedProfileOption(user?.avatarType || "upload");
         }
     }, [user, reset, setValue]);
 
@@ -236,8 +240,14 @@ const FormularioPerfil = () => {
                                 type="file"
                                 accept="image/*"
                                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                {...register("imagenPerfil")}
+                                {...register("imagenPerfil", {
+                                    validate: {
+                                        lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
+                                        acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
+                                    }
+                                })}
                             />
+                            {errors.imagenPerfil && <p className="text-red-800">{errors.imagenPerfil.message}</p>}
                         </div>
                     )}
                 </div>
@@ -245,8 +255,9 @@ const FormularioPerfil = () => {
 
             <input
                 type="submit"
-                value="Actualizar"
-                className="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold uppercase rounded-lg transition-all"
+                value={isSubmitting ? "Actualizando..." : "Actualizar"}
+                disabled={isSubmitting}
+                className="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold uppercase rounded-lg transition-all disabled:opacity-50"
             />
             <ToastContainer position="bottom-right" theme="dark" />
         </form>
