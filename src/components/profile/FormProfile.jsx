@@ -75,6 +75,8 @@ const FormularioPerfil = () => {
     };
 
     const updateUser = async (data) => {
+        if (isSubmitting) return; // Evitar múltiples envíos
+        
         setIsSubmitting(true);
         try {
             const formData = new FormData();
@@ -92,10 +94,16 @@ const FormularioPerfil = () => {
             });
 
             await updateProfile(formData, user._id);
-            toast.success("Perfil actualizado correctamente");
+            
+            // Si updateProfile ya muestra un toast, comenta esta línea
+            toast.success("Perfil actualizado correctamente", {
+                toastId: "profile-update-success" // Usar un ID único para evitar duplicados
+            });
         } catch (error) {
             console.error("Error al actualizar el perfil:", error);
-            toast.error("Error al actualizar el perfil. Inténtalo de nuevo más tarde.");
+            toast.error("Error al actualizar el perfil. Inténtalo de nuevo más tarde.", {
+                toastId: "profile-update-error" // Usar un ID único para evitar duplicados
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -299,7 +307,14 @@ const FormularioPerfil = () => {
                 disabled={isSubmitting}
                 className="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold uppercase rounded-lg transition-all disabled:opacity-50"
             />
-            <ToastContainer position="bottom-right" theme="dark" />
+            
+            <ToastContainer 
+                position="bottom-right" 
+                theme="dark"
+                limit={3} 
+                newestOnTop={true} 
+                autoClose={3000} 
+            />
         </form>
     );
 };
