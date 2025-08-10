@@ -1,65 +1,100 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Users = () => {
-    // Datos simulados por ahora
-    const [users, setUsers] = useState([
-        {
-        id: 1,
-        nombre: "Juan Pérez",
-        cedula: "1723456789",
-        arriendos: [
-            { id: 1, nombre: "Residencia Central", precio: 250 },
-            { id: 2, nombre: "Apartamento Norte", precio: 300 }
-        ]
-        },
-        {
-        id: 2,
-        nombre: "María Gómez",
-        cedula: "0923456789",
-        arriendos: [
-            { id: 3, nombre: "Suite Moderna", precio: 400 }
-        ]
-        }
-    ]);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // En el futuro aquí harás la petición al backend
     useEffect(() => {
-        // Ejemplo de integración futura:
-        // const fetchUsers = async () => {
-        //   const response = await fetch('URL_BACKEND/users');
-        //   const data = await response.json();
-        //   setUsers(data);
-        // }
-        // fetchUsers();
+        const fetchUsers = async () => {
+            setLoading(true);
+            try {
+                // Obtener el token del localStorage
+                const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+                const token = storedUser?.state?.token;
+
+                if (!token) {
+                    toast.error("No se encontró la sesión, por favor inicia sesión nuevamente");
+                    return;
+                }
+
+                // Realizar la petición al backend
+                const response = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`, 
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                // Actualizar el estado con los datos recibidos
+                setUsers(response.data);
+            } catch (error) {
+                console.error("Error al obtener los usuarios:", error);
+                toast.error("Error al cargar los usuarios. Intenta de nuevo más tarde.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div>
-        <h1 className='font-black text-4xl text-gray-500'>Usuarios</h1>
-        <hr className='my-4 border-t-2 border-gray-300' />
-        <p className='mb-8'>Este módulo te permite gestionar los usuarios</p>
+            <h1 className='font-black text-4xl text-gray-500'>Usuarios</h1>
+            <hr className='my-4 border-t-2 border-gray-300' />
+            <p className='mb-8'>Este módulo te permite gestionar los usuarios</p>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {users.map(user => (
-            <div key={user.id} className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-blue-800 mb-2">{user.nombre}</h2>
-                <p className="text-gray-600 mb-4">Cédula: {user.cedula}</p>
+            {users.length === 0 ? (
+                <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
+                    No se encontraron usuarios registrados.
+                </div>
+            ) : (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {users.map(user => (
+                        <div key={user._id} className="bg-white rounded-lg shadow p-6">
+                            <h2 className="text-xl font-bold text-blue-800 mb-2">
+                                {user.nombre} {user.apellido}
+                            </h2>
+                            <div className="text-gray-600 mb-4">
+                                <p><span className="font-semibold">Email:</span> {user.email}</p>
+                                <p><span className="font-semibold">Teléfono:</span> {user.telefono || "No disponible"}</p>
+                                <p><span className="font-semibold">Dirección:</span> {user.direccion || "No disponible"}</p>
+                                <p><span className="font-semibold">Rol:</span> {user.rol}</p>
+                            </div>
 
-                <h3 className="text-md font-semibold text-gray-700 mb-2">Arriendos:</h3>
-                {user.arriendos.length > 0 ? (
-                <ul className="list-disc list-inside">
-                    {user.arriendos.map(arriendo => (
-                    <li key={arriendo.id} className="text-gray-600">
-                        {arriendo.nombre} - ${arriendo.precio}
-                    </li>
+                            {/* Si en el futuro hay datos de arriendos, se pueden mostrar aquí */}
+                            {user.departamentos && user.departamentos.length > 0 ? (
+                                <>
+                                    <h3 className="text-md font-semibold text-gray-700 mb-2">Departamentos:</h3>
+                                    <ul className="list-disc list-inside">
+                                        {user.departamentos.map(depa => (
+                                            <li key={depa._id} className="text-gray-600">
+                                                {depa.titulo} - ${depa.precioMensual}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            ) : (
+                                <p className="text-gray-500 mt-2">No tiene departamentos registrados.</p>
+                            )}
+                        </div>
                     ))}
-                </ul>
-                ) : (
-                <p className="text-gray-500">No tiene arriendos registrados.</p>
-                )}
-            </div>
-            ))}
-        </div>
+                </div>
+            )}
         </div>
     );
 };
