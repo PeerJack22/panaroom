@@ -2,7 +2,7 @@ import { useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import storeAuth from "../../context/storeAuth.jsx";
 
@@ -73,7 +73,6 @@ export const Form = () => {
             onSubmit={handleSubmit(registerResidencia)}
             className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
         >
-            <ToastContainer />
 
             <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg mt-10">
                 <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
