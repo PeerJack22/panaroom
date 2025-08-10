@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Users = () => {
@@ -32,6 +32,7 @@ const Users = () => {
                 );
 
                 // Actualizar el estado con los datos recibidos
+                console.log("Datos de usuarios recibidos:", response.data);
                 setUsers(response.data);
             } catch (error) {
                 console.error("Error al obtener los usuarios:", error);
@@ -71,12 +72,13 @@ const Users = () => {
                             </h2>
                             <div className="text-gray-600 mb-4">
                                 <p><span className="font-semibold">Email:</span> {user.email}</p>
-                                <p><span className="font-semibold">Teléfono:</span> {user.telefono || "No disponible"}</p>
+                                <p><span className="font-semibold">Teléfono:</span> {user.telefono ? user.telefono : `No disponible (valor: ${JSON.stringify(user.telefono)})`}</p>
                                 <p><span className="font-semibold">Dirección:</span> {user.direccion || "No disponible"}</p>
                                 <p><span className="font-semibold">Rol:</span> {user.rol}</p>
                             </div>
 
                             {/* Si en el futuro hay datos de arriendos, se pueden mostrar aquí */}
+                            {console.log(`Departamentos para usuario ${user.nombre}:`, user.departamentos)}
                             {user.departamentos && user.departamentos.length > 0 ? (
                                 <>
                                     <h3 className="text-md font-semibold text-gray-700 mb-2">Departamentos:</h3>
