@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router'; 
+import { Link, useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import { ToastContainer, toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
