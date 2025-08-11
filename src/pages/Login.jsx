@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router'; 
 import useFetch from '../hooks/useFetch';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
 
 const Login = () => {
@@ -112,7 +112,13 @@ const loginUser = async (data) => {
                         {/* Botón de Google */}
                         <div className="my-4">
                             <button
-                                onClick={() => window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`}
+                                onClick={() => {
+                                    toast.info('Redirigiendo a Google...', {
+                                        position: "top-right",
+                                        autoClose: 2000
+                                    });
+                                    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
+                                }}
                                 className="py-2 w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-gray-100 transition duration-300"
                             >
                                 <img
