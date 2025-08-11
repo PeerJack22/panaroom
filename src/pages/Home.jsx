@@ -102,19 +102,31 @@ export const Home = () => {
                 <h2 className='text-center text-3xl font-bold text-blue-800 mb-10'>SERVICIOS</h2>
                 <div className='grid gap-6 sm:grid-cols-2 md:grid-cols-4'>
                     {[
-                        "Gestión de publicaciones de Habitaciones",
-                        "Perfiles de Arrendatarios",
-                        "Información detallada de los lugares",
-                        "Sistema de Quejas y Sugerencias"
-                    ].map((titulo, i) => (
+                        {
+                            titulo: "Gestión de publicaciones de Habitaciones",
+                            contenido: "Publica y administra habitaciones de forma sencilla y eficiente."
+                        },
+                        {
+                            titulo: "Perfiles de Arrendatarios",
+                            contenido: "Crea y personaliza tu perfil para conectar con propietarios."
+                        },
+                        {
+                            titulo: "Información detallada de los lugares",
+                            contenido: "Accede a descripciones completas y fotos de las propiedades."
+                        },
+                        {
+                            titulo: "Sistema de Quejas y Sugerencias",
+                            contenido: "Envía tus comentarios para mejorar la experiencia del usuario."
+                        }
+                    ].map((servicio, i) => (
                         <div
                             key={i}
                             style={{ backgroundColor: '#D9D9D9' }}
                             className="shadow-md hover:shadow-xl p-6 rounded-md text-center transition-shadow duration-300"
                         >
-                            <h4 className="text-lg font-semibold text-blue-700 mb-4">{titulo}</h4>
+                            <h4 className="text-lg font-semibold text-blue-700 mb-4">{servicio.titulo}</h4>
                             <p className="text-gray-700 text-sm">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, similique sint eius consectetur rerum voluptate rem tenetur quisquam veniam quos ad facilis alias necessitatibus.
+                                {servicio.contenido}
                             </p>
                         </div>
                     ))}
