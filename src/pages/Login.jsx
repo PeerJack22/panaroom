@@ -117,7 +117,8 @@ const loginUser = async (data) => {
                                         position: "top-right",
                                         autoClose: 2000
                                     });
-                                    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
+                                    // Iniciar el proceso de autenticación con Google
+                                    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google/callback`;
                                 }}
                                 className="py-2 w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-gray-100 transition duration-300"
                             >

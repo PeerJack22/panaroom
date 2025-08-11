@@ -9,30 +9,41 @@ const AuthSuccess = () => {
     const { setToken, setRol, setUser } = storeAuth();
 
     useEffect(() => {
-        const token = searchParams.get('token');
-        
-        if (!token) {
-            toast.error('No se recibió el token de autenticación');
-            navigate('/login');
-            return;
-        }
-
         try {
-            // Guardar el token
-            setToken(token);
+            // Obtener los datos del usuario desde la URL
+            const jsonData = searchParams.get('data');
+            
+            if (!jsonData) {
+                toast.error('No se recibieron los datos de autenticación');
+                navigate('/login');
+                return;
+            }
 
-            // Construir el objeto usuario con los datos de la URL
+            // Parsear los datos JSON
+            const userData = JSON.parse(jsonData);
+            console.log('Datos recibidos:', userData);
+
+            if (!userData.token) {
+                toast.error('No se recibió el token de autenticación');
+                navigate('/login');
+                return;
+            }
+
+            // Guardar el token
+            setToken(userData.token);
+
+            // Construir el objeto usuario
             const user = {
-                _id: searchParams.get('id'),
-                nombre: searchParams.get('nombre'),
-                apellido: searchParams.get('apellido'),
-                email: searchParams.get('email'),
-                direccion: searchParams.get('direccion'),
-                celular: searchParams.get('celular')
+                _id: userData._id,
+                nombre: userData.nombre,
+                apellido: userData.apellido,
+                direccion: userData.direccion || '',
+                celular: userData.celular || '',
+                email: userData.email || ''
             };
 
             // Guardar el rol y los datos del usuario
-            setRol(searchParams.get('rol'));
+            setRol(userData.rol);
             setUser(user);
 
             // Redirigir al dashboard
