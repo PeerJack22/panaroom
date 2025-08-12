@@ -12,6 +12,7 @@ const Table = () => {
 
     const storedUser = JSON.parse(localStorage.getItem("auth-token"));
     const userRol = storedUser?.state?.rol || "";
+    const userId = storedUser?.state?.id || "";
 
     const listarDepartamentos = async () => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
@@ -39,6 +40,7 @@ const Table = () => {
                 setDepartamentos((prev) => prev.filter(dep => dep._id !== id));
                 toast.success("Departamento eliminado correctamente");
             } catch (error) {
+                console.error("Error al eliminar:", error);
                 toast.error("Error al eliminar el departamento");
             }
         }
@@ -83,7 +85,7 @@ const Table = () => {
                                 className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-green-600"
                                 onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)} 
                             />  
-                            {userRol !== "arrendatario" && (
+                            {(userRol === "administrador" || (userRol === "arrendador" && dep.creador === userId)) && (
                                 <MdDeleteForever
                                     title="Eliminar"
                                     className="h-7 w-7 text-red-900 cursor-pointer inline-block hover:text-red-600"
