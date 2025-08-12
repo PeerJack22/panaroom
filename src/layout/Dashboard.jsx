@@ -60,11 +60,11 @@ const Dashboard = () => {
                         <img
                             src={user?.avatarUrl || "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"}
                                             alt="Usuario"
-                                            className="w-10 h-10 border-2 border-gray-600 "
+                                            className="w-10 h-10 border-2 border-gray-600 rounded-full"
                                         />
                                         <Link
                                             to="/"
-                                            className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5  transition-all"
+                                            className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5 rounded-full transition-all"
                                             onClick={() => clearToken()}
                                         >
                                             Salir

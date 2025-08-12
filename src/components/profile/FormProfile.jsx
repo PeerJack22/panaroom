@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const FormularioPerfil = () => {
     const { user, updateProfile } = storeProfile();
+
     const {
         register,
         handleSubmit,
@@ -159,6 +160,11 @@ const FormularioPerfil = () => {
             }
         };
     }, [uploadedImagePreview, stateProfileAvatar.generatedImage]);
+
+    // Evitar renderizar el componente si el usuario es administrador
+    if (user?.rol === "administrador") {
+        return null;
+    }
 
     return (
         <form
