@@ -55,25 +55,15 @@ const AuthSuccess = () => {
             
             console.log('AuthSuccess: Datos guardados en store, redirigiendo a dashboard');
             
-            // Redirigir al dashboard - primero intentar con navigate
+            // Redirigir al dashboard - intentar con redirección directa
             toast.success('¡Inicio de sesión exitoso!');
             
-            try {
-                navigate('/dashboard');
-                
-                // Como respaldo, también configuramos un temporizador para redirigir después de 1 segundo
-                // si el navigate no funciona correctamente
-                setTimeout(() => {
-                    if (window.location.pathname !== '/dashboard') {
-                        console.log('Redirección fallida con navigate, intentando con window.location');
-                        window.location.href = '/dashboard';
-                    }
-                }, 1000);
-            } catch (navError) {
-                console.error('Error en navigate:', navError);
-                // Si falla navigate, usamos window.location directamente
+            console.log('AuthSuccess: Intentando redirección a /dashboard');
+            
+            // Usar window.location directamente para mayor seguridad
+            setTimeout(() => {
                 window.location.href = '/dashboard';
-            }
+            }, 500);
         } catch (error) {
             console.error('Error al procesar los datos de autenticación:', error);
             toast.error('Error al procesar los datos de autenticación');
@@ -82,8 +72,15 @@ const AuthSuccess = () => {
     }, [navigate, searchParams, setToken, setRol, setUser]);
 
     return (
-        <div className="flex justify-center items-center h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="flex flex-col justify-center items-center h-screen bg-gray-900 text-white">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+            <p className="text-lg">Procesando tu inicio de sesión...</p>
+            <button 
+                onClick={() => window.location.href = '/dashboard'}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            >
+                Haz clic aquí si no eres redirigido automáticamente
+            </button>
         </div>
     );
 };
