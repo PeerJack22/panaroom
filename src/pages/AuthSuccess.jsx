@@ -9,96 +9,52 @@ const AuthSuccess = () => {
     const { setToken, setRol, setUser } = storeAuth();
 
     useEffect(() => {
+        // Debugging: Mostrar todos los parámetros recibidos
+        console.log('AuthSuccess: URL completa =', window.location.href);
+        console.log('AuthSuccess: Todos los parámetros =', Object.fromEntries(searchParams.entries()));
+
         try {
-            // Intentar obtener datos de la URL
-            const jsonStr = searchParams.get('data');
+            // Simplificar el proceso usando directamente los parámetros de la URL
             const tokenParam = searchParams.get('token');
             
-            console.log('Parámetros recibidos:', { 
-                data: jsonStr, 
-                token: tokenParam,
-                todos: Object.fromEntries(searchParams.entries())
-            });
-            
-            let userData;
-            
-            // Primero intentamos con el parámetro data
-            if (jsonStr) {
-                try {
-                    // Intentar parsear data como JSON
-                    userData = JSON.parse(decodeURIComponent(jsonStr));
-                    console.log('Datos JSON parseados correctamente:', userData);
-                } catch (error) {
-                    console.error('Error al parsear JSON:', error);
-                    // Probar como si fuera una cadena que no necesita parsing
-                    if (jsonStr.includes('"token"')) {
-                        try {
-                            // A veces el JSON viene como string sin codificar
-                            userData = JSON.parse(jsonStr);
-                            console.log('Datos JSON parseados en segundo intento:', userData);
-                        } catch (e) {
-                            console.error('Error en segundo intento de parsing:', e);
-                        }
-                    }
-                }
-            } 
-            
-            // Si no tenemos userData pero tenemos token, construimos el objeto
-            if (!userData && tokenParam) {
-                userData = {
-                    token: tokenParam,
-                    _id: searchParams.get('_id') || searchParams.get('id'),
-                    nombre: searchParams.get('nombre'),
-                    apellido: searchParams.get('apellido'),
-                    email: searchParams.get('email'),
-                    direccion: searchParams.get('direccion'),
-                    celular: searchParams.get('celular'),
-                    rol: searchParams.get('rol')
-                };
-                console.log('Datos construidos desde parámetros:', userData);
-            }
-            
-            // Si aún no tenemos datos, intentamos ver si todo viene en un solo parámetro
-            if (!userData) {
-                // Buscar algún parámetro que parezca un JSON
-                for (const [key, value] of searchParams.entries()) {
-                    if (value && (value.includes('{') || value.includes('"token"'))) {
-                        try {
-                            userData = JSON.parse(value);
-                            console.log(`Datos encontrados en el parámetro ${key}:`, userData);
-                            break;
-                        } catch (e) {
-                            console.error(`Error al parsear parámetro ${key}:`, e);
-                        }
-                    }
-                }
-            }
-
-            // Verificar que tengamos datos válidos
-            if (!userData || !userData.token) {
-                toast.error('No se pudieron procesar los datos de autenticación');
-                console.error('Datos de autenticación inválidos:', userData);
+            if (!tokenParam) {
+                console.error('No se encontró token en los parámetros');
+                toast.error('No se encontró token de autenticación');
                 navigate('/login');
                 return;
             }
-
-            // Guardar el token
+            
+            // Construir el objeto de datos del usuario directamente desde los parámetros
+            const userData = {
+                token: tokenParam,
+                _id: searchParams.get('_id'),
+                nombre: searchParams.get('nombre'),
+                apellido: searchParams.get('apellido'),
+                email: searchParams.get('email'),
+                direccion: searchParams.get('direccion') || '',
+                celular: searchParams.get('celular') || '',
+                rol: searchParams.get('rol') || 'arrendatario'
+            };
+            
+            console.log('AuthSuccess: Datos de usuario construidos =', userData);
+            
+            // Guardar token, rol y datos de usuario
             setToken(userData.token);
-
-            // Construir el objeto usuario
+            setRol(userData.rol);
+            
             const user = {
                 _id: userData._id,
                 nombre: userData.nombre,
                 apellido: userData.apellido,
-                direccion: userData.direccion || '',
-                celular: userData.celular || '',
-                email: userData.email || ''
+                direccion: userData.direccion,
+                celular: userData.celular,
+                email: userData.email
             };
-
-            // Guardar el rol y los datos del usuario
-            setRol(userData.rol);
+            
             setUser(user);
-
+            
+            console.log('AuthSuccess: Datos guardados en store, redirigiendo a dashboard');
+            
             // Redirigir al dashboard
             toast.success('¡Inicio de sesión exitoso!');
             navigate('/dashboard');
