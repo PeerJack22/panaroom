@@ -17,7 +17,7 @@ const Dashboard = () => {
                     <h2 className="text-2xl font-bold text-white text-center mb-6">PanaRoom</h2>
 
                     <img
-                        src="https://i.pinimg.com/originals/57/96/7b/57967b8930c1ce7f5269370bb3faea67.jpg"
+                        src={user?.avatarUrl || "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"}
                         alt="Usuario"
                         className="w-24 h-24 mx-auto border-4 border-gray-600 mb-4 rounded-lg"
                     />
@@ -54,22 +54,25 @@ const Dashboard = () => {
             <div className="flex-1 flex flex-col justify-between h-screen">
 
                 {/* Barra superior - estilo oscuro */}
-                <header className="bg-gray-800 px-6 py-3 flex justify-end items-center gap-4 shadow">
-                    <img
-                        src="https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
-                        alt="Usuario"
-                        className="w-10 h-10 border-2 border-gray-600"
-                    />
-                    <Link
-                        to="/"
-                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5 rounded-full transition-all"
-                        onClick={() => clearToken()}
-                    >
-                        Salir
-                    </Link>
-                </header>
+                <header className="bg-gray-800 px-6 py-3 flex justify-between items-center gap-4 shadow">
+                    <h1 className="text-white text-lg font-semibold">Dashboard</h1>
+                    <div className="flex items-center gap-4">
+                        <img
+                            src={user?.avatarUrl || "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"}
+                                            alt="Usuario"
+                                            className="w-10 h-10 border-2 border-gray-600 rounded-full"
+                                        />
+                                        <Link
+                                            to="/"
+                                            className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5 rounded-full transition-all"
+                                            onClick={() => clearToken()}
+                                        >
+                                            Salir
+                                        </Link>
+                                    </div>
+                                </header>
 
-                {/* Contenido dinámico */}
+                                {/* Contenido dinámico */}
                 <main className="flex-1 overflow-y-auto p-6 bg-gray-100">
                     <Outlet />
                 </main>

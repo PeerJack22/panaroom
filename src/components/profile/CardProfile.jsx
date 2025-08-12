@@ -11,13 +11,13 @@ export const CardProfile = () => {
 
     return (
         <div className="bg-gray-900 border border-gray-700 h-auto p-6 
-                        flex flex-col items-center justify-between shadow-lg rounded-xl text-white">
+                        flex flex-col items-center justify-between shadow-lg rounded-lg text-white">
 
         <div className="relative mb-6">
             <img
                 src={imagenPerfil}
                 alt="img-client"
-                className="m-auto border-4 border-gray-600 object-cover rounded-full"
+                className="m-auto border-4 border-gray-600 object-cover rounded-lg"
                 width={120}
                 height={120}
             />
