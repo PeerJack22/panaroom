@@ -55,9 +55,25 @@ const AuthSuccess = () => {
             
             console.log('AuthSuccess: Datos guardados en store, redirigiendo a dashboard');
             
-            // Redirigir al dashboard
+            // Redirigir al dashboard - primero intentar con navigate
             toast.success('¡Inicio de sesión exitoso!');
-            navigate('/dashboard');
+            
+            try {
+                navigate('/dashboard');
+                
+                // Como respaldo, también configuramos un temporizador para redirigir después de 1 segundo
+                // si el navigate no funciona correctamente
+                setTimeout(() => {
+                    if (window.location.pathname !== '/dashboard') {
+                        console.log('Redirección fallida con navigate, intentando con window.location');
+                        window.location.href = '/dashboard';
+                    }
+                }, 1000);
+            } catch (navError) {
+                console.error('Error en navigate:', navError);
+                // Si falla navigate, usamos window.location directamente
+                window.location.href = '/dashboard';
+            }
         } catch (error) {
             console.error('Error al procesar los datos de autenticación:', error);
             toast.error('Error al procesar los datos de autenticación');

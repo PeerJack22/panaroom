@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import storeAuth from '../context/storeAuth'
 import storeProfile from '../context/storeProfile'
 
