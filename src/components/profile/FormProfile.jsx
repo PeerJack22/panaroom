@@ -81,17 +81,31 @@ const FormularioPerfil = () => {
         try {
             const formData = new FormData();
 
-            Object.keys(data).forEach((key) => {
-                if (key === "imagenPerfil" && data.profileImageOption === "upload") {
-                    if (data.imagenPerfil[0]) {
-                        formData.append("avatarArren", data.imagenPerfil[0]);
-                    }
-                } else if (key === "avatarProfileIA" && data.profileImageOption === "ia") {
-                    formData.append("avatarArrenIA", data[key]);
+            // Añadir campos de texto
+            formData.append("nombre", data.nombre);
+            formData.append("apellido", data.apellido);
+            formData.append("direccion", data.direccion || "");
+            formData.append("celular", data.celular || "");
+            formData.append("email", data.email);
+            formData.append("profileImageOption", data.profileImageOption);
+            
+            // Añadir la imagen según la opción seleccionada
+            if (data.profileImageOption === "upload" && data.imagenPerfil && data.imagenPerfil[0]) {
+                formData.append("avatarArren", data.imagenPerfil[0]);
+                console.log("Imagen a subir:", data.imagenPerfil[0].name, data.imagenPerfil[0].size);
+            } else if (data.profileImageOption === "ia" && data.avatarProfileIA) {
+                formData.append("avatarArrenIA", data.avatarProfileIA);
+                console.log("Imagen IA a guardar:", data.avatarProfileIA.substring(0, 50) + "...");
+            }
+
+            // Mostrar todos los campos del FormData para depuración
+            for (let [key, value] of formData.entries()) {
+                if (key !== "avatarArren" && key !== "avatarArrenIA") {
+                    console.log(`FormData campo: ${key} = ${value}`);
                 } else {
-                    formData.append(key, data[key]);
+                    console.log(`FormData campo: ${key} = [Contenido del archivo]`);
                 }
-            });
+            }
 
             await updateProfile(formData, user._id);
             

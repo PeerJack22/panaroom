@@ -3,11 +3,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 
-const getAuthHeaders = () => {
+const getAuthHeaders = (isFormData = false) => {
     const storedUser = JSON.parse(localStorage.getItem("auth-token"));
     return {
         headers: {
-            "Content-Type": "application/json",
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
             Authorization: `Bearer ${storedUser?.state?.token}`,
         },
     };
@@ -31,13 +31,17 @@ const storeProfile = create((set) => ({
         },
         updateProfile:async(data,id)=>{
             try {
+                // Detectar si data es un FormData para no enviar Content-Type
+                const isFormData = data instanceof FormData;
+                console.log("Enviando con FormData:", isFormData);
+                
                 const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`
-                const respuesta = await axios.put(url, data,getAuthHeaders())
+                const respuesta = await axios.put(url, data, getAuthHeaders(isFormData))
                 set({ user: respuesta.data })
                 return respuesta; // Añadir return para poder manejar la respuesta
             } catch (error) {
                 console.log(error)
-                toast.error(error.response?.data?.msg)
+                toast.error(error.response?.data?.msg || "Error al actualizar el perfil")
                 throw error; // Re-lanzar el error para manejarlo en el componente
             }
         },

@@ -10,21 +10,74 @@ const AuthSuccess = () => {
 
     useEffect(() => {
         try {
-            // Obtener los datos del usuario desde la URL
-            const jsonData = searchParams.get('data');
+            // Intentar obtener datos de la URL
+            const jsonStr = searchParams.get('data');
+            const tokenParam = searchParams.get('token');
             
-            if (!jsonData) {
-                toast.error('No se recibieron los datos de autenticación');
-                navigate('/login');
-                return;
+            console.log('Parámetros recibidos:', { 
+                data: jsonStr, 
+                token: tokenParam,
+                todos: Object.fromEntries(searchParams.entries())
+            });
+            
+            let userData;
+            
+            // Primero intentamos con el parámetro data
+            if (jsonStr) {
+                try {
+                    // Intentar parsear data como JSON
+                    userData = JSON.parse(decodeURIComponent(jsonStr));
+                    console.log('Datos JSON parseados correctamente:', userData);
+                } catch (error) {
+                    console.error('Error al parsear JSON:', error);
+                    // Probar como si fuera una cadena que no necesita parsing
+                    if (jsonStr.includes('"token"')) {
+                        try {
+                            // A veces el JSON viene como string sin codificar
+                            userData = JSON.parse(jsonStr);
+                            console.log('Datos JSON parseados en segundo intento:', userData);
+                        } catch (e) {
+                            console.error('Error en segundo intento de parsing:', e);
+                        }
+                    }
+                }
+            } 
+            
+            // Si no tenemos userData pero tenemos token, construimos el objeto
+            if (!userData && tokenParam) {
+                userData = {
+                    token: tokenParam,
+                    _id: searchParams.get('_id') || searchParams.get('id'),
+                    nombre: searchParams.get('nombre'),
+                    apellido: searchParams.get('apellido'),
+                    email: searchParams.get('email'),
+                    direccion: searchParams.get('direccion'),
+                    celular: searchParams.get('celular'),
+                    rol: searchParams.get('rol')
+                };
+                console.log('Datos construidos desde parámetros:', userData);
+            }
+            
+            // Si aún no tenemos datos, intentamos ver si todo viene en un solo parámetro
+            if (!userData) {
+                // Buscar algún parámetro que parezca un JSON
+                for (const [key, value] of searchParams.entries()) {
+                    if (value && (value.includes('{') || value.includes('"token"'))) {
+                        try {
+                            userData = JSON.parse(value);
+                            console.log(`Datos encontrados en el parámetro ${key}:`, userData);
+                            break;
+                        } catch (e) {
+                            console.error(`Error al parsear parámetro ${key}:`, e);
+                        }
+                    }
+                }
             }
 
-            // Parsear los datos JSON
-            const userData = JSON.parse(jsonData);
-            console.log('Datos recibidos:', userData);
-
-            if (!userData.token) {
-                toast.error('No se recibió el token de autenticación');
+            // Verificar que tengamos datos válidos
+            if (!userData || !userData.token) {
+                toast.error('No se pudieron procesar los datos de autenticación');
+                console.error('Datos de autenticación inválidos:', userData);
                 navigate('/login');
                 return;
             }

@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import edificio from '../assets/edificio.png';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
 
 export const Home = () => {
