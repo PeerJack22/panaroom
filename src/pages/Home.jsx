@@ -33,7 +33,7 @@ export const Home = () => {
                 <div className='w-full max-w-3xl'>
                     
                     {/* Contenedor del input y botón */}
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
                         <input
                             type="text"
                             placeholder="Ingresa el sector"
