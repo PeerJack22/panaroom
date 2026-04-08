@@ -28,9 +28,9 @@ export const Home = () => {
                 </div>
             </header>
 
-            <main className='bg-gray-100 py-10 px-6 flex justify-center'>
+            <main className='bg-gray-100 py-10 px-6 w-full'>
                 {/* Texto e input */}
-                <div className='w-full max-w-3xl'>
+                <div className='w-full'>
                     
                     {/* Contenedor del input y botón */}
                     <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
