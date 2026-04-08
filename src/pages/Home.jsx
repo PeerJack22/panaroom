@@ -51,23 +51,30 @@ export const Home = () => {
             {/* Sección Últimas propiedades */}
             <section className="px-6 py-12 bg-white">
                 <h2 className="text-3xl font-bold text-gray-800 mb-8">Últimas propiedades de arriendo</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="max-w-6xl mx-auto space-y-6">
                     {[1, 2, 3].map((_, index) => (
-                        <div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg">
+                        <div key={index} className="bg-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                            <div className="flex flex-col md:flex-row">
                             <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-                                alt={`Apartamento ${index + 1}`} className="w-full h-48 object-cover border-b-4 border-blue-500"
+                                alt={`Apartamento ${index + 1}`} className="w-full md:w-2/5 h-64 md:h-72 object-cover border-b-4 md:border-b-0 md:border-r-4 border-blue-500"
                             />
-                            <div className="p-4">
-                                <div className="flex justify-between items-center mb-2">
-                                    <h3 className="text-lg font-bold text-gray-800">Apt {index + 1}</h3>
-                                    <span className="text-md font-medium text-gray-700">210 $</span>
+                            <div className="p-6 md:p-8 flex-1 flex flex-col min-h-[260px]">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
+                                    <h3 className="text-2xl font-bold text-gray-800">Apt {index + 1}</h3>
+                                    <span className="text-lg font-semibold text-blue-800">$ 210 / mes</span>
                                 </div>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
+                                    Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades, transporte publico y supermercados. Cuenta con espacios comodos para estudiar y descansar, ideal para estudiantes o jovenes profesionales.
                                 </p>
-                                <button className="inline-block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer">
-                                    Detalles
-                                </button>
+                                <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-6">
+                                    Incluye cocina equipada, area de lavanderia, internet de alta velocidad y excelente ventilacion natural. La administracion y servicios son economicos, lo que la convierte en una opcion practica y segura para vivir.
+                                </p>
+                                <div className="mt-auto flex justify-end">
+                                    <button className="inline-block bg-blue-700 hover:bg-blue-600 text-white px-5 py-2.5 rounded-full text-sm md:text-base transition-colors cursor-pointer">
+                                        Detalles
+                                    </button>
+                                </div>
+                            </div>
                             </div>
                         </div>
                     ))}
@@ -100,7 +107,7 @@ export const Home = () => {
                             contenido: "Publica y administra habitaciones de forma sencilla y eficiente."
                         },
                         {
-                            titulo: "Perfiles de Arrendatarios",
+                            titulo: "Perfiles de Usuarios",
                             contenido: "Crea y personaliza tu perfil para conectar con propietarios."
                         },
                         {
