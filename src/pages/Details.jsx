@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import useFetch from "../hooks/useFetch";
-import DepartamentoPaymentBox from "../components/treatments/DepartamentoPaymentBox";
 
 
 const Details = () => {
@@ -76,10 +75,6 @@ const Details = () => {
             )}
         </div>
 
-        {/* Cuadro de pago si está disponible */}
-        {departamento.disponible && (
-            <DepartamentoPaymentBox departamento={departamento} />
-        )}
         </div>
     );
     };
