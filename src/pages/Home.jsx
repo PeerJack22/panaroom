@@ -33,17 +33,37 @@ export const Home = () => {
                 <div className='w-full max-w-3xl'>
                     
                     {/* Contenedor del input y botón */}
-                    <div className='flex items-center gap-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                         <input
                             type="text"
                             placeholder="Ingresa el sector"
-                            className="w-full md:w-2/3 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
-                        <button
-                            className="px-5 py-2 bg-blue-700 hover:bg-blue-600 text-white rounded-md transition-colors cursor-pointer"
+
+                        <input
+                            type="number"
+                            min="0"
+                            placeholder="Numero de habitaciones"
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        />
+
+                        <input
+                            type="number"
+                            min="0"
+                            placeholder="Numero de baños"
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        />
+
+                        <select
+                            defaultValue=""
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         >
-                            Buscar
-                        </button>
+                            <option value="" disabled>Servicios incluidos</option>
+                            <option value="luz">Luz</option>
+                            <option value="agua">Agua</option>
+                            <option value="internet">Internet</option>
+                            <option value="todos">Luz, agua e internet</option>
+                        </select>
                     </div>
                 </div>
             </main>
