@@ -22,6 +22,8 @@ const Table = () => {
     const userToken = storedUser?.state?.token || "";
 
     useEffect(() => {
+        if (!userToken) return;
+
         const listarDepartamentos = async () => {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
             const headers = {

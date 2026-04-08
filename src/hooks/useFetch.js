@@ -1,8 +1,9 @@
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useCallback } from "react";
 
 function useFetch() {
-    const fetchDataBackend = async (url, data = null, method = "GET", headers = {}) => {
+    const fetchDataBackend = useCallback(async (url, data = null, method = "GET", headers = {}) => {
         const loadingToast = toast.loading("Procesando solicitud...");
         try {
             const isFormData = data instanceof FormData;
@@ -23,14 +24,16 @@ function useFetch() {
 
             const response = await axios(options);
             toast.dismiss(loadingToast);
-            toast.success(response?.data?.msg);
+            if (response?.data?.msg) {
+                toast.success(response.data.msg);
+            }
             return response?.data;
         } catch (error) {
             toast.dismiss(loadingToast);
             console.error(error);
-            toast.error(error.response?.data?.msg);
+            toast.error(error.response?.data?.msg || "Error en la solicitud");
         }
-    };
+    }, []);
 
     return { fetchDataBackend };
 }
