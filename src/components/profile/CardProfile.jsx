@@ -3,10 +3,9 @@ import storeProfile from "../../context/storeProfile"
 export const CardProfile = () => {
     const { user } = storeProfile()
 
-    // Selección de imagen de perfil: primero la subida (avatarUrl), luego la generada por IA, luego default
+    // Selección de imagen de perfil: subida o imagen por defecto.
     const imagenPerfil =
         user?.avatarUrl ||
-        user?.avatarArrenIA ||
         "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
 
     return (
@@ -21,10 +20,6 @@ export const CardProfile = () => {
                 width={120}
                 height={120}
             />
-            {/* Etiqueta si la imagen es generada por IA */}
-            {user?.avatarType === "ia" && (
-                <p className="text-xs text-gray-400 mt-2 text-center">Imagen generada por IA</p>
-            )}
         </div>
 
         <div className="self-start mb-2">
