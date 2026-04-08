@@ -1,5 +1,4 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
-import edificio from '../assets/edificio.png';
 import { Link } from 'react-router-dom';
 import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
 
@@ -29,16 +28,15 @@ export const Home = () => {
                 </div>
             </header>
 
-            <main className='bg-gray-100 py-10 px-6 md:flex justify-between items-center'>
+            <main className='bg-gray-100 py-10 px-6 flex justify-center'>
                 {/* Texto e input */}
-                <div className='mb-10 md:mb-0 md:w-1/2'>
-                    <h2 className='text-4xl md:text-5xl font-extrabold text-blue-900 mb-6 uppercase'>Busca tu próximo apartamento</h2>
+                <div className='w-full max-w-3xl'>
                     
                     {/* Contenedor del input y botón */}
                     <div className='flex items-center gap-4'>
                         <input
                             type="text"
-                            placeholder="Ingresa lo que buscas"
+                            placeholder="Ingresa el sector"
                             className="w-full md:w-2/3 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
                         <button
@@ -48,20 +46,7 @@ export const Home = () => {
                         </button>
                     </div>
                 </div>
-
-                {/* Imagen */}
-                <div className='md:w-1/2'>
-                    <img src={edificio} alt="edificio" className='w-full' />
-                </div>
             </main>
-
-            {/* Sección Acerca de */}
-            <section id="acerca" className="px-6 py-12 bg-white">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">Acerca de</h2>
-                <p className="text-gray-700 text-md leading-relaxed">
-                    PanaRoom es un sistema web diseñado para facilitar la gestión de residencias estudiantiles, permitiendo a propietarios publicar sus habitaciones y a los estudiantes encontrar su mejor opción de alojamiento de manera rápida y segura. Nuestro objetivo es conectar personas y crear experiencias de vivienda confiables, modernas y accesibles para toda la comunidad.
-                </p>
-            </section>
 
             {/* Sección Últimas propiedades */}
             <section className="px-6 py-12 bg-white">
@@ -96,6 +81,14 @@ export const Home = () => {
                         Siguiente
                     </button>
                 </div>
+            </section>
+
+                        {/* Sección Acerca de */}
+            <section id="acerca" className="px-6 py-12 bg-white">
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">Acerca de</h2>
+                <p className="text-gray-700 text-md leading-relaxed">
+                    PanaRoom es un sistema web diseñado para facilitar la gestión de residencias estudiantiles, permitiendo a propietarios publicar sus habitaciones y a los estudiantes encontrar su mejor opción de alojamiento de manera rápida y segura. Nuestro objetivo es conectar personas y crear experiencias de vivienda confiables, modernas y accesibles para toda la comunidad.
+                </p>
             </section>
 
             <section id="servicios" className='container mx-auto px-6 py-10'>
