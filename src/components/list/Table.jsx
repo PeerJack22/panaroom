@@ -12,8 +12,10 @@ const Table = () => {
         sector: "",
         habitaciones: "",
         banos: "",
-        servicio: "",
+        servicios: [],
     });
+    const [abiertoServicios, setAbiertoServicios] = useState(false);
+    const opcionesServicios = ["luz", "agua", "internet"];
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(localStorage.getItem("auth-token"));
@@ -60,6 +62,25 @@ const Table = () => {
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
+    const toggleServicio = (servicio) => {
+        setFilters((prev) => {
+            const yaExiste = prev.servicios.includes(servicio);
+            return {
+                ...prev,
+                servicios: yaExiste
+                    ? prev.servicios.filter((s) => s !== servicio)
+                    : [...prev.servicios, servicio],
+            };
+        });
+    };
+
+    const removerServicio = (servicio) => {
+        setFilters((prev) => ({
+            ...prev,
+            servicios: prev.servicios.filter((s) => s !== servicio),
+        }));
+    };
+
     const getServiciosDepartamento = (dep) => {
         if (Array.isArray(dep?.serviciosIncluidos)) {
             return dep.serviciosIncluidos.map((s) => String(s).toLowerCase());
@@ -94,10 +115,8 @@ const Table = () => {
 
         const serviciosDep = getServiciosDepartamento(dep);
         const matchServicio =
-            !filters.servicio ||
-            (filters.servicio === "todos"
-                ? ["luz", "agua", "internet"].every((serv) => serviciosDep.includes(serv))
-                : serviciosDep.includes(filters.servicio));
+            !filters.servicios.length ||
+            filters.servicios.every((serv) => serviciosDep.includes(serv));
 
         return matchSector && matchHabitaciones && matchBanos && matchServicio;
     });
@@ -137,18 +156,63 @@ const Table = () => {
                         className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                     />
 
-                    <select
-                        name="servicio"
-                        value={filters.servicio}
-                        onChange={handleFilterChange}
-                        className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                    >
-                        <option value="">Servicios incluidos</option>
-                        <option value="luz">Luz</option>
-                        <option value="agua">Agua</option>
-                        <option value="internet">Internet</option>
-                        <option value="todos">Luz, agua e internet</option>
-                    </select>
+                    <div className="relative">
+                        <div className="w-full rounded-md border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1 min-h-[42px] flex items-center gap-2">
+                            <div
+                                className="flex-1 flex flex-wrap gap-2 cursor-pointer"
+                                onClick={() => setAbiertoServicios(!abiertoServicios)}
+                            >
+                                {filters.servicios.length === 0 && (
+                                    <span className="text-gray-500 px-2 py-1">Servicios incluidos</span>
+                                )}
+
+                                {filters.servicios.map((servicio) => (
+                                    <span
+                                        key={servicio}
+                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
+                                    >
+                                        {servicio.charAt(0).toUpperCase() + servicio.slice(1)}
+                                        <button
+                                            type="button"
+                                            className="text-blue-800 hover:text-blue-900"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                removerServicio(servicio);
+                                            }}
+                                            aria-label={`Quitar ${servicio}`}
+                                        >
+                                            x
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setAbiertoServicios(!abiertoServicios)}
+                                className="px-2 text-gray-500 hover:text-gray-700"
+                                aria-label="Abrir opciones de servicios"
+                            >
+                                {abiertoServicios ? "▴" : "▾"}
+                            </button>
+                        </div>
+
+                        {abiertoServicios && (
+                            <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+                                {opcionesServicios.map((servicio) => (
+                                    <button
+                                        key={servicio}
+                                        type="button"
+                                        onClick={() => toggleServicio(servicio)}
+                                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between"
+                                    >
+                                        <span>{servicio.charAt(0).toUpperCase() + servicio.slice(1)}</span>
+                                        {filters.servicios.includes(servicio) && <span className="text-blue-700 font-semibold">✓</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

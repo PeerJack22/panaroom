@@ -79,13 +79,45 @@ export const Home = () => {
                         />
 
                         <div className="relative">
-                            <button
-                                type="button"
-                                className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                onClick={() => setAbierto(!abierto)}
-                            >
-                                {servicios.length ? servicios.join(', ') : 'Servicios incluidos'}
-                            </button>
+                            <div className="w-full rounded-md border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1 min-h-[42px] flex items-center gap-2">
+                                <div
+                                    className="flex-1 flex flex-wrap gap-2 cursor-pointer"
+                                    onClick={() => setAbierto(!abierto)}
+                                >
+                                    {servicios.length === 0 && (
+                                        <span className="text-gray-500 px-2 py-1">Servicios incluidos</span>
+                                    )}
+
+                                    {servicios.map((servicio) => (
+                                        <span
+                                            key={servicio}
+                                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
+                                        >
+                                            {servicio}
+                                            <button
+                                                type="button"
+                                                className="text-blue-800 hover:text-blue-900"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    removerServicio(servicio);
+                                                }}
+                                                aria-label={`Quitar ${servicio}`}
+                                            >
+                                                x
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setAbierto(!abierto)}
+                                    className="px-2 text-gray-500 hover:text-gray-700"
+                                    aria-label="Abrir opciones de servicios"
+                                >
+                                    {abierto ? '▴' : '▾'}
+                                </button>
+                            </div>
 
                             {abierto && (
                                 <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
@@ -103,26 +135,6 @@ export const Home = () => {
                                 </div>
                             )}
 
-                            {servicios.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {servicios.map((servicio) => (
-                                        <span
-                                            key={servicio}
-                                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
-                                        >
-                                            {servicio}
-                                            <button
-                                                type="button"
-                                                className="text-blue-800 hover:text-blue-900"
-                                                onClick={() => removerServicio(servicio)}
-                                                aria-label={`Quitar ${servicio}`}
-                                            >
-                                                x
-                                            </button>
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
