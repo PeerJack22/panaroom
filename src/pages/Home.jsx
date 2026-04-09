@@ -1,8 +1,32 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link } from 'react-router-dom';
 import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
+import { useState } from 'react';
 
 export const Home = () => {
+    const [servicios, setServicios] = useState([]);
+    const [abierto, setAbierto] = useState(false);
+    const opcionesServicios = ['Luz', 'Agua', 'Internet'];
+
+    const agregarServicio = (servicio) => {
+        if (!servicios.includes(servicio)) {
+            setServicios([...servicios, servicio]);
+        }
+        setAbierto(false);
+    };
+
+    const removerServicio = (servicio) => {
+        setServicios(servicios.filter(s => s !== servicio));
+    };
+
+    const toggleServicio = (servicio) => {
+        if (servicios.includes(servicio)) {
+            removerServicio(servicio);
+            return;
+        }
+        agregarServicio(servicio);
+    };
+
     return (
         <>
             <header className="w-full py-6 px-6 bg-slate-800 text-white flex flex-col md:flex-row justify-between items-center">
@@ -54,16 +78,52 @@ export const Home = () => {
                             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
 
-                        <select
-                            defaultValue=""
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                        >
-                            <option value="" disabled>Servicios incluidos</option>
-                            <option value="luz">Luz</option>
-                            <option value="agua">Agua</option>
-                            <option value="internet">Internet</option>
-                            <option value="todos">Luz, agua e internet</option>
-                        </select>
+                        <div className="relative">
+                            <button
+                                type="button"
+                                className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onClick={() => setAbierto(!abierto)}
+                            >
+                                {servicios.length ? servicios.join(', ') : 'Servicios incluidos'}
+                            </button>
+
+                            {abierto && (
+                                <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+                                    {opcionesServicios.map((servicio) => (
+                                        <button
+                                            key={servicio}
+                                            type="button"
+                                            onClick={() => toggleServicio(servicio)}
+                                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between"
+                                        >
+                                            <span>{servicio}</span>
+                                            {servicios.includes(servicio) && <span className="text-blue-700 font-semibold">✓</span>}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            {servicios.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {servicios.map((servicio) => (
+                                        <span
+                                            key={servicio}
+                                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
+                                        >
+                                            {servicio}
+                                            <button
+                                                type="button"
+                                                className="text-blue-800 hover:text-blue-900"
+                                                onClick={() => removerServicio(servicio)}
+                                                aria-label={`Quitar ${servicio}`}
+                                            >
+                                                x
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </main>
