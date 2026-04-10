@@ -6,7 +6,28 @@ import { useState } from 'react';
 export const Home = () => {
     const [servicios, setServicios] = useState([]);
     const [abierto, setAbierto] = useState(false);
+    const [paginaActual, setPaginaActual] = useState(1);
+    const propiedadesPorPagina = 6;
     const opcionesServicios = ['Luz', 'Agua', 'Internet'];
+
+    const propiedades = [
+        { id: 1, titulo: 'Apt 1', precio: 210, descripcion: 'Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades y supermercados.' },
+        { id: 2, titulo: 'Apt 2', precio: 240, descripcion: 'Espacio comodo con buena ventilacion natural, ideal para estudiantes que buscan una zona segura y conectada.' },
+        { id: 3, titulo: 'Apt 3', precio: 195, descripcion: 'Residencia funcional con servicios basicos incluidos y cercania a transporte publico y comercio local.' },
+        { id: 4, titulo: 'Apt 4', precio: 260, descripcion: 'Departamento moderno con acabados recientes, ambiente tranquilo y acceso rapido a zonas universitarias.' },
+        { id: 5, titulo: 'Apt 5', precio: 225, descripcion: 'Unidad acogedora con buena iluminacion y distribucion practica para estudio y descanso diario.' },
+        { id: 6, titulo: 'Apt 6', precio: 280, descripcion: 'Opcion amplia para compartir, con cocina equipada y excelente ubicacion cerca de vias principales.' },
+        { id: 7, titulo: 'Apt 7', precio: 205, descripcion: 'Apartamento economico con servicios estables y entorno residencial silencioso para concentrarse.' },
+        { id: 8, titulo: 'Apt 8', precio: 300, descripcion: 'Espacio premium con mayor metraje, buena seguridad y facil acceso a centros de estudio y trabajo.' },
+        { id: 9, titulo: 'Apt 9', precio: 235, descripcion: 'Departamento balanceado en precio y comodidad, ideal para quienes buscan ubicacion y funcionalidad.' },
+        { id: 10, titulo: 'Apt 10', precio: 250, descripcion: 'Propiedad bien distribuida con acabados cuidados, ambiente comodo y cercania a zonas de interes.' },
+        { id: 11, titulo: 'Apt 11', precio: 220, descripcion: 'Alternativa accesible con buena conectividad y espacios adecuados para estudio o trabajo remoto.' },
+        { id: 12, titulo: 'Apt 12', precio: 275, descripcion: 'Departamento en sector estrategico con excelente movilidad y condiciones practicas para vivir.' },
+    ];
+
+    const totalPaginas = Math.ceil(propiedades.length / propiedadesPorPagina);
+    const indiceInicio = (paginaActual - 1) * propiedadesPorPagina;
+    const propiedadesPaginadas = propiedades.slice(indiceInicio, indiceInicio + propiedadesPorPagina);
 
     const agregarServicio = (servicio) => {
         if (!servicios.includes(servicio)) {
@@ -152,19 +173,19 @@ export const Home = () => {
             <section className="px-6 py-12 bg-white">
                 <h2 className="text-3xl font-bold text-gray-800 mb-8">Propiedades en arriendo</h2>
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3].map((_, index) => (
-                        <div key={index} className="bg-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                    {propiedadesPaginadas.map((propiedad) => (
+                        <div key={propiedad.id} className="bg-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200">
                             <div className="flex flex-col h-full">
                             <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-                                alt={`Apartamento ${index + 1}`} className="w-full h-44 object-cover border-b-4 border-blue-500"
+                                alt={`Apartamento ${propiedad.id}`} className="w-full h-44 object-cover border-b-4 border-blue-500"
                             />
                             <div className="p-4 flex-1 flex flex-col">
                                 <div className="flex justify-between items-start gap-2 mb-2">
-                                    <h3 className="text-lg font-bold text-gray-800">Apt {index + 1}</h3>
-                                    <span className="text-sm font-semibold text-blue-800">$ 210 / mes</span>
+                                    <h3 className="text-lg font-bold text-gray-800">{propiedad.titulo}</h3>
+                                    <span className="text-sm font-semibold text-blue-800">$ {propiedad.precio} / mes</span>
                                 </div>
                                 <p className="text-sm text-gray-600 leading-relaxed mb-4 h-16 overflow-hidden">
-                                    Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades, transporte publico y supermercados. Cuenta con espacios comodos para estudiar y descansar, ideal para estudiantes o jovenes profesionales.
+                                    {propiedad.descripcion}
                                 </p>
                                 <div className="mt-auto flex justify-end">
                                     <button className="inline-block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer">
@@ -178,10 +199,20 @@ export const Home = () => {
                 </div>
 
                 <div className="flex justify-end gap-3 mt-6">
-                    <button className="inline-block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer">
+                    <button
+                        type="button"
+                        onClick={() => setPaginaActual((prev) => Math.max(prev - 1, 1))}
+                        disabled={paginaActual === 1}
+                        className="inline-block bg-blue-700 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer"
+                    >
                         Anterior
                     </button>
-                    <button className="inline-block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer">
+                    <button
+                        type="button"
+                        onClick={() => setPaginaActual((prev) => Math.min(prev + 1, totalPaginas))}
+                        disabled={paginaActual === totalPaginas}
+                        className="inline-block bg-blue-700 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer"
+                    >
                         Siguiente
                     </button>
                 </div>
