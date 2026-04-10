@@ -138,7 +138,7 @@ const Table = () => {
                         name="arriendoMin"
                         value={filters.arriendoMin}
                         onChange={handleFilterChange}
-                        placeholder="Arriendo minimo"
+                        placeholder="Cantidad minima"
                         className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                     />
 
@@ -148,7 +148,7 @@ const Table = () => {
                         name="arriendoMax"
                         value={filters.arriendoMax}
                         onChange={handleFilterChange}
-                        placeholder="Arriendo maximo"
+                        placeholder="Cantidad maxima"
                         className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                     />
 
