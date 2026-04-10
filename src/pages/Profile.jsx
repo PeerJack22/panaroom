@@ -13,11 +13,11 @@ const Profile = () => {
                 <p className='mb-8'>Este módulo te permite gestionar el perfil del usuario</p>
             </div>
 
-            <div className='flex justify-around gap-x-8 flex-wrap gap-y-8 md:flex-nowrap'>
-                <div className='w-full md:w-1/2'>
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 items-start'>
+                <div className='w-full'>
                     <FormProfile/>
                 </div>
-                <div className='w-full md:w-1/2'>
+                <div className='w-full'>
                     <CardProfile/>
                     <CardPassword/>
                 </div>

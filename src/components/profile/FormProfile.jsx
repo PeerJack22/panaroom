@@ -110,7 +110,7 @@ const FormularioPerfil = () => {
     return (
         <form
             onSubmit={handleSubmit(updateUser)}
-            className="bg-gray-900 p-6 rounded-xl shadow-lg text-white max-w-xl mx-auto mt-10"
+            className="bg-gray-900 p-6 rounded-xl shadow-lg text-white max-w-xl mx-auto"
         >
             <h2 className="text-2xl font-bold text-slate-200 mb-6">Editar perfil</h2>
 
