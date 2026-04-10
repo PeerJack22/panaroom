@@ -59,8 +59,9 @@ export const Home = () => {
                     {/* Contenedor del input y botón */}
                     <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
                         <input
-                            type="text"
-                            placeholder="Ingresa el sector"
+                            type="number"
+                            min="0"
+                            placeholder="Ingresa el valor del arriendo"
                             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
 
@@ -140,9 +141,9 @@ export const Home = () => {
                 </div>
             </main>
 
-            {/* Sección Últimas propiedades */}
+            {/* Sección de propiedades */}
             <section className="px-6 py-12 bg-white">
-                <h2 className="text-3xl font-bold text-gray-800 mb-8">Últimas propiedades de arriendo</h2>
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">Propiedades en arriendo</h2>
                 <div className="max-w-6xl mx-auto space-y-6">
                     {[1, 2, 3].map((_, index) => (
                         <div key={index} className="bg-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200">
