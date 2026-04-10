@@ -9,7 +9,8 @@ const Table = () => {
     const { fetchDataBackend } = useFetch();
     const [departamentos, setDepartamentos] = useState([]);
     const [filters, setFilters] = useState({
-        arriendo: "",
+        arriendoMin: "",
+        arriendoMax: "",
         habitaciones: "",
         banos: "",
         servicios: [],
@@ -102,9 +103,12 @@ const Table = () => {
     };
 
     const departamentosFiltrados = departamentos.filter((dep) => {
+        const precio = Number(dep?.precioMensual);
+        const min = filters.arriendoMin === "" ? null : Number(filters.arriendoMin);
+        const max = filters.arriendoMax === "" ? null : Number(filters.arriendoMax);
         const matchArriendo =
-            !filters.arriendo ||
-            Number(dep?.precioMensual) === Number(filters.arriendo);
+            (min === null || precio >= min) &&
+            (max === null || precio <= max);
 
         const matchHabitaciones =
             !filters.habitaciones ||
@@ -127,14 +131,24 @@ const Table = () => {
             <ToastContainer />
 
             <div className="w-full mt-5 mb-4 p-4 rounded-lg bg-white shadow-lg border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <input
                         type="number"
                         min="0"
-                        name="arriendo"
-                        value={filters.arriendo}
+                        name="arriendoMin"
+                        value={filters.arriendoMin}
                         onChange={handleFilterChange}
-                        placeholder="Ingresa el valor del arriendo"
+                        placeholder="Arriendo minimo"
+                        className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                    />
+
+                    <input
+                        type="number"
+                        min="0"
+                        name="arriendoMax"
+                        value={filters.arriendoMax}
+                        onChange={handleFilterChange}
+                        placeholder="Arriendo maximo"
                         className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                     />
 

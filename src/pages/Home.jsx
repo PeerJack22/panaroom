@@ -57,11 +57,18 @@ export const Home = () => {
                 <div className='w-full'>
                     
                     {/* Contenedor del input y botón */}
-                    <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
                         <input
                             type="number"
                             min="0"
-                            placeholder="Ingresa el valor del arriendo"
+                            placeholder="Arriendo minimo"
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        />
+
+                        <input
+                            type="number"
+                            min="0"
+                            placeholder="Arriendo maximo"
                             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
 
