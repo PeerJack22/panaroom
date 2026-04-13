@@ -95,7 +95,7 @@ export const Register = () => {
             </div>
 
             {/* Imagen lateral decorativa */}
-            <div className="hidden sm:block sm:w-1/2 h-screen bg-cover bg-center" style={{ backgroundImage: `url('/images/apartamento1.jpg')` }}></div>
+            <div className="hidden sm:block sm:w-1/2 bg-cover bg-center" style={{ backgroundImage: `url('/images/apartamento1.jpg')` }}></div>
         </div>
     );
 };
