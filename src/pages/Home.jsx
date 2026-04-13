@@ -174,35 +174,31 @@ export const Home = () => {
                 <h2 className="text-3xl font-bold text-gray-800 mb-8">Propiedades en arriendo</h2>
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {propiedadesPaginadas.map((propiedad) => (
-                        <div key={propiedad.id} className="bg-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200">
-                            <div className="flex flex-col h-full">
+                        <article key={propiedad.id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
                                 <img
                                     src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
                                     alt={`Apartamento ${propiedad.id}`}
-                                    className="w-full h-40 object-cover border-b-4 border-blue-500"
+                                    className="w-full h-40 object-cover rounded-lg border border-gray-200"
                                 />
-                                <div className="p-5 flex-1 flex flex-col gap-3">
-                                    <div className="flex items-start justify-between gap-3">
-                                        <h3 className="text-lg font-bold text-gray-800 leading-tight">{propiedad.titulo}</h3>
-                                        <span className="text-sm font-semibold text-blue-800">$ {propiedad.precio} / mes</span>
-                                    </div>
-
-                                    <p className="text-sm text-gray-600 leading-relaxed h-16 overflow-hidden">
-                                        {propiedad.descripcion}
-                                    </p>
-
-                                    <p className="text-sm text-gray-700">
-                                        <span className="font-semibold">Dirección:</span> {propiedad.direccion}
-                                    </p>
-
-                                    <div className="mt-auto flex justify-end">
-                                        <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer">
-                                            Detalles
-                                        </button>
-                                    </div>
+                                <div className="flex items-start justify-between gap-3">
+                                    <h3 className="text-lg font-bold text-gray-800 leading-tight">{propiedad.titulo}</h3>
+                                    <span className="text-sm font-semibold text-blue-800">$ {propiedad.precio} / mes</span>
                                 </div>
-                            </div>
-                        </div>
+
+                                <p className="text-sm text-gray-600 line-clamp-3">
+                                    {propiedad.descripcion}
+                                </p>
+
+                                <p className="text-sm text-gray-700">
+                                    <span className="font-semibold">Dirección:</span> {propiedad.direccion}
+                                </p>
+
+                                <div className="mt-auto flex justify-end gap-3 pt-2">
+                                    <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer">
+                                        Detalles
+                                    </button>
+                                </div>
+                        </article>
                     ))}
                 </div>
 
