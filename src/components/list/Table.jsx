@@ -241,47 +241,56 @@ const Table = () => {
                     <span className="font-medium">No hay resultados con esos filtros</span>
                 </div>
             ) : (
-                <table className="w-full mt-5 table-auto shadow-lg bg-white">
-                    <thead className="bg-gray-800 text-slate-400">
-                        <tr>
-                            {["N°", "Título", "Descripción", "Dirección", "Precio", "Habitaciones", "Baños", "Estado", "Acciones"].map((header) => (
-                                <th key={header} className="p-2">{header}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {departamentosFiltrados.map((dep, index) => (
-                            <tr className="hover:bg-gray-300 text-center" key={dep._id}>
-                                <td>{index + 1}</td>
-                                <td>{dep.titulo}</td>
-                                <td>{dep.descripcion}</td>
-                                <td>{dep.direccion}</td>
-                                <td>$ {dep.precioMensual}</td>
-                                <td>{dep.numeroHabitaciones}</td>
-                                <td>{dep.numeroBanos}</td>
-                                <td>
-                                    <span className={`text-xs font-medium mr-2 px-2.5 py-0.5 rounded ${dep.disponible ? "bg-blue-100 text-green-500" : "bg-red-100 text-red-500"}`}>
-                                        {dep.disponible ? "Disponible" : "No disponible"}
-                                    </span>
-                                </td>
-                                <td className="py-2 text-center">
-                                    <MdInfo
-                                        title="Más información"
-                                        className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2 hover:text-green-600"
-                                        onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)}
-                                    />
-                                    {(userRol === "administrador" || (userRol === "arrendador" && dep.creador === userId)) && (
-                                        <MdDeleteForever
-                                            title="Eliminar"
-                                            className="h-7 w-7 text-red-900 cursor-pointer inline-block hover:text-red-600"
-                                            onClick={() => deleteDepartamento(dep._id)}
-                                        />
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
+                    {departamentosFiltrados.map((dep) => (
+                        <article key={dep._id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
+                            <img
+                                src={dep?.imagenes?.[0]?.url || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"}
+                                alt={`Imagen principal de ${dep.titulo}`}
+                                className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                            />
+
+                            <div className="flex items-start justify-between gap-3">
+                                <h3 className="text-lg font-bold text-gray-800 leading-tight">{dep.titulo}</h3>
+                                <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${dep.disponible ? "bg-blue-100 text-green-500" : "bg-red-100 text-red-500"}`}>
+                                    {dep.disponible ? "Disponible" : "No disponible"}
+                                </span>
+                            </div>
+
+                            <p className="text-sm text-gray-600 line-clamp-3">{dep.descripcion}</p>
+
+                            <p className="text-sm text-gray-700">
+                                <span className="font-semibold">Dirección:</span> {dep.direccion}
+                            </p>
+
+                            <p className="text-sm text-blue-800 font-semibold">Precio: $ {dep.precioMensual}</p>
+
+                            <div className="mt-auto flex items-center justify-end gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    title="Más información"
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
+                                    onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)}
+                                >
+                                    <MdInfo className="h-5 w-5" />
+                                    Ver más
+                                </button>
+
+                                {(userRol === "administrador" || (userRol === "arrendador" && dep.creador === userId)) && (
+                                    <button
+                                        type="button"
+                                        title="Eliminar"
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 hover:bg-red-50"
+                                        onClick={() => deleteDepartamento(dep._id)}
+                                    >
+                                        <MdDeleteForever className="h-5 w-5" />
+                                        Eliminar
+                                    </button>
+                                )}
+                            </div>
+                        </article>
+                    ))}
+                </div>
             )}
         </>
     );
