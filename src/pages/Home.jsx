@@ -11,18 +11,18 @@ export const Home = () => {
     const opcionesServicios = ['Luz', 'Agua', 'Internet'];
 
     const propiedades = [
-        { id: 1, titulo: 'Apt 1', precio: 210, descripcion: 'Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades y supermercados.' },
-        { id: 2, titulo: 'Apt 2', precio: 240, descripcion: 'Espacio comodo con buena ventilacion natural, ideal para estudiantes que buscan una zona segura y conectada.' },
-        { id: 3, titulo: 'Apt 3', precio: 195, descripcion: 'Residencia funcional con servicios basicos incluidos y cercania a transporte publico y comercio local.' },
-        { id: 4, titulo: 'Apt 4', precio: 260, descripcion: 'Departamento moderno con acabados recientes, ambiente tranquilo y acceso rapido a zonas universitarias.' },
-        { id: 5, titulo: 'Apt 5', precio: 225, descripcion: 'Unidad acogedora con buena iluminacion y distribucion practica para estudio y descanso diario.' },
-        { id: 6, titulo: 'Apt 6', precio: 280, descripcion: 'Opcion amplia para compartir, con cocina equipada y excelente ubicacion cerca de vias principales.' },
-        { id: 7, titulo: 'Apt 7', precio: 205, descripcion: 'Apartamento economico con servicios estables y entorno residencial silencioso para concentrarse.' },
-        { id: 8, titulo: 'Apt 8', precio: 300, descripcion: 'Espacio premium con mayor metraje, buena seguridad y facil acceso a centros de estudio y trabajo.' },
-        { id: 9, titulo: 'Apt 9', precio: 235, descripcion: 'Departamento balanceado en precio y comodidad, ideal para quienes buscan ubicacion y funcionalidad.' },
-        { id: 10, titulo: 'Apt 10', precio: 250, descripcion: 'Propiedad bien distribuida con acabados cuidados, ambiente comodo y cercania a zonas de interes.' },
-        { id: 11, titulo: 'Apt 11', precio: 220, descripcion: 'Alternativa accesible con buena conectividad y espacios adecuados para estudio o trabajo remoto.' },
-        { id: 12, titulo: 'Apt 12', precio: 275, descripcion: 'Departamento en sector estrategico con excelente movilidad y condiciones practicas para vivir.' },
+        { id: 1, titulo: 'Apt 1', precio: 210, direccion: 'Centro', descripcion: 'Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades y supermercados.' },
+        { id: 2, titulo: 'Apt 2', precio: 240, direccion: 'Norte', descripcion: 'Espacio comodo con buena ventilacion natural, ideal para estudiantes que buscan una zona segura y conectada.' },
+        { id: 3, titulo: 'Apt 3', precio: 195, direccion: 'Sur', descripcion: 'Residencia funcional con servicios basicos incluidos y cercania a transporte publico y comercio local.' },
+        { id: 4, titulo: 'Apt 4', precio: 260, direccion: 'Occidente', descripcion: 'Departamento moderno con acabados recientes, ambiente tranquilo y acceso rapido a zonas universitarias.' },
+        { id: 5, titulo: 'Apt 5', precio: 225, direccion: 'Centro', descripcion: 'Unidad acogedora con buena iluminacion y distribucion practica para estudio y descanso diario.' },
+        { id: 6, titulo: 'Apt 6', precio: 280, direccion: 'Oriente', descripcion: 'Opcion amplia para compartir, con cocina equipada y excelente ubicacion cerca de vias principales.' },
+        { id: 7, titulo: 'Apt 7', precio: 205, direccion: 'Norte', descripcion: 'Apartamento economico con servicios estables y entorno residencial silencioso para concentrarse.' },
+        { id: 8, titulo: 'Apt 8', precio: 300, direccion: 'Centro', descripcion: 'Espacio premium con mayor metraje, buena seguridad y facil acceso a centros de estudio y trabajo.' },
+        { id: 9, titulo: 'Apt 9', precio: 235, direccion: 'Sur', descripcion: 'Departamento balanceado en precio y comodidad, ideal para quienes buscan ubicacion y funcionalidad.' },
+        { id: 10, titulo: 'Apt 10', precio: 250, direccion: 'Occidente', descripcion: 'Propiedad bien distribuida con acabados cuidados, ambiente comodo y cercania a zonas de interes.' },
+        { id: 11, titulo: 'Apt 11', precio: 220, direccion: 'Centro', descripcion: 'Alternativa accesible con buena conectividad y espacios adecuados para estudio o trabajo remoto.' },
+        { id: 12, titulo: 'Apt 12', precio: 275, direccion: 'Oriente', descripcion: 'Departamento en sector estrategico con excelente movilidad y condiciones practicas para vivir.' },
     ];
 
     const totalPaginas = Math.ceil(propiedades.length / propiedadesPorPagina);
@@ -176,23 +176,31 @@ export const Home = () => {
                     {propiedadesPaginadas.map((propiedad) => (
                         <div key={propiedad.id} className="bg-gray-100 rounded-xl overflow-hidden shadow-lg border border-gray-200">
                             <div className="flex flex-col h-full">
-                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-                                alt={`Apartamento ${propiedad.id}`} className="w-full h-44 object-cover border-b-4 border-blue-500"
-                            />
-                            <div className="p-4 flex-1 flex flex-col">
-                                <div className="flex justify-between items-start gap-2 mb-2">
-                                    <h3 className="text-lg font-bold text-gray-800">{propiedad.titulo}</h3>
-                                    <span className="text-sm font-semibold text-blue-800">$ {propiedad.precio} / mes</span>
+                                <img
+                                    src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+                                    alt={`Apartamento ${propiedad.id}`}
+                                    className="w-full h-40 object-cover border-b-4 border-blue-500"
+                                />
+                                <div className="p-5 flex-1 flex flex-col gap-3">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <h3 className="text-lg font-bold text-gray-800 leading-tight">{propiedad.titulo}</h3>
+                                        <span className="text-sm font-semibold text-blue-800">$ {propiedad.precio} / mes</span>
+                                    </div>
+
+                                    <p className="text-sm text-gray-600 leading-relaxed h-16 overflow-hidden">
+                                        {propiedad.descripcion}
+                                    </p>
+
+                                    <p className="text-sm text-gray-700">
+                                        <span className="font-semibold">Dirección:</span> {propiedad.direccion}
+                                    </p>
+
+                                    <div className="mt-auto flex justify-end">
+                                        <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer">
+                                            Detalles
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className="text-sm text-gray-600 leading-relaxed mb-4 h-16 overflow-hidden">
-                                    {propiedad.descripcion}
-                                </p>
-                                <div className="mt-auto flex justify-end">
-                                    <button className="inline-block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer">
-                                        Detalles
-                                    </button>
-                                </div>
-                            </div>
                             </div>
                         </div>
                     ))}

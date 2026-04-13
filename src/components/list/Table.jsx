@@ -252,9 +252,6 @@ const Table = () => {
 
                             <div className="flex items-start justify-between gap-3">
                                 <h3 className="text-lg font-bold text-gray-800 leading-tight">{dep.titulo}</h3>
-                                <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${dep.disponible ? "bg-blue-100 text-green-500" : "bg-red-100 text-red-500"}`}>
-                                    {dep.disponible ? "Disponible" : "No disponible"}
-                                </span>
                             </div>
 
                             <p className="text-sm text-gray-600 line-clamp-3">{dep.descripcion}</p>
