@@ -8,6 +8,7 @@ export const Home = () => {
     const [abierto, setAbierto] = useState(false);
     const [paginaActual, setPaginaActual] = useState(1);
     const [mostrarMensajeDetalle, setMostrarMensajeDetalle] = useState(false);
+    const [animandoResidencias, setAnimandoResidencias] = useState(false);
     const propiedadesPorPagina = 6;
     const opcionesServicios = ['Luz', 'Agua', 'Internet'];
 
@@ -29,6 +30,16 @@ export const Home = () => {
     const totalPaginas = Math.ceil(propiedades.length / propiedadesPorPagina);
     const indiceInicio = (paginaActual - 1) * propiedadesPorPagina;
     const propiedadesPaginadas = propiedades.slice(indiceInicio, indiceInicio + propiedadesPorPagina);
+
+    const cambiarPagina = (nuevaPagina) => {
+        if (nuevaPagina < 1 || nuevaPagina > totalPaginas || nuevaPagina === paginaActual) return;
+
+        setAnimandoResidencias(true);
+        setTimeout(() => {
+            setPaginaActual(nuevaPagina);
+            setAnimandoResidencias(false);
+        }, 180);
+    };
 
     const agregarServicio = (servicio) => {
         if (!servicios.includes(servicio)) {
@@ -173,7 +184,7 @@ export const Home = () => {
             {/* Sección de propiedades */}
             <section className="px-6 py-12 bg-white">
                 <h2 className="text-3xl font-bold text-gray-800 mb-8">Propiedades en arriendo</h2>
-                <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ease-out ${animandoResidencias ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
                     {propiedadesPaginadas.map((propiedad) => (
                         <article key={propiedad.id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
                                 <img
@@ -210,7 +221,7 @@ export const Home = () => {
                 <div className="flex justify-end gap-3 mt-6">
                     <button
                         type="button"
-                        onClick={() => setPaginaActual((prev) => Math.max(prev - 1, 1))}
+                        onClick={() => cambiarPagina(paginaActual - 1)}
                         disabled={paginaActual === 1}
                         className="inline-block bg-blue-700 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer"
                     >
@@ -218,7 +229,7 @@ export const Home = () => {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setPaginaActual((prev) => Math.min(prev + 1, totalPaginas))}
+                        onClick={() => cambiarPagina(paginaActual + 1)}
                         disabled={paginaActual === totalPaginas}
                         className="inline-block bg-blue-700 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer"
                     >
