@@ -15,6 +15,7 @@ const Table = () => {
         banos: "",
         servicios: [],
     });
+    const [abiertoPrecio, setAbiertoPrecio] = useState(false);
     const [abiertoServicios, setAbiertoServicios] = useState(false);
     const opcionesServicios = ["luz", "agua", "internet"];
     const navigate = useNavigate();
@@ -82,6 +83,13 @@ const Table = () => {
         }));
     };
 
+    const textoPrecio = () => {
+        if (!filters.arriendoMin && !filters.arriendoMax) return "Precio";
+        if (filters.arriendoMin && filters.arriendoMax) return `$${filters.arriendoMin} - $${filters.arriendoMax}`;
+        if (filters.arriendoMin) return `Desde $${filters.arriendoMin}`;
+        return `Hasta $${filters.arriendoMax}`;
+    };
+
     const getServiciosDepartamento = (dep) => {
         if (Array.isArray(dep?.serviciosIncluidos)) {
             return dep.serviciosIncluidos.map((s) => String(s).toLowerCase());
@@ -131,26 +139,56 @@ const Table = () => {
             <ToastContainer />
 
             <div className="w-full mt-5 mb-4 p-4 rounded-lg bg-white shadow-lg border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <input
-                        type="number"
-                        min="0"
-                        name="arriendoMin"
-                        value={filters.arriendoMin}
-                        onChange={handleFilterChange}
-                        placeholder="Cantidad minima"
-                        className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="relative">
+                        <button
+                            type="button"
+                            onClick={() => setAbiertoPrecio(!abiertoPrecio)}
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <span>{textoPrecio()}</span>
+                            <span className="text-gray-500">{abiertoPrecio ? "▴" : "▾"}</span>
+                        </button>
 
-                    <input
-                        type="number"
-                        min="0"
-                        name="arriendoMax"
-                        value={filters.arriendoMax}
-                        onChange={handleFilterChange}
-                        placeholder="Cantidad maxima"
-                        className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                    />
+                        {abiertoPrecio && (
+                            <div className="absolute z-20 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg p-3 space-y-3">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    name="arriendoMin"
+                                    value={filters.arriendoMin}
+                                    onChange={handleFilterChange}
+                                    placeholder="Precio mínimo"
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                                />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    name="arriendoMax"
+                                    value={filters.arriendoMax}
+                                    onChange={handleFilterChange}
+                                    placeholder="Precio máximo"
+                                    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFilters((prev) => ({ ...prev, arriendoMin: "", arriendoMax: "" }))}
+                                        className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                    >
+                                        Limpiar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setAbiertoPrecio(false)}
+                                        className="px-3 py-1.5 text-sm rounded-md bg-blue-700 text-white hover:bg-blue-600"
+                                    >
+                                        Aplicar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     <input
                         type="number"
