@@ -43,9 +43,17 @@ const loginUser = async (data) => {
     return (
         <div className="flex flex-col sm:flex-row h-screen">
             <ToastContainer />
-            {/* Imagen de fondo */}
-            <div className="w-full sm:w-1/2 h-1/3 sm:h-screen bg-[url('/public/images/edificio2.jpg')] 
-                bg-no-repeat bg-cover bg-center hidden sm:block" />
+            {/* Imagen LCP visible y detectable desde el HTML */}
+            <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
+                <img
+                    src="/images/edificio2.jpg"
+                    alt="Edificio del proyecto PanaRoom"
+                    className="w-full h-full object-cover object-center"
+                    fetchPriority="high"
+                    loading="eager"
+                    decoding="async"
+                />
+            </div>
 
             {/* Contenedor de formulario */}
             <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center px-6">
