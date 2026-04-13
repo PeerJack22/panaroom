@@ -6,6 +6,9 @@ import { useState } from 'react';
 export const Home = () => {
     const [servicios, setServicios] = useState([]);
     const [abierto, setAbierto] = useState(false);
+    const [abiertoPrecio, setAbiertoPrecio] = useState(false);
+    const [precioMin, setPrecioMin] = useState("");
+    const [precioMax, setPrecioMax] = useState("");
     const [paginaActual, setPaginaActual] = useState(1);
     const [mostrarMensajeDetalle, setMostrarMensajeDetalle] = useState(false);
     const [animandoResidencias, setAnimandoResidencias] = useState(false);
@@ -60,6 +63,13 @@ export const Home = () => {
         agregarServicio(servicio);
     };
 
+    const textoPrecio = () => {
+        if (!precioMin && !precioMax) return 'Precio';
+        if (precioMin && precioMax) return `$${precioMin} - $${precioMax}`;
+        if (precioMin) return `Desde $${precioMin}`;
+        return `Hasta $${precioMax}`;
+    };
+
     return (
         <>
             <header className="sticky top-0 z-50 w-full py-3 px-6 bg-slate-800/95 backdrop-blur-sm text-white flex flex-col md:flex-row justify-between items-center shadow-md">
@@ -90,20 +100,57 @@ export const Home = () => {
                 <div className='w-full'>
                     
                     {/* Contenedor del input y botón */}
-                    <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
-                        <input
-                            type="number"
-                            min="0"
-                            placeholder="Cantidad minima"
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                        />
+                    <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setAbiertoPrecio(!abiertoPrecio)}
+                                className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <span>{textoPrecio()}</span>
+                                <span className="text-gray-500">{abiertoPrecio ? '▴' : '▾'}</span>
+                            </button>
 
-                        <input
-                            type="number"
-                            min="0"
-                            placeholder="Cantidad maxima"
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-                        />
+                            {abiertoPrecio && (
+                                <div className="absolute z-20 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg p-3 space-y-3">
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={precioMin}
+                                        onChange={(e) => setPrecioMin(e.target.value)}
+                                        placeholder="Precio mínimo"
+                                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                                    />
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={precioMax}
+                                        onChange={(e) => setPrecioMax(e.target.value)}
+                                        placeholder="Precio máximo"
+                                        className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                                    />
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPrecioMin("");
+                                                setPrecioMax("");
+                                            }}
+                                            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                        >
+                                            Limpiar
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setAbiertoPrecio(false)}
+                                            className="px-3 py-1.5 text-sm rounded-md bg-blue-700 text-white hover:bg-blue-600"
+                                        >
+                                            Aplicar
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         <input
                             type="number"
