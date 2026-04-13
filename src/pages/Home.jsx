@@ -51,24 +51,24 @@ export const Home = () => {
 
     return (
         <>
-            <header className="w-full py-6 px-6 bg-slate-800 text-white flex flex-col md:flex-row justify-between items-center">
+            <header className="sticky top-0 z-50 w-full py-3 px-6 bg-slate-800/95 backdrop-blur-sm text-white flex flex-col md:flex-row justify-between items-center shadow-md">
                 {/* Logo + Título */}
-                <div className="flex items-center gap-3 mb-4 md:mb-0">
-                    <img className="w-20 h-20" src={logo_proyecto} alt="Logo PanaRoom" />
-                    <h1 className="font-bold text-3xl text-cyan-400">
+                <div className="flex items-center gap-3 mb-3 md:mb-0">
+                    <img className="w-14 h-14" src={logo_proyecto} alt="Logo PanaRoom" />
+                    <h1 className="font-bold text-2xl text-cyan-400 leading-none">
                         Pana<span className="text-white">Room</span>
                     </h1>
                 </div>
 
                 {/* Navegación + Botón */}
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                    <ul className="flex gap-6 justify-center flex-wrap">
+                <div className="flex flex-col md:flex-row items-center gap-3">
+                    <ul className="flex gap-4 justify-center flex-wrap text-sm md:text-base">
                         <li><a href="#" className="hover:text-cyan-400 transition-colors">Inicio</a></li>
                         <li><a href="#acerca" className="hover:text-cyan-400 transition-colors">Acerca de</a></li>
                         <li><a href="#servicios" className="hover:text-cyan-400 transition-colors">Servicios</a></li>
                         <li><a href="#contacto" className="hover:text-cyan-400 transition-colors">Contacto</a></li>
                     </ul>
-                    <Link to="/login" className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-2 px-6 rounded-full transition-colors">
+                    <Link to="/login" className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-1.5 px-5 rounded-full text-sm md:text-base transition-colors">
                         Ingresar
                     </Link>
                 </div>
