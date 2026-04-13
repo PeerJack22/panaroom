@@ -7,6 +7,7 @@ export const Home = () => {
     const [servicios, setServicios] = useState([]);
     const [abierto, setAbierto] = useState(false);
     const [paginaActual, setPaginaActual] = useState(1);
+    const [mostrarMensajeDetalle, setMostrarMensajeDetalle] = useState(false);
     const propiedadesPorPagina = 6;
     const opcionesServicios = ['Luz', 'Agua', 'Internet'];
 
@@ -194,7 +195,11 @@ export const Home = () => {
                                 </p>
 
                                 <div className="mt-auto flex justify-end gap-3 pt-2">
-                                    <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer">
+                                    <button
+                                        type="button"
+                                        onClick={() => setMostrarMensajeDetalle(true)}
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                                    >
                                         Detalles
                                     </button>
                                 </div>
@@ -221,6 +226,33 @@ export const Home = () => {
                     </button>
                 </div>
             </section>
+
+            {mostrarMensajeDetalle && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+                    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-3">Información de la propiedad</h3>
+                        <p className="text-gray-600 leading-relaxed mb-6">
+                            Si quieres saber la información de contacto y más detalles de la propiedad, crea una cuenta.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                            <Link
+                                to="/register"
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-700 hover:bg-blue-600 text-white transition-colors"
+                            >
+                                Crear cuenta
+                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => setMostrarMensajeDetalle(false)}
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
                         {/* Sección Acerca de */}
             <section id="acerca" className="px-6 py-12 bg-white">
