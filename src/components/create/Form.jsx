@@ -63,18 +63,17 @@ export const Form = () => {
             return;
         }
 
+        if (!selectedImages.length) {
+            toast.error("Debes subir al menos una imagen.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("arrendatario", user._id);
 
         Object.keys(data).forEach((key) => {
             if (key === "imagen") {
-                const imagenes = Array.isArray(data.imagen)
-                    ? data.imagen
-                    : Array.from(data.imagen || []);
-
-                imagenes.forEach((img) => {
-                    formData.append("imagenes", img);
-                });
+                return;
             } else if (key === "servicios") {
                 data.servicios.forEach((servicio) => {
                     formData.append("serviciosIncluidos[]", servicio);
@@ -82,6 +81,10 @@ export const Form = () => {
             } else {
                 formData.append(key, data[key]);
             }
+        });
+
+        selectedImages.forEach((img) => {
+            formData.append("imagenes", img);
         });
 
         try {
