@@ -49,9 +49,9 @@ const Table = () => {
                 Authorization: `Bearer ${userToken}`,
             };
             try {
-                await fetchDataBackend(url, null, "DELETE", headers);
+                const response = await fetchDataBackend(url, null, "DELETE", headers);
+                if (!response) return;
                 setDepartamentos((prev) => prev.filter(dep => dep._id !== id));
-                toast.success("Departamento eliminado correctamente");
             } catch (error) {
                 console.error("Error al eliminar:", error);
                 toast.error("Error al eliminar el departamento");
