@@ -7,6 +7,20 @@ const Details = () => {
     const { id } = useParams();
     const { fetchDataBackend } = useFetch();
     const [departamento, setDepartamento] = useState(null);
+    const [imagenActiva, setImagenActiva] = useState(null);
+
+    const abrirLightbox = (index) => setImagenActiva(index);
+    const cerrarLightbox = () => setImagenActiva(null);
+
+    const irSiguienteImagen = () => {
+        if (!departamento?.imagenes?.length) return;
+        setImagenActiva((prev) => (prev + 1) % departamento.imagenes.length);
+    };
+
+    const irImagenAnterior = () => {
+        if (!departamento?.imagenes?.length) return;
+        setImagenActiva((prev) => (prev - 1 + departamento.imagenes.length) % departamento.imagenes.length);
+    };
 
     const formatearServicio = (valor) => {
         if (!valor) return null;
@@ -60,6 +74,31 @@ const Details = () => {
         };
         fetchDepartamento();
     }, [id, fetchDataBackend]);
+
+    useEffect(() => {
+        const totalImagenes = departamento?.imagenes?.length || 0;
+
+        const onKeyDown = (e) => {
+            if (imagenActiva === null) return;
+
+            if (e.key === "Escape") {
+                cerrarLightbox();
+            }
+
+            if (e.key === "ArrowRight") {
+                if (!totalImagenes) return;
+                setImagenActiva((prev) => (prev + 1) % totalImagenes);
+            }
+
+            if (e.key === "ArrowLeft") {
+                if (!totalImagenes) return;
+                setImagenActiva((prev) => (prev - 1 + totalImagenes) % totalImagenes);
+            }
+        };
+
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+    }, [imagenActiva, departamento?.imagenes?.length]);
 
     if (!departamento) {
         return (
@@ -133,11 +172,67 @@ const Details = () => {
                                     key={index}
                                     src={img.url}
                                     alt={`Imagen ${index + 1}`}
-                                    className="w-full h-44 object-cover rounded-lg border border-gray-200 shadow-sm"
+                                    className="w-full h-44 object-cover rounded-lg border border-gray-200 shadow-sm cursor-zoom-in hover:scale-[1.02] transition-transform"
+                                    onClick={() => abrirLightbox(index)}
                                 />
                             ))}
                         </div>
                     </section>
+                )}
+
+                {imagenActiva !== null && departamento.imagenes?.length > 0 && (
+                    <div
+                        className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
+                        onClick={cerrarLightbox}
+                    >
+                        <button
+                            type="button"
+                            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white text-2xl w-10 h-10 rounded-full"
+                            onClick={cerrarLightbox}
+                            aria-label="Cerrar visor"
+                        >
+                            ×
+                        </button>
+
+                        {departamento.imagenes.length > 1 && (
+                            <button
+                                type="button"
+                                className="absolute left-4 md:left-8 bg-white/10 hover:bg-white/20 text-white text-2xl w-11 h-11 rounded-full"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    irImagenAnterior();
+                                }}
+                                aria-label="Imagen anterior"
+                            >
+                                ‹
+                            </button>
+                        )}
+
+                        <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
+                            <img
+                                src={departamento.imagenes[imagenActiva]?.url}
+                                alt={`Vista grande ${imagenActiva + 1}`}
+                                className="w-full max-h-[82vh] object-contain rounded-xl"
+                            />
+                            <p className="text-white text-sm mt-3 text-center">
+                                Imagen {imagenActiva + 1} de {departamento.imagenes.length}
+                            </p>
+                        </div>
+
+                        {departamento.imagenes.length > 1 && (
+                            <button
+                                type="button"
+                                className="absolute right-4 md:right-8 bg-white/10 hover:bg-white/20 text-white text-2xl w-11 h-11 rounded-full"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    irSiguienteImagen();
+                                }}
+                                aria-label="Siguiente imagen"
+                            >
+                                ›
+                            </button>
+                        )}
+                    </div>
                 )}
             </div>
         </div>
