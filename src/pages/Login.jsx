@@ -13,7 +13,8 @@ const Login = () => {
     const { setToken, setRol, setUser } = storeAuth(); 
 
 const loginUser = async (data) => {
-    const url = `${import.meta.env.VITE_BACKEND_URL}/login`;
+    const isAdmin = data.email?.trim().toLowerCase() === 'admin@gmail.com';
+    const url = `${import.meta.env.VITE_BACKEND_URL}/${isAdmin ? 'loginAd' : 'login'}`;
 
     try {
         const response = await fetchDataBackend(url, data, 'POST');
