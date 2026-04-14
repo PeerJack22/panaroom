@@ -9,10 +9,13 @@ import storeAuth from "../../context/storeAuth.jsx";
 export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [selectedImages, setSelectedImages] = useState([]);
     const totalSteps = 4;
     const {
         register,
         handleSubmit,
+        setValue,
+        clearErrors,
         trigger,
         watch,
         formState: { errors },
@@ -64,9 +67,12 @@ export const Form = () => {
         formData.append("arrendatario", user._id);
 
         Object.keys(data).forEach((key) => {
-            if (key === "imagen" && data.imagen.length > 0) {
-                // Permitir varias imágenes
-                Array.from(data.imagen).forEach((img) => {
+            if (key === "imagen") {
+                const imagenes = Array.isArray(data.imagen)
+                    ? data.imagen
+                    : Array.from(data.imagen || []);
+
+                imagenes.forEach((img) => {
                     formData.append("imagenes", img);
                 });
             } else if (key === "servicios") {
@@ -86,7 +92,9 @@ export const Form = () => {
             };
             const response = await fetchDataBackend(url, formData, "POST", headers);
             if (response) {
-                toast.success("Residencia registrada exitosamente!");
+                if (!response.msg) {
+                    toast.success("Residencia registrada exitosamente!");
+                }
                 setTimeout(() => {
                     navigate("/dashboard/listar");
                 }, 2000);
@@ -239,9 +247,31 @@ export const Form = () => {
                                 type="file"
                                 multiple
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("imagen", { required: "Debes subir al menos una imagen." })}
+                                {...register("imagen", {
+                                    validate: () =>
+                                        selectedImages.length > 0 || "Debes subir al menos una imagen.",
+                                    onChange: (e) => {
+                                        const newFiles = Array.from(e.target.files || []);
+                                        if (!newFiles.length) return;
+
+                                        setSelectedImages((prev) => {
+                                            const merged = [...prev, ...newFiles];
+                                            setValue("imagen", merged, { shouldValidate: true });
+                                            return merged;
+                                        });
+                                        clearErrors("imagen");
+
+                                        // Permite volver a abrir el selector y agregar más archivos sin perder los anteriores.
+                                        e.target.value = "";
+                                    },
+                                })}
                             />
                             {errors.imagen && <p className="text-red-500 text-xs italic">{errors.imagen.message}</p>}
+                            {selectedImages.length > 0 && (
+                                <p className="text-xs text-gray-500 mt-2">
+                                    {selectedImages.length} imagen(es) seleccionada(s)
+                                </p>
+                            )}
                         </div>
 
                         <div>
