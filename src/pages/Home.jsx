@@ -503,10 +503,10 @@ export const Home = () => {
 
             <section className="px-6 py-12 bg-slate-900 text-white">
                 <div className="max-w-6xl mx-auto rounded-2xl border border-white/20 bg-slate-800/80 p-6 md:p-8">
-                    <h2 className="text-2xl md:text-3xl font-bold text-cyan-300">
+                    <h2 className="text-xl md:text-2xl font-bold text-cyan-300">
                         ¿Quieres publicar tus propiedades en arriendo cerca de la Escuela Politécnica Nacional?
                     </h2>
-                    <p className="mt-3 text-slate-200 leading-relaxed">
+                    <p className="mt-3 text-slate-200 leading-relaxed text-sm md:text-base">
                         Da clic aquí y llena tus datos para la solicitud de rol arrendatario.
                     </p>
 
@@ -520,82 +520,87 @@ export const Home = () => {
                         </button>
                     </div>
 
-                    {mostrarFormularioArrendatario && (
-                        <form onSubmit={enviarSolicitudArrendatario} className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input
-                                type="text"
-                                name="nombre"
-                                value={datosSolicitud.nombre}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Nombre (ej: Eddy)"
-                                className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="apellido"
-                                value={datosSolicitud.apellido}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Apellido (ej: Pruebas)"
-                                className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="direccion"
-                                value={datosSolicitud.direccion}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Dirección (ej: Av. Libertad 123)"
-                                className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 md:col-span-2"
-                                required
-                            />
-                            <input
-                                type="tel"
-                                name="celular"
-                                value={datosSolicitud.celular}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Celular (ej: 987654321)"
-                                className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                                required
-                            />
-                            <input
-                                type="email"
-                                name="email"
-                                value={datosSolicitud.email}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Correo (ej: edyis1720@gmail.com)"
-                                className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                                required
-                            />
+                    <div
+                        className={`grid overflow-hidden transition-all duration-500 ease-in-out ${
+                            mostrarFormularioArrendatario
+                                ? "grid-rows-[1fr] opacity-100 mt-6"
+                                : "grid-rows-[0fr] opacity-0 mt-0"
+                        }`}
+                    >
+                        <div className="min-h-0">
+                            <form onSubmit={enviarSolicitudArrendatario} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input
+                                    type="text"
+                                    name="nombre"
+                                    value={datosSolicitud.nombre}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Nombre"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    name="apellido"
+                                    value={datosSolicitud.apellido}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Apellido"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    name="direccion"
+                                    value={datosSolicitud.direccion}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Dirección"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 md:col-span-2 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="tel"
+                                    name="celular"
+                                    value={datosSolicitud.celular}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Celular"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={datosSolicitud.email}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Correo"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
 
-                            <div className="md:col-span-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
-                                <p className="text-sm text-slate-300">
-                                    Por ahora este formulario es solo visual y no está conectado a ningún endpoint.
-                                </p>
-                                <button
-                                    type="submit"
-                                    disabled={enviandoSolicitud}
-                                    className="inline-flex items-center justify-center rounded-md bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold px-5 py-2 transition-colors"
-                                >
-                                    {enviandoSolicitud ? "Guardando..." : "Guardar solicitud"}
-                                </button>
-                            </div>
-
-                            {estadoSolicitud.mensaje && (
-                                <div className={`md:col-span-2 p-3 rounded-md text-sm ${
-                                    estadoSolicitud.tipo === "ok"
-                                        ? "bg-emerald-100 text-emerald-800"
-                                        : "bg-red-100 text-red-800"
-                                }`}>
-                                    {estadoSolicitud.mensaje}
+                                <div className="md:col-span-2 flex justify-end mt-1">
+                                    <button
+                                        type="submit"
+                                        disabled={enviandoSolicitud}
+                                        className="inline-flex items-center justify-center rounded-md bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold px-5 py-2 transition-colors text-sm"
+                                    >
+                                        {enviandoSolicitud ? "Guardando..." : "Guardar solicitud"}
+                                    </button>
                                 </div>
-                            )}
-                        </form>
-                    )}
+
+                                {estadoSolicitud.mensaje && (
+                                    <div className={`md:col-span-2 p-3 rounded-md text-sm ${
+                                        estadoSolicitud.tipo === "ok"
+                                            ? "bg-emerald-100 text-emerald-800"
+                                            : "bg-red-100 text-red-800"
+                                    }`}>
+                                        {estadoSolicitud.mensaje}
+                                    </div>
+                                )}
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <footer id="contacto" className='bg-slate-800 text-white py-10 px-6 rounded-tr-3xl rounded-tl-3xl'>
+            <footer id="contacto" className='bg-slate-800 text-white py-10 px-6'>
                 <div className='flex flex-col sm:flex-row justify-between items-center mb-8'>
                     <p className='text-center text-white-400'>© 2025 PanaRoom - Todos los derechos reservados</p>
                     <div className='flex gap-4 mt-4 sm:mt-0'>
