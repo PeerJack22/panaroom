@@ -8,21 +8,12 @@ import storeAuth from '../context/storeAuth';
 const Login = () => {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
-    const [tipoCuenta, setTipoCuenta] = useState('administrador');
     const { register, handleSubmit, formState: { errors } } = useForm()
     const { fetchDataBackend } = useFetch()
     const { setToken, setRol, setUser } = storeAuth(); 
 
 const loginUser = async (data) => {
-    const endpointPorTipo = {
-        administrador: 'loginAd',
-        estudiante: 'loginEstudiante',
-        // Cuando implementes backend de arrendatario, habilita esta opción:
-        // arrendatario: 'loginArrendatario',
-    };
-
-    const endpoint = endpointPorTipo[tipoCuenta];
-    const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
+    const url = `${import.meta.env.VITE_BACKEND_URL}/login`;
 
     try {
         const response = await fetchDataBackend(url, data, 'POST');
@@ -30,7 +21,7 @@ const loginUser = async (data) => {
 
         if (response) {
             setToken(response.token);
-            setRol(response.rol || tipoCuenta);
+            setRol(response.rol);
 
             // Construye el objeto user manualmente
             const user = {
@@ -72,18 +63,6 @@ const loginUser = async (data) => {
                     <small className="text-gray-500 block my-4 text-sm text-center">Ingresa tus datos porfavor</small>
 
                     <form onSubmit={handleSubmit(loginUser)}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo de cuenta</label>
-                            <select
-                                value={tipoCuenta}
-                                onChange={(e) => setTipoCuenta(e.target.value)}
-                                className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 text-gray-700 bg-white"
-                            >
-                                <option value="administrador">Administrador</option>
-                                <option value="estudiante">Estudiante</option>
-                            </select>
-                        </div>
-
                         {/* Correo electrónico */}
                         <div className="mb-4">
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
