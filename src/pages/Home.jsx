@@ -2,6 +2,40 @@ import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link } from 'react-router-dom';
 import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const normalizarServicio = (valor) => {
+    if (!valor) return null;
+    const texto = String(valor).trim().toLowerCase();
+    return texto || null;
+};
+
+const obtenerServicios = (item) => {
+    if (Array.isArray(item?.serviciosIncluidos)) {
+        return item.serviciosIncluidos
+            .map((serv) => {
+                if (typeof serv === 'string') return normalizarServicio(serv);
+                if (serv && typeof serv === 'object') {
+                    return normalizarServicio(serv.nombre || serv.name || serv.servicio);
+                }
+                return null;
+            })
+            .filter(Boolean);
+    }
+
+    if (typeof item?.serviciosIncluidos === 'string') {
+        return item.serviciosIncluidos
+            .split(',')
+            .map((serv) => normalizarServicio(serv))
+            .filter(Boolean);
+    }
+
+    const servicios = [];
+    if (item?.luz) servicios.push('luz');
+    if (item?.agua) servicios.push('agua');
+    if (item?.internet) servicios.push('internet');
+    return servicios;
+};
 
 export const Home = () => {
     const [servicios, setServicios] = useState([]);
@@ -14,23 +48,48 @@ export const Home = () => {
     const [paginaActual, setPaginaActual] = useState(1);
     const [mostrarMensajeDetalle, setMostrarMensajeDetalle] = useState(false);
     const [animandoResidencias, setAnimandoResidencias] = useState(false);
+    const [cargandoPropiedades, setCargandoPropiedades] = useState(true);
+    const [errorPropiedades, setErrorPropiedades] = useState("");
     const propiedadesPorPagina = 6;
     const opcionesServicios = ['luz', 'agua', 'internet'];
 
-    const propiedades = [
-        { id: 1, titulo: 'Apt 1', precio: 210, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['luz', 'agua'], direccion: 'Centro', descripcion: 'Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades y supermercados.' },
-        { id: 2, titulo: 'Apt 2', precio: 240, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['luz', 'internet'], direccion: 'Norte', descripcion: 'Espacio comodo con buena ventilacion natural, ideal para estudiantes que buscan una zona segura y conectada.' },
-        { id: 3, titulo: 'Apt 3', precio: 195, numeroHabitaciones: 1, numeroBanos: 1, serviciosIncluidos: ['agua'], direccion: 'Sur', descripcion: 'Residencia funcional con servicios basicos incluidos y cercania a transporte publico y comercio local.' },
-        { id: 4, titulo: 'Apt 4', precio: 260, numeroHabitaciones: 2, numeroBanos: 2, serviciosIncluidos: ['luz', 'agua', 'internet'], direccion: 'Occidente', descripcion: 'Departamento moderno con acabados recientes, ambiente tranquilo y acceso rapido a zonas universitarias.' },
-        { id: 5, titulo: 'Apt 5', precio: 225, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['luz'], direccion: 'Centro', descripcion: 'Unidad acogedora con buena iluminacion y distribucion practica para estudio y descanso diario.' },
-        { id: 6, titulo: 'Apt 6', precio: 280, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['agua', 'internet'], direccion: 'Oriente', descripcion: 'Opcion amplia para compartir, con cocina equipada y excelente ubicacion cerca de vias principales.' },
-        { id: 7, titulo: 'Apt 7', precio: 205, numeroHabitaciones: 1, numeroBanos: 1, serviciosIncluidos: ['luz', 'agua'], direccion: 'Norte', descripcion: 'Apartamento economico con servicios estables y entorno residencial silencioso para concentrarse.' },
-        { id: 8, titulo: 'Apt 8', precio: 300, numeroHabitaciones: 4, numeroBanos: 2, serviciosIncluidos: ['luz', 'internet'], direccion: 'Centro', descripcion: 'Espacio premium con mayor metraje, buena seguridad y facil acceso a centros de estudio y trabajo.' },
-        { id: 9, titulo: 'Apt 9', precio: 235, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['agua', 'internet'], direccion: 'Sur', descripcion: 'Departamento balanceado en precio y comodidad, ideal para quienes buscan ubicacion y funcionalidad.' },
-        { id: 10, titulo: 'Apt 10', precio: 250, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['luz', 'agua', 'internet'], direccion: 'Occidente', descripcion: 'Propiedad bien distribuida con acabados cuidados, ambiente comodo y cercania a zonas de interes.' },
-        { id: 11, titulo: 'Apt 11', precio: 220, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['luz'], direccion: 'Centro', descripcion: 'Alternativa accesible con buena conectividad y espacios adecuados para estudio o trabajo remoto.' },
-        { id: 12, titulo: 'Apt 12', precio: 275, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['agua', 'internet'], direccion: 'Oriente', descripcion: 'Departamento en sector estrategico con excelente movilidad y condiciones practicas para vivir.' },
-    ];
+    const [propiedades, setPropiedades] = useState([]);
+
+    useEffect(() => {
+        const cargarDepartamentosPublicos = async () => {
+            try {
+                setCargandoPropiedades(true);
+                setErrorPropiedades("");
+                const url = `${import.meta.env.VITE_BACKEND_URL}/public/departamentoInfo`;
+                const response = await axios.get(url);
+                const lista = Array.isArray(response?.data)
+                    ? response.data
+                    : response?.data?.departamentos || response?.data?.data || [];
+
+                const normalizados = lista.map((item, index) => ({
+                    id: item?._id || item?.id || index + 1,
+                    titulo: item?.titulo || 'Sin título',
+                    precio: Number(item?.precioMensual) || 0,
+                    numeroHabitaciones: Number(item?.numeroHabitaciones) || 0,
+                    numeroBanos: Number(item?.numeroBanos) || 0,
+                    direccion: item?.direccion || item?.ciudad || 'Sin dirección',
+                    descripcion: item?.descripcion || 'Sin descripción disponible.',
+                    serviciosIncluidos: obtenerServicios(item),
+                    imagenPrincipal: item?.imagenes?.[0]?.url || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c',
+                }));
+
+                setPropiedades(normalizados);
+            } catch (error) {
+                console.error('Error al cargar departamentos públicos:', error);
+                setErrorPropiedades('No se pudo cargar la información de departamentos.');
+                setPropiedades([]);
+            } finally {
+                setCargandoPropiedades(false);
+            }
+        };
+
+        cargarDepartamentosPublicos();
+    }, []);
 
     const propiedadesFiltradas = propiedades.filter((propiedad) => {
         const min = precioMin === '' ? null : Number(precioMin);
@@ -262,7 +321,19 @@ export const Home = () => {
             {/* Sección de propiedades */}
             <section className="px-6 py-12 bg-white">
                 <h2 className="text-3xl font-bold text-gray-800 mb-8">Propiedades en arriendo</h2>
-                {propiedadesFiltradas.length === 0 && (
+                {cargandoPropiedades && (
+                    <div className="max-w-6xl mx-auto p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50" role="alert">
+                        <span className="font-medium">Cargando departamentos...</span>
+                    </div>
+                )}
+
+                {errorPropiedades && !cargandoPropiedades && (
+                    <div className="max-w-6xl mx-auto p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                        <span className="font-medium">{errorPropiedades}</span>
+                    </div>
+                )}
+
+                {!cargandoPropiedades && !errorPropiedades && propiedadesFiltradas.length === 0 && (
                     <div className="max-w-6xl mx-auto p-4 mb-4 text-sm text-amber-800 rounded-lg bg-amber-50" role="alert">
                         <span className="font-medium">No hay resultados con esos filtros</span>
                     </div>
@@ -271,7 +342,7 @@ export const Home = () => {
                     {propiedadesPaginadas.map((propiedad) => (
                         <article key={propiedad.id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
                                 <img
-                                    src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+                                    src={propiedad.imagenPrincipal}
                                     alt={`Apartamento ${propiedad.id}`}
                                     className="w-full h-40 object-cover rounded-lg border border-gray-200"
                                 />
