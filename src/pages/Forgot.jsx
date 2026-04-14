@@ -10,11 +10,11 @@ export const Forgot = () => {
     const { fetchDataBackend } = useFetch()
 
     const sendMail = (data) => {
+        if (!data?.email) return;
+
         const url = `${import.meta.env.VITE_BACKEND_URL}/recuperarpassword`
         fetchDataBackend(url, data,'POST')
     }
-    
-    sendMail()
 
     return (
         <div className="flex flex-col sm:flex-row h-screen bg-gray-100">
