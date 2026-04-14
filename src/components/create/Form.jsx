@@ -58,7 +58,17 @@ export const Form = () => {
             return;
         }
 
-        if (!data.servicios || data.servicios.length === 0) {
+        const serviciosSeleccionados = Array.isArray(data.servicios)
+            ? data.servicios
+            : data.servicios
+                ? [data.servicios]
+                : [];
+
+        const serviciosNormalizados = serviciosSeleccionados
+            .map((serv) => String(serv).trim().toLowerCase())
+            .filter(Boolean);
+
+        if (!serviciosNormalizados.length) {
             toast.error("Debes seleccionar al menos un servicio.");
             return;
         }
@@ -75,12 +85,14 @@ export const Form = () => {
             if (key === "imagen") {
                 return;
             } else if (key === "servicios") {
-                data.servicios.forEach((servicio) => {
-                    formData.append("serviciosIncluidos[]", servicio);
-                });
+                return;
             } else {
                 formData.append(key, data[key]);
             }
+        });
+
+        serviciosNormalizados.forEach((servicio) => {
+            formData.append("serviciosIncluidos", servicio);
         });
 
         selectedImages.forEach((img) => {
@@ -281,15 +293,15 @@ export const Form = () => {
                             <label className="mb-2 block text-sm font-semibold">Servicios incluidos</label>
                             <div className="flex gap-6">
                                 <label className="flex items-center gap-2">
-                                    <input type="checkbox" value="Agua" {...register("servicios")} />
+                                    <input type="checkbox" value="agua" {...register("servicios")} />
                                     Agua
                                 </label>
                                 <label className="flex items-center gap-2">
-                                    <input type="checkbox" value="Luz" {...register("servicios")} />
+                                    <input type="checkbox" value="luz" {...register("servicios")} />
                                     Luz
                                 </label>
                                 <label className="flex items-center gap-2">
-                                    <input type="checkbox" value="Internet" {...register("servicios")} />
+                                    <input type="checkbox" value="internet" {...register("servicios")} />
                                     Internet
                                 </label>
                             </div>
@@ -305,7 +317,11 @@ export const Form = () => {
                         <p><span className="font-semibold">Precio mensual:</span> {values.precioMensual || "-"}</p>
                         <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
                         <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>
-                        <p><span className="font-semibold">Servicios:</span> {values.servicios?.length ? values.servicios.join(", ") : "-"}</p>
+                        <p><span className="font-semibold">Servicios:</span> {
+                            Array.isArray(values.servicios)
+                                ? values.servicios.join(", ")
+                                : values.servicios || "-"
+                        }</p>
                         <p className="text-gray-500">Si todo es correcto, presiona &quot;Guardar registro&quot;.</p>
                     </div>
                 )}
