@@ -50,7 +50,7 @@ export const Home = () => {
     const [animandoResidencias, setAnimandoResidencias] = useState(false);
     const [cargandoPropiedades, setCargandoPropiedades] = useState(true);
     const [errorPropiedades, setErrorPropiedades] = useState("");
-    const propiedadesPorPagina = 6;
+    const propiedadesPorPagina = 9;
     const opcionesServicios = ['luz', 'agua', 'internet'];
 
     const [propiedades, setPropiedades] = useState([]);
