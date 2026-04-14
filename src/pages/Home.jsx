@@ -1,7 +1,7 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link } from 'react-router-dom';
 import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Home = () => {
     const [servicios, setServicios] = useState([]);
@@ -9,30 +9,56 @@ export const Home = () => {
     const [abiertoPrecio, setAbiertoPrecio] = useState(false);
     const [precioMin, setPrecioMin] = useState("");
     const [precioMax, setPrecioMax] = useState("");
+    const [habitacionesFiltro, setHabitacionesFiltro] = useState("");
+    const [banosFiltro, setBanosFiltro] = useState("");
     const [paginaActual, setPaginaActual] = useState(1);
     const [mostrarMensajeDetalle, setMostrarMensajeDetalle] = useState(false);
     const [animandoResidencias, setAnimandoResidencias] = useState(false);
     const propiedadesPorPagina = 6;
-    const opcionesServicios = ['Luz', 'Agua', 'Internet'];
+    const opcionesServicios = ['luz', 'agua', 'internet'];
 
     const propiedades = [
-        { id: 1, titulo: 'Apt 1', precio: 210, direccion: 'Centro', descripcion: 'Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades y supermercados.' },
-        { id: 2, titulo: 'Apt 2', precio: 240, direccion: 'Norte', descripcion: 'Espacio comodo con buena ventilacion natural, ideal para estudiantes que buscan una zona segura y conectada.' },
-        { id: 3, titulo: 'Apt 3', precio: 195, direccion: 'Sur', descripcion: 'Residencia funcional con servicios basicos incluidos y cercania a transporte publico y comercio local.' },
-        { id: 4, titulo: 'Apt 4', precio: 260, direccion: 'Occidente', descripcion: 'Departamento moderno con acabados recientes, ambiente tranquilo y acceso rapido a zonas universitarias.' },
-        { id: 5, titulo: 'Apt 5', precio: 225, direccion: 'Centro', descripcion: 'Unidad acogedora con buena iluminacion y distribucion practica para estudio y descanso diario.' },
-        { id: 6, titulo: 'Apt 6', precio: 280, direccion: 'Oriente', descripcion: 'Opcion amplia para compartir, con cocina equipada y excelente ubicacion cerca de vias principales.' },
-        { id: 7, titulo: 'Apt 7', precio: 205, direccion: 'Norte', descripcion: 'Apartamento economico con servicios estables y entorno residencial silencioso para concentrarse.' },
-        { id: 8, titulo: 'Apt 8', precio: 300, direccion: 'Centro', descripcion: 'Espacio premium con mayor metraje, buena seguridad y facil acceso a centros de estudio y trabajo.' },
-        { id: 9, titulo: 'Apt 9', precio: 235, direccion: 'Sur', descripcion: 'Departamento balanceado en precio y comodidad, ideal para quienes buscan ubicacion y funcionalidad.' },
-        { id: 10, titulo: 'Apt 10', precio: 250, direccion: 'Occidente', descripcion: 'Propiedad bien distribuida con acabados cuidados, ambiente comodo y cercania a zonas de interes.' },
-        { id: 11, titulo: 'Apt 11', precio: 220, direccion: 'Centro', descripcion: 'Alternativa accesible con buena conectividad y espacios adecuados para estudio o trabajo remoto.' },
-        { id: 12, titulo: 'Apt 12', precio: 275, direccion: 'Oriente', descripcion: 'Departamento en sector estrategico con excelente movilidad y condiciones practicas para vivir.' },
+        { id: 1, titulo: 'Apt 1', precio: 210, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['luz', 'agua'], direccion: 'Centro', descripcion: 'Apartamento amplio y bien iluminado, ubicado en una zona tranquila con acceso cercano a universidades y supermercados.' },
+        { id: 2, titulo: 'Apt 2', precio: 240, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['luz', 'internet'], direccion: 'Norte', descripcion: 'Espacio comodo con buena ventilacion natural, ideal para estudiantes que buscan una zona segura y conectada.' },
+        { id: 3, titulo: 'Apt 3', precio: 195, numeroHabitaciones: 1, numeroBanos: 1, serviciosIncluidos: ['agua'], direccion: 'Sur', descripcion: 'Residencia funcional con servicios basicos incluidos y cercania a transporte publico y comercio local.' },
+        { id: 4, titulo: 'Apt 4', precio: 260, numeroHabitaciones: 2, numeroBanos: 2, serviciosIncluidos: ['luz', 'agua', 'internet'], direccion: 'Occidente', descripcion: 'Departamento moderno con acabados recientes, ambiente tranquilo y acceso rapido a zonas universitarias.' },
+        { id: 5, titulo: 'Apt 5', precio: 225, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['luz'], direccion: 'Centro', descripcion: 'Unidad acogedora con buena iluminacion y distribucion practica para estudio y descanso diario.' },
+        { id: 6, titulo: 'Apt 6', precio: 280, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['agua', 'internet'], direccion: 'Oriente', descripcion: 'Opcion amplia para compartir, con cocina equipada y excelente ubicacion cerca de vias principales.' },
+        { id: 7, titulo: 'Apt 7', precio: 205, numeroHabitaciones: 1, numeroBanos: 1, serviciosIncluidos: ['luz', 'agua'], direccion: 'Norte', descripcion: 'Apartamento economico con servicios estables y entorno residencial silencioso para concentrarse.' },
+        { id: 8, titulo: 'Apt 8', precio: 300, numeroHabitaciones: 4, numeroBanos: 2, serviciosIncluidos: ['luz', 'internet'], direccion: 'Centro', descripcion: 'Espacio premium con mayor metraje, buena seguridad y facil acceso a centros de estudio y trabajo.' },
+        { id: 9, titulo: 'Apt 9', precio: 235, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['agua', 'internet'], direccion: 'Sur', descripcion: 'Departamento balanceado en precio y comodidad, ideal para quienes buscan ubicacion y funcionalidad.' },
+        { id: 10, titulo: 'Apt 10', precio: 250, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['luz', 'agua', 'internet'], direccion: 'Occidente', descripcion: 'Propiedad bien distribuida con acabados cuidados, ambiente comodo y cercania a zonas de interes.' },
+        { id: 11, titulo: 'Apt 11', precio: 220, numeroHabitaciones: 2, numeroBanos: 1, serviciosIncluidos: ['luz'], direccion: 'Centro', descripcion: 'Alternativa accesible con buena conectividad y espacios adecuados para estudio o trabajo remoto.' },
+        { id: 12, titulo: 'Apt 12', precio: 275, numeroHabitaciones: 3, numeroBanos: 2, serviciosIncluidos: ['agua', 'internet'], direccion: 'Oriente', descripcion: 'Departamento en sector estrategico con excelente movilidad y condiciones practicas para vivir.' },
     ];
 
-    const totalPaginas = Math.ceil(propiedades.length / propiedadesPorPagina);
+    const propiedadesFiltradas = propiedades.filter((propiedad) => {
+        const min = precioMin === '' ? null : Number(precioMin);
+        const max = precioMax === '' ? null : Number(precioMax);
+        const precioValido = (min === null || propiedad.precio >= min) && (max === null || propiedad.precio <= max);
+
+        const habitacionesValidas =
+            !habitacionesFiltro ||
+            Number(propiedad.numeroHabitaciones) === Number(habitacionesFiltro);
+
+        const banosValidos =
+            !banosFiltro ||
+            Number(propiedad.numeroBanos) === Number(banosFiltro);
+
+        const serviciosValidos =
+            !servicios.length ||
+            servicios.every((serv) => propiedad.serviciosIncluidos.includes(serv));
+
+        return precioValido && habitacionesValidas && banosValidos && serviciosValidos;
+    });
+
+    const totalPaginas = Math.max(1, Math.ceil(propiedadesFiltradas.length / propiedadesPorPagina));
     const indiceInicio = (paginaActual - 1) * propiedadesPorPagina;
-    const propiedadesPaginadas = propiedades.slice(indiceInicio, indiceInicio + propiedadesPorPagina);
+    const propiedadesPaginadas = propiedadesFiltradas.slice(indiceInicio, indiceInicio + propiedadesPorPagina);
+
+    useEffect(() => {
+        setPaginaActual(1);
+    }, [precioMin, precioMax, habitacionesFiltro, banosFiltro, servicios]);
 
     const cambiarPagina = (nuevaPagina) => {
         if (nuevaPagina < 1 || nuevaPagina > totalPaginas || nuevaPagina === paginaActual) return;
@@ -45,8 +71,9 @@ export const Home = () => {
     };
 
     const agregarServicio = (servicio) => {
-        if (!servicios.includes(servicio)) {
-            setServicios([...servicios, servicio]);
+        const normalizado = servicio.toLowerCase();
+        if (!servicios.includes(normalizado)) {
+            setServicios([...servicios, normalizado]);
         }
         setAbierto(false);
     };
@@ -155,6 +182,8 @@ export const Home = () => {
                         <input
                             type="number"
                             min="0"
+                            value={habitacionesFiltro}
+                            onChange={(e) => setHabitacionesFiltro(e.target.value)}
                             placeholder="Numero de habitaciones"
                             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
@@ -162,6 +191,8 @@ export const Home = () => {
                         <input
                             type="number"
                             min="0"
+                            value={banosFiltro}
+                            onChange={(e) => setBanosFiltro(e.target.value)}
                             placeholder="Numero de baños"
                             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
@@ -181,7 +212,7 @@ export const Home = () => {
                                             key={servicio}
                                             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
                                         >
-                                            {servicio}
+                                            {servicio.charAt(0).toUpperCase() + servicio.slice(1)}
                                             <button
                                                 type="button"
                                                 className="text-blue-800 hover:text-blue-900"
@@ -216,7 +247,7 @@ export const Home = () => {
                                             onClick={() => toggleServicio(servicio)}
                                             className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between"
                                         >
-                                            <span>{servicio}</span>
+                                            <span>{servicio.charAt(0).toUpperCase() + servicio.slice(1)}</span>
                                             {servicios.includes(servicio) && <span className="text-blue-700 font-semibold">✓</span>}
                                         </button>
                                     ))}
@@ -231,6 +262,11 @@ export const Home = () => {
             {/* Sección de propiedades */}
             <section className="px-6 py-12 bg-white">
                 <h2 className="text-3xl font-bold text-gray-800 mb-8">Propiedades en arriendo</h2>
+                {propiedadesFiltradas.length === 0 && (
+                    <div className="max-w-6xl mx-auto p-4 mb-4 text-sm text-amber-800 rounded-lg bg-amber-50" role="alert">
+                        <span className="font-medium">No hay resultados con esos filtros</span>
+                    </div>
+                )}
                 <div className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ease-out ${animandoResidencias ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
                     {propiedadesPaginadas.map((propiedad) => (
                         <article key={propiedad.id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">

@@ -8,15 +8,30 @@ const Details = () => {
     const { fetchDataBackend } = useFetch();
     const [departamento, setDepartamento] = useState(null);
 
+    const formatearServicio = (valor) => {
+        if (!valor) return null;
+        const texto = String(valor).trim();
+        if (!texto) return null;
+        return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+    };
+
     const getServicios = (dep) => {
         if (Array.isArray(dep?.serviciosIncluidos)) {
-            return dep.serviciosIncluidos;
+            return dep.serviciosIncluidos
+                .map((item) => {
+                    if (typeof item === "string") return formatearServicio(item);
+                    if (item && typeof item === "object") {
+                        return formatearServicio(item.nombre || item.name || item.servicio);
+                    }
+                    return null;
+                })
+                .filter(Boolean);
         }
 
         if (typeof dep?.serviciosIncluidos === "string") {
             return dep.serviciosIncluidos
                 .split(",")
-                .map((s) => s.trim())
+                .map((s) => formatearServicio(s))
                 .filter(Boolean);
         }
 

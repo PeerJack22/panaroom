@@ -90,16 +90,30 @@ const Table = () => {
         return `Hasta $${filters.arriendoMax}`;
     };
 
+    const normalizarServicio = (valor) => {
+        if (!valor) return null;
+        const texto = String(valor).trim().toLowerCase();
+        return texto || null;
+    };
+
     const getServiciosDepartamento = (dep) => {
         if (Array.isArray(dep?.serviciosIncluidos)) {
-            return dep.serviciosIncluidos.map((s) => String(s).toLowerCase());
+            return dep.serviciosIncluidos
+                .map((item) => {
+                    if (typeof item === "string") return normalizarServicio(item);
+                    if (item && typeof item === "object") {
+                        return normalizarServicio(item.nombre || item.name || item.servicio);
+                    }
+                    return null;
+                })
+                .filter(Boolean);
         }
 
         if (typeof dep?.serviciosIncluidos === "string") {
             return dep.serviciosIncluidos
                 .toLowerCase()
                 .split(",")
-                .map((s) => s.trim())
+                .map((s) => normalizarServicio(s))
                 .filter(Boolean);
         }
 
