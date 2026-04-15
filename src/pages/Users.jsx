@@ -6,8 +6,14 @@ import "react-toastify/dist/ReactToastify.css";
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    // Esta variable de estado se usará cuando el endpoint esté disponible
-    // const [userDepartamentos, setUserDepartamentos] = useState({});
+    const [userDepartamentos, setUserDepartamentos] = useState({});
+
+    const obtenerIdArrendatario = (valor) => {
+        if (!valor) return null;
+        if (typeof valor === "string") return valor;
+        if (typeof valor === "object") return valor._id || valor.id || null;
+        return null;
+    };
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -22,55 +28,59 @@ const Users = () => {
                     return;
                 }
 
-                // Realizar la petición al backend
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`, 
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
+                const headers = {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                };
+
+                // Intentar endpoint solicitado /arrendatario y fallback a /arrendatarios
+                let usersResponse;
+                try {
+                    usersResponse = await axios.get(
+                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario`,
+                        { headers }
+                    );
+                } catch {
+                    usersResponse = await axios.get(
+                        `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`,
+                        { headers }
+                    );
+                }
+
+                const departamentosResponse = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/departamentos`,
+                    { headers }
                 );
 
-                // Actualizar el estado con los datos recibidos
-                setUsers(response.data);
-                
-                /* 
-                // CÓDIGO PARA OBTENER DEPARTAMENTOS POR USUARIO
-                // Este código se activará cuando el endpoint esté disponible en el backend
-                
-                // Obtener los departamentos para cada usuario
-                const departamentosPromises = response.data.map(async (user) => {
-                    try {
-                        // Intentar obtener los departamentos para este usuario específico
-                        const depResponse = await axios.get(
-                            `${import.meta.env.VITE_BACKEND_URL}/departamentos/usuario/${user._id}`,
-                            {
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    Authorization: `Bearer ${token}`
-                                }
-                            }
-                        );
-                        return { userId: user._id, departamentos: depResponse.data };
-                    } catch (error) {
-                        console.error(`Error al obtener departamentos para usuario ${user._id}:`, error);
-                        return { userId: user._id, departamentos: [] };
-                    }
-                });
-                
-                // Esperar a que todas las peticiones se completen
-                const departamentosResults = await Promise.all(departamentosPromises);
-                
-                // Crear un objeto con los departamentos indexados por userId
+                const usersData = Array.isArray(usersResponse?.data)
+                    ? usersResponse.data
+                    : usersResponse?.data?.arrendatarios || usersResponse?.data?.data || [];
+
+                const departamentosData = Array.isArray(departamentosResponse?.data)
+                    ? departamentosResponse.data
+                    : departamentosResponse?.data?.departamentos || departamentosResponse?.data?.data || [];
+
                 const departamentosMap = {};
-                departamentosResults.forEach(result => {
-                    departamentosMap[result.userId] = result.departamentos;
+
+                usersData.forEach((user) => {
+                    if (user?._id) departamentosMap[user._id] = [];
                 });
-                
+
+                departamentosData.forEach((dep, index) => {
+                    const ownerId = obtenerIdArrendatario(dep?.arrendatario);
+                    if (!ownerId) return;
+
+                    const titulo = dep?.titulo || dep?.nombre || "Sin título";
+                    if (!departamentosMap[ownerId]) departamentosMap[ownerId] = [];
+
+                    departamentosMap[ownerId].push({
+                        _id: dep?._id || `${ownerId}-${index}`,
+                        titulo,
+                    });
+                });
+
+                setUsers(usersData);
                 setUserDepartamentos(departamentosMap);
-                */
             } catch (error) {
                 console.error("Error al obtener los usuarios:", error);
                 toast.error("Error al cargar los usuarios. Intenta de nuevo más tarde.");
@@ -117,13 +127,11 @@ const Users = () => {
                             {/* Sección de departamentos */}
                             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                                 <h3 className="text-md font-semibold text-gray-700 mb-2">Departamentos:</h3>
-                                {/* Este código se activará cuando el endpoint esté disponible */}
-                                {/*
                                 {userDepartamentos[user._id] && userDepartamentos[user._id].length > 0 ? (
                                     <ul className="list-disc list-inside">
                                         {userDepartamentos[user._id].map(depa => (
                                             <li key={depa._id} className="text-gray-600">
-                                                {depa.titulo || depa.nombre || 'Sin título'} - ${depa.precioMensual || depa.precio || 0}
+                                                {depa.titulo}
                                             </li>
                                         ))}
                                     </ul>
@@ -132,10 +140,6 @@ const Users = () => {
                                         No tiene departamentos asociados.
                                     </p>
                                 )}
-                                */}
-                                <p className="text-gray-500">
-                                    La información de departamentos estará disponible próximamente.
-                                </p>
                             </div>
                         </div>
                     ))}
