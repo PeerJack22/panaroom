@@ -102,15 +102,21 @@ const Details = () => {
                         console.log("Respuesta completa de arrendatarios:", arrendatariosResponse);
 
                         // Buscar al propietario en la lista
-                        const arrendatariosList = Array.isArray(arrendatariosResponse?.data)
-                            ? arrendatariosResponse.data
-                            : arrendatariosResponse?.data?.arrendatarios || 
-                                arrendatariosResponse?.data?.data || 
-                                arrendatariosResponse || 
-                                [];
+                        // La respuesta puede venir como array directo o dentro de .data
+                        let arrendatariosList = [];
+                        
+                        if (Array.isArray(arrendatariosResponse)) {
+                            arrendatariosList = arrendatariosResponse;
+                        } else if (Array.isArray(arrendatariosResponse?.data)) {
+                            arrendatariosList = arrendatariosResponse.data;
+                        } else if (arrendatariosResponse?.data?.arrendatarios) {
+                            arrendatariosList = arrendatariosResponse.data.arrendatarios;
+                        } else if (arrendatariosResponse?.data?.data) {
+                            arrendatariosList = arrendatariosResponse.data.data;
+                        }
 
                         console.log("ID del propietario buscado:", ownerIdString);
-                        console.log("Lista de arrendatarios:", arrendatariosList);
+                        console.log("Lista de arrendatarios final:", arrendatariosList);
 
                         const owner = arrendatariosList.find(
                             (arr) => arr._id === ownerIdString || arr.id === ownerIdString
