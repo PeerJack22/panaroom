@@ -53,15 +53,6 @@ const Users = () => {
 
     const fetchUsers = useCallback(async () => {
         setLoading(true);
-        const loadingToastId = "users-loading";
-        const startedAt = Date.now();
-        toast.dismiss(loadingToastId);
-        toast.loading("Procesando solicitud...", {
-            toastId: loadingToastId,
-            autoClose: false,
-            closeOnClick: false,
-            draggable: false,
-        });
         try {
             // Obtener el token del localStorage
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
@@ -69,7 +60,6 @@ const Users = () => {
 
             if (!token) {
                 toast.error("No se encontró la sesión, por favor inicia sesión nuevamente");
-                toast.dismiss(loadingToastId);
                 return;
             }
 
@@ -147,13 +137,6 @@ const Users = () => {
             console.error("Error al obtener los usuarios:", error);
             toast.error("Error al cargar los usuarios. Intenta de nuevo más tarde.");
         } finally {
-            const elapsed = Date.now() - startedAt;
-            const minVisibleMs = 700;
-            if (elapsed < minVisibleMs) {
-                setTimeout(() => toast.dismiss(loadingToastId), minVisibleMs - elapsed);
-            } else {
-                toast.dismiss(loadingToastId);
-            }
             setLoading(false);
         }
     }, []);
@@ -271,6 +254,14 @@ const Users = () => {
     });
 
     const mostrarFormulario = Boolean(tipoFormulario);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -431,15 +422,15 @@ const Users = () => {
                 </select>
             </div>
 
-            {!loading && users.length === 0 ? (
+            {users.length === 0 ? (
                 <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
                     No se encontraron usuarios registrados.
                 </div>
-            ) : !loading && usuariosFiltrados.length === 0 ? (
+            ) : usuariosFiltrados.length === 0 ? (
                 <div className="bg-amber-100 text-amber-800 p-4 rounded-lg">
                     No hay resultados para ese filtro.
                 </div>
-            ) : !loading ? (
+            ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {usuariosFiltrados.map(user => (
                         <div key={user._id} className="bg-white rounded-lg shadow p-6">
@@ -480,7 +471,7 @@ const Users = () => {
                         </div>
                     ))}
                 </div>
-            ) : null}
+            )}
         </div>
     );
 };
