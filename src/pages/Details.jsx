@@ -70,6 +70,9 @@ const Details = () => {
             if (!response) throw new Error("Departamento no encontrado");
             setDepartamento(response);
 
+            console.log("Departamento cargado:", response);
+            console.log("Campo arrendatario:", response?.arrendatario);
+
             // Obtener datos del propietario (arrendatario)
             if (response?.arrendatario) {
                 const ownerIdString = typeof response.arrendatario === "object" 
@@ -103,9 +106,14 @@ const Details = () => {
                                 arrendatariosResponse?.data?.data || 
                                 [];
 
+                        console.log("ID del propietario buscado:", ownerIdString);
+                        console.log("Lista de arrendatarios:", arrendatariosList);
+
                         const owner = arrendatariosList.find(
                             (arr) => arr._id === ownerIdString || arr.id === ownerIdString
                         );
+
+                        console.log("Propietario encontrado:", owner);
 
                         if (owner) {
                             setPropietario(owner);
