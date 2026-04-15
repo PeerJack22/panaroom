@@ -4,6 +4,9 @@ import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^\d{7,15}$/;
+
 const normalizarServicio = (valor) => {
     if (!valor) return null;
     const texto = String(valor).trim().toLowerCase();
@@ -168,12 +171,35 @@ export const Home = () => {
 
     const manejarCambioSolicitud = (e) => {
         const { name, value } = e.target;
+
+        if (name === "celular") {
+            const soloDigitos = value.replace(/\D/g, "");
+            setDatosSolicitud((prev) => ({ ...prev, [name]: soloDigitos }));
+            return;
+        }
+
         setDatosSolicitud((prev) => ({ ...prev, [name]: value }));
     };
 
     const enviarSolicitudArrendatario = (e) => {
         e.preventDefault();
         setEstadoSolicitud({ tipo: "", mensaje: "" });
+
+        if (!PHONE_REGEX.test(datosSolicitud.celular)) {
+            setEstadoSolicitud({
+                tipo: "error",
+                mensaje: "El teléfono debe contener solo números (7 a 15 dígitos).",
+            });
+            return;
+        }
+
+        if (!EMAIL_REGEX.test(datosSolicitud.email)) {
+            setEstadoSolicitud({
+                tipo: "error",
+                mensaje: "Ingresa un correo electrónico válido.",
+            });
+            return;
+        }
 
         setEnviandoSolicitud(true);
 
@@ -562,6 +588,9 @@ export const Home = () => {
                                     value={datosSolicitud.celular}
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Celular"
+                                    inputMode="numeric"
+                                    pattern="[0-9]{7,15}"
+                                    title="Ingresa solo números (7 a 15 dígitos)"
                                     className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
                                     required
                                 />
@@ -571,6 +600,8 @@ export const Home = () => {
                                     value={datosSolicitud.email}
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Correo"
+                                    pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                                    title="Ingresa un correo válido"
                                     className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
                                     required
                                 />

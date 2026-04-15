@@ -4,6 +4,9 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^\d{7,15}$/;
+
 const Users = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
@@ -12,7 +15,9 @@ const Users = () => {
     const [filtroNombre, setFiltroNombre] = useState("");
     const [filtroRol, setFiltroRol] = useState("todos");
     const [tipoFormulario, setTipoFormulario] = useState(null);
+    const [animandoCambioFormulario, setAnimandoCambioFormulario] = useState(false);
     const [guardando, setGuardando] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         nombre: "",
         apellido: "",
@@ -149,17 +154,39 @@ const Users = () => {
     }, [fetchUsers]);
 
     const abrirFormulario = (tipo) => {
+        if (tipoFormulario && tipoFormulario !== tipo) {
+            setAnimandoCambioFormulario(true);
+            setTimeout(() => {
+                setTipoFormulario(tipo);
+                setShowPassword(false);
+                resetForm();
+                setTimeout(() => setAnimandoCambioFormulario(false), 30);
+            }, 180);
+            return;
+        }
+
         setTipoFormulario(tipo);
+        setAnimandoCambioFormulario(false);
+        setShowPassword(false);
         resetForm();
     };
 
     const cerrarFormulario = () => {
         setTipoFormulario(null);
+        setAnimandoCambioFormulario(false);
+        setShowPassword(false);
         resetForm();
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === "celular") {
+            const soloDigitos = value.replace(/\D/g, "");
+            setFormData((prev) => ({ ...prev, [name]: soloDigitos }));
+            return;
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -171,6 +198,16 @@ const Users = () => {
         const camposVacios = Object.values(formData).some((value) => !String(value).trim());
         if (camposVacios) {
             toast.error("Todos los campos son obligatorios");
+            return;
+        }
+
+        if (!PHONE_REGEX.test(formData.celular)) {
+            toast.error("El teléfono debe contener solo números (7 a 15 dígitos)");
+            return;
+        }
+
+        if (!EMAIL_REGEX.test(formData.email)) {
+            toast.error("Ingresa un correo electrónico válido");
             return;
         }
 
@@ -246,7 +283,7 @@ const Users = () => {
                     onClick={() => abrirFormulario("administrador")}
                     className="rounded-md bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 transition-colors"
                 >
-                    Crear administrador
+                    Registrar administrador
                 </button>
                 <button
                     type="button"
@@ -264,7 +301,13 @@ const Users = () => {
                         : "max-h-0 opacity-0 -translate-y-1"
                 }`}
             >
-                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div
+                    className={`rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-200 ease-in-out ${
+                        animandoCambioFormulario
+                            ? "opacity-0 translate-y-1 scale-[0.98]"
+                            : "opacity-100 translate-y-0 scale-100"
+                    }`}
+                >
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-lg font-bold text-gray-800">
                             {tipoFormulario === "administrador"
@@ -311,6 +354,9 @@ const Users = () => {
                             value={formData.celular}
                             onChange={handleInputChange}
                             placeholder="Teléfono"
+                            inputMode="numeric"
+                            pattern="[0-9]{7,15}"
+                            title="Ingresa solo números (7 a 15 dígitos)"
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <input
@@ -319,16 +365,38 @@ const Users = () => {
                             value={formData.email}
                             onChange={handleInputChange}
                             placeholder="Correo electrónico"
+                            pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                            title="Ingresa un correo válido"
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            placeholder="Contraseña"
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                placeholder="Contraseña"
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute top-2.5 right-3 text-gray-500 hover:text-gray-700"
+                                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showPassword ? (
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                            d="M13.875 18.825A9.956 9.956 0 0112 19c-4.418 0-8.165-2.928-9.53-7a10.005 10.005 0 0119.06 0 9.956 9.956 0 01-1.845 3.35M9.9 14.32a3 3 0 114.2-4.2m.5 3.5l3.8 3.8m-3.8-3.8L5.5 5.5" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-9.95 0a9.96 9.96 0 0119.9 0m-19.9 0a9.96 9.96 0 0119.9 0M3 3l18 18" />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
 
                         <div className="md:col-span-2 flex justify-end">
                             <button
