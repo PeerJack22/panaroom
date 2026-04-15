@@ -12,9 +12,19 @@ export const Register = () => {
     const registro = async (data) => {
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/registroEstudiante`;
+            console.log("=== DEBUG REGISTRO ESTUDIANTE ===");
+            console.log("URL enviada:", url);
+            console.log("Datos enviados:", data);
             const respuesta = await axios.post(url, data);
+            console.log("Respuesta del servidor:", respuesta.data);
+            console.log("Mensaje:", respuesta.data.msg);
             toast.success(respuesta.data.msg);
         } catch (error) {
+            console.error("=== ERROR EN REGISTRO ===");
+            console.error("Status:", error.response?.status);
+            console.error("Error data:", error.response?.data);
+            console.error("Mensaje error:", error.response?.data?.msg);
+            console.error("Error completo:", error);
             toast.error(error.response?.data?.msg || "Error al registrarse");
         }
     };
