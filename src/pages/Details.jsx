@@ -78,9 +78,38 @@ const Details = () => {
 
                 if (ownerIdString) {
                     try {
-                        const ownerUrl = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${ownerIdString}`;
-                        const ownerResponse = await fetchDataBackend(ownerUrl, null, "GET", headers);
-                        setPropietario(ownerResponse);
+                        // Intentar primero con /arrendatarios (plural) y luego con /arrendatario (singular)
+                        let arrendatariosResponse;
+                        try {
+                            arrendatariosResponse = await fetchDataBackend(
+                                `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`,
+                                null,
+                                "GET",
+                                headers
+                            );
+                        } catch {
+                            arrendatariosResponse = await fetchDataBackend(
+                                `${import.meta.env.VITE_BACKEND_URL}/arrendatario`,
+                                null,
+                                "GET",
+                                headers
+                            );
+                        }
+
+                        // Buscar al propietario en la lista
+                        const arrendatariosList = Array.isArray(arrendatariosResponse?.data)
+                            ? arrendatariosResponse.data
+                            : arrendatariosResponse?.data?.arrendatarios || 
+                                arrendatariosResponse?.data?.data || 
+                                [];
+
+                        const owner = arrendatariosList.find(
+                            (arr) => arr._id === ownerIdString || arr.id === ownerIdString
+                        );
+
+                        if (owner) {
+                            setPropietario(owner);
+                        }
                     } catch (ownerError) {
                         console.error("Error al obtener datos del propietario:", ownerError);
                     }
