@@ -70,9 +70,6 @@ const Details = () => {
             if (!response) throw new Error("Departamento no encontrado");
             setDepartamento(response);
 
-            console.log("Departamento cargado:", response);
-            console.log("Campo arrendatario:", response?.arrendatario);
-
             // Obtener datos del propietario (arrendatario)
             if (response?.arrendatario) {
                 const ownerIdString = typeof response.arrendatario === "object" 
@@ -115,14 +112,9 @@ const Details = () => {
                             arrendatariosList = arrendatariosResponse.data.data;
                         }
 
-                        console.log("ID del propietario buscado:", ownerIdString);
-                        console.log("Lista de arrendatarios final:", arrendatariosList);
-
                         const owner = arrendatariosList.find(
                             (arr) => arr._id === ownerIdString || arr.id === ownerIdString
                         );
-
-                        console.log("Propietario encontrado:", owner);
 
                         if (owner) {
                             setPropietario(owner);
@@ -209,6 +201,17 @@ const Details = () => {
                                 <p className="text-sm text-gray-500">Este apartamento no tiene servicios registrados.</p>
                             )}
                         </div>
+
+                        {propietario && (
+                            <div className="mt-6 pt-6 border-t border-gray-300">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-3">Datos del propietario</h3>
+                                <div className="space-y-2 text-gray-700">
+                                    <p><strong className="text-gray-900">Nombre:</strong> {propietario.nombre} {propietario.apellido}</p>
+                                    <p><strong className="text-gray-900">Correo:</strong> {propietario.email}</p>
+                                    <p><strong className="text-gray-900">Teléfono:</strong> {propietario.celular || "No disponible"}</p>
+                                </div>
+                            </div>
+                        )}
                     </section>
 
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
@@ -224,17 +227,6 @@ const Details = () => {
                         <p className="text-xs text-gray-500 mt-2">
                             Ubicación de referencia cercana a la Escuela Politécnica Nacional, Quito.
                         </p>
-
-                        {propietario && (
-                            <div className="mt-6 pt-6 border-t border-gray-300">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-3">Datos del propietario</h3>
-                                <div className="space-y-2 text-gray-700">
-                                    <p><strong className="text-gray-900">Nombre:</strong> {propietario.nombre} {propietario.apellido}</p>
-                                    <p><strong className="text-gray-900">Correo:</strong> {propietario.email}</p>
-                                    <p><strong className="text-gray-900">Teléfono:</strong> {propietario.celular || "No disponible"}</p>
-                                </div>
-                            </div>
-                        )}
                     </section>
                 </div>
 
