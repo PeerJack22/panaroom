@@ -7,12 +7,20 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userDepartamentos, setUserDepartamentos] = useState({});
+    const [filtroNombre, setFiltroNombre] = useState("");
+    const [filtroRol, setFiltroRol] = useState("todos");
 
     const obtenerIdArrendatario = (valor) => {
         if (!valor) return null;
         if (typeof valor === "string") return valor;
         if (typeof valor === "object") return valor._id || valor.id || null;
         return null;
+    };
+
+    const normalizarRol = (rol) => {
+        const valor = String(rol || "").trim().toLowerCase();
+        if (valor === "arrendador") return "arrendatario";
+        return valor;
     };
 
     useEffect(() => {
@@ -47,6 +55,16 @@ const Users = () => {
                     );
                 }
 
+                let estudiantesResponse;
+                try {
+                    estudiantesResponse = await axios.get(
+                        `${import.meta.env.VITE_BACKEND_URL}/estudiantes`,
+                        { headers }
+                    );
+                } catch {
+                    estudiantesResponse = { data: [] };
+                }
+
                 const departamentosResponse = await axios.get(
                     `${import.meta.env.VITE_BACKEND_URL}/departamentos`,
                     { headers }
@@ -55,6 +73,10 @@ const Users = () => {
                 const usersData = Array.isArray(usersResponse?.data)
                     ? usersResponse.data
                     : usersResponse?.data?.arrendatarios || usersResponse?.data?.data || [];
+
+                const estudiantesData = Array.isArray(estudiantesResponse?.data)
+                    ? estudiantesResponse.data
+                    : estudiantesResponse?.data?.estudiantes || estudiantesResponse?.data?.data || [];
 
                 const departamentosData = Array.isArray(departamentosResponse?.data)
                     ? departamentosResponse.data
@@ -79,7 +101,18 @@ const Users = () => {
                     });
                 });
 
-                setUsers(usersData);
+                const usuariosUnificados = [
+                    ...usersData.map((u) => ({
+                        ...u,
+                        rol: u?.rol || "arrendatario",
+                    })),
+                    ...estudiantesData.map((u) => ({
+                        ...u,
+                        rol: u?.rol || "estudiante",
+                    })),
+                ];
+
+                setUsers(usuariosUnificados);
                 setUserDepartamentos(departamentosMap);
             } catch (error) {
                 console.error("Error al obtener los usuarios:", error);
@@ -100,19 +133,52 @@ const Users = () => {
         );
     }
 
+    const usuariosFiltrados = users.filter((user) => {
+        const nombreCompleto = `${user?.nombre || ""} ${user?.apellido || ""}`.toLowerCase();
+        const nombreOk = !filtroNombre.trim() || nombreCompleto.includes(filtroNombre.trim().toLowerCase());
+
+        const rolNormalizado = normalizarRol(user?.rol);
+        const rolOk = filtroRol === "todos" || rolNormalizado === filtroRol;
+
+        return nombreOk && rolOk;
+    });
+
     return (
         <div>
             <h1 className='font-black text-4xl text-gray-500'>Usuarios</h1>
             <hr className='my-4 border-t-2 border-gray-300' />
             <p className='mb-8'>Este módulo te permite gestionar los usuarios</p>
 
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                    type="text"
+                    value={filtroNombre}
+                    onChange={(e) => setFiltroNombre(e.target.value)}
+                    placeholder="Filtrar por nombre"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <select
+                    value={filtroRol}
+                    onChange={(e) => setFiltroRol(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="todos">Todos los roles</option>
+                    <option value="arrendatario">Arrendatario</option>
+                    <option value="estudiante">Estudiante</option>
+                </select>
+            </div>
+
             {users.length === 0 ? (
                 <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
                     No se encontraron usuarios registrados.
                 </div>
+            ) : usuariosFiltrados.length === 0 ? (
+                <div className="bg-amber-100 text-amber-800 p-4 rounded-lg">
+                    No hay resultados para ese filtro.
+                </div>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {users.map(user => (
+                    {usuariosFiltrados.map(user => (
                         <div key={user._id} className="bg-white rounded-lg shadow p-6">
                             <h2 className="text-xl font-bold text-blue-800 mb-2">
                                 {user.nombre} {user.apellido}
@@ -121,26 +187,28 @@ const Users = () => {
                                 <p><span className="font-semibold">Email:</span> {user.email}</p>
                                 <p><span className="font-semibold">Teléfono:</span> {user.celular || "No disponible"}</p>
                                 <p><span className="font-semibold">Dirección:</span> {user.direccion || "No disponible"}</p>
-                                <p><span className="font-semibold">Rol:</span> {user.rol}</p>
+                                <p><span className="font-semibold">Rol:</span> {normalizarRol(user.rol)}</p>
                             </div>
 
                             {/* Sección de departamentos */}
-                            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                                <h3 className="text-md font-semibold text-gray-700 mb-2">Departamentos:</h3>
-                                {userDepartamentos[user._id] && userDepartamentos[user._id].length > 0 ? (
-                                    <ul className="list-disc list-inside">
-                                        {userDepartamentos[user._id].map(depa => (
-                                            <li key={depa._id} className="text-gray-600">
-                                                {depa.titulo}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p className="text-gray-500">
-                                        No tiene departamentos asociados.
-                                    </p>
-                                )}
-                            </div>
+                            {normalizarRol(user.rol) === "arrendatario" && (
+                                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                    <h3 className="text-md font-semibold text-gray-700 mb-2">Departamentos:</h3>
+                                    {userDepartamentos[user._id] && userDepartamentos[user._id].length > 0 ? (
+                                        <ul className="list-disc list-inside">
+                                            {userDepartamentos[user._id].map(depa => (
+                                                <li key={depa._id} className="text-gray-600">
+                                                    {depa.titulo}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-gray-500">
+                                            No tiene departamentos asociados.
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
