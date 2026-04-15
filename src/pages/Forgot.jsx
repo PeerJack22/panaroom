@@ -62,7 +62,7 @@ export const Forgot = () => {
             {/* Imagen lateral */}
             <div className="hidden sm:block sm:w-1/2 h-1/3 sm:h-full">
                 <img
-                    src="/images/password.jpg"
+                    src="/images/password.webp"
                     alt="Recuperación de contraseña"
                     className="w-full h-full object-cover object-center"
                     loading="lazy"

@@ -97,7 +97,7 @@ export const Register = () => {
             {/* Imagen lateral decorativa */}
             <div className="hidden sm:block sm:w-1/2">
                 <img
-                    src="/images/apartamento1.jpg"
+                    src="/images/apartamento1.webp"
                     alt="Apartamento de referencia"
                     className="w-full h-full object-cover object-center"
                     loading="lazy"

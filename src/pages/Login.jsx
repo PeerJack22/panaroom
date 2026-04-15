@@ -48,7 +48,7 @@ const loginUser = async (data) => {
             {/* Imagen LCP visible y detectable desde el HTML */}
             <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
                 <img
-                    src="/images/edificio2.jpg"
+                    src="/images/edificio2.webp"
                     alt="Edificio del proyecto PanaRoom"
                     className="w-full h-full object-cover object-center"
                     fetchPriority="high"
