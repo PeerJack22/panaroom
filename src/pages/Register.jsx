@@ -95,7 +95,17 @@ export const Register = () => {
             </div>
 
             {/* Imagen lateral decorativa */}
-            <div className="hidden sm:block sm:w-1/2 bg-cover bg-center" style={{ backgroundImage: `url('/images/apartamento1.jpg')` }}></div>
+            <div className="hidden sm:block sm:w-1/2">
+                <img
+                    src="/images/apartamento1.jpg"
+                    alt="Apartamento de referencia"
+                    className="w-full h-full object-cover object-center"
+                    loading="lazy"
+                    decoding="async"
+                    fetchPriority="low"
+                    sizes="50vw"
+                />
+            </div>
         </div>
     );
 };

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 
 
 const Details = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { fetchDataBackend } = useFetch();
     const [departamento, setDepartamento] = useState(null);
     const [propietario, setPropietario] = useState(null);
@@ -169,6 +171,13 @@ const Details = () => {
     return (
         <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
             <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 md:p-8">
+                <button
+                    type="button"
+                    onClick={() => navigate("/dashboard/listar")}
+                    className="mb-4 inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                    ← Atrás
+                </button>
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Detalles del departamento</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
