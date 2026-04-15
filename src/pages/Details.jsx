@@ -99,11 +99,14 @@ const Details = () => {
                             );
                         }
 
+                        console.log("Respuesta completa de arrendatarios:", arrendatariosResponse);
+
                         // Buscar al propietario en la lista
                         const arrendatariosList = Array.isArray(arrendatariosResponse?.data)
                             ? arrendatariosResponse.data
                             : arrendatariosResponse?.data?.arrendatarios || 
                                 arrendatariosResponse?.data?.data || 
+                                arrendatariosResponse || 
                                 [];
 
                         console.log("ID del propietario buscado:", ownerIdString);
