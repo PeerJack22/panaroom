@@ -7,6 +7,7 @@ const Details = () => {
     const { id } = useParams();
     const { fetchDataBackend } = useFetch();
     const [departamento, setDepartamento] = useState(null);
+    const [propietario, setPropietario] = useState(null);
     const [imagenActiva, setImagenActiva] = useState(null);
 
     const abrirLightbox = (index) => setImagenActiva(index);
@@ -68,6 +69,23 @@ const Details = () => {
             const response = await fetchDataBackend(url, null, "GET", headers);
             if (!response) throw new Error("Departamento no encontrado");
             setDepartamento(response);
+
+            // Obtener datos del propietario (arrendatario)
+            if (response?.arrendatario) {
+                const ownerIdString = typeof response.arrendatario === "object" 
+                    ? response.arrendatario._id || response.arrendatario.id 
+                    : response.arrendatario;
+
+                if (ownerIdString) {
+                    try {
+                        const ownerUrl = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${ownerIdString}`;
+                        const ownerResponse = await fetchDataBackend(ownerUrl, null, "GET", headers);
+                        setPropietario(ownerResponse);
+                    } catch (ownerError) {
+                        console.error("Error al obtener datos del propietario:", ownerError);
+                    }
+                }
+            }
         } catch (error) {
             console.error("Error al cargar departamento:", error);
         }
@@ -160,6 +178,17 @@ const Details = () => {
                         <p className="text-xs text-gray-500 mt-2">
                             Ubicación de referencia cercana a la Escuela Politécnica Nacional, Quito.
                         </p>
+
+                        {propietario && (
+                            <div className="mt-6 pt-6 border-t border-gray-300">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-3">Datos del propietario</h3>
+                                <div className="space-y-2 text-gray-700">
+                                    <p><strong className="text-gray-900">Nombre:</strong> {propietario.nombre} {propietario.apellido}</p>
+                                    <p><strong className="text-gray-900">Correo:</strong> {propietario.email}</p>
+                                    <p><strong className="text-gray-900">Teléfono:</strong> {propietario.celular || "No disponible"}</p>
+                                </div>
+                            </div>
+                        )}
                     </section>
                 </div>
 
