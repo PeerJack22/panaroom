@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Users = () => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userDepartamentos, setUserDepartamentos] = useState({});
@@ -198,7 +200,12 @@ const Users = () => {
                                         <ul className="list-disc list-inside">
                                             {userDepartamentos[user._id].map(depa => (
                                                 <li key={depa._id} className="text-gray-600">
-                                                    {depa.titulo}
+                                                    <button
+                                                        onClick={() => navigate(`/dashboard/visualizar/${depa._id}`)}
+                                                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium transition-colors duration-200"
+                                                    >
+                                                        {depa.titulo}
+                                                    </button>
                                                 </li>
                                             ))}
                                         </ul>
