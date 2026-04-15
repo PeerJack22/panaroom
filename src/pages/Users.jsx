@@ -232,6 +232,8 @@ const Users = () => {
         return nombreOk && rolOk;
     });
 
+    const mostrarFormulario = Boolean(tipoFormulario);
+
     return (
         <div>
             <h1 className='font-black text-4xl text-gray-500'>Usuarios</h1>
@@ -255,8 +257,14 @@ const Users = () => {
                 </button>
             </div>
 
-            {tipoFormulario && (
-                <div className="mb-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div
+                className={`mb-8 overflow-hidden transition-all duration-500 ease-in-out ${
+                    mostrarFormulario
+                        ? "max-h-[900px] opacity-100 translate-y-0"
+                        : "max-h-0 opacity-0 -translate-y-1"
+                }`}
+            >
+                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-lg font-bold text-gray-800">
                             {tipoFormulario === "administrador"
@@ -333,7 +341,7 @@ const Users = () => {
                         </div>
                     </form>
                 </div>
-            )}
+            </div>
 
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
