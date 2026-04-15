@@ -53,7 +53,10 @@ const Users = () => {
 
     const fetchUsers = useCallback(async () => {
         setLoading(true);
-        const loadingToast = toast.loading("Procesando solicitud...");
+        const loadingToastId = "users-loading";
+        if (!toast.isActive(loadingToastId)) {
+            toast.loading("Procesando solicitud...", { toastId: loadingToastId });
+        }
         try {
             // Obtener el token del localStorage
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
@@ -61,7 +64,7 @@ const Users = () => {
 
             if (!token) {
                 toast.error("No se encontró la sesión, por favor inicia sesión nuevamente");
-                toast.dismiss(loadingToast);
+                toast.dismiss(loadingToastId);
                 return;
             }
 
@@ -70,19 +73,11 @@ const Users = () => {
                 Authorization: `Bearer ${token}`,
             };
 
-            // Intentar endpoint solicitado /arrendatario y fallback a /arrendatarios
-            let usersResponse;
-            try {
-                usersResponse = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/arrendatario`,
-                    { headers }
-                );
-            } catch {
-                usersResponse = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`,
-                    { headers }
-                );
-            }
+            // Endpoint principal para listar arrendatarios
+            const usersResponse = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`,
+                { headers }
+            );
 
             let estudiantesResponse;
             try {
@@ -147,7 +142,7 @@ const Users = () => {
             console.error("Error al obtener los usuarios:", error);
             toast.error("Error al cargar los usuarios. Intenta de nuevo más tarde.");
         } finally {
-            toast.dismiss(loadingToast);
+            toast.dismiss(loadingToastId);
             setLoading(false);
         }
     }, []);
