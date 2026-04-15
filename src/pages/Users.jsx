@@ -54,9 +54,14 @@ const Users = () => {
     const fetchUsers = useCallback(async () => {
         setLoading(true);
         const loadingToastId = "users-loading";
-        if (!toast.isActive(loadingToastId)) {
-            toast.loading("Procesando solicitud...", { toastId: loadingToastId });
-        }
+        const startedAt = Date.now();
+        toast.dismiss(loadingToastId);
+        toast.loading("Procesando solicitud...", {
+            toastId: loadingToastId,
+            autoClose: false,
+            closeOnClick: false,
+            draggable: false,
+        });
         try {
             // Obtener el token del localStorage
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
@@ -142,7 +147,13 @@ const Users = () => {
             console.error("Error al obtener los usuarios:", error);
             toast.error("Error al cargar los usuarios. Intenta de nuevo más tarde.");
         } finally {
-            toast.dismiss(loadingToastId);
+            const elapsed = Date.now() - startedAt;
+            const minVisibleMs = 700;
+            if (elapsed < minVisibleMs) {
+                setTimeout(() => toast.dismiss(loadingToastId), minVisibleMs - elapsed);
+            } else {
+                toast.dismiss(loadingToastId);
+            }
             setLoading(false);
         }
     }, []);
