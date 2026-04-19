@@ -53,7 +53,7 @@ const Table = () => {
                 Authorization: `Bearer ${userToken}`,
             };
             try {
-                const response = await fetchDataBackend(url, { disponible: nuevoEstado }, "PATCH", headers);
+                const response = await fetchDataBackend(url, { disponible: nuevoEstado }, "PUT", headers);
                 if (!response) return;
                 
                 setDepartamentos((prev) =>
