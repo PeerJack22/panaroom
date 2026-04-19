@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom'; 
-import useFetch from '../hooks/useFetch';
+import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
 
@@ -12,7 +12,6 @@ const Login = () => {
     const [tipoAcceso, setTipoAcceso] = useState(isStudentLogin ? 'estudiante' : 'arrendatario');
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm()
-    const { fetchDataBackend } = useFetch()
     const { setToken, setRol, setUser } = storeAuth(); 
 
 useEffect(() => {
@@ -20,59 +19,82 @@ useEffect(() => {
 }, [isStudentLogin]);
 
 const loginUser = async (data) => {
-    const endpoint =
-        tipoAcceso === 'estudiante'
-            ? 'loginEstudiante'
-            : tipoAcceso === 'administrador'
-                ? 'loginAd'
-                : 'login';
-    const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
-
     try {
-        const response = await fetchDataBackend(url, data, 'POST');
-        console.log(response);
+        const endpointCandidates =
+            tipoAcceso === 'estudiante'
+                ? ['loginEstudiante', 'login']
+                : tipoAcceso === 'administrador'
+                    ? ['loginAd']
+                    : ['login'];
 
-        if (response) {
-            const rolRecibido = String(response.rol || '').toLowerCase();
+        let response = null;
+        let lastError = null;
 
-            if (tipoAcceso === 'estudiante' && rolRecibido !== 'estudiante') {
-                toast.error('Seleccionaste Estudiante, pero la cuenta no es de estudiante.');
-                return;
+        for (const endpoint of endpointCandidates) {
+            try {
+                const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
+                const { data: loginResponse } = await axios.post(url, data, {
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                response = loginResponse;
+                break;
+            } catch (error) {
+                lastError = error;
+                const status = error?.response?.status;
+                if (status !== 401) break;
             }
-
-            if (tipoAcceso === 'arrendatario' && rolRecibido === 'estudiante') {
-                toast.error('Seleccionaste Arrendatario, pero la cuenta es de estudiante.');
-                return;
-            }
-
-            if (tipoAcceso === 'administrador' && rolRecibido !== 'administrador') {
-                toast.error('Seleccionaste Administrador, pero la cuenta no es de administrador.');
-                return;
-            }
-
-            if (tipoAcceso !== 'administrador' && rolRecibido === 'administrador') {
-                toast.error('Seleccionaste un tipo de acceso incorrecto para una cuenta de administrador.');
-                return;
-            }
-
-            setToken(response.token);
-            setRol(response.rol);
-
-            // Construye el objeto user manualmente
-            const user = {
-                _id: response._id,
-                nombre: response.nombre,
-                apellido: response.apellido,
-                direccion: response.direccion,
-                celular: response.celular,
-                // agrega aquí cualquier otro dato que necesites
-            };
-            setUser(user);
-
-            navigate('/dashboard');
         }
+
+        if (!response) {
+            const backendMsg =
+                lastError?.response?.data?.msg ||
+                lastError?.response?.data?.message ||
+                'No se pudo iniciar sesión. Verifica tus credenciales.';
+            toast.error(backendMsg);
+            return;
+        }
+
+        const rolRecibido = String(response.rol || '').toLowerCase();
+
+        if (tipoAcceso === 'estudiante' && rolRecibido !== 'estudiante') {
+            toast.error('Seleccionaste Estudiante, pero la cuenta no es de estudiante.');
+            return;
+        }
+
+        if (tipoAcceso === 'arrendatario' && rolRecibido === 'estudiante') {
+            toast.error('Seleccionaste Arrendatario, pero la cuenta es de estudiante.');
+            return;
+        }
+
+        if (tipoAcceso === 'administrador' && rolRecibido !== 'administrador') {
+            toast.error('Seleccionaste Administrador, pero la cuenta no es de administrador.');
+            return;
+        }
+
+        if (tipoAcceso !== 'administrador' && rolRecibido === 'administrador') {
+            toast.error('Seleccionaste un tipo de acceso incorrecto para una cuenta de administrador.');
+            return;
+        }
+
+        setToken(response.token);
+        setRol(response.rol);
+
+        // Construye el objeto user manualmente
+        const user = {
+            _id: response._id,
+            nombre: response.nombre,
+            apellido: response.apellido,
+            direccion: response.direccion,
+            celular: response.celular,
+            // agrega aquí cualquier otro dato que necesites
+        };
+        setUser(user);
+
+        navigate('/dashboard');
     } catch (error) {
         console.error("Error en el login:", error);
+        const msg = error?.response?.data?.msg || error?.response?.data?.message || 'No se pudo iniciar sesión';
+        toast.error(msg);
     }
 };
 
