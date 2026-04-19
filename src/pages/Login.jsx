@@ -22,7 +22,7 @@ const loginUser = async (data) => {
     try {
         const endpointCandidates =
             tipoAcceso === 'estudiante'
-                ? ['loginEstudiante', 'login']
+                ? ['loginEstudiante']
                 : tipoAcceso === 'administrador'
                     ? ['loginAd']
                     : ['login'];

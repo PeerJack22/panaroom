@@ -26,8 +26,8 @@ export const Register = () => {
             {/* Formulario */}
             <div className="w-full sm:w-1/2 flex justify-center items-center px-8 py-12 bg-white">
                 <div className="w-full max-w-md">
-                    <h1 className="text-3xl font-extrabold text-blue-900 mb-2 text-center uppercase">Bienvenido(a)</h1>
-                    <p className="text-gray-500 text-sm text-center mb-6">Ingrese sus datos por favor</p>
+                    <h1 className="text-3xl font-extrabold text-blue-900 mb-2 text-center uppercase">Registro estudiante</h1>
+                    <p className="text-gray-500 text-sm text-center mb-6">Crea tu cuenta de estudiante y confirma tu correo para iniciar sesión</p>
 
                     <form onSubmit={handleSubmit(registro)} className="space-y-4">
                         {[
@@ -87,7 +87,7 @@ export const Register = () => {
 
                     <div className="mt-6 border-t pt-4 text-center text-sm text-gray-600 flex justify-between items-center">
                         <p>¿Ya tienes una cuenta?</p>
-                        <Link to="/login" className="bg-cyan-500 hover:bg-cyan-600 text-white py-2 px-4 rounded-md transition">
+                        <Link to="/loginEstudiante" className="bg-cyan-500 hover:bg-cyan-600 text-white py-2 px-4 rounded-md transition">
                             Iniciar sesión
                         </Link>
                     </div>
