@@ -42,6 +42,7 @@ function App() {
         <Route element={<PublicRoute />}>
           <Route index element={<Home/>}/>
           <Route path='login' element={<Login/>}/>
+          <Route path='loginEstudiante' element={<Login/>}/>
           <Route path='register' element={<Register/>}/>
           <Route path='forgot/:id' element={<Forgot/>}/>
           <Route path='confirm/:token' element={<Confirm/>}/>

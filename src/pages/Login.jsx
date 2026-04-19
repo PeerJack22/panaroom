@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link, useLocation, useNavigate } from 'react-router-dom'; 
 import useFetch from '../hooks/useFetch';
 import { ToastContainer, toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
 
 const Login = () => {
     const navigate = useNavigate()
+    const location = useLocation();
+    const isStudentLogin = location.pathname === '/loginEstudiante';
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm()
     const { fetchDataBackend } = useFetch()
@@ -14,13 +16,26 @@ const Login = () => {
 
 const loginUser = async (data) => {
     const isAdmin = data.email?.trim().toLowerCase() === 'admin@gmail.com';
-    const url = `${import.meta.env.VITE_BACKEND_URL}/${isAdmin ? 'loginAd' : 'login'}`;
+    const endpoint = isStudentLogin ? 'loginEstudiante' : (isAdmin ? 'loginAd' : 'login');
+    const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
 
     try {
         const response = await fetchDataBackend(url, data, 'POST');
         console.log(response);
 
         if (response) {
+            const rolRecibido = String(response.rol || '').toLowerCase();
+
+            if (isStudentLogin && rolRecibido !== 'estudiante') {
+                toast.error('Esta ruta es solo para estudiantes.');
+                return;
+            }
+
+            if (!isStudentLogin && rolRecibido === 'estudiante') {
+                toast.error('Si eres estudiante, inicia sesión en /loginEstudiante.');
+                return;
+            }
+
             setToken(response.token);
             setRol(response.rol);
 
@@ -60,7 +75,9 @@ const loginUser = async (data) => {
             {/* Contenedor de formulario */}
             <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center px-6">
                 <div className="md:w-4/5 sm:w-full">
-                    <h1 className="text-3xl font-bold mb-2 text-center uppercase text-blue-800">Bienvenido(a) de nuevo</h1>
+                    <h1 className="text-3xl font-bold mb-2 text-center uppercase text-blue-800">
+                        {isStudentLogin ? 'Login estudiante' : 'Login arrendatario'}
+                    </h1>
                     <small className="text-gray-500 block my-4 text-sm text-center">Ingresa tus datos porfavor</small>
 
                     <form onSubmit={handleSubmit(loginUser)}>
@@ -147,9 +164,17 @@ const loginUser = async (data) => {
                     {/* Enlaces */}
                     <div className="mt-6 text-sm flex justify-between items-center">
                         <Link to="/" className="text-gray-500 underline hover:text-blue-700">Regresar</Link>
-                        <Link to="/register" className="py-2 px-5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition duration-300">
-                            Registrarse
-                        </Link>
+                        <div className="flex items-center gap-3">
+                            <Link
+                                to={isStudentLogin ? '/login' : '/loginEstudiante'}
+                                className="text-gray-500 underline hover:text-blue-700"
+                            >
+                                {isStudentLogin ? 'Soy arrendatario' : 'Soy estudiante'}
+                            </Link>
+                            <Link to="/register" className="py-2 px-5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition duration-300">
+                                Registrarse
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
