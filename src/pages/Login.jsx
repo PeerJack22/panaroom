@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom'; 
 import useFetch from '../hooks/useFetch';
@@ -9,14 +9,19 @@ const Login = () => {
     const navigate = useNavigate()
     const location = useLocation();
     const isStudentLogin = location.pathname === '/loginEstudiante';
+    const [tipoAcceso, setTipoAcceso] = useState(isStudentLogin ? 'estudiante' : 'arrendatario');
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm()
     const { fetchDataBackend } = useFetch()
     const { setToken, setRol, setUser } = storeAuth(); 
 
+useEffect(() => {
+    setTipoAcceso(isStudentLogin ? 'estudiante' : 'arrendatario');
+}, [isStudentLogin]);
+
 const loginUser = async (data) => {
     const isAdmin = data.email?.trim().toLowerCase() === 'admin@gmail.com';
-    const endpoint = isStudentLogin ? 'loginEstudiante' : (isAdmin ? 'loginAd' : 'login');
+    const endpoint = tipoAcceso === 'estudiante' ? 'loginEstudiante' : (isAdmin ? 'loginAd' : 'login');
     const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
 
     try {
@@ -26,13 +31,13 @@ const loginUser = async (data) => {
         if (response) {
             const rolRecibido = String(response.rol || '').toLowerCase();
 
-            if (isStudentLogin && rolRecibido !== 'estudiante') {
-                toast.error('Esta ruta es solo para estudiantes.');
+            if (tipoAcceso === 'estudiante' && rolRecibido !== 'estudiante') {
+                toast.error('Seleccionaste Estudiante, pero la cuenta no es de estudiante.');
                 return;
             }
 
-            if (!isStudentLogin && rolRecibido === 'estudiante') {
-                toast.error('Si eres estudiante, inicia sesión en /loginEstudiante.');
+            if (tipoAcceso === 'arrendatario' && rolRecibido === 'estudiante') {
+                toast.error('Seleccionaste Arrendatario, pero la cuenta es de estudiante.');
                 return;
             }
 
@@ -76,11 +81,24 @@ const loginUser = async (data) => {
             <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center px-6">
                 <div className="md:w-4/5 sm:w-full">
                     <h1 className="text-3xl font-bold mb-2 text-center uppercase text-blue-800">
-                        {isStudentLogin ? 'Login estudiante' : 'Login arrendatario'}
+                        Login
                     </h1>
                     <small className="text-gray-500 block my-4 text-sm text-center">Ingresa tus datos porfavor</small>
 
                     <form onSubmit={handleSubmit(loginUser)}>
+                        {/* Tipo de acceso */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo de acceso</label>
+                            <select
+                                value={tipoAcceso}
+                                onChange={(e) => setTipoAcceso(e.target.value)}
+                                className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 text-gray-700 bg-white"
+                            >
+                                <option value="arrendatario">Arrendatario</option>
+                                <option value="estudiante">Estudiante</option>
+                            </select>
+                        </div>
+
                         {/* Correo electrónico */}
                         <div className="mb-4">
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
@@ -164,17 +182,9 @@ const loginUser = async (data) => {
                     {/* Enlaces */}
                     <div className="mt-6 text-sm flex justify-between items-center">
                         <Link to="/" className="text-gray-500 underline hover:text-blue-700">Regresar</Link>
-                        <div className="flex items-center gap-3">
-                            <Link
-                                to={isStudentLogin ? '/login' : '/loginEstudiante'}
-                                className="text-gray-500 underline hover:text-blue-700"
-                            >
-                                {isStudentLogin ? 'Soy arrendatario' : 'Soy estudiante'}
-                            </Link>
-                            <Link to="/register" className="py-2 px-5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition duration-300">
-                                Registrarse
-                            </Link>
-                        </div>
+                        <Link to="/register" className="py-2 px-5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition duration-300">
+                            Registrarse
+                        </Link>
                     </div>
                 </div>
             </div>
