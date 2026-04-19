@@ -102,11 +102,6 @@ const FormularioPerfil = () => {
         };
     }, [uploadedImagePreview]);
 
-    // Evitar renderizar el componente si el usuario es administrador
-    if (user?.rol === "administrador") {
-        return null;
-    }
-
     return (
         <form
             onSubmit={handleSubmit(updateUser)}
@@ -169,37 +164,35 @@ const FormularioPerfil = () => {
                 {errors.email && <p className="text-red-800">{errors.email.message}</p>}
             </div>
 
-            {user?.rol !== "administrador" && (
-                <div className="mb-6">
-                    <label className="mb-2 block text-sm font-medium text-gray-300">Imagen de perfil</label>
-                    <div className="mt-4">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            {...register("imagenPerfil", {
-                                validate: {
-                                    lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
-                                    acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
-                                },
-                                onChange: handleFileChange
-                            })}
-                        />
-                        {errors.imagenPerfil && <p className="text-red-800">{errors.imagenPerfil.message}</p>}
+            <div className="mb-6">
+                <label className="mb-2 block text-sm font-medium text-gray-300">Imagen de perfil</label>
+                <div className="mt-4">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        {...register("imagenPerfil", {
+                            validate: {
+                                lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
+                                acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
+                            },
+                            onChange: handleFileChange
+                        })}
+                    />
+                    {errors.imagenPerfil && <p className="text-red-800">{errors.imagenPerfil.message}</p>}
 
-                        {/* Previsualización de la imagen subida */}
-                        {uploadedImagePreview && (
-                            <div className="mt-4">
-                                <img
-                                    src={uploadedImagePreview}
-                                    alt="Imagen subida"
-                                    className="w-24 h-24 object-cover rounded-full"
-                                />
-                            </div>
-                        )}
-                    </div>
+                    {/* Previsualización de la imagen subida */}
+                    {uploadedImagePreview && (
+                        <div className="mt-4">
+                            <img
+                                src={uploadedImagePreview}
+                                alt="Imagen subida"
+                                className="w-24 h-24 object-cover rounded-full"
+                            />
+                        </div>
+                    )}
                 </div>
-            )}
+            </div>
 
             <input
                 type="submit"

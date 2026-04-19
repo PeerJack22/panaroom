@@ -8,11 +8,6 @@ const CardPassword = () => {
     const { user, updatePasswordProfile } = storeProfile();
     const { clearToken } = storeAuth();
 
-    // Verificar si el usuario es administrador o si tiene googleId
-    if (user?.rol === "administrador" || user?.googleId) {
-        return null; // No renderiza nada si es administrador o tiene googleId
-    }
-
     const updatePassword = async (data) => {
         const response = await updatePasswordProfile(data, user._id);
         if (response) {

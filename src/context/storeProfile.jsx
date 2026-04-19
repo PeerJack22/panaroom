@@ -13,6 +13,11 @@ const getAuthHeaders = (isFormData = false) => {
     };
 };
 
+const getCurrentRole = () => {
+    const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+    return storedUser?.state?.rol;
+};
+
 
 const storeProfile = create((set) => ({
         
@@ -34,9 +39,34 @@ const storeProfile = create((set) => ({
                 // Detectar si data es un FormData para no enviar Content-Type
                 const isFormData = data instanceof FormData;
                 console.log("Enviando con FormData:", isFormData);
-                
-                const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`
-                const respuesta = await axios.put(url, data, getAuthHeaders(isFormData))
+
+                const rol = getCurrentRole();
+                const endpoints = rol === "administrador"
+                    ? [
+                        `${import.meta.env.VITE_BACKEND_URL}/administrador/${id}`,
+                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`,
+                    ]
+                    : [
+                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`,
+                        `${import.meta.env.VITE_BACKEND_URL}/administrador/${id}`,
+                    ];
+
+                let respuesta;
+                let lastError;
+
+                for (const url of endpoints) {
+                    try {
+                        respuesta = await axios.put(url, data, getAuthHeaders(isFormData));
+                        break;
+                    } catch (error) {
+                        lastError = error;
+                    }
+                }
+
+                if (!respuesta) {
+                    throw lastError;
+                }
+
                 set({ user: respuesta.data })
                 return respuesta; // Añadir return para poder manejar la respuesta
             } catch (error) {
@@ -47,8 +77,33 @@ const storeProfile = create((set) => ({
         },
         updatePasswordProfile:async(data,id)=>{
             try {
-                const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/actualizarpassword/${id}`
-                const respuesta = await axios.put(url, data,getAuthHeaders())
+                const rol = getCurrentRole();
+                const endpoints = rol === "administrador"
+                    ? [
+                        `${import.meta.env.VITE_BACKEND_URL}/administrador/actualizarpassword/${id}`,
+                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/actualizarpassword/${id}`,
+                    ]
+                    : [
+                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/actualizarpassword/${id}`,
+                        `${import.meta.env.VITE_BACKEND_URL}/administrador/actualizarpassword/${id}`,
+                    ];
+
+                let respuesta;
+                let lastError;
+
+                for (const url of endpoints) {
+                    try {
+                        respuesta = await axios.put(url, data, getAuthHeaders());
+                        break;
+                    } catch (error) {
+                        lastError = error;
+                    }
+                }
+
+                if (!respuesta) {
+                    throw lastError;
+                }
+
                 toast.success(respuesta?.data?.msg)
                 return respuesta
             } catch (error) {
