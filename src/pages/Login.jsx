@@ -20,8 +20,12 @@ useEffect(() => {
 }, [isStudentLogin]);
 
 const loginUser = async (data) => {
-    const isAdmin = data.email?.trim().toLowerCase() === 'admin@gmail.com';
-    const endpoint = tipoAcceso === 'estudiante' ? 'loginEstudiante' : (isAdmin ? 'loginAd' : 'login');
+    const endpoint =
+        tipoAcceso === 'estudiante'
+            ? 'loginEstudiante'
+            : tipoAcceso === 'administrador'
+                ? 'loginAd'
+                : 'login';
     const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
 
     try {
@@ -38,6 +42,16 @@ const loginUser = async (data) => {
 
             if (tipoAcceso === 'arrendatario' && rolRecibido === 'estudiante') {
                 toast.error('Seleccionaste Arrendatario, pero la cuenta es de estudiante.');
+                return;
+            }
+
+            if (tipoAcceso === 'administrador' && rolRecibido !== 'administrador') {
+                toast.error('Seleccionaste Administrador, pero la cuenta no es de administrador.');
+                return;
+            }
+
+            if (tipoAcceso !== 'administrador' && rolRecibido === 'administrador') {
+                toast.error('Seleccionaste un tipo de acceso incorrecto para una cuenta de administrador.');
                 return;
             }
 
@@ -96,6 +110,7 @@ const loginUser = async (data) => {
                             >
                                 <option value="arrendatario">Arrendatario</option>
                                 <option value="estudiante">Estudiante</option>
+                                <option value="administrador">Administrador</option>
                             </select>
                         </div>
 
