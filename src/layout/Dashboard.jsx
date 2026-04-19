@@ -42,6 +42,9 @@ const Dashboard = () => {
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                             {`Bienvenido - ${user?.nombre || ''}`}
                         </span>
+                        <p className="mt-1 text-xs text-gray-500">
+                            Rol: {rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : "No definido"}
+                        </p>
                     </div>
 
                     <ul className="mt-5">
@@ -105,6 +108,9 @@ const Dashboard = () => {
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                             {`Bienvenido - ${user?.nombre || ''}`}
                         </span>
+                        <p className="mt-1 text-xs text-gray-500">
+                            Rol: {rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : "No definido"}
+                        </p>
                     </div>
 
                     <ul className="mt-5">
