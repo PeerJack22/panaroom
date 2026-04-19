@@ -208,9 +208,7 @@ const Users = () => {
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const token = storedUser?.state?.token;
 
-            const endpoint = tipoFormulario === "administrador"
-                ? `${import.meta.env.VITE_BACKEND_URL}/administrador/registro`
-                : `${import.meta.env.VITE_BACKEND_URL}/registroArrendatario`;
+            const endpoint = `${import.meta.env.VITE_BACKEND_URL}/registroArrendatario`;
 
             const headers = {
                 "Content-Type": "application/json",
@@ -220,7 +218,7 @@ const Users = () => {
                 headers.Authorization = `Bearer ${token}`;
             }
 
-            if (tipoFormulario === "arrendatario" && !token) {
+            if (!token) {
                 toast.error("Necesitas sesión de administrador para registrar arrendatarios");
                 return;
             }
@@ -228,9 +226,7 @@ const Users = () => {
             await axios.post(endpoint, formData, { headers });
 
             toast.success(
-                tipoFormulario === "administrador"
-                    ? "Administrador creado correctamente"
-                    : "Arrendatario registrado correctamente"
+                "Arrendatario registrado correctamente"
             );
 
             cerrarFormulario();
@@ -272,13 +268,6 @@ const Users = () => {
             <div className="mb-6 flex flex-wrap gap-3">
                 <button
                     type="button"
-                    onClick={() => abrirFormulario("administrador")}
-                    className="rounded-md bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 transition-colors"
-                >
-                    Registrar administrador
-                </button>
-                <button
-                    type="button"
                     onClick={() => abrirFormulario("arrendatario")}
                     className="rounded-md bg-emerald-600 px-4 py-2 text-white font-semibold hover:bg-emerald-700 transition-colors"
                 >
@@ -302,9 +291,7 @@ const Users = () => {
                 >
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-lg font-bold text-gray-800">
-                            {tipoFormulario === "administrador"
-                                ? "Nuevo administrador"
-                                : "Nuevo arrendatario"}
+                            Nuevo arrendatario
                         </h2>
                         <button
                             type="button"
