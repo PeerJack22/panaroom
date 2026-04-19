@@ -180,7 +180,7 @@ const Details = () => {
                 </button>
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Detalles del departamento</h1>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-stretch">
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Información general</h2>
                         <ul className="space-y-3 text-gray-700">
@@ -213,12 +213,21 @@ const Details = () => {
                     </section>
 
                     {propietario && (
-                        <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">Datos del propietario</h3>
-                            <div className="space-y-3 text-gray-700">
-                                <p><strong className="text-gray-900">Nombre:</strong> {propietario.nombre} {propietario.apellido}</p>
-                                <p><strong className="text-gray-900">Correo:</strong> {propietario.email}</p>
-                                <p><strong className="text-gray-900">Teléfono:</strong> {propietario.celular || "No disponible"}</p>
+                        <section className="bg-gray-50 rounded-xl p-8 border border-gray-200 flex flex-col justify-start">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-6">Datos del propietario</h3>
+                            <div className="space-y-4 text-gray-700">
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Nombre completo</p>
+                                    <p className="text-lg font-medium text-gray-900">{propietario.nombre} {propietario.apellido}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Correo electrónico</p>
+                                    <p className="text-lg font-medium text-gray-900">{propietario.email}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Teléfono de contacto</p>
+                                    <p className="text-lg font-medium text-gray-900">{propietario.celular || "No disponible"}</p>
+                                </div>
                             </div>
                         </section>
                     )}
