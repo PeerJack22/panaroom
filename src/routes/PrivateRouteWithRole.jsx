@@ -1,11 +1,11 @@
 import storeAuth from '../context/storeAuth';
-import { Forbidden } from '../pages/Forbidden';
+import { Navigate } from 'react-router-dom';
 
 
 export default function PrivateRouteWithRole({ children }) {
 
     const {rol} = storeAuth()
     
-    return ("arrendatario" === rol) ? <Forbidden/> : children
+    return (rol === "administrador") ? children : <Navigate to="/dashboard" replace />
     
 }

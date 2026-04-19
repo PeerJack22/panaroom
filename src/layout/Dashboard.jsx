@@ -10,12 +10,13 @@ const Dashboard = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { clearToken } = storeAuth()
     const{user} = storeProfile()
+    const { rol } = storeAuth()
 
     const navItems = [
         { to: '/dashboard', label: 'Perfil' },
         { to: '/dashboard/listar', label: 'Lista de residencias' },
         { to: '/dashboard/crear', label: 'Crear residencia' },
-        { to: '/dashboard/usuarios', label: 'Administrar usuarios' },
+        ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios' }] : []),
     ];
 
     return (

@@ -42,32 +42,7 @@ const Table = () => {
     }, [fetchDataBackend, userToken]);
 
     const toggleDisponibilidad = async (id, disponibleActual) => {
-        const nuevoEstado = !disponibleActual;
-        const accion = nuevoEstado ? "activar" : "desactivar";
-        const confirmChange = confirm(`¿Estás seguro de ${accion} este departamento?`);
-        
-        if (confirmChange) {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/${id}`;
-            const headers = {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${userToken}`,
-            };
-            try {
-                const response = await fetchDataBackend(url, { disponible: nuevoEstado }, "PUT", headers);
-                if (!response) return;
-                
-                setDepartamentos((prev) =>
-                    prev.map((dep) =>
-                        dep._id === id ? { ...dep, disponible: nuevoEstado } : dep
-                    )
-                );
-                
-                toast.success(`Departamento ${accion === "activar" ? "activado" : "desactivado"} correctamente`);
-            } catch (error) {
-                console.error(`Error al ${accion}:`, error);
-                toast.error(`Error al ${accion} el departamento`);
-            }
-        }
+        toast.info("Esta funcionalidad está en desarrollo. Pronto podrás activar/desactivar departamentos.");
     };
 
     const handleFilterChange = (e) => {
