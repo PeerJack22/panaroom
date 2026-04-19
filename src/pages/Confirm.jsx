@@ -12,10 +12,10 @@ export const Confirm = () => {
     const verifyToken = useCallback(async () => {
         const endpoints = [
             `${import.meta.env.VITE_BACKEND_URL}/confirmar/${token}`,
-            `${import.meta.env.VITE_BACKEND_URL}/confirmarEstudiante/${token}`,
+            `${import.meta.env.VITE_BACKEND_URL}/confirm/${token}`,
         ];
 
-        let lastError;
+        let backendMessage = '';
 
         for (const url of endpoints) {
             try {
@@ -26,11 +26,21 @@ export const Confirm = () => {
                 toast.success(msg);
                 return;
             } catch (error) {
-                lastError = error;
+                const status = error?.response?.status;
+                const msg = error?.response?.data?.msg || error?.response?.data?.message || '';
+
+                if (msg && !backendMessage) {
+                    backendMessage = msg;
+                }
+
+                // Si no es 404, no seguimos probando rutas porque ya tenemos respuesta válida del backend
+                if (status && status !== 404) {
+                    break;
+                }
             }
         }
 
-        const msg = lastError?.response?.data?.msg || 'No se pudo confirmar la cuenta. El enlace puede haber expirado.';
+        const msg = backendMessage || 'No se pudo confirmar la cuenta. El enlace puede haber expirado.';
         setConfirmStatus('error');
         setConfirmMessage(msg);
         toast.error(msg);

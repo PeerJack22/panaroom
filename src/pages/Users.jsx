@@ -11,6 +11,7 @@ const Users = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [deletingStudentId, setDeletingStudentId] = useState(null);
     const [userDepartamentos, setUserDepartamentos] = useState({});
     const [filtroNombre, setFiltroNombre] = useState("");
     const [filtroRol, setFiltroRol] = useState("todos");
@@ -239,6 +240,42 @@ const Users = () => {
         }
     };
 
+    const handleDeleteStudent = async (student) => {
+        const studentId = student?._id || student?.id;
+        if (!studentId) {
+            toast.error("No se pudo identificar el estudiante");
+            return;
+        }
+
+        const confirmar = confirm(`¿Seguro que deseas eliminar al estudiante ${student?.nombre || ""} ${student?.apellido || ""}?`);
+        if (!confirmar) return;
+
+        setDeletingStudentId(studentId);
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const token = storedUser?.state?.token;
+
+            if (!token) {
+                toast.error("No se encontró la sesión, por favor inicia sesión nuevamente");
+                return;
+            }
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/estudiante/${studentId}`, { headers });
+
+            setUsers((prev) => prev.filter((u) => (u?._id || u?.id) !== studentId));
+            toast.success("Estudiante eliminado correctamente");
+        } catch (error) {
+            const errorMsg = error?.response?.data?.msg || error?.response?.data?.message;
+            toast.error(errorMsg || "No se pudo eliminar el estudiante");
+        } finally {
+            setDeletingStudentId(null);
+        }
+    };
+
     const usuariosFiltrados = users.filter((user) => {
         const nombreCompleto = `${user?.nombre || ""} ${user?.apellido || ""}`.toLowerCase();
         const nombreOk = !filtroNombre.trim() || nombreCompleto.includes(filtroNombre.trim().toLowerCase());
@@ -453,6 +490,19 @@ const Users = () => {
                                             No tiene departamentos asociados.
                                         </p>
                                     )}
+                                </div>
+                            )}
+
+                            {normalizarRol(user.rol) === "estudiante" && (
+                                <div className="mt-4 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteStudent(user)}
+                                        disabled={deletingStudentId === (user?._id || user?.id)}
+                                        className="rounded-md border border-red-300 bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-100 transition-colors disabled:opacity-60"
+                                    >
+                                        {deletingStudentId === (user?._id || user?.id) ? "Eliminando..." : "Eliminar estudiante"}
+                                    </button>
                                 </div>
                             )}
                         </div>
