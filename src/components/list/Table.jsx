@@ -1,4 +1,4 @@
-import { MdDeleteForever, MdInfo} from "react-icons/md";
+import { MdToggleOn, MdToggleOff, MdInfo} from "react-icons/md";
 import useFetch from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
@@ -41,20 +41,31 @@ const Table = () => {
         listarDepartamentos();
     }, [fetchDataBackend, userToken]);
 
-    const deleteDepartamento = async (id) => {
-        const confirmDelete = confirm("¿Estás seguro de eliminar este departamento?");
-        if (confirmDelete) {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/eliminar/${id}`;
+    const toggleDisponibilidad = async (id, disponibleActual) => {
+        const nuevoEstado = !disponibleActual;
+        const accion = nuevoEstado ? "activar" : "desactivar";
+        const confirmChange = confirm(`¿Estás seguro de ${accion} este departamento?`);
+        
+        if (confirmChange) {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/${id}`;
             const headers = {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${userToken}`,
             };
             try {
-                const response = await fetchDataBackend(url, null, "DELETE", headers);
+                const response = await fetchDataBackend(url, { disponible: nuevoEstado }, "PATCH", headers);
                 if (!response) return;
-                setDepartamentos((prev) => prev.filter(dep => dep._id !== id));
+                
+                setDepartamentos((prev) =>
+                    prev.map((dep) =>
+                        dep._id === id ? { ...dep, disponible: nuevoEstado } : dep
+                    )
+                );
+                
+                toast.success(`Departamento ${accion === "activar" ? "activado" : "desactivado"} correctamente`);
             } catch (error) {
-                console.error("Error al eliminar:", error);
-                toast.error("Error al eliminar el departamento");
+                console.error(`Error al ${accion}:`, error);
+                toast.error(`Error al ${accion} el departamento`);
             }
         }
     };
@@ -125,6 +136,9 @@ const Table = () => {
     };
 
     const departamentosFiltrados = departamentos.filter((dep) => {
+        // Filtrar solo departamentos disponibles
+        if (dep?.disponible === false) return false;
+        
         const precio = Number(dep?.precioMensual);
         const min = filters.arriendoMin === "" ? null : Number(filters.arriendoMin);
         const max = filters.arriendoMax === "" ? null : Number(filters.arriendoMax);
@@ -327,16 +341,36 @@ const Table = () => {
                                     Ver más
                                 </button>
 
-                                {(userRol === "administrador" || (userRol === "arrendador" && dep.creador === userId)) && (
+                                {userRol === "administrador" && (
                                     <button
                                         type="button"
-                                        title="Eliminar"
-                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 hover:bg-red-50"
-                                        onClick={() => deleteDepartamento(dep._id)}
+                                        title={dep?.disponible === false ? "Activar" : "Desactivar"}
+                                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors ${
+                                            dep?.disponible === false
+                                                ? "border-green-300 text-green-700 hover:bg-green-50"
+                                                : "border-red-300 text-red-700 hover:bg-red-50"
+                                        }`}
+                                        onClick={() => toggleDisponibilidad(dep._id, dep?.disponible)}
                                     >
-                                        <MdDeleteForever className="h-5 w-5" />
-                                        Eliminar
+                                        {dep?.disponible === false ? (
+                                            <>
+                                                <MdToggleOff className="h-5 w-5" />
+                                                Activar
+                                            </>
+                                        ) : (
+                                            <>
+                                                <MdToggleOn className="h-5 w-5" />
+                                                Desactivar
+                                            </>
+                                        )}
                                     </button>
+                                )}
+
+                                {(userRol === "arrendador" && dep.creador === userId && dep?.disponible === false) && (
+                                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 bg-red-50 text-sm font-medium">
+                                        <MdToggleOff className="h-5 w-5" />
+                                        Desactivado
+                                    </span>
                                 )}
                             </div>
                         </article>
