@@ -1,5 +1,5 @@
 import edificioPulgar from '../assets/edificioPulgar.png';
-import { Link, useParams } from 'react-router';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -36,7 +36,7 @@ export const Confirm = () => {
                 <p className="text-lg md:text-xl text-gray-600 mb-6">Tu cuenta ha sido confirmada. Ya puedes iniciar sesión.</p>
                 
                 <Link
-                    to="/login"
+                    to="/loginEstudiante"
                     className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-2 px-6 rounded-md transition-colors cursor-pointer"
                 >
                     Iniciar sesión
