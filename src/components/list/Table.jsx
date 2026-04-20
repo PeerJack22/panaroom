@@ -17,6 +17,17 @@ const Table = () => {
     });
     const [abiertoPrecio, setAbiertoPrecio] = useState(false);
     const [abiertoServicios, setAbiertoServicios] = useState(false);
+    const [abiertoMasFiltros, setAbiertoMasFiltros] = useState(false);
+    const [filtrosAdicionales, setFiltrosAdicionales] = useState({
+        alicuotaIncluida: "",
+        parqueadero: "",
+        inmobiliario: "",
+    });
+    const [filtrosAdicionalesAplicados, setFiltrosAdicionalesAplicados] = useState({
+        alicuotaIncluida: "",
+        parqueadero: "",
+        inmobiliario: "",
+    });
     const opcionesServicios = ["luz", "agua", "internet"];
     const navigate = useNavigate();
 
@@ -68,6 +79,29 @@ const Table = () => {
             servicios: prev.servicios.filter((s) => s !== servicio),
         }));
     };
+
+    const handleFiltroAdicionalChange = (campo, valor) => {
+        setFiltrosAdicionales((prev) => ({ ...prev, [campo]: valor }));
+    };
+
+    const limpiarFiltrosAdicionales = () => {
+        const vacio = {
+            alicuotaIncluida: "",
+            parqueadero: "",
+            inmobiliario: "",
+        };
+        setFiltrosAdicionales(vacio);
+        setFiltrosAdicionalesAplicados(vacio);
+    };
+
+    const aplicarFiltrosAdicionales = () => {
+        setFiltrosAdicionalesAplicados(filtrosAdicionales);
+        setAbiertoMasFiltros(false);
+    };
+
+    const contarFiltrosAdicionalesAplicados = Object.values(filtrosAdicionalesAplicados)
+        .filter(Boolean)
+        .length;
 
     const textoPrecio = () => {
         if (!filters.arriendoMin && !filters.arriendoMax) return "Precio";
@@ -269,6 +303,122 @@ const Table = () => {
                                         {filters.servicios.includes(servicio) && <span className="text-blue-700 font-semibold">✓</span>}
                                     </button>
                                 ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="relative md:col-span-4 md:flex md:justify-end">
+                        <button
+                            type="button"
+                            onClick={() => setAbiertoMasFiltros((prev) => !prev)}
+                            className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <span>Mas filtros</span>
+                            {contarFiltrosAdicionalesAplicados > 0 && (
+                                <span className="inline-flex min-w-[22px] justify-center rounded-full bg-blue-700 px-2 py-0.5 text-xs font-semibold text-white">
+                                    {contarFiltrosAdicionalesAplicados}
+                                </span>
+                            )}
+                            <span className="text-gray-500">{abiertoMasFiltros ? "▴" : "▾"}</span>
+                        </button>
+
+                        {abiertoMasFiltros && (
+                            <div className="absolute right-0 z-30 mt-12 w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
+                                <div className="mb-3 border-b border-gray-200 pb-2">
+                                    <h3 className="text-sm font-semibold text-gray-800">Más filtros</h3>
+                                    <p className="text-xs text-gray-500">Estos filtros se guardan en la interfaz y luego se conectarán al backend.</p>
+                                </div>
+
+                                <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
+                                    <div>
+                                        <p className="mb-2 text-sm font-medium text-gray-700">Precio mensual incluye alicuota</p>
+                                        <div className="flex items-center gap-4 text-sm text-gray-700">
+                                            <label className="inline-flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="alicuotaIncluida"
+                                                    checked={filtrosAdicionales.alicuotaIncluida === "si"}
+                                                    onChange={() => handleFiltroAdicionalChange("alicuotaIncluida", "si")}
+                                                />
+                                                Si
+                                            </label>
+                                            <label className="inline-flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="alicuotaIncluida"
+                                                    checked={filtrosAdicionales.alicuotaIncluida === "no"}
+                                                    onChange={() => handleFiltroAdicionalChange("alicuotaIncluida", "no")}
+                                                />
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p className="mb-2 text-sm font-medium text-gray-700">Parqueadero</p>
+                                        <div className="flex items-center gap-4 text-sm text-gray-700">
+                                            <label className="inline-flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="parqueadero"
+                                                    checked={filtrosAdicionales.parqueadero === "si"}
+                                                    onChange={() => handleFiltroAdicionalChange("parqueadero", "si")}
+                                                />
+                                                Si
+                                            </label>
+                                            <label className="inline-flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="parqueadero"
+                                                    checked={filtrosAdicionales.parqueadero === "no"}
+                                                    onChange={() => handleFiltroAdicionalChange("parqueadero", "no")}
+                                                />
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p className="mb-2 text-sm font-medium text-gray-700">Inmobiliario</p>
+                                        <div className="flex items-center gap-4 text-sm text-gray-700">
+                                            <label className="inline-flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="inmobiliario"
+                                                    checked={filtrosAdicionales.inmobiliario === "si"}
+                                                    onChange={() => handleFiltroAdicionalChange("inmobiliario", "si")}
+                                                />
+                                                Si
+                                            </label>
+                                            <label className="inline-flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="inmobiliario"
+                                                    checked={filtrosAdicionales.inmobiliario === "no"}
+                                                    onChange={() => handleFiltroAdicionalChange("inmobiliario", "no")}
+                                                />
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 flex items-center justify-end gap-2 border-t border-gray-200 pt-3">
+                                    <button
+                                        type="button"
+                                        onClick={limpiarFiltrosAdicionales}
+                                        className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                        Limpiar filtro
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={aplicarFiltrosAdicionales}
+                                        className="rounded-md bg-blue-700 px-3 py-1.5 text-sm text-white hover:bg-blue-600"
+                                    >
+                                        Aplicar
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
