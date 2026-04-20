@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
 
 const Login = () => {
@@ -109,7 +109,6 @@ const loginUser = async (data) => {
 
     return (
         <div className="flex flex-col sm:flex-row h-screen">
-            <ToastContainer />
             {/* Imagen LCP visible y detectable desde el HTML */}
             <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
                 <img

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth'
 import storeProfile from '../context/storeProfile'
 
@@ -11,6 +12,12 @@ const Dashboard = () => {
     const { clearToken } = storeAuth()
     const{user} = storeProfile()
     const { rol } = storeAuth()
+
+    const handleLogout = () => {
+        // Limpia cualquier toast en curso antes de salir al login
+        toast.dismiss();
+        clearToken();
+    };
 
     const navItems = [
         { to: '/dashboard', label: 'Perfil' },
@@ -172,7 +179,7 @@ const Dashboard = () => {
                                         <Link
                                             to="/"
                                             className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1.5 rounded-full transition-all"
-                                            onClick={() => clearToken()}
+                                            onClick={handleLogout}
                                         >
                                             Salir
                                         </Link>
