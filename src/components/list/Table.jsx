@@ -176,7 +176,7 @@ const Table = () => {
             <ToastContainer />
 
             <div className="w-full mt-5 mb-4 p-4 rounded-lg bg-white shadow-lg border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div className="relative">
                         <button
                             type="button"
@@ -307,11 +307,11 @@ const Table = () => {
                         )}
                     </div>
 
-                    <div className="relative md:col-span-4 md:flex md:justify-end">
+                    <div className="relative">
                         <button
                             type="button"
                             onClick={() => setAbiertoMasFiltros((prev) => !prev)}
-                            className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <span>Mas filtros</span>
                             {contarFiltrosAdicionalesAplicados > 0 && (
@@ -326,7 +326,6 @@ const Table = () => {
                             <div className="absolute right-0 z-30 mt-12 w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
                                 <div className="mb-3 border-b border-gray-200 pb-2">
                                     <h3 className="text-sm font-semibold text-gray-800">Más filtros</h3>
-                                    <p className="text-xs text-gray-500">Estos filtros se guardan en la interfaz y luego se conectarán al backend.</p>
                                 </div>
 
                                 <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
