@@ -19,6 +19,8 @@ useEffect(() => {
 }, [isStudentLogin]);
 
 const loginUser = async (data) => {
+    const loadingToast = toast.loading('Procesando solicitud...');
+
     try {
         const endpointCandidates =
             tipoAcceso === 'estudiante'
@@ -50,6 +52,7 @@ const loginUser = async (data) => {
                 lastError?.response?.data?.msg ||
                 lastError?.response?.data?.message ||
                 'No se pudo iniciar sesión. Verifica tus credenciales.';
+            toast.dismiss(loadingToast);
             toast.error(backendMsg);
             return;
         }
@@ -57,21 +60,25 @@ const loginUser = async (data) => {
         const rolRecibido = String(response.rol || '').toLowerCase();
 
         if (tipoAcceso === 'estudiante' && rolRecibido !== 'estudiante') {
+            toast.dismiss(loadingToast);
             toast.error('Seleccionaste Estudiante, pero la cuenta no es de estudiante.');
             return;
         }
 
         if (tipoAcceso === 'arrendatario' && rolRecibido === 'estudiante') {
+            toast.dismiss(loadingToast);
             toast.error('Seleccionaste Arrendatario, pero la cuenta es de estudiante.');
             return;
         }
 
         if (tipoAcceso === 'administrador' && rolRecibido !== 'administrador') {
+            toast.dismiss(loadingToast);
             toast.error('Seleccionaste Administrador, pero la cuenta no es de administrador.');
             return;
         }
 
         if (tipoAcceso !== 'administrador' && rolRecibido === 'administrador') {
+            toast.dismiss(loadingToast);
             toast.error('Seleccionaste un tipo de acceso incorrecto para una cuenta de administrador.');
             return;
         }
@@ -90,8 +97,10 @@ const loginUser = async (data) => {
         };
         setUser(user);
 
+        toast.dismiss(loadingToast);
         navigate('/dashboard');
     } catch (error) {
+        toast.dismiss(loadingToast);
         console.error("Error en el login:", error);
         const msg = error?.response?.data?.msg || error?.response?.data?.message || 'No se pudo iniciar sesión';
         toast.error(msg);
