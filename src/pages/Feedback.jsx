@@ -29,7 +29,7 @@ const formatDate = (isoDate) => {
 };
 
 const Feedback = () => {
-    const { rol } = storeAuth();
+    const { rol, user: authUser } = storeAuth();
     const { user } = storeProfile();
 
     const [tipo, setTipo] = useState("queja");
@@ -40,11 +40,20 @@ const Feedback = () => {
     const roleNormalized = String(rol || "").toLowerCase();
     const isStudent = roleNormalized === "estudiante";
     const isAdmin = roleNormalized === "administrador";
+    const currentUser = user || authUser;
+    const currentUserId =
+        currentUser?._id ||
+        currentUser?.id ||
+        currentUser?.email ||
+        "anonimo";
+    const currentUserName =
+        `${currentUser?.nombre || ""} ${currentUser?.apellido || ""}`.trim() ||
+        currentUser?.email ||
+        "Usuario";
 
     const myItems = useMemo(() => {
-        const userId = user?._id || user?.id;
-        return items.filter((item) => item.userId === userId);
-    }, [items, user]);
+        return items.filter((item) => item.userId === currentUserId);
+    }, [items, currentUserId]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -57,24 +66,34 @@ const Feedback = () => {
             return;
         }
 
-        const newItem = {
-            id: crypto?.randomUUID?.() || `${Date.now()}`,
-            tipo,
-            asunto: asuntoTrim,
-            mensaje: mensajeTrim,
-            createdAt: new Date().toISOString(),
-            userId: user?._id || user?.id || "sin-id",
-            userName: `${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario",
-            estado: "pendiente",
-        };
+        try {
+            const newItem = {
+                id: globalThis.crypto?.randomUUID?.() || `${Date.now()}`,
+                tipo,
+                asunto: asuntoTrim,
+                mensaje: mensajeTrim,
+                createdAt: new Date().toISOString(),
+                userId: currentUserId,
+                userName: currentUserName,
+                estado: "pendiente",
+            };
 
-        const updated = [newItem, ...items];
-        setItems(updated);
-        saveItems(updated);
-        setAsunto("");
-        setMensaje("");
-        setTipo("queja");
-        toast.success("Tu mensaje fue registrado correctamente");
+            setItems((prev) => {
+                const updated = [newItem, ...prev];
+                saveItems(updated);
+                return updated;
+            });
+
+            setAsunto("");
+            setMensaje("");
+            setTipo("queja");
+
+            // Forzar visualización inmediata del mensaje más reciente
+            toast.dismiss();
+            toast.success("Tu mensaje fue registrado correctamente", { toastId: "feedback-created" });
+        } catch {
+            toast.error("No se pudo guardar tu mensaje");
+        }
     };
 
     if (!isStudent && !isAdmin) {
