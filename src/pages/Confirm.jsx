@@ -11,8 +11,7 @@ export const Confirm = () => {
 
     const verifyToken = useCallback(async () => {
         const endpoints = [
-            `${import.meta.env.VITE_BACKEND_URL}/confirmar/${token}`,
-            `${import.meta.env.VITE_BACKEND_URL}/confirm/${token}`,
+            `${import.meta.env.VITE_BACKEND_URL}/estudiante/confirmar/${token}`,
         ];
 
         let backendMessage = '';
