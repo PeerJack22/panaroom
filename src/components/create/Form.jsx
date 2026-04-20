@@ -18,7 +18,7 @@ export const Form = () => {
         clearErrors,
         trigger,
         watch,
-        formState: { errors },
+        formState: { errors, isSubmitting },
     } = useForm();
     const { fetchDataBackend } = useFetch();
 
@@ -348,8 +348,9 @@ export const Form = () => {
                 ) : (
                     <input
                         type="submit"
-                        value="Guardar registro"
-                        className="bg-blue-700 px-5 py-2 text-white uppercase font-bold rounded-lg hover:bg-blue-600 cursor-pointer transition-all"
+                        value={isSubmitting ? "Guardando..." : "Guardar registro"}
+                        disabled={isSubmitting}
+                        className="bg-blue-700 px-5 py-2 text-white uppercase font-bold rounded-lg hover:bg-blue-600 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-700"
                     />
                 )}
             </div>
