@@ -1,4 +1,4 @@
-import edificioPulgar from '../assets/edificioPulgar.png';
+import edificioPulgar from '../assets/edificioPulgar.webp';
 import { Link, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
