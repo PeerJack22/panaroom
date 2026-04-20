@@ -16,6 +16,7 @@ const Dashboard = () => {
         { to: '/dashboard', label: 'Perfil' },
         { to: '/dashboard/listar', label: 'Lista de residencias' },
         { to: '/dashboard/crear', label: 'Crear residencia' },
+        ...(["administrador", "estudiante"].includes(rol) ? [{ to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias' }] : []),
         ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios' }] : []),
     ];
 

@@ -14,6 +14,7 @@ import Create from './pages/Create'
 import Update from './pages/Update'
 import Reset from './pages/Reset'
 import Users from './pages/Users'
+import Feedback from './pages/Feedback'
 import PublicRoute from './routes/PublicRoute'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { useEffect } from 'react'
@@ -60,6 +61,7 @@ function App() {
                   <Route path='listar' element={<List />} />
                   <Route path='visualizar/:id' element={<Details />} />
                   <Route path='crear' element={<Create />} />
+                  <Route path='quejas-sugerencias' element={<Feedback />} />
                   <Route path='actualizar/:id' element={<Update />} />
                   <Route path='usuarios' element={
                     <PrivateRouteWithRole>
