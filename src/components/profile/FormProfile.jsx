@@ -81,7 +81,7 @@ const FormularioPerfil = () => {
                 nombre: user?.nombre,
                 apellido: user?.apellido,
                 direccion: user?.direccion,
-                celular: user?.celular,
+                celular: user?.telefono,
                 email: user?.email,
             });
 
