@@ -40,7 +40,7 @@ const FormularioPerfil = () => {
             formData.append("nombre", data.nombre);
             formData.append("apellido", data.apellido);
             formData.append("direccion", data.direccion || "");
-            formData.append("celular", data.celular || "");
+            formData.append("celular", data.telefono || "");
             formData.append("email", data.email);
             formData.append("profileImageOption", "upload");
             
