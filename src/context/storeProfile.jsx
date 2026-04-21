@@ -47,7 +47,7 @@ const storeProfile = create((set) => ({
                 const endpoint = getProfileEndpoint(storedUser?.state?.rol);
                 const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
                 const respuesta = await axios.get(url, getAuthHeaders())
-                set({ user: respuesta.data })
+                set({ user: respuesta.data?.user || respuesta.data?.data || respuesta.data?.perfil || respuesta.data })
             } catch (error) {
                 console.error(error)
             }
@@ -62,7 +62,7 @@ const storeProfile = create((set) => ({
                 const url = getUpdateProfileEndpoint(rol, id);
                 const respuesta = await axios.put(url, data, getAuthHeaders(isFormData));
 
-                set({ user: respuesta.data })
+                set({ user: respuesta.data?.user || respuesta.data?.data || respuesta.data?.perfil || respuesta.data })
                 return respuesta; // Añadir return para poder manejar la respuesta
             } catch (error) {
                 console.log(error)

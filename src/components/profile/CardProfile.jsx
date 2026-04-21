@@ -36,7 +36,7 @@ export const CardProfile = () => {
         </div>
         <div className="self-start mb-2">
             <b className="text-gray-300">Teléfono:</b>
-            <p className="inline-block ml-3 text-white">{user?.telefono}</p>
+            <p className="inline-block ml-3 text-white">{user?.telefono || user?.celular || "-"}</p>
         </div>
         <div className="self-start">
             <b className="text-gray-300">Correo:</b>
