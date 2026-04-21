@@ -1,18 +1,35 @@
 import { Link } from 'react-router';
 import useFetch from '../hooks/useFetch'
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import { ToastContainer} from 'react-toastify'
 
+
+const getRecoverEndpointByRole = (roleParam) => {
+    const role = String(roleParam || '').toLowerCase();
+
+    if (role === 'administrador' || role === 'admin') {
+        return 'administrador/recuperarpassword';
+    }
+
+    if (role === 'estudiante') {
+        return 'estudiante/recuperarpassword';
+    }
+
+    return 'arrendatario/recuperarpassword';
+};
 
 export const Forgot = () => {
 
     const { register, handleSubmit, formState: { errors } } = useForm()
     const { fetchDataBackend } = useFetch()
+    const { id } = useParams();
 
     const sendMail = (data) => {
         if (!data?.email) return;
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/recuperarpassword`
+        const endpoint = getRecoverEndpointByRole(id);
+        const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`
         fetchDataBackend(url, data,'POST')
     }
 
