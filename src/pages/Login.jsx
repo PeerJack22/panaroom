@@ -27,7 +27,7 @@ const loginUser = async (data) => {
                 ? ['loginEstudiante']
                 : tipoAcceso === 'administrador'
                     ? ['loginAd']
-                    : ['login'];
+                    : ['arrendatario/login'];
 
         let response = null;
         let lastError = null;
