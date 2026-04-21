@@ -219,8 +219,9 @@ export const Home = () => {
         setDatosSolicitud((prev) => ({ ...prev, [name]: value }));
     };
 
-    const enviarSolicitudArrendatario = (e) => {
+    const enviarSolicitudArrendatario = async (e) => {
         e.preventDefault();
+        if (enviandoSolicitud) return;
         setEstadoSolicitud({ tipo: "", mensaje: "" });
 
         if (!PHONE_REGEX.test(datosSolicitud.celular)) {
@@ -241,10 +242,21 @@ export const Home = () => {
 
         setEnviandoSolicitud(true);
 
-        setTimeout(() => {
+        try {
+            const payload = {
+                nombre: datosSolicitud.nombre.trim(),
+                apellido: datosSolicitud.apellido.trim(),
+                direccion: datosSolicitud.direccion.trim(),
+                celular: datosSolicitud.celular.trim(),
+                email: datosSolicitud.email.trim().toLowerCase(),
+            };
+
+            const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/crear`;
+            const response = await axios.post(url, payload);
+
             setEstadoSolicitud({
                 tipo: "ok",
-                mensaje: "Formulario completado. Por ahora no se enviará al backend.",
+                mensaje: response?.data?.msg || "Solicitud enviada correctamente.",
             });
             setDatosSolicitud({
                 nombre: "",
@@ -253,8 +265,14 @@ export const Home = () => {
                 celular: "",
                 email: "",
             });
+        } catch (error) {
+            setEstadoSolicitud({
+                tipo: "error",
+                mensaje: error?.response?.data?.msg || "No se pudo enviar la solicitud. Inténtalo nuevamente.",
+            });
+        } finally {
             setEnviandoSolicitud(false);
-        }, 300);
+        }
     };
 
     return (
