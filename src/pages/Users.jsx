@@ -12,6 +12,7 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deletingStudentId, setDeletingStudentId] = useState(null);
+    const [confirmingArrendatarioId, setConfirmingArrendatarioId] = useState(null);
     const [userDepartamentos, setUserDepartamentos] = useState({});
     const [filtroNombre, setFiltroNombre] = useState("");
     const [filtroRol, setFiltroRol] = useState("todos");
@@ -297,6 +298,60 @@ const Users = () => {
         }
     };
 
+    const handleConfirmArrendatario = async (arrendatario) => {
+        const arrendatarioId = arrendatario?._id || arrendatario?.id;
+        if (!arrendatarioId) {
+            toast.error("No se pudo identificar al arrendatario");
+            return;
+        }
+
+        const confirmar = confirm(`¿Confirmar al arrendatario ${arrendatario?.nombre || ""} ${arrendatario?.apellido || ""}?`);
+        if (!confirmar) return;
+
+        setConfirmingArrendatarioId(arrendatarioId);
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const token = storedUser?.state?.token;
+
+            if (!token) {
+                toast.error("No se encontró la sesión, por favor inicia sesión nuevamente");
+                return;
+            }
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+
+            await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/arrendatarios/confirmar/${arrendatarioId}`,
+                {},
+                { headers }
+            );
+
+            setArrendatariosNoConfirmadosIds((prev) =>
+                prev.filter((id) => id !== arrendatarioId)
+            );
+
+            setUsers((prev) =>
+                prev.map((u) => {
+                    const userId = u?._id || u?.id;
+                    if (userId !== arrendatarioId) return u;
+                    return {
+                        ...u,
+                        confirmEmail: true,
+                    };
+                })
+            );
+
+            toast.success("Arrendatario confirmado correctamente");
+        } catch (error) {
+            const errorMsg = error?.response?.data?.msg || error?.response?.data?.message;
+            toast.error(errorMsg || "No se pudo confirmar al arrendatario");
+        } finally {
+            setConfirmingArrendatarioId(null);
+        }
+    };
+
     const usuariosFiltrados = users.filter((user) => {
         const nombreCompleto = `${user?.nombre || ""} ${user?.apellido || ""}`.toLowerCase();
         const nombreOk = !filtroNombre.trim() || nombreCompleto.includes(filtroNombre.trim().toLowerCase());
@@ -542,6 +597,21 @@ const Users = () => {
                                         <p className="text-gray-500">
                                             No tiene departamentos asociados.
                                         </p>
+                                    )}
+
+                                    {arrendatariosNoConfirmadosIds.includes(user?._id || user?.id) && (
+                                        <div className="mt-3 flex justify-end">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleConfirmArrendatario(user)}
+                                                disabled={confirmingArrendatarioId === (user?._id || user?.id)}
+                                                className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-60"
+                                            >
+                                                {confirmingArrendatarioId === (user?._id || user?.id)
+                                                    ? "Confirmando..."
+                                                    : "Confirmar arrendatario"}
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             )}
