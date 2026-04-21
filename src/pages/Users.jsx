@@ -15,6 +15,8 @@ const Users = () => {
     const [userDepartamentos, setUserDepartamentos] = useState({});
     const [filtroNombre, setFiltroNombre] = useState("");
     const [filtroRol, setFiltroRol] = useState("todos");
+    const [soloNoConfirmados, setSoloNoConfirmados] = useState(false);
+    const [arrendatariosNoConfirmadosIds, setArrendatariosNoConfirmadosIds] = useState([]);
     const [tipoFormulario, setTipoFormulario] = useState(null);
     const [animandoCambioFormulario, setAnimandoCambioFormulario] = useState(false);
     const [guardando, setGuardando] = useState(false);
@@ -85,6 +87,16 @@ const Users = () => {
                 estudiantesResponse = { data: [] };
             }
 
+            let noConfirmadosResponse;
+            try {
+                noConfirmadosResponse = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/administrador/arrendatarios/noconfirmados`,
+                    { headers }
+                );
+            } catch {
+                noConfirmadosResponse = { data: [] };
+            }
+
             const departamentosResponse = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/departamentos`,
                 { headers }
@@ -97,6 +109,10 @@ const Users = () => {
             const estudiantesData = Array.isArray(estudiantesResponse?.data)
                 ? estudiantesResponse.data
                 : estudiantesResponse?.data?.estudiantes || estudiantesResponse?.data?.data || [];
+
+            const noConfirmadosData = Array.isArray(noConfirmadosResponse?.data)
+                ? noConfirmadosResponse.data
+                : noConfirmadosResponse?.data?.arrendatarios || noConfirmadosResponse?.data?.data || [];
 
             const departamentosData = Array.isArray(departamentosResponse?.data)
                 ? departamentosResponse.data
@@ -132,8 +148,13 @@ const Users = () => {
                 })),
             ];
 
+            const idsNoConfirmados = noConfirmadosData
+                .map((u) => u?._id || u?.id)
+                .filter(Boolean);
+
             setUsers(usuariosUnificados);
             setUserDepartamentos(departamentosMap);
+            setArrendatariosNoConfirmadosIds(idsNoConfirmados);
         } catch (error) {
             console.error("Error al obtener los usuarios:", error);
             toast.error("Error al cargar los usuarios. Intenta de nuevo más tarde.");
@@ -283,7 +304,13 @@ const Users = () => {
         const rolNormalizado = normalizarRol(user?.rol);
         const rolOk = filtroRol === "todos" || rolNormalizado === filtroRol;
 
-        return nombreOk && rolOk;
+        const userId = user?._id || user?.id;
+        const esNoConfirmado = arrendatariosNoConfirmadosIds.includes(userId);
+        const noConfirmadoOk =
+            !soloNoConfirmados ||
+            (rolNormalizado === "arrendatario" && esNoConfirmado);
+
+        return nombreOk && rolOk && noConfirmadoOk;
     });
 
     const mostrarFormulario = Boolean(tipoFormulario);
@@ -446,6 +473,24 @@ const Users = () => {
                 </select>
             </div>
 
+            <div className="mb-6 flex items-center gap-3">
+                <input
+                    id="soloNoConfirmados"
+                    type="checkbox"
+                    checked={soloNoConfirmados}
+                    onChange={(e) => {
+                        setSoloNoConfirmados(e.target.checked);
+                        if (e.target.checked) {
+                            setFiltroRol("arrendatario");
+                        }
+                    }}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="soloNoConfirmados" className="text-sm font-medium text-gray-700">
+                    Solo arrendatarios no confirmados
+                </label>
+            </div>
+
             {users.length === 0 ? (
                 <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
                     No se encontraron usuarios registrados.
@@ -466,6 +511,14 @@ const Users = () => {
                                 <p><span className="font-semibold">Teléfono:</span> {user.celular || "No disponible"}</p>
                                 <p><span className="font-semibold">Dirección:</span> {user.direccion || "No disponible"}</p>
                                 <p><span className="font-semibold">Rol:</span> {normalizarRol(user.rol)}</p>
+                                {normalizarRol(user.rol) === "arrendatario" && (
+                                    <p>
+                                        <span className="font-semibold">Confirmación:</span>{" "}
+                                        {arrendatariosNoConfirmadosIds.includes(user?._id || user?.id)
+                                            ? "Pendiente"
+                                            : "Confirmado"}
+                                    </p>
+                                )}
                             </div>
 
                             {/* Sección de departamentos */}
