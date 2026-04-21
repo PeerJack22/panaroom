@@ -43,7 +43,9 @@ const FormularioPerfil = () => {
             formData.append("nombre", data.nombre);
             formData.append("apellido", data.apellido);
             formData.append("direccion", data.direccion || "");
-            formData.append("telefono", data.celular || "");
+            // Admin usa "telefono", arrendatario y estudiante usan "celular"
+            const fieldName = isAdmin ? "telefono" : "celular";
+            formData.append(fieldName, data.celular || "");
             formData.append("email", data.email);
             
             if (!isAdmin) {
