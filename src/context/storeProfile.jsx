@@ -18,6 +18,24 @@ const getCurrentRole = () => {
     return storedUser?.state?.rol;
 };
 
+const getProfileEndpoint = (rol) => {
+    if (rol === "administrador") return "perfilAd";
+    if (rol === "estudiante") return "estudiante/perfil";
+    return "arrendatario/perfil";
+};
+
+const getUpdateProfileEndpoint = (rol, id) => {
+    if (rol === "administrador") return `${import.meta.env.VITE_BACKEND_URL}/administrador/perfil/${id}`;
+    if (rol === "estudiante") return `${import.meta.env.VITE_BACKEND_URL}/estudiante/perfil/${id}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`;
+};
+
+const getUpdatePasswordEndpoint = (rol, id) => {
+    if (rol === "administrador") return `${import.meta.env.VITE_BACKEND_URL}/administrador/actualizarpassword/${id}`;
+    if (rol === "estudiante") return `${import.meta.env.VITE_BACKEND_URL}/estudiante/actualizarpassword/${id}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/arrendatario/actualizarpassword/${id}`;
+};
+
 
 const storeProfile = create((set) => ({
         
@@ -26,7 +44,7 @@ const storeProfile = create((set) => ({
         profile: async () => {
             try {
                 const storedUser = JSON.parse(localStorage.getItem("auth-token"));
-                const endpoint = storedUser.state.rol === "administrador" ? "perfilAd" : "perfil";
+                const endpoint = getProfileEndpoint(storedUser?.state?.rol);
                 const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`;
                 const respuesta = await axios.get(url, getAuthHeaders())
                 set({ user: respuesta.data })
@@ -41,31 +59,8 @@ const storeProfile = create((set) => ({
                 console.log("Enviando con FormData:", isFormData);
 
                 const rol = getCurrentRole();
-                const endpoints = rol === "administrador"
-                    ? [
-                        `${import.meta.env.VITE_BACKEND_URL}/administrador/${id}`,
-                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`,
-                    ]
-                    : [
-                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${id}`,
-                        `${import.meta.env.VITE_BACKEND_URL}/administrador/${id}`,
-                    ];
-
-                let respuesta;
-                let lastError;
-
-                for (const url of endpoints) {
-                    try {
-                        respuesta = await axios.put(url, data, getAuthHeaders(isFormData));
-                        break;
-                    } catch (error) {
-                        lastError = error;
-                    }
-                }
-
-                if (!respuesta) {
-                    throw lastError;
-                }
+                const url = getUpdateProfileEndpoint(rol, id);
+                const respuesta = await axios.put(url, data, getAuthHeaders(isFormData));
 
                 set({ user: respuesta.data })
                 return respuesta; // Añadir return para poder manejar la respuesta
@@ -75,34 +70,18 @@ const storeProfile = create((set) => ({
                 throw error; // Re-lanzar el error para manejarlo en el componente
             }
         },
-        updatePasswordProfile:async(data,id)=>{
+        updatePasswordProfile:async(data,id,token = null,useResetEndpoint = false)=>{
             try {
                 const rol = getCurrentRole();
-                const endpoints = rol === "administrador"
-                    ? [
-                        `${import.meta.env.VITE_BACKEND_URL}/administrador/actualizarpassword/${id}`,
-                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/actualizarpassword/${id}`,
-                    ]
-                    : [
-                        `${import.meta.env.VITE_BACKEND_URL}/arrendatario/actualizarpassword/${id}`,
-                        `${import.meta.env.VITE_BACKEND_URL}/administrador/actualizarpassword/${id}`,
-                    ];
-
-                let respuesta;
-                let lastError;
-
-                for (const url of endpoints) {
-                    try {
-                        respuesta = await axios.put(url, data, getAuthHeaders());
-                        break;
-                    } catch (error) {
-                        lastError = error;
-                    }
+                if (useResetEndpoint && rol === "administrador" && token) {
+                    const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/nuevopassword/${token}`;
+                    const respuesta = await axios.post(url, data);
+                    toast.success(respuesta?.data?.msg)
+                    return respuesta;
                 }
 
-                if (!respuesta) {
-                    throw lastError;
-                }
+                const url = getUpdatePasswordEndpoint(rol, id);
+                const respuesta = await axios.put(url, data, getAuthHeaders());
 
                 toast.success(respuesta?.data?.msg)
                 return respuesta
