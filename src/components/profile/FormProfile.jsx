@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import storeProfile from "../../context/storeProfile";
+import storeAuth from "../../context/storeAuth";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const FormularioPerfil = () => {
     const { user, updateProfile } = storeProfile();
+    const { rol } = storeAuth();
+    const isAdmin = rol === "administrador";
 
     const {
         register,
@@ -42,12 +45,15 @@ const FormularioPerfil = () => {
             formData.append("direccion", data.direccion || "");
             formData.append("telefono", data.celular || "");
             formData.append("email", data.email);
-            formData.append("profileImageOption", "upload");
             
-            // Añadir solo imagen subida
-            if (data.imagenPerfil && data.imagenPerfil[0]) {
-                formData.append("avatarArren", data.imagenPerfil[0]);
-                console.log("Imagen a subir:", data.imagenPerfil[0].name, data.imagenPerfil[0].size);
+            if (!isAdmin) {
+                formData.append("profileImageOption", "upload");
+
+                // Añadir solo imagen subida
+                if (data.imagenPerfil && data.imagenPerfil[0]) {
+                    formData.append("avatarArren", data.imagenPerfil[0]);
+                    console.log("Imagen a subir:", data.imagenPerfil[0].name, data.imagenPerfil[0].size);
+                }
             }
 
             // Mostrar todos los campos del FormData para depuración
@@ -164,7 +170,7 @@ const FormularioPerfil = () => {
                 {errors.email && <p className="text-red-800">{errors.email.message}</p>}
             </div>
 
-            <div className="mb-6">
+            {!isAdmin && <div className="mb-6">
                 <label className="mb-2 block text-sm font-medium text-gray-300">Imagen de perfil</label>
                 <div className="mt-4">
                     <input
@@ -192,7 +198,7 @@ const FormularioPerfil = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </div>}
 
             <input
                 type="submit"
