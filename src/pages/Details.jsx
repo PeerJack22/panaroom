@@ -21,7 +21,7 @@ const Details = () => {
     const [mostrarFormularioQueja, setMostrarFormularioQueja] = useState(false);
     const [enviandoQueja, setEnviandoQueja] = useState(false);
 
-    const isEstudiante = rol === 'estudiante';
+    const isAdminOArrendatario = rol === 'administrador' || rol === 'arrendatario';
 
     const abrirLightbox = (index) => setImagenActiva(index);
     const cerrarLightbox = () => setImagenActiva(null);
@@ -83,7 +83,8 @@ const Details = () => {
             };
 
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
-            const url = `${import.meta.env.VITE_BACKEND_URL}/estudiante/queja-sugerencia`;
+            const rolPrefix = rol === 'administrador' ? 'administrador' : rol === 'arrendatario' ? 'arrendatario' : 'estudiante';
+            const url = `${import.meta.env.VITE_BACKEND_URL}/${rolPrefix}/queja-sugerencia`;
             const response = await axios.post(url, payload, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -313,7 +314,7 @@ const Details = () => {
                     </section>
                 )}
 
-                {isEstudiante && (
+                {isAdminOArrendatario && (
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Queja o Sugerencia</h2>
                         
