@@ -11,34 +11,85 @@ const formatDate = (isoDate) => {
     }
 };
 
+const toText = (value, fallback = "-") => {
+    if (value === null || value === undefined) return fallback;
+    if (["string", "number", "boolean"].includes(typeof value)) return String(value);
+
+    if (typeof value === "object") {
+        const fullName = `${value?.nombre || ""} ${value?.apellido || ""}`.trim();
+        if (fullName) return fullName;
+        if (value?.titulo) return String(value.titulo);
+        if (value?.name) return String(value.name);
+        if (value?.email) return String(value.email);
+        if (value?.descripcion) return String(value.descripcion);
+        if (value?.mensaje) return String(value.mensaje);
+        return fallback;
+    }
+
+    return fallback;
+};
+
+const findFirstArrayInObject = (value, depth = 0) => {
+    if (depth > 5 || value === null || value === undefined) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value !== "object") return [];
+
+    const nestedValues = Object.values(value);
+    for (const nested of nestedValues) {
+        const found = findFirstArrayInObject(nested, depth + 1);
+        if (found.length) return found;
+    }
+
+    return [];
+};
+
 const getListFromResponse = (responseData) => {
     if (Array.isArray(responseData)) return responseData;
     if (Array.isArray(responseData?.data)) return responseData.data;
     if (Array.isArray(responseData?.quejas)) return responseData.quejas;
     if (Array.isArray(responseData?.comentarios)) return responseData.comentarios;
     if (Array.isArray(responseData?.results)) return responseData.results;
+
+    // Fallback genérico para estructuras anidadas: data.items, data.comentarios, etc.
+    const nestedArray = findFirstArrayInObject(responseData);
+    if (nestedArray.length) return nestedArray;
+
+    // Algunos backends devuelven un solo objeto en lugar de lista.
+    if (
+        responseData &&
+        typeof responseData === "object" &&
+        (responseData?.descripcion || responseData?.mensaje || responseData?.comentario || responseData?._id || responseData?.id)
+    ) {
+        return [responseData];
+    }
+
     return [];
 };
 
 const normalizeFeedbackItem = (item, index) => ({
     id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
-    tipo: item?.tipo || item?.categoria || "queja",
-    asunto: item?.asunto || item?.titulo || item?.subject || "Sin asunto",
-    mensaje: item?.mensaje || item?.descripcion || item?.comentario || "Sin descripción",
-    estado: item?.estado || "pendiente",
+    tipo: toText(item?.tipo || item?.categoria, "queja"),
+    asunto: toText(item?.asunto || item?.titulo || item?.subject, "Sin asunto"),
+    mensaje: toText(item?.mensaje || item?.descripcion || item?.comentario, "Sin descripción"),
+    estado: toText(item?.estado, "pendiente"),
     createdAt: item?.createdAt || item?.fecha || item?.updatedAt || new Date().toISOString(),
-    userName:
+    userName: toText(
         item?.userName ||
         item?.usuario ||
         item?.estudiante?.nombre ||
         item?.arrendatario?.nombre ||
         item?.autor ||
-        "Usuario",
-    departamento:
+        item?.creadoPor,
+        "Usuario"
+    ),
+    departamento: toText(
         item?.departamento?.titulo ||
         item?.departamento?.nombre ||
         item?.departamento ||
-        "-",
+        item?.inmueble ||
+        item?.residencia,
+        "-"
+    ),
 });
 
 const Feedback = () => {
