@@ -1,16 +1,27 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
+import storeAuth from "../context/storeAuth";
 
 
 const Details = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { fetchDataBackend } = useFetch();
+    const { rol } = storeAuth();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
     const [departamento, setDepartamento] = useState(null);
     const [propietario, setPropietario] = useState(null);
     const [imagenActiva, setImagenActiva] = useState(null);
+    const [mostrarFormularioQueja, setMostrarFormularioQueja] = useState(false);
+    const [enviandoQueja, setEnviandoQueja] = useState(false);
+
+    const isEstudiante = rol === 'estudiante';
 
     const abrirLightbox = (index) => setImagenActiva(index);
     const cerrarLightbox = () => setImagenActiva(null);
@@ -57,6 +68,43 @@ const Details = () => {
         if (dep?.agua) servicios.push("Agua");
         if (dep?.internet) servicios.push("Internet");
         return servicios;
+    };
+
+    const enviarQueja = async (data) => {
+        if (!departamento?._id || !data?.descripcion || enviandoQueja) return;
+
+        setEnviandoQueja(true);
+        const loadingToast = toast.loading('Enviando queja/sugerencia...');
+
+        try {
+            const payload = {
+                descripcion: data.descripcion,
+                departamento: departamento._id,
+            };
+
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const url = `${import.meta.env.VITE_BACKEND_URL}/estudiante/queja-sugerencia`;
+            const response = await axios.post(url, payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${storedUser?.state?.token}`,
+                },
+            });
+
+            toast.dismiss(loadingToast);
+            toast.success(response?.data?.msg || 'Queja/sugerencia enviada correctamente');
+            setMostrarFormularioQueja(false);
+            reset();
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            const errorMessage =
+                error?.response?.data?.msg ||
+                error?.response?.data?.message ||
+                'No se pudo enviar la queja/sugerencia';
+            toast.error(errorMessage);
+        } finally {
+            setEnviandoQueja(false);
+        }
     };
 
     useEffect(() => {
@@ -211,6 +259,62 @@ const Details = () => {
                             )}
                         </div>
                     </section>
+
+                    {isEstudiante && (
+                        <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Queja o Sugerencia</h2>
+                            
+                            {!mostrarFormularioQueja ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setMostrarFormularioQueja(true)}
+                                    className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                >
+                                    Dejar una queja o sugerencia
+                                </button>
+                            ) : (
+                                <form onSubmit={handleSubmit(enviarQueja)} className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Descripción
+                                        </label>
+                                        <textarea
+                                            placeholder="Cuéntanos tu queja o sugerencia..."
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 text-gray-700 resize-none"
+                                            rows="5"
+                                            {...register("descripcion", { 
+                                                required: "La descripción es obligatoria",
+                                                minLength: { value: 10, message: "Mínimo 10 caracteres" }
+                                            })}
+                                        />
+                                        {errors.descripcion && (
+                                            <p className="text-sm text-red-600 mt-1">{errors.descripcion.message}</p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="submit"
+                                            disabled={enviandoQueja}
+                                            className="flex-1 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                        >
+                                            {enviandoQueja ? 'Enviando...' : 'Enviar'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMostrarFormularioQueja(false);
+                                                reset();
+                                            }}
+                                            className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </section>
+                    )}
 
                     {propietario && (
                         <section className="bg-gray-50 rounded-xl p-8 border border-gray-200 flex flex-col justify-start">
