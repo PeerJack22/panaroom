@@ -25,10 +25,15 @@ export const Forgot = () => {
     const { fetchDataBackend } = useFetch()
     const { id } = useParams();
 
+    const initialRole = ["administrador", "estudiante", "arrendatario"].includes(String(id || '').toLowerCase())
+        ? String(id).toLowerCase()
+        : "";
+
     const sendMail = (data) => {
         if (!data?.email) return;
+        if (!data?.rol) return;
 
-        const endpoint = getRecoverEndpointByRole(id);
+        const endpoint = getRecoverEndpointByRole(data.rol);
         const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}`
         fetchDataBackend(url, data,'POST')
     }
@@ -45,6 +50,21 @@ export const Forgot = () => {
                     <p className="text-gray-500 text-sm text-center mb-6">Ingresa tu correo para restablecerla</p>
 
                     <form onSubmit={handleSubmit(sendMail)}>
+                        <div className="mb-4">
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo de acceso</label>
+                            <select
+                                defaultValue={initialRole}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 text-gray-700"
+                                {...register("rol", { required: "El tipo de acceso es obligatorio" })}
+                            >
+                                <option value="">Selecciona un rol</option>
+                                <option value="arrendatario">Arrendatario</option>
+                                <option value="estudiante">Estudiante</option>
+                                <option value="administrador">Administrador</option>
+                            </select>
+                            {errors.rol && <p className="text-red-800">{errors.rol.message}</p>}
+                        </div>
+
                         <div className="mb-4">
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
                             <input
