@@ -57,7 +57,6 @@ export const Forgot = () => {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 text-gray-700"
                                 {...register("rol", { required: "El tipo de acceso es obligatorio" })}
                             >
-                                <option value="">Selecciona un rol</option>
                                 <option value="arrendatario">Arrendatario</option>
                                 <option value="estudiante">Estudiante</option>
                                 <option value="administrador">Administrador</option>
