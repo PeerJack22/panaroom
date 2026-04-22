@@ -1,24 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import { toast } from "react-toastify";
 import storeAuth from "../context/storeAuth";
-import storeProfile from "../context/storeProfile";
-
-const STORAGE_KEY = "feedback-items-mock";
-
-const getStoredItems = () => {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
-};
-
-const saveItems = (items) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-};
 
 const formatDate = (isoDate) => {
     try {
@@ -28,79 +11,89 @@ const formatDate = (isoDate) => {
     }
 };
 
-const Feedback = () => {
-    const { rol, user: authUser } = storeAuth();
-    const { user } = storeProfile();
+const getListFromResponse = (responseData) => {
+    if (Array.isArray(responseData)) return responseData;
+    if (Array.isArray(responseData?.data)) return responseData.data;
+    if (Array.isArray(responseData?.quejas)) return responseData.quejas;
+    if (Array.isArray(responseData?.comentarios)) return responseData.comentarios;
+    if (Array.isArray(responseData?.results)) return responseData.results;
+    return [];
+};
 
-    const [tipo, setTipo] = useState("queja");
-    const [asunto, setAsunto] = useState("");
-    const [mensaje, setMensaje] = useState("");
-    const [items, setItems] = useState(getStoredItems);
+const normalizeFeedbackItem = (item, index) => ({
+    id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
+    tipo: item?.tipo || item?.categoria || "queja",
+    asunto: item?.asunto || item?.titulo || item?.subject || "Sin asunto",
+    mensaje: item?.mensaje || item?.descripcion || item?.comentario || "Sin descripción",
+    estado: item?.estado || "pendiente",
+    createdAt: item?.createdAt || item?.fecha || item?.updatedAt || new Date().toISOString(),
+    userName:
+        item?.userName ||
+        item?.usuario ||
+        item?.estudiante?.nombre ||
+        item?.arrendatario?.nombre ||
+        item?.autor ||
+        "Usuario",
+    departamento:
+        item?.departamento?.titulo ||
+        item?.departamento?.nombre ||
+        item?.departamento ||
+        "-",
+});
+
+const Feedback = () => {
+    const { rol, token } = storeAuth();
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const roleNormalized = String(rol || "").toLowerCase();
-    const isStudent = roleNormalized === "estudiante";
     const isAdmin = roleNormalized === "administrador";
-    const currentUser = user || authUser;
-    const currentUserId =
-        currentUser?._id ||
-        currentUser?.id ||
-        currentUser?.email ||
-        "anonimo";
-    const currentUserName =
-        `${currentUser?.nombre || ""} ${currentUser?.apellido || ""}`.trim() ||
-        currentUser?.email ||
-        "Usuario";
+    const isArrendatario = roleNormalized === "arrendatario";
+    const canViewFeedback = isAdmin || isArrendatario;
 
-    const myItems = useMemo(() => {
-        return items.filter((item) => item.userId === currentUserId);
-    }, [items, currentUserId]);
+    const endpoint = useMemo(() => {
+        if (isAdmin) return "/administrador/quejas";
+        if (isArrendatario) return "/arrendatario/comentarios";
+        return null;
+    }, [isAdmin, isArrendatario]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        const fetchFeedback = async () => {
+            if (!canViewFeedback || !endpoint) return;
 
-        const asuntoTrim = asunto.trim();
-        const mensajeTrim = mensaje.trim();
+            setLoading(true);
+            try {
+                const url = `${import.meta.env.VITE_BACKEND_URL}${endpoint}`;
+                const response = await axios.get(url, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-        if (!asuntoTrim || !mensajeTrim) {
-            toast.error("Completa asunto y mensaje");
-            return;
-        }
+                const rawList = getListFromResponse(response?.data);
+                const normalizedList = rawList.map((item, index) => normalizeFeedbackItem(item, index));
+                setItems(normalizedList);
+            } catch (error) {
+                const errorMessage =
+                    error?.response?.data?.msg ||
+                    error?.response?.data?.message ||
+                    "No se pudieron cargar las quejas/sugerencias";
+                toast.error(errorMessage);
+                setItems([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        try {
-            const newItem = {
-                id: globalThis.crypto?.randomUUID?.() || `${Date.now()}`,
-                tipo,
-                asunto: asuntoTrim,
-                mensaje: mensajeTrim,
-                createdAt: new Date().toISOString(),
-                userId: currentUserId,
-                userName: currentUserName,
-                estado: "pendiente",
-            };
+        fetchFeedback();
+    }, [canViewFeedback, endpoint, token]);
 
-            setItems((prev) => {
-                const updated = [newItem, ...prev];
-                saveItems(updated);
-                return updated;
-            });
-
-            setAsunto("");
-            setMensaje("");
-            setTipo("queja");
-
-            // Forzar visualización inmediata del mensaje más reciente
-            toast.dismiss();
-            toast.success("Tu mensaje fue registrado correctamente", { toastId: "feedback-created" });
-        } catch {
-            toast.error("No se pudo guardar tu mensaje");
-        }
-    };
-
-    if (!isStudent && !isAdmin) {
+    if (!canViewFeedback) {
         return (
             <div className="bg-white border border-gray-200 rounded-xl shadow p-6">
                 <h1 className="font-black text-3xl text-gray-700">Quejas y sugerencias</h1>
-                <p className="mt-4 text-gray-600">Este módulo está disponible para estudiantes y administradores.</p>
+                <p className="mt-4 text-gray-600">Este módulo está disponible para administrador y arrendatario.</p>
             </div>
         );
     }
@@ -110,108 +103,41 @@ const Feedback = () => {
             <h1 className="font-black text-4xl text-gray-500">Quejas y sugerencias</h1>
             <hr className="my-4 border-t-2 border-gray-300" />
 
-            {isStudent && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">Enviar un mensaje</h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo</label>
-                                <select
-                                    value={tipo}
-                                    onChange={(e) => setTipo(e.target.value)}
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="queja">Queja</option>
-                                    <option value="sugerencia">Sugerencia</option>
-                                </select>
-                            </div>
+            <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">
+                    {isAdmin ? "Todas las quejas (Administrador)" : "Quejas de mis departamentos (Arrendatario)"}
+                </h2>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Asunto</label>
-                                <input
-                                    type="text"
-                                    value={asunto}
-                                    onChange={(e) => setAsunto(e.target.value)}
-                                    placeholder="Escribe el asunto"
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">Mensaje</label>
-                                <textarea
-                                    value={mensaje}
-                                    onChange={(e) => setMensaje(e.target.value)}
-                                    rows={5}
-                                    placeholder="Cuéntanos lo que sucede o tu sugerencia"
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="rounded-md bg-blue-600 px-4 py-2 text-white font-semibold hover:bg-blue-700 transition-colors"
-                            >
-                                Enviar
-                            </button>
-                        </form>
-                    </section>
-
-                    <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">Mis envíos</h2>
-                        {!myItems.length ? (
-                            <p className="text-gray-500">Aún no has enviado quejas o sugerencias.</p>
-                        ) : (
-                            <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
-                                {myItems.map((item) => (
-                                    <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                                        <div className="flex items-center justify-between gap-3">
-                                            <p className="font-semibold text-gray-800">{item.asunto}</p>
-                                            <span className="text-xs rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 uppercase">
-                                                {item.tipo}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
-                                        <p className="text-xs text-gray-500 mt-2">{formatDate(item.createdAt)}</p>
-                                    </article>
-                                ))}
-                            </div>
-                        )}
-                    </section>
-                </div>
-            )}
-
-            {isAdmin && (
-                <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Bandeja de quejas y sugerencias</h2>
-                    {!items.length ? (
-                        <p className="text-gray-500">No existen mensajes registrados.</p>
-                    ) : (
-                        <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
-                            {items.map((item) => (
-                                <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                                    <div className="flex flex-wrap items-center justify-between gap-2">
-                                        <p className="font-semibold text-gray-800">{item.asunto}</p>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 uppercase">
-                                                {item.tipo}
-                                            </span>
-                                            <span className="text-xs rounded-full bg-amber-100 text-amber-800 px-2 py-0.5 uppercase">
-                                                {item.estado}
-                                            </span>
-                                        </div>
+                {loading ? (
+                    <p className="text-gray-500">Cargando registros...</p>
+                ) : !items.length ? (
+                    <p className="text-gray-500">No existen registros para mostrar.</p>
+                ) : (
+                    <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
+                        {items.map((item) => (
+                            <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <p className="font-semibold text-gray-800">{item.asunto}</p>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 uppercase">
+                                            {item.tipo}
+                                        </span>
+                                        <span className="text-xs rounded-full bg-amber-100 text-amber-800 px-2 py-0.5 uppercase">
+                                            {item.estado}
+                                        </span>
                                     </div>
-                                    <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
-                                    <p className="text-xs text-gray-500 mt-2">
-                                        Enviado por {item.userName} • {formatDate(item.createdAt)}
-                                    </p>
-                                </article>
-                            ))}
-                        </div>
-                    )}
-                </section>
-            )}
+                                </div>
+
+                                <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
+
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Usuario: {item.userName} • Departamento: {item.departamento} • {formatDate(item.createdAt)}
+                                </p>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </section>
         </div>
     );
 };
