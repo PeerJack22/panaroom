@@ -47,6 +47,7 @@ function App() {
           <Route path='register' element={<Register/>}/>
           <Route path='forgot/:id' element={<Forgot/>}/>
           <Route path='confirm/:token' element={<Confirm/>}/>
+          <Route path='reset/:rol/:token' element={<Reset/>}/>
           <Route path='reset/:token' element={<Reset/>}/>
           <Route path='auth/success' element={<AuthSuccess />} />
           <Route path='*' element={<NotFound />} />

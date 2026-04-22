@@ -1,33 +1,93 @@
 import passwordRecovery from '../assets/passwordRecovery.jpg';
 import { ToastContainer } from 'react-toastify';
 import { useEffect, useState } from 'react';
-import useFetch from '../hooks/useFetch';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import { useNavigate, useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 
+const roleToPrefix = {
+    administrador: 'administrador',
+    arrendatario: 'arrendatario',
+    estudiante: 'estudiante',
+};
+
+const normalizeRole = (value) => {
+    const role = String(value || '').toLowerCase();
+    return roleToPrefix[role] ? role : null;
+};
+
+const getCandidatePrefixes = (roleParam) => {
+    const normalizedRole = normalizeRole(roleParam);
+    if (normalizedRole) return [roleToPrefix[normalizedRole]];
+    return ['administrador', 'arrendatario', 'estudiante'];
+};
+
 const Reset = () => {
-    const { fetchDataBackend } = useFetch();
-    const { token } = useParams();
+    const { token, rol } = useParams();
     const navigate = useNavigate();
     const [tokenback, setTokenBack] = useState(false);
+    const [resolvedPrefix, setResolvedPrefix] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const changePassword = (data) => {
-        const url = `${import.meta.env.VITE_BACKEND_URL}/nuevopassword/${token}`;
-        fetchDataBackend(url, data, 'POST');
-        setTimeout(() => {
-            navigate('/login');   
-        }, 3000);
+    const changePassword = async (data) => {
+        if (!token || !resolvedPrefix || isSubmitting) return;
+
+        setIsSubmitting(true);
+        const loadingToast = toast.loading('Procesando solicitud...');
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/${resolvedPrefix}/nuevopassword/${token}`;
+            const response = await axios.post(url, data, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            toast.dismiss(loadingToast);
+            toast.success(response?.data?.msg || 'Contraseña actualizada correctamente');
+
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            const errorMessage =
+                error?.response?.data?.msg ||
+                error?.response?.data?.message ||
+                'No se pudo actualizar la contraseña';
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     useEffect(() => {
         const verifyToken = async () => {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/recuperarpassword/${token}`;
-            fetchDataBackend(url, null, 'GET');
-            setTokenBack(true);
+            if (!token) {
+                setTokenBack(false);
+                return;
+            }
+
+            const prefixes = getCandidatePrefixes(rol);
+
+            for (const prefix of prefixes) {
+                try {
+                    const url = `${import.meta.env.VITE_BACKEND_URL}/${prefix}/recuperarpassword/${token}`;
+                    await axios.get(url);
+                    setResolvedPrefix(prefix);
+                    setTokenBack(true);
+                    return;
+                } catch {
+                    // Probar siguiente prefijo cuando falle la validación en este rol.
+                }
+            }
+
+            setTokenBack(false);
+            toast.error('El enlace de recuperación no es válido o expiró.');
         };
+
         verifyToken();
-    }, []);
+    }, [token, rol]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
@@ -75,9 +135,10 @@ const Reset = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-700 hover:bg-blue-600 text-white py-2 rounded-md transition-colors cursor-pointer"
+                        disabled={isSubmitting}
+                        className="w-full bg-blue-700 hover:bg-blue-600 disabled:bg-gray-500 text-white py-2 rounded-md transition-colors cursor-pointer"
                     >
-                        Enviar
+                        {isSubmitting ? 'Enviando...' : 'Enviar'}
                     </button>
                 </form>
             )}
