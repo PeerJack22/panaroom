@@ -40,6 +40,15 @@ const obtenerServicios = (item) => {
     return servicios;
 };
 
+const tieneParqueadero = (valor) => {
+    if (valor === true || valor === 1) return true;
+    if (typeof valor === "string") {
+        const normalizado = valor.trim().toLowerCase();
+        return ["true", "1", "si", "sí"].includes(normalizado);
+    }
+    return false;
+};
+
 export const Home = () => {
     const [servicios, setServicios] = useState([]);
     const [abierto, setAbierto] = useState(false);
@@ -96,6 +105,7 @@ export const Home = () => {
                     precio: Number(item?.precioMensual) || 0,
                     numeroHabitaciones: Number(item?.numeroHabitaciones) || 0,
                     numeroBanos: Number(item?.numeroBanos) || 0,
+                    parqueadero: item?.parqueadero,
                     direccion: item?.direccion || item?.ciudad || 'Sin dirección',
                     descripcion: item?.descripcion || 'Sin descripción disponible.',
                     serviciosIncluidos: obtenerServicios(item),
@@ -136,7 +146,13 @@ export const Home = () => {
             !servicios.length ||
             servicios.every((serv) => propiedad.serviciosIncluidos.includes(serv));
 
-        return precioValido && habitacionesValidas && banosValidos && serviciosValidos;
+        const filtroParqueadero = filtrosAdicionalesAplicados.parqueadero;
+        const tieneParqueaderoPropiedad = tieneParqueadero(propiedad?.parqueadero);
+        const parqueaderoValido =
+            !filtroParqueadero ||
+            (filtroParqueadero === 'si' ? tieneParqueaderoPropiedad : !tieneParqueaderoPropiedad);
+
+        return precioValido && habitacionesValidas && banosValidos && serviciosValidos && parqueaderoValido;
     });
 
     const totalPaginas = Math.max(1, Math.ceil(propiedadesFiltradas.length / propiedadesPorPagina));
@@ -145,7 +161,7 @@ export const Home = () => {
 
     useEffect(() => {
         setPaginaActual(1);
-    }, [precioMin, precioMax, habitacionesFiltro, banosFiltro, servicios]);
+    }, [precioMin, precioMax, habitacionesFiltro, banosFiltro, servicios, filtrosAdicionalesAplicados]);
 
     const cambiarPagina = (nuevaPagina) => {
         if (nuevaPagina < 1 || nuevaPagina > totalPaginas || nuevaPagina === paginaActual) return;

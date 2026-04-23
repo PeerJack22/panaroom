@@ -144,6 +144,15 @@ const Table = () => {
         return servicios;
     };
 
+    const tieneParqueadero = (valor) => {
+        if (valor === true || valor === 1) return true;
+        if (typeof valor === "string") {
+            const normalizado = valor.trim().toLowerCase();
+            return ["true", "1", "si", "sí"].includes(normalizado);
+        }
+        return false;
+    };
+
     const departamentosFiltrados = departamentos.filter((dep) => {
         // Filtrar solo departamentos disponibles
         if (dep?.disponible === false) return false;
@@ -168,7 +177,15 @@ const Table = () => {
             !filters.servicios.length ||
             filters.servicios.every((serv) => serviciosDep.includes(serv));
 
-        return matchArriendo && matchHabitaciones && matchBanos && matchServicio;
+        const filtroParqueadero = filtrosAdicionalesAplicados.parqueadero;
+        const tieneParqueaderoDepartamento = tieneParqueadero(dep?.parqueadero);
+        const matchParqueadero =
+            !filtroParqueadero ||
+            (filtroParqueadero === "si"
+                ? tieneParqueaderoDepartamento
+                : !tieneParqueaderoDepartamento);
+
+        return matchArriendo && matchHabitaciones && matchBanos && matchServicio && matchParqueadero;
     });
 
     return (
