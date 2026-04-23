@@ -825,7 +825,7 @@ export const Home = () => {
                         <p className='text-center text-white-400'>Correo: contacto@panaroom.com</p>
                         <FaSquareInstagram className='text-2xl hover:text-cyan-400' />
                         <FaYoutube className='text-2xl hover:text-cyan-400' />
-                        <FaGithub className='text-2xl hover:text-cyan-400' />
+                        <FaGithub className='text-2xl hover:text-cyan-400' href='https://github.com/PeerJack22/panaroom' />
                     </div>
                 </div>
             </footer>

@@ -125,9 +125,9 @@ const loginUser = async (data) => {
             <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center px-6">
                 <div className="md:w-4/5 sm:w-full">
                     <h1 className="text-3xl font-bold mb-2 text-center uppercase text-blue-800">
-                        Login
+                        Inicio de sesión
                     </h1>
-                    <small className="text-gray-500 block my-4 text-sm text-center">Ingresa tus datos porfavor</small>
+                    <small className="text-gray-500 block my-4 text-sm text-center">Ingresa tus datos</small>
 
                     <form onSubmit={handleSubmit(loginUser)}>
                         {/* Tipo de acceso */}
