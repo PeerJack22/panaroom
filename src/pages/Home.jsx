@@ -652,10 +652,30 @@ export const Home = () => {
                 </div>
 
                 <div className="flex justify-center mt-8">
-                    <div className="flex items-center gap-2 flex-wrap justify-center">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                        <button
+                            type="button"
+                            onClick={() => cambiarPagina(1)}
+                            disabled={paginaActual === 1}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Primera página"
+                        >
+                            &laquo;
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => cambiarPagina(paginaActual - 1)}
+                            disabled={paginaActual === 1}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Página anterior"
+                        >
+                            &lsaquo;
+                        </button>
+
                         {paginasVisibles.map((pagina, index) =>
                             pagina === "..." ? (
-                                <span key={`ellipsis-${index}`} className="px-2 text-gray-500 text-sm">
+                                <span key={`ellipsis-${index}`} className="px-1.5 text-gray-400 text-xs select-none">
                                     ...
                                 </span>
                             ) : (
@@ -663,16 +683,36 @@ export const Home = () => {
                                     key={pagina}
                                     type="button"
                                     onClick={() => cambiarPagina(pagina)}
-                                    className={`min-w-10 px-3 py-2 rounded-full text-sm font-semibold transition-colors border ${
+                                    className={`h-8 min-w-8 px-2 rounded-full text-xs font-semibold transition-colors border ${
                                         pagina === paginaActual
-                                            ? "bg-blue-700 text-white border-blue-700"
-                                            : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50"
+                                            ? "bg-blue-700 text-white border-blue-700 shadow-sm"
+                                            : "bg-white text-gray-600 border-gray-300 hover:bg-blue-50"
                                     }`}
                                 >
                                     {pagina}
                                 </button>
                             )
                         )}
+
+                        <button
+                            type="button"
+                            onClick={() => cambiarPagina(paginaActual + 1)}
+                            disabled={paginaActual === totalPaginas}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Página siguiente"
+                        >
+                            &rsaquo;
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => cambiarPagina(totalPaginas)}
+                            disabled={paginaActual === totalPaginas}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Última página"
+                        >
+                            &raquo;
+                        </button>
                     </div>
                 </div>
             </section>

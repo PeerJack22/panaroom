@@ -41,6 +41,8 @@ const Table = () => {
         titulo: "",
         estado: "",
     });
+    const [paginaActual, setPaginaActual] = useState(1);
+    const elementosPorPagina = 6;
 
     useEffect(() => {
         if (!userToken) return;
@@ -209,6 +211,37 @@ const Table = () => {
 
     const limpiarFiltrosAdmin = () => {
         setAdminFilters({ titulo: "", estado: "" });
+    };
+
+    useEffect(() => {
+        setPaginaActual(1);
+    }, [departamentosFiltrados.length]);
+
+    const totalPaginas = Math.max(1, Math.ceil(departamentosFiltrados.length / elementosPorPagina));
+    const indiceInicial = (paginaActual - 1) * elementosPorPagina;
+    const departamentosPaginados = departamentosFiltrados.slice(indiceInicial, indiceInicial + elementosPorPagina);
+
+    const paginasVisibles = (() => {
+        const total = totalPaginas;
+        const actual = Math.min(paginaActual, total);
+        if (total <= 5) {
+            return Array.from({ length: total }, (_, index) => index + 1);
+        }
+
+        if (actual <= 3) {
+            return [1, 2, 3, 4, "...", total];
+        }
+
+        if (actual >= total - 2) {
+            return [1, "...", total - 3, total - 2, total - 1, total];
+        }
+
+        return [1, "...", actual - 1, actual, actual + 1, "...", total];
+    })();
+
+    const cambiarPagina = (pagina) => {
+        const siguiente = Math.min(Math.max(pagina, 1), totalPaginas);
+        setPaginaActual(siguiente);
     };
 
     return (
@@ -501,72 +534,141 @@ const Table = () => {
                     <span className="font-medium">No hay resultados con esos filtros</span>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
-                    {departamentosFiltrados.map((dep) => (
-                        <article key={dep._id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
-                            <img
-                                src={dep?.imagenes?.[0]?.url || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"}
-                                alt={`Imagen principal de ${dep.titulo}`}
-                                className="w-full h-40 object-cover rounded-lg border border-gray-200"
-                            />
+                <div className="mt-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {departamentosPaginados.map((dep) => (
+                            <article key={dep._id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
+                                <img
+                                    src={dep?.imagenes?.[0]?.url || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"}
+                                    alt={`Imagen principal de ${dep.titulo}`}
+                                    className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                                />
 
-                            <div className="flex items-start justify-between gap-3">
-                                <h3 className="text-lg font-bold text-gray-800 leading-tight">{dep.titulo}</h3>
-                            </div>
+                                <div className="flex items-start justify-between gap-3">
+                                    <h3 className="text-lg font-bold text-gray-800 leading-tight">{dep.titulo}</h3>
+                                </div>
 
-                            <p className="text-sm text-gray-600 line-clamp-3">{dep.descripcion}</p>
+                                <p className="text-sm text-gray-600 line-clamp-3">{dep.descripcion}</p>
 
-                            <p className="text-sm text-gray-700">
-                                <span className="font-semibold">Dirección:</span> {dep.direccion}
-                            </p>
+                                <p className="text-sm text-gray-700">
+                                    <span className="font-semibold">Dirección:</span> {dep.direccion}
+                                </p>
 
-                            <p className="text-sm text-blue-800 font-semibold">Precio: $ {dep.precioMensual}</p>
+                                <p className="text-sm text-blue-800 font-semibold">Precio: $ {dep.precioMensual}</p>
 
-                            <div className="mt-auto flex items-center justify-end gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    title="Más información"
-                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
-                                    onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)}
-                                >
-                                    <MdInfo className="h-5 w-5" />
-                                    Ver más
-                                </button>
-
-                                {userRol === "administrador" && (
+                                <div className="mt-auto flex items-center justify-end gap-3 pt-2">
                                     <button
                                         type="button"
-                                        title={dep?.disponible === false ? "Activar" : "Desactivar"}
-                                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors ${
-                                            dep?.disponible === false
-                                                ? "border-green-300 text-green-700 hover:bg-green-50"
-                                                : "border-red-300 text-red-700 hover:bg-red-50"
-                                        }`}
-                                        onClick={toggleDisponibilidad}
+                                        title="Más información"
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
+                                        onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)}
                                     >
-                                        {dep?.disponible === false ? (
-                                            <>
-                                                <MdToggleOff className="h-5 w-5" />
-                                                Activar
-                                            </>
-                                        ) : (
-                                            <>
-                                                <MdToggleOn className="h-5 w-5" />
-                                                Desactivar
-                                            </>
-                                        )}
+                                        <MdInfo className="h-5 w-5" />
+                                        Ver más
                                     </button>
+
+                                    {userRol === "administrador" && (
+                                        <button
+                                            type="button"
+                                            title={dep?.disponible === false ? "Activar" : "Desactivar"}
+                                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors ${
+                                                dep?.disponible === false
+                                                    ? "border-green-300 text-green-700 hover:bg-green-50"
+                                                    : "border-red-300 text-red-700 hover:bg-red-50"
+                                            }`}
+                                            onClick={toggleDisponibilidad}
+                                        >
+                                            {dep?.disponible === false ? (
+                                                <>
+                                                    <MdToggleOff className="h-5 w-5" />
+                                                    Activar
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <MdToggleOn className="h-5 w-5" />
+                                                    Desactivar
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
+
+                                    {(userRol === "arrendador" && dep.creador === userId && dep?.disponible === false) && (
+                                        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 bg-red-50 text-sm font-medium">
+                                            <MdToggleOff className="h-5 w-5" />
+                                            Desactivado
+                                        </span>
+                                    )}
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+
+                    {departamentosFiltrados.length > elementosPorPagina && (
+                        <div className="mt-6 flex justify-center">
+                            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(1)}
+                                    disabled={paginaActual === 1}
+                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    aria-label="Primera página"
+                                >
+                                    &laquo;
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(paginaActual - 1)}
+                                    disabled={paginaActual === 1}
+                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    aria-label="Página anterior"
+                                >
+                                    &lsaquo;
+                                </button>
+
+                                {paginasVisibles.map((pagina, index) =>
+                                    pagina === "..." ? (
+                                        <span key={`ellipsis-${index}`} className="px-1.5 text-gray-400 text-xs select-none">
+                                            ...
+                                        </span>
+                                    ) : (
+                                        <button
+                                            key={pagina}
+                                            type="button"
+                                            onClick={() => cambiarPagina(pagina)}
+                                            className={`h-8 min-w-8 px-2 rounded-full text-xs font-semibold transition-colors border ${
+                                                pagina === paginaActual
+                                                    ? "bg-blue-700 text-white border-blue-700 shadow-sm"
+                                                    : "bg-white text-gray-600 border-gray-300 hover:bg-blue-50"
+                                            }`}
+                                        >
+                                            {pagina}
+                                        </button>
+                                    )
                                 )}
 
-                                {(userRol === "arrendador" && dep.creador === userId && dep?.disponible === false) && (
-                                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 bg-red-50 text-sm font-medium">
-                                        <MdToggleOff className="h-5 w-5" />
-                                        Desactivado
-                                    </span>
-                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(paginaActual + 1)}
+                                    disabled={paginaActual === totalPaginas}
+                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    aria-label="Página siguiente"
+                                >
+                                    &rsaquo;
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(totalPaginas)}
+                                    disabled={paginaActual === totalPaginas}
+                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    aria-label="Última página"
+                                >
+                                    &raquo;
+                                </button>
                             </div>
-                        </article>
-                    ))}
+                        </div>
+                    )}
                 </div>
             )}
         </>
