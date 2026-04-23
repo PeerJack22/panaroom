@@ -3,14 +3,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import storeAuth from "../context/storeAuth";
 
-const formatDate = (isoDate) => {
-    try {
-        return new Date(isoDate).toLocaleString("es-EC");
-    } catch {
-        return isoDate;
-    }
-};
-
 const toText = (value, fallback = "-") => {
     if (value === null || value === undefined) return fallback;
     if (["string", "number", "boolean"].includes(typeof value)) return String(value);
@@ -68,19 +60,15 @@ const getListFromResponse = (responseData) => {
 
 const normalizeFeedbackItem = (item, index) => ({
     id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
-    tipo: toText(item?.tipo || item?.categoria, "queja"),
-    asunto: toText(item?.asunto || item?.titulo || item?.subject, "Sin asunto"),
     mensaje: toText(item?.mensaje || item?.descripcion || item?.comentario, "Sin descripción"),
-    estado: toText(item?.estado, "pendiente"),
-    createdAt: item?.createdAt || item?.fecha || item?.updatedAt || new Date().toISOString(),
-    userName: toText(
-        item?.userName ||
-        item?.usuario ||
+    estudiante: toText(
         item?.estudiante?.nombre ||
-        item?.arrendatario?.nombre ||
+        item?.estudiante ||
+        item?.usuario ||
+        item?.userName ||
         item?.autor ||
         item?.creadoPor,
-        "Usuario"
+        "No disponible"
     ),
     departamento: toText(
         item?.departamento?.titulo ||
@@ -88,9 +76,19 @@ const normalizeFeedbackItem = (item, index) => ({
         item?.departamento ||
         item?.inmueble ||
         item?.residencia,
-        "-"
+        "No disponible"
     ),
+    fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
 });
+
+const formatDate = (value) => {
+    if (!value) return "No disponible";
+    try {
+        return new Date(value).toLocaleString("es-EC");
+    } catch {
+        return String(value);
+    }
+};
 
 const Feedback = () => {
     const { rol, token } = storeAuth();
@@ -167,22 +165,9 @@ const Feedback = () => {
                     <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
                         {items.map((item) => (
                             <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                    <p className="font-semibold text-gray-800">{item.asunto}</p>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 uppercase">
-                                            {item.tipo}
-                                        </span>
-                                        <span className="text-xs rounded-full bg-amber-100 text-amber-800 px-2 py-0.5 uppercase">
-                                            {item.estado}
-                                        </span>
-                                    </div>
-                                </div>
-
                                 <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
-
                                 <p className="text-xs text-gray-500 mt-2">
-                                    Usuario: {item.userName} • Departamento: {item.departamento} • {formatDate(item.createdAt)}
+                                    Estudiante: {item.estudiante} • Departamento: {item.departamento} • Fecha: {formatDate(item.fecha)}
                                 </p>
                             </article>
                         ))}
