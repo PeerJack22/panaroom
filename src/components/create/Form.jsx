@@ -63,10 +63,14 @@ export const Form = () => {
     }, [currentMapUrl]);
 
     const stepFields = {
-        1: ["titulo", "descripcion", "direccion", "ciudad", "urlMapa"],
+        1: ["titulo", "descripcion", "direccion", "urlMapa"],
         2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero"],
         3: ["imagen"],
     };
+
+    useEffect(() => {
+        setValue("ciudad", "Quito", { shouldDirty: false });
+    }, [setValue]);
 
     const handleNextStep = async () => {
         if (!stepFields[step]) {
@@ -252,16 +256,7 @@ export const Form = () => {
                             {errors.direccion && <p className="text-red-500 text-xs italic">{errors.direccion.message}</p>}
                         </div>
 
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold">Ciudad</label>
-                            <input
-                                type="text"
-                                placeholder="Ingresar ciudad"
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                                {...register("ciudad", { required: "La ciudad es obligatoria." })}
-                            />
-                            {errors.ciudad && <p className="text-red-500 text-xs italic">{errors.ciudad.message}</p>}
-                        </div>
+                        <input type="hidden" {...register("ciudad")} />
 
                         <input
                             type="hidden"
@@ -424,7 +419,6 @@ export const Form = () => {
                     <div className="space-y-3 text-sm text-gray-700">
                         <p><span className="font-semibold">Título:</span> {values.titulo || "-"}</p>
                         <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
-                        <p><span className="font-semibold">Ciudad:</span> {values.ciudad || "-"}</p>
                         <p><span className="font-semibold">Precio mensual:</span> {values.precioMensual || "-"}</p>
                         <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
                         <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>

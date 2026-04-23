@@ -239,7 +239,6 @@ const Details = () => {
                             <li><strong className="text-gray-900">Título:</strong> {departamento.titulo}</li>
                             <li><strong className="text-gray-900">Descripción:</strong> {departamento.descripcion}</li>
                             <li><strong className="text-gray-900">Dirección:</strong> {departamento.direccion}</li>
-                            <li><strong className="text-gray-900">Ciudad:</strong> {departamento.ciudad}</li>
                             <li><strong className="text-gray-900">Precio mensual:</strong> $ {departamento.precioMensual}</li>
                             <li><strong className="text-gray-900">Habitaciones:</strong> {departamento.numeroHabitaciones}</li>
                             <li><strong className="text-gray-900">Baños:</strong> {departamento.numeroBanos}</li>

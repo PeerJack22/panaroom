@@ -252,7 +252,7 @@ const Table = () => {
                         name="habitaciones"
                         value={filters.habitaciones}
                         onChange={handleFilterChange}
-                        placeholder="Numero de habitaciones"
+                        placeholder="Número de habitaciones"
                         className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                     />
 
@@ -262,7 +262,7 @@ const Table = () => {
                         name="banos"
                         value={filters.banos}
                         onChange={handleFilterChange}
-                        placeholder="Numero de baños"
+                        placeholder="Número de baños"
                         className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                     />
 
@@ -330,7 +330,7 @@ const Table = () => {
                             onClick={() => setAbiertoMasFiltros((prev) => !prev)}
                             className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <span>Mas filtros</span>
+                            <span>Más filtros</span>
                             {contarFiltrosAdicionalesAplicados > 0 && (
                                 <span className="inline-flex min-w-[22px] justify-center rounded-full bg-blue-700 px-2 py-0.5 text-xs font-semibold text-white">
                                     {contarFiltrosAdicionalesAplicados}
