@@ -2,7 +2,7 @@ import { MdToggleOn, MdToggleOff, MdInfo} from "react-icons/md";
 import useFetch from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Table = () => {
@@ -190,8 +190,6 @@ const Table = () => {
 
     return (
         <>
-            <ToastContainer />
-
             <div className="w-full mt-5 mb-4 p-4 rounded-lg bg-white shadow-lg border border-gray-200">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div className="relative">

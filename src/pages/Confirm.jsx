@@ -2,7 +2,7 @@ import edificioPulgar from '../assets/edificioPulgar.webp';
 import { Link, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export const Confirm = () => {
     const { token } = useParams();
@@ -51,8 +51,6 @@ export const Confirm = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
-            <ToastContainer />
-
             <img
                 className="h-64 w-64 object-cover border-4 border-slate-600 shadow-md mb-8"
                 src={edificioPulgar}

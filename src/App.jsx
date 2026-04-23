@@ -82,8 +82,10 @@ function App() {
     <ToastContainer 
       position="bottom-right" 
       theme="dark"
-      limit={3} 
       newestOnTop={true} 
+      pauseOnFocusLoss={false}
+      closeOnClick
+      draggable
       autoClose={3000}
     />
     </>

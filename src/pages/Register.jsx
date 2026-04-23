@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export const Register = () => {
 
@@ -21,8 +21,6 @@ export const Register = () => {
 
     return (
         <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100">
-            <ToastContainer />
-
             {/* Formulario */}
             <div className="w-full sm:w-1/2 flex justify-center items-center px-8 py-12 bg-white">
                 <div className="w-full max-w-md">

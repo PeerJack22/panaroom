@@ -1,5 +1,4 @@
 import passwordRecovery from '../assets/passwordRecovery.jpg';
-import { ToastContainer } from 'react-toastify';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -91,8 +90,6 @@ const Reset = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
-            <ToastContainer />
-            
             <h1 className="text-3xl font-bold text-blue-900 text-center mb-2 uppercase">Reestablecer contraseña</h1>
             <p className="text-sm text-gray-600 mb-6 text-center">Por favor, ingresa tu nueva contraseña</p>
 

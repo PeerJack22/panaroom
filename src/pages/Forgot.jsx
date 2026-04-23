@@ -2,7 +2,6 @@ import { Link } from 'react-router';
 import useFetch from '../hooks/useFetch'
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { ToastContainer} from 'react-toastify'
 
 
 const getRecoverEndpointByRole = (roleParam) => {
@@ -40,9 +39,6 @@ export const Forgot = () => {
 
     return (
         <div className="flex flex-col sm:flex-row h-screen bg-gray-100">
-
-            <ToastContainer/> 
-
             {/* Sección del formulario */}
             <div className="w-full sm:w-1/2 flex justify-center items-center px-6">
                 <div className="w-full max-w-md rounded-lg p-8">

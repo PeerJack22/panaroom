@@ -6,7 +6,8 @@ function useFetch() {
     const fetchDataBackend = useCallback(async (url, data = null, method = "GET", headers = {}) => {
         const normalizedMethod = String(method || "GET").toUpperCase();
         const shouldShowSuccessToast = ["POST", "PUT", "PATCH", "DELETE"].includes(normalizedMethod);
-        const loadingToast = toast.loading("Procesando solicitud...");
+        const shouldShowLoadingToast = ["POST", "PUT", "PATCH", "DELETE"].includes(normalizedMethod);
+        const loadingToast = shouldShowLoadingToast ? toast.loading("Procesando solicitud...") : null;
         try {
             const isFormData = data instanceof FormData;
             const isDelete = normalizedMethod === "DELETE";
@@ -25,7 +26,7 @@ function useFetch() {
             };
 
             const response = await axios(options);
-            toast.dismiss(loadingToast);
+            if (loadingToast) toast.dismiss(loadingToast);
 
             const successMessage = response?.data?.msg || response?.data?.message;
             if (successMessage) {
@@ -36,7 +37,7 @@ function useFetch() {
 
             return response?.data;
         } catch (error) {
-            toast.dismiss(loadingToast);
+            if (loadingToast) toast.dismiss(loadingToast);
             console.error(error);
 
             const errorMessage =

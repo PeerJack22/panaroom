@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { ToastContainer } from 'react-toastify';
 import storeProfile from "../../context/storeProfile";
 import storeAuth from "../../context/storeAuth";
 
@@ -17,7 +16,6 @@ const CardPassword = () => {
 
     return (
         <>
-            <ToastContainer />
             <div className="bg-gray-900 p-6 rounded-xl shadow-lg text-white max-w-xl mx-auto mt-10">
                 <h1 className="text-2xl font-bold text-slate-200 mb-4">Actualizar contraseña</h1>
                 <hr className="border-gray-600 mb-6" />
