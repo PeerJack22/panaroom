@@ -1,10 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import storeAuth from "../../context/storeAuth.jsx";
+
+const DEFAULT_CENTER = [-0.2106, -78.4897];
+
+const buildOpenStreetMapEmbedUrl = (lat, lng) => {
+    const delta = 0.005;
+    const minLng = (lng - delta).toFixed(6);
+    const minLat = (lat - delta).toFixed(6);
+    const maxLng = (lng + delta).toFixed(6);
+    const maxLat = (lat + delta).toFixed(6);
+    const markerLat = lat.toFixed(6);
+    const markerLng = lng.toFixed(6);
+
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${minLng}%2C${minLat}%2C${maxLng}%2C${maxLat}&layer=mapnik&marker=${markerLat}%2C${markerLng}`;
+};
+
+const extractMarkerCoordinates = (url) => {
+    if (!url || typeof url !== "string") return null;
+    const markerMatch = url.match(/marker=([-\d.]+)%2C([-\d.]+)/i) || url.match(/marker=([-\d.]+),([-\d.]+)/i);
+    if (!markerMatch) return null;
+
+    const lat = Number(markerMatch[1]);
+    const lng = Number(markerMatch[2]);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+    return [lat, lng];
+};
 
 export const Form = () => {
     const navigate = useNavigate();
@@ -25,6 +52,15 @@ export const Form = () => {
     const { user, token } = storeAuth();
 
     const values = watch();
+    const currentMapUrl = watch("urlMapa");
+    const [selectedPoint, setSelectedPoint] = useState(null);
+
+    useEffect(() => {
+        const coords = extractMarkerCoordinates(currentMapUrl);
+        if (coords) {
+            setSelectedPoint(coords);
+        }
+    }, [currentMapUrl]);
 
     const stepFields = {
         1: ["titulo", "descripcion", "direccion", "ciudad", "urlMapa"],
@@ -49,6 +85,25 @@ export const Form = () => {
 
     const handlePreviousStep = () => {
         setStep((prev) => Math.max(prev - 1, 1));
+    };
+
+    const handleMapSelect = ([lat, lng]) => {
+        setSelectedPoint([lat, lng]);
+        setValue("urlMapa", buildOpenStreetMapEmbedUrl(lat, lng), {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+        clearErrors("urlMapa");
+    };
+
+    const MapClickSelector = () => {
+        useMapEvents({
+            click(e) {
+                handleMapSelect([e.latlng.lat, e.latlng.lng]);
+            },
+        });
+
+        return null;
     };
 
     const registerResidencia = async (data) => {
@@ -223,7 +278,31 @@ export const Form = () => {
                             />
                             {errors.urlMapa && <p className="text-red-500 text-xs italic">{errors.urlMapa.message}</p>}
                             <p className="text-xs text-gray-500 mt-1">
-                                Usa la URL de compartir/incrustar de OpenStreetMap para mostrar la ubicación exacta.
+                                Puedes pegar una URL o seleccionar un punto en el mapa para autogenerarla.
+                            </p>
+                        </div>
+
+                        <div className="mt-5">
+                            <label className="mb-2 block text-sm font-semibold">Seleccionar punto en el mapa</label>
+                            <div className="rounded-md border border-gray-300 overflow-hidden">
+                                <MapContainer
+                                    key={selectedPoint ? `${selectedPoint[0]}-${selectedPoint[1]}` : "default-center"}
+                                    center={selectedPoint || DEFAULT_CENTER}
+                                    zoom={15}
+                                    style={{ height: "280px", width: "100%" }}
+                                >
+                                    <TileLayer
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+                                    <MapClickSelector />
+                                    {selectedPoint && (
+                                        <CircleMarker center={selectedPoint} radius={8} pathOptions={{ color: "#1d4ed8" }} />
+                                    )}
+                                </MapContainer>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                                Haz clic en el mapa para guardar la ubicacion exacta en el campo urlMapa.
                             </p>
                         </div>
                     </>
