@@ -357,8 +357,8 @@ export const Form = () => {
                                 })}
                             >
                                 <option value="" disabled>Seleccionar...</option>
-                                <option value="true">true</option>
-                                <option value="false">false</option>
+                                <option value="true">Sí</option>
+                                <option value="false">No</option>
                             </select>
                             {errors.parqueadero && <p className="text-red-500 text-xs italic">{errors.parqueadero.message}</p>}
                         </div>
