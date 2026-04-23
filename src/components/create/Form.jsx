@@ -263,24 +263,15 @@ export const Form = () => {
                             {errors.ciudad && <p className="text-red-500 text-xs italic">{errors.ciudad.message}</p>}
                         </div>
 
-                        <div className="mt-5">
-                            <label className="mb-2 block text-sm font-semibold">URL del mapa (OpenStreetMap)</label>
-                            <input
-                                type="url"
-                                placeholder="https://www.openstreetmap.org/export/embed.html?..."
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                                {...register("urlMapa", {
-                                    required: "La URL del mapa es obligatoria.",
-                                    validate: (value) =>
-                                        String(value || "").includes("openstreetmap.org") ||
-                                        "La URL debe ser de OpenStreetMap.",
-                                })}
-                            />
-                            {errors.urlMapa && <p className="text-red-500 text-xs italic">{errors.urlMapa.message}</p>}
-                            <p className="text-xs text-gray-500 mt-1">
-                                Puedes pegar una URL o seleccionar un punto en el mapa para autogenerarla.
-                            </p>
-                        </div>
+                        <input
+                            type="hidden"
+                            {...register("urlMapa", {
+                                required: "Debes seleccionar la ubicacion en el mapa.",
+                                validate: (value) =>
+                                    String(value || "").includes("openstreetmap.org") ||
+                                    "No se pudo guardar la ubicacion del mapa.",
+                            })}
+                        />
 
                         <div className="mt-5">
                             <label className="mb-2 block text-sm font-semibold">Seleccionar punto en el mapa</label>
@@ -302,8 +293,9 @@ export const Form = () => {
                                 </MapContainer>
                             </div>
                             <p className="text-xs text-gray-500 mt-2">
-                                Haz clic en el mapa para guardar la ubicacion exacta en el campo urlMapa.
+                                Haz clic en el mapa para guardar la ubicacion del lugar.
                             </p>
+                            {errors.urlMapa && <p className="text-red-500 text-xs italic mt-2">{errors.urlMapa.message}</p>}
                         </div>
                     </>
                 )}
@@ -433,7 +425,6 @@ export const Form = () => {
                         <p><span className="font-semibold">Título:</span> {values.titulo || "-"}</p>
                         <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
                         <p><span className="font-semibold">Ciudad:</span> {values.ciudad || "-"}</p>
-                        <p><span className="font-semibold">Mapa:</span> {values.urlMapa || "-"}</p>
                         <p><span className="font-semibold">Precio mensual:</span> {values.precioMensual || "-"}</p>
                         <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
                         <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>
