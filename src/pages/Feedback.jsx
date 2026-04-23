@@ -163,7 +163,7 @@ const Feedback = () => {
 
             <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
                 <h2 className="text-xl font-bold text-gray-800 mb-4">
-                    {isAdmin ? "Todas las quejas (Administrador)" : "Quejas de mis departamentos (Arrendatario)"}
+                    {isAdmin ? "Todas las quejas y sugerencias" : "Quejas y sugerencias de mis departamentos"}
                 </h2>
 
                 {loading ? (
