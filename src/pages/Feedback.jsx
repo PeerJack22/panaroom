@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import storeAuth from "../context/storeAuth";
 
 const toText = (value, fallback = "-") => {
@@ -78,6 +79,14 @@ const normalizeFeedbackItem = (item, index) => ({
         item?.residencia,
         "No disponible"
     ),
+    departamentoId:
+        item?.departamento?._id ||
+        item?.departamento?.id ||
+        item?.inmueble?._id ||
+        item?.inmueble?.id ||
+        item?.residencia?._id ||
+        item?.residencia?.id ||
+        null,
     fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
 });
 
@@ -167,7 +176,18 @@ const Feedback = () => {
                             <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
                                 <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
                                 <p className="text-xs text-gray-500 mt-2">
-                                    Estudiante: {item.estudiante} • Departamento: {item.departamento} • Fecha: {formatDate(item.fecha)}
+                                    Estudiante: {item.estudiante} • Departamento:{" "}
+                                    {item.departamentoId ? (
+                                        <Link
+                                            to={`/dashboard/visualizar/${item.departamentoId}`}
+                                            className="text-blue-600 hover:text-blue-700 underline"
+                                        >
+                                            {item.departamento}
+                                        </Link>
+                                    ) : (
+                                        item.departamento
+                                    )}
+                                    {" "}• Fecha: {formatDate(item.fecha)}
                                 </p>
                             </article>
                         ))}
