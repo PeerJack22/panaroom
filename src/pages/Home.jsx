@@ -83,7 +83,7 @@ export const Home = () => {
         celular: "",
         email: "",
     });
-    const propiedadesPorPagina = 9;
+    const propiedadesPorPagina = 6;
     const opcionesServicios = ['luz', 'agua', 'internet'];
 
     const [propiedades, setPropiedades] = useState([]);
