@@ -215,6 +215,10 @@ const Details = () => {
     }
 
     const servicios = getServicios(departamento);
+    const mapaUrl =
+        typeof departamento?.urlMapa === "string" && departamento.urlMapa.includes("openstreetmap.org")
+            ? departamento.urlMapa
+            : "https://www.openstreetmap.org/export/embed.html?bbox=-78.5058%2C-0.2148%2C-78.4878%2C-0.1968&layer=mapnik&marker=-0.2058%2C-78.4968";
 
     return (
         <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
@@ -239,6 +243,7 @@ const Details = () => {
                             <li><strong className="text-gray-900">Precio mensual:</strong> $ {departamento.precioMensual}</li>
                             <li><strong className="text-gray-900">Habitaciones:</strong> {departamento.numeroHabitaciones}</li>
                             <li><strong className="text-gray-900">Baños:</strong> {departamento.numeroBanos}</li>
+                            <li><strong className="text-gray-900">Parqueadero:</strong> {departamento.parqueadero ? "Sí" : "No"}</li>
                         </ul>
 
                         <div className="mt-5">
@@ -286,7 +291,7 @@ const Details = () => {
                     <div className="rounded-lg overflow-hidden border border-gray-300">
                         <iframe
                             title="Mapa referencial Quito - Escuela Politécnica Nacional"
-                            src="https://www.openstreetmap.org/export/embed.html?bbox=-78.5058%2C-0.2148%2C-78.4878%2C-0.1968&layer=mapnik&marker=-0.2058%2C-78.4968"
+                            src={mapaUrl}
                             className="w-full h-96"
                             loading="lazy"
                         />

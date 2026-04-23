@@ -27,8 +27,8 @@ export const Form = () => {
     const values = watch();
 
     const stepFields = {
-        1: ["titulo", "descripcion", "direccion", "ciudad"],
-        2: ["precioMensual", "numeroHabitaciones", "numeroBanos"],
+        1: ["titulo", "descripcion", "direccion", "ciudad", "urlMapa"],
+        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero"],
         3: ["imagen"],
     };
 
@@ -86,6 +86,8 @@ export const Form = () => {
                 return;
             } else if (key === "servicios") {
                 return;
+            } else if (key === "parqueadero") {
+                formData.append("parqueadero", data[key] === "true" ? "true" : "false");
             } else {
                 formData.append(key, data[key]);
             }
@@ -205,6 +207,25 @@ export const Form = () => {
                             />
                             {errors.ciudad && <p className="text-red-500 text-xs italic">{errors.ciudad.message}</p>}
                         </div>
+
+                        <div className="mt-5">
+                            <label className="mb-2 block text-sm font-semibold">URL del mapa (OpenStreetMap)</label>
+                            <input
+                                type="url"
+                                placeholder="https://www.openstreetmap.org/export/embed.html?..."
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                                {...register("urlMapa", {
+                                    required: "La URL del mapa es obligatoria.",
+                                    validate: (value) =>
+                                        String(value || "").includes("openstreetmap.org") ||
+                                        "La URL debe ser de OpenStreetMap.",
+                                })}
+                            />
+                            {errors.urlMapa && <p className="text-red-500 text-xs italic">{errors.urlMapa.message}</p>}
+                            <p className="text-xs text-gray-500 mt-1">
+                                Usa la URL de compartir/incrustar de OpenStreetMap para mostrar la ubicación exacta.
+                            </p>
+                        </div>
                     </>
                 )}
 
@@ -250,6 +271,25 @@ export const Form = () => {
                                 })}
                             />
                             {errors.numeroBanos && <p className="text-red-500 text-xs italic">{errors.numeroBanos.message}</p>}
+                        </div>
+
+                        <div className="mt-5">
+                            <label className="mb-2 block text-sm font-semibold">Parqueadero</label>
+                            <select
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                                defaultValue=""
+                                {...register("parqueadero", {
+                                    required: "Debes indicar si tiene parqueadero.",
+                                    validate: (value) =>
+                                        ["true", "false"].includes(String(value)) ||
+                                        "Selecciona una opción válida.",
+                                })}
+                            >
+                                <option value="" disabled>Seleccionar...</option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                            {errors.parqueadero && <p className="text-red-500 text-xs italic">{errors.parqueadero.message}</p>}
                         </div>
                     </>
                 )}
@@ -314,9 +354,17 @@ export const Form = () => {
                         <p><span className="font-semibold">Título:</span> {values.titulo || "-"}</p>
                         <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
                         <p><span className="font-semibold">Ciudad:</span> {values.ciudad || "-"}</p>
+                        <p><span className="font-semibold">Mapa:</span> {values.urlMapa || "-"}</p>
                         <p><span className="font-semibold">Precio mensual:</span> {values.precioMensual || "-"}</p>
                         <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
                         <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>
+                        <p><span className="font-semibold">Parqueadero:</span> {
+                            values.parqueadero === "true"
+                                ? "Sí"
+                                : values.parqueadero === "false"
+                                    ? "No"
+                                    : "-"
+                        }</p>
                         <p><span className="font-semibold">Servicios:</span> {
                             Array.isArray(values.servicios)
                                 ? values.servicios.join(", ")
