@@ -823,9 +823,15 @@ export const Home = () => {
                     <p className='text-center text-white-400'>© 2025 PanaRoom - Todos los derechos reservados</p>
                     <div className='flex gap-4 mt-4 sm:mt-0'>
                         <p className='text-center text-white-400'>Correo: contacto@panaroom.com</p>
-                        <FaSquareInstagram className='text-2xl hover:text-cyan-400' />
-                        <FaYoutube className='text-2xl hover:text-cyan-400' />
-                        <FaGithub className='text-2xl hover:text-cyan-400' href='https://github.com/PeerJack22/panaroom' />
+                        <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram">
+                            <FaSquareInstagram className='text-2xl hover:text-cyan-400' />
+                        </a>
+                        <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube">
+                            <FaYoutube className='text-2xl hover:text-cyan-400' />
+                        </a>
+                        <a href='https://github.com/PeerJack22/panaroom' target="_blank" rel="noreferrer" aria-label="GitHub PanaRoom">
+                            <FaGithub className='text-2xl hover:text-cyan-400' />
+                        </a>
                     </div>
                 </div>
             </footer>
