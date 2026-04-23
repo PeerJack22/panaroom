@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link } from 'react-router-dom';
-import { FaSquareInstagram, FaYoutube, FaGithub } from "react-icons/fa6";
+import { FaYoutube, FaGithub } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -172,6 +172,33 @@ export const Home = () => {
             setAnimandoResidencias(false);
         }, 180);
     };
+
+    const paginasVisibles = (() => {
+        if (totalPaginas <= 7) {
+            return Array.from({ length: totalPaginas }, (_, index) => index + 1);
+        }
+
+        const inicio = Math.max(1, paginaActual - 2);
+        const fin = Math.min(totalPaginas, inicio + 4);
+        const inicioAjustado = Math.max(1, fin - 4);
+        const paginas = [];
+
+        if (inicioAjustado > 1) {
+            paginas.push(1);
+            if (inicioAjustado > 2) paginas.push("...");
+        }
+
+        for (let pagina = inicioAjustado; pagina <= fin; pagina += 1) {
+            paginas.push(pagina);
+        }
+
+        if (fin < totalPaginas) {
+            if (fin < totalPaginas - 1) paginas.push("...");
+            paginas.push(totalPaginas);
+        }
+
+        return paginas;
+    })();
 
     const agregarServicio = (servicio) => {
         const normalizado = servicio.toLowerCase();
@@ -624,23 +651,29 @@ export const Home = () => {
                     ))}
                 </div>
 
-                <div className="flex justify-end gap-3 mt-6">
-                    <button
-                        type="button"
-                        onClick={() => cambiarPagina(paginaActual - 1)}
-                        disabled={paginaActual === 1}
-                        className="inline-block bg-blue-700 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer"
-                    >
-                        Anterior
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => cambiarPagina(paginaActual + 1)}
-                        disabled={paginaActual === totalPaginas}
-                        className="inline-block bg-blue-700 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-full text-sm transition-colors cursor-pointer"
-                    >
-                        Siguiente
-                    </button>
+                <div className="flex justify-center mt-8">
+                    <div className="flex items-center gap-2 flex-wrap justify-center">
+                        {paginasVisibles.map((pagina, index) =>
+                            pagina === "..." ? (
+                                <span key={`ellipsis-${index}`} className="px-2 text-gray-500 text-sm">
+                                    ...
+                                </span>
+                            ) : (
+                                <button
+                                    key={pagina}
+                                    type="button"
+                                    onClick={() => cambiarPagina(pagina)}
+                                    className={`min-w-10 px-3 py-2 rounded-full text-sm font-semibold transition-colors border ${
+                                        pagina === paginaActual
+                                            ? "bg-blue-700 text-white border-blue-700"
+                                            : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50"
+                                    }`}
+                                >
+                                    {pagina}
+                                </button>
+                            )
+                        )}
+                    </div>
                 </div>
             </section>
 
@@ -818,14 +851,11 @@ export const Home = () => {
                 </div>
             </section>
 
-            <footer id="contacto" className='bg-slate-800 text-white py-10 px-6'>
-                <div className='flex flex-col sm:flex-row justify-between items-center mb-8'>
+            <footer id="contacto" className='bg-slate-800 text-white py-5 px-6'>
+                <div className='flex flex-col sm:flex-row justify-between items-center gap-3'>
                     <p className='text-center text-white-400'>© 2025 PanaRoom - Todos los derechos reservados</p>
-                    <div className='flex gap-4 mt-4 sm:mt-0'>
+                    <div className='flex items-center gap-4'>
                         <p className='text-center text-white-400'>Correo: contacto@panaroom.com</p>
-                        <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram">
-                            <FaSquareInstagram className='text-2xl hover:text-cyan-400' />
-                        </a>
                         <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube">
                             <FaYoutube className='text-2xl hover:text-cyan-400' />
                         </a>
