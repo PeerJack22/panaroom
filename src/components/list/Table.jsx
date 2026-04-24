@@ -35,7 +35,8 @@ const Table = () => {
     const userRol = storedUser?.state?.rol || "";
     const userId = storedUser?.state?.id || "";
     const userToken = storedUser?.state?.token || "";
-    const isAdminOrArrendatario = userRol === "administrador" || userRol === "arrendatario";
+    const isArrendatario = userRol === "arrendatario" || userRol === "arrendador";
+    const isAdminOrArrendatario = userRol === "administrador" || isArrendatario;
 
     const [adminFilters, setAdminFilters] = useState({
         titulo: "",
@@ -163,6 +164,10 @@ const Table = () => {
 
     const departamentosFiltrados = departamentos.filter((dep) => {
         if (isAdminOrArrendatario) {
+            if (isArrendatario && String(dep?.creador || "") !== String(userId || "")) {
+                return false;
+            }
+
             const tituloFiltro = String(adminFilters.titulo || "").trim().toLowerCase();
             const tituloDepartamento = String(dep?.titulo || "").toLowerCase();
             const matchTitulo = !tituloFiltro || tituloDepartamento.includes(tituloFiltro);
