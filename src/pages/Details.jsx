@@ -6,6 +6,42 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
 import storeAuth from "../context/storeAuth";
+import { CircleMarker, MapContainer, TileLayer } from "react-leaflet";
+
+const DEFAULT_CENTER = [-0.2106, -78.4897];
+const EPN_BOUNDS = {
+    south: -0.222,
+    west: -78.502,
+    north: -0.199,
+    east: -78.475,
+};
+const EPN_MAX_BOUNDS = [
+    [EPN_BOUNDS.south, EPN_BOUNDS.west],
+    [EPN_BOUNDS.north, EPN_BOUNDS.east],
+];
+const MAP_MIN_ZOOM = 14;
+const MAP_MAX_ZOOM = 18;
+
+const extractMarkerCoordinates = (url) => {
+    if (!url || typeof url !== "string") return null;
+    const markerMatch = url.match(/marker=([-\d.]+)%2C([-\d.]+)/i) || url.match(/marker=([-\d.]+),([-\d.]+)/i);
+    if (!markerMatch) return null;
+
+    const lat = Number(markerMatch[1]);
+    const lng = Number(markerMatch[2]);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+    return [lat, lng];
+};
+
+const isWithinEpnBounds = (lat, lng) => {
+    return (
+        lat >= EPN_BOUNDS.south &&
+        lat <= EPN_BOUNDS.north &&
+        lng >= EPN_BOUNDS.west &&
+        lng <= EPN_BOUNDS.east
+    );
+};
 
 
 const Details = () => {
@@ -215,10 +251,10 @@ const Details = () => {
     }
 
     const servicios = getServicios(departamento);
-    const mapaUrl =
-        typeof departamento?.urlMapa === "string" && departamento.urlMapa.includes("openstreetmap.org")
-            ? departamento.urlMapa
-            : "https://www.openstreetmap.org/export/embed.html?bbox=-78.5058%2C-0.2148%2C-78.4878%2C-0.1968&layer=mapnik&marker=-0.2058%2C-78.4968";
+    const markerCoords = extractMarkerCoordinates(departamento?.urlMapa);
+    const mapCenter = markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1])
+        ? markerCoords
+        : DEFAULT_CENTER;
 
     return (
         <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
@@ -288,12 +324,24 @@ const Details = () => {
                 <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Ubicación referencial</h2>
                     <div className="rounded-lg overflow-hidden border border-gray-300">
-                        <iframe
-                            title="Mapa referencial Quito - Escuela Politécnica Nacional"
-                            src={mapaUrl}
-                            className="w-full h-96"
-                            loading="lazy"
-                        />
+                        <MapContainer
+                            key={`${mapCenter[0]}-${mapCenter[1]}`}
+                            center={mapCenter}
+                            zoom={15}
+                            minZoom={MAP_MIN_ZOOM}
+                            maxZoom={MAP_MAX_ZOOM}
+                            maxBounds={EPN_MAX_BOUNDS}
+                            maxBoundsViscosity={1.0}
+                            style={{ height: "24rem", width: "100%" }}
+                        >
+                            <TileLayer
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            {markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1]) && (
+                                <CircleMarker center={markerCoords} radius={8} pathOptions={{ color: "#1d4ed8" }} />
+                            )}
+                        </MapContainer>
                     </div>
                     <p className="text-xs text-gray-500 mt-2">
                         Ubicación de referencia cercana a la Escuela Politécnica Nacional, Quito.

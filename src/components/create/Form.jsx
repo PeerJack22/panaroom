@@ -8,6 +8,27 @@ import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leafl
 import storeAuth from "../../context/storeAuth.jsx";
 
 const DEFAULT_CENTER = [-0.2106, -78.4897];
+const EPN_BOUNDS = {
+    south: -0.222,
+    west: -78.502,
+    north: -0.199,
+    east: -78.475,
+};
+const EPN_MAX_BOUNDS = [
+    [EPN_BOUNDS.south, EPN_BOUNDS.west],
+    [EPN_BOUNDS.north, EPN_BOUNDS.east],
+];
+const MAP_MIN_ZOOM = 14;
+const MAP_MAX_ZOOM = 18;
+
+const isWithinEpnBounds = (lat, lng) => {
+    return (
+        lat >= EPN_BOUNDS.south &&
+        lat <= EPN_BOUNDS.north &&
+        lng >= EPN_BOUNDS.west &&
+        lng <= EPN_BOUNDS.east
+    );
+};
 
 const buildOpenStreetMapEmbedUrl = (lat, lng) => {
     const delta = 0.005;
@@ -57,9 +78,12 @@ export const Form = () => {
 
     useEffect(() => {
         const coords = extractMarkerCoordinates(currentMapUrl);
-        if (coords) {
+        if (coords && isWithinEpnBounds(coords[0], coords[1])) {
             setSelectedPoint(coords);
+            return;
         }
+
+        setSelectedPoint(null);
     }, [currentMapUrl]);
 
     const stepFields = {
@@ -92,6 +116,11 @@ export const Form = () => {
     };
 
     const handleMapSelect = ([lat, lng]) => {
+        if (!isWithinEpnBounds(lat, lng)) {
+            toast.error("Selecciona un punto dentro de la zona aledaña a la EPN.");
+            return;
+        }
+
         setSelectedPoint([lat, lng]);
         setValue("urlMapa", buildOpenStreetMapEmbedUrl(lat, lng), {
             shouldDirty: true,
@@ -262,9 +291,18 @@ export const Form = () => {
                             type="hidden"
                             {...register("urlMapa", {
                                 required: "Debes seleccionar la ubicacion en el mapa.",
-                                validate: (value) =>
-                                    String(value || "").includes("openstreetmap.org") ||
-                                    "No se pudo guardar la ubicacion del mapa.",
+                                validate: (value) => {
+                                    if (!String(value || "").includes("openstreetmap.org")) {
+                                        return "No se pudo guardar la ubicacion del mapa.";
+                                    }
+
+                                    const coords = extractMarkerCoordinates(value);
+                                    if (!coords || !isWithinEpnBounds(coords[0], coords[1])) {
+                                        return "La ubicacion debe estar dentro de la zona aledaña a la EPN.";
+                                    }
+
+                                    return true;
+                                },
                             })}
                         />
 
@@ -275,6 +313,10 @@ export const Form = () => {
                                     key={selectedPoint ? `${selectedPoint[0]}-${selectedPoint[1]}` : "default-center"}
                                     center={selectedPoint || DEFAULT_CENTER}
                                     zoom={15}
+                                    minZoom={MAP_MIN_ZOOM}
+                                    maxZoom={MAP_MAX_ZOOM}
+                                    maxBounds={EPN_MAX_BOUNDS}
+                                    maxBoundsViscosity={1.0}
                                     style={{ height: "280px", width: "100%" }}
                                 >
                                     <TileLayer
@@ -288,7 +330,7 @@ export const Form = () => {
                                 </MapContainer>
                             </div>
                             <p className="text-xs text-gray-500 mt-2">
-                                Haz clic en el mapa para guardar la ubicacion del lugar.
+                                Haz clic en el mapa para guardar la ubicacion del lugar (zona aledaña a la EPN).
                             </p>
                             {errors.urlMapa && <p className="text-red-500 text-xs italic mt-2">{errors.urlMapa.message}</p>}
                         </div>
