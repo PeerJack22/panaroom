@@ -51,6 +51,7 @@ const tieneParqueadero = (valor) => {
 
 export const Home = () => {
     const [servicios, setServicios] = useState([]);
+    const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
     const [abierto, setAbierto] = useState(false);
     const [abiertoPrecio, setAbiertoPrecio] = useState(false);
     const [abiertoMasFiltros, setAbiertoMasFiltros] = useState(false);
@@ -85,6 +86,11 @@ export const Home = () => {
     });
     const propiedadesPorPagina = 6;
     const opcionesServicios = ['luz', 'agua', 'internet'];
+    const opcionesCategorias = [
+        { value: "todas", label: "Todas las categorías" },
+        { value: "departamento", label: "Departamento" },
+        { value: "suite", label: "Suite" },
+    ];
 
     const [propiedades, setPropiedades] = useState([]);
 
@@ -108,6 +114,7 @@ export const Home = () => {
                     parqueadero: item?.parqueadero,
                     direccion: item?.direccion || item?.ciudad || 'Sin dirección',
                     descripcion: item?.descripcion || 'Sin descripción disponible.',
+                    categoria: String(item?.categoria || "").trim().toLowerCase(),
                     serviciosIncluidos: obtenerServicios(item),
                     imagenPrincipal: item?.imagenes?.[0]?.url || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c',
                     disponible: item?.disponible !== false,
@@ -152,7 +159,12 @@ export const Home = () => {
             !filtroParqueadero ||
             (filtroParqueadero === 'si' ? tieneParqueaderoPropiedad : !tieneParqueaderoPropiedad);
 
-        return precioValido && habitacionesValidas && banosValidos && serviciosValidos && parqueaderoValido;
+        const categoriaValida =
+            categoriaFiltro === "todas" ||
+            !propiedad.categoria ||
+            propiedad.categoria === categoriaFiltro;
+
+        return precioValido && habitacionesValidas && banosValidos && serviciosValidos && parqueaderoValido && categoriaValida;
     });
 
     const totalPaginas = Math.max(1, Math.ceil(propiedadesFiltradas.length / propiedadesPorPagina));
@@ -161,7 +173,7 @@ export const Home = () => {
 
     useEffect(() => {
         setPaginaActual(1);
-    }, [precioMin, precioMax, habitacionesFiltro, banosFiltro, servicios, filtrosAdicionalesAplicados]);
+    }, [precioMin, precioMax, habitacionesFiltro, banosFiltro, servicios, filtrosAdicionalesAplicados, categoriaFiltro]);
 
     const cambiarPagina = (nuevaPagina) => {
         if (nuevaPagina < 1 || nuevaPagina > totalPaginas || nuevaPagina === paginaActual) return;
@@ -348,7 +360,7 @@ export const Home = () => {
                 <div className='w-full'>
                     
                     {/* Contenedor del input y botón */}
-                    <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-6 gap-4'>
                         <div className="relative">
                             <button
                                 type="button"
@@ -419,6 +431,18 @@ export const Home = () => {
                             placeholder="Número de baños"
                             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
+
+                        <select
+                            value={categoriaFiltro}
+                            onChange={(e) => setCategoriaFiltro(e.target.value)}
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        >
+                            {opcionesCategorias.map((opcion) => (
+                                <option key={opcion.value} value={opcion.value}>
+                                    {opcion.label}
+                                </option>
+                            ))}
+                        </select>
 
                         <div className="relative">
                             <div className="w-full rounded-md border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1 min-h-[42px] flex items-center gap-2">
