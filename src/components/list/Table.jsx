@@ -13,6 +13,7 @@ const Table = () => {
         arriendoMax: "",
         habitaciones: "",
         banos: "",
+        categoria: "",
         servicios: [],
     });
     const [abiertoPrecio, setAbiertoPrecio] = useState(false);
@@ -198,6 +199,12 @@ const Table = () => {
             !filters.banos ||
             Number(dep?.numeroBanos) === Number(filters.banos);
 
+        const categoriaNormalizada = String(dep?.categoria || "").trim().toLowerCase();
+        const matchCategoria =
+            !filters.categoria ||
+            !categoriaNormalizada ||
+            categoriaNormalizada === filters.categoria;
+
         const serviciosDep = getServiciosDepartamento(dep);
         const matchServicio =
             !filters.servicios.length ||
@@ -211,7 +218,7 @@ const Table = () => {
                 ? tieneParqueaderoDepartamento
                 : !tieneParqueaderoDepartamento);
 
-        return matchArriendo && matchHabitaciones && matchBanos && matchServicio && matchParqueadero;
+        return matchArriendo && matchHabitaciones && matchBanos && matchCategoria && matchServicio && matchParqueadero;
     });
 
     const limpiarFiltrosAdmin = () => {
@@ -281,7 +288,7 @@ const Table = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                         <div className="relative">
                             <button
                                 type="button"
@@ -353,6 +360,17 @@ const Table = () => {
                             placeholder="Número de baños"
                             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
+
+                        <select
+                            name="categoria"
+                            value={filters.categoria}
+                            onChange={handleFilterChange}
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        >
+                            <option value="">Todas las categorías</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="suite">Suite</option>
+                        </select>
 
                         <div className="relative">
                             <div className="w-full rounded-md border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1 min-h-[42px] flex items-center gap-2">
