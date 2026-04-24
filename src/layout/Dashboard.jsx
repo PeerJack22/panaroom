@@ -22,7 +22,7 @@ const Dashboard = () => {
     const navItems = [
         { to: '/dashboard', label: 'Perfil' },
         { to: '/dashboard/listar', label: 'Lista de residencias' },
-        ... (rol === 'arrendadatario' ? [{ to: '/dashboard/crear', label: 'Crear residencia' }] : []),
+        ... (rol === 'arrendatario' ? [{ to: '/dashboard/crear', label: 'Crear residencia' }] : []),
         ...(["administrador", "arrendatario"].includes(rol) ? [{ to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias' }] : []),
         ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios' }] : []),
     ];
