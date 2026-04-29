@@ -20,14 +20,14 @@ const Table = () => {
     const [abiertoServicios, setAbiertoServicios] = useState(false);
     const [abiertoMasFiltros, setAbiertoMasFiltros] = useState(false);
     const [filtrosAdicionales, setFiltrosAdicionales] = useState({
-        alicuotaIncluida: "",
+        alicuota: "",
         parqueadero: "",
-        inmobiliario: "",
+        mascotas: "",
     });
     const [filtrosAdicionalesAplicados, setFiltrosAdicionalesAplicados] = useState({
-        alicuotaIncluida: "",
+        alicuota: "",
         parqueadero: "",
-        inmobiliario: "",
+        mascotas: "",
     });
     const opcionesServicios = ["luz", "agua", "internet"];
     const navigate = useNavigate();
@@ -96,9 +96,9 @@ const Table = () => {
 
     const limpiarFiltrosAdicionales = () => {
         const vacio = {
-            alicuotaIncluida: "",
+            alicuota: "",
             parqueadero: "",
-            inmobiliario: "",
+            mascotas: "",
         };
         setFiltrosAdicionales(vacio);
         setFiltrosAdicionalesAplicados(vacio);
@@ -163,6 +163,15 @@ const Table = () => {
         return false;
     };
 
+    const esBooleanoTrue = (valor) => {
+        if (valor === true || valor === 1) return true;
+        if (typeof valor === "string") {
+            const normalizado = valor.trim().toLowerCase();
+            return ["true", "1", "si", "sí"].includes(normalizado);
+        }
+        return false;
+    };
+
     const departamentosFiltrados = departamentos.filter((dep) => {
         if (isAdminOrArrendatario) {
             if (isArrendatario && String(dep?.creador || "") !== String(userId || "")) {
@@ -218,7 +227,19 @@ const Table = () => {
                 ? tieneParqueaderoDepartamento
                 : !tieneParqueaderoDepartamento);
 
-        return matchArriendo && matchHabitaciones && matchBanos && matchCategoria && matchServicio && matchParqueadero;
+        const filtroAlicuota = filtrosAdicionalesAplicados.alicuota;
+        const tieneAlicuota = esBooleanoTrue(dep?.alicuota);
+        const matchAlicuota =
+            !filtroAlicuota ||
+            (filtroAlicuota === "si" ? tieneAlicuota : !tieneAlicuota);
+
+        const filtroMascotas = filtrosAdicionalesAplicados.mascotas;
+        const permiteMascotas = esBooleanoTrue(dep?.mascotas);
+        const matchMascotas =
+            !filtroMascotas ||
+            (filtroMascotas === "si" ? permiteMascotas : !permiteMascotas);
+
+        return matchArriendo && matchHabitaciones && matchBanos && matchCategoria && matchServicio && matchParqueadero && matchAlicuota && matchMascotas;
     });
 
     const limpiarFiltrosAdmin = () => {
@@ -453,23 +474,23 @@ const Table = () => {
 
                                     <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
                                         <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">Precio mensual incluye alicuota</p>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">Si tiene alicuota</p>
                                             <div className="flex items-center gap-4 text-sm text-gray-700">
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="alicuotaIncluida"
-                                                        checked={filtrosAdicionales.alicuotaIncluida === "si"}
-                                                        onChange={() => handleFiltroAdicionalChange("alicuotaIncluida", "si")}
+                                                        name="alicuota"
+                                                        checked={filtrosAdicionales.alicuota === "si"}
+                                                        onChange={() => handleFiltroAdicionalChange("alicuota", "si")}
                                                     />
                                                     Si
                                                 </label>
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="alicuotaIncluida"
-                                                        checked={filtrosAdicionales.alicuotaIncluida === "no"}
-                                                        onChange={() => handleFiltroAdicionalChange("alicuotaIncluida", "no")}
+                                                        name="alicuota"
+                                                        checked={filtrosAdicionales.alicuota === "no"}
+                                                        onChange={() => handleFiltroAdicionalChange("alicuota", "no")}
                                                     />
                                                     No
                                                 </label>
@@ -501,23 +522,23 @@ const Table = () => {
                                         </div>
 
                                         <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">Inmobiliario</p>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">Mascotas</p>
                                             <div className="flex items-center gap-4 text-sm text-gray-700">
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="inmobiliario"
-                                                        checked={filtrosAdicionales.inmobiliario === "si"}
-                                                        onChange={() => handleFiltroAdicionalChange("inmobiliario", "si")}
+                                                        name="mascotas"
+                                                        checked={filtrosAdicionales.mascotas === "si"}
+                                                        onChange={() => handleFiltroAdicionalChange("mascotas", "si")}
                                                     />
                                                     Si
                                                 </label>
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="inmobiliario"
-                                                        checked={filtrosAdicionales.inmobiliario === "no"}
-                                                        onChange={() => handleFiltroAdicionalChange("inmobiliario", "no")}
+                                                        name="mascotas"
+                                                        checked={filtrosAdicionales.mascotas === "no"}
+                                                        onChange={() => handleFiltroAdicionalChange("mascotas", "no")}
                                                     />
                                                     No
                                                 </label>

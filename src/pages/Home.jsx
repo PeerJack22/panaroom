@@ -49,6 +49,15 @@ const tieneParqueadero = (valor) => {
     return false;
 };
 
+const esBooleanoTrue = (valor) => {
+    if (valor === true || valor === 1) return true;
+    if (typeof valor === "string") {
+        const normalizado = valor.trim().toLowerCase();
+        return ["true", "1", "si", "sí"].includes(normalizado);
+    }
+    return false;
+};
+
 export const Home = () => {
     const navigate = useNavigate();
     const [servicios, setServicios] = useState([]);
@@ -61,14 +70,14 @@ export const Home = () => {
     const [habitacionesFiltro, setHabitacionesFiltro] = useState("");
     const [banosFiltro, setBanosFiltro] = useState("");
     const [filtrosAdicionales, setFiltrosAdicionales] = useState({
-        alicuotaIncluida: "",
+        alicuota: "",
         parqueadero: "",
-        inmobiliario: "",
+        mascotas: "",
     });
     const [filtrosAdicionalesAplicados, setFiltrosAdicionalesAplicados] = useState({
-        alicuotaIncluida: "",
+        alicuota: "",
         parqueadero: "",
-        inmobiliario: "",
+        mascotas: "",
     });
     const [paginaActual, setPaginaActual] = useState(1);
     const [mostrarMensajeDetalle, setMostrarMensajeDetalle] = useState(false);
@@ -114,6 +123,8 @@ export const Home = () => {
                     numeroHabitaciones: Number(item?.numeroHabitaciones) || 0,
                     numeroBanos: Number(item?.numeroBanos) || 0,
                     parqueadero: item?.parqueadero,
+                    alicuota: item?.alicuota,
+                    mascotas: item?.mascotas,
                     direccion: item?.direccion || item?.ciudad || 'Sin dirección',
                     descripcion: item?.descripcion || 'Sin descripción disponible.',
                     categoria: String(item?.categoria || "").trim().toLowerCase(),
@@ -161,12 +172,24 @@ export const Home = () => {
             !filtroParqueadero ||
             (filtroParqueadero === 'si' ? tieneParqueaderoPropiedad : !tieneParqueaderoPropiedad);
 
+        const filtroAlicuota = filtrosAdicionalesAplicados.alicuota;
+        const tieneAlicuota = esBooleanoTrue(propiedad?.alicuota);
+        const alicuotaValida =
+            !filtroAlicuota ||
+            (filtroAlicuota === 'si' ? tieneAlicuota : !tieneAlicuota);
+
+        const filtroMascotas = filtrosAdicionalesAplicados.mascotas;
+        const permiteMascotas = esBooleanoTrue(propiedad?.mascotas);
+        const mascotasValidas =
+            !filtroMascotas ||
+            (filtroMascotas === 'si' ? permiteMascotas : !permiteMascotas);
+
         const categoriaValida =
             categoriaFiltro === "todas" ||
             !propiedad.categoria ||
             propiedad.categoria === categoriaFiltro;
 
-        return precioValido && habitacionesValidas && banosValidos && serviciosValidos && parqueaderoValido && categoriaValida;
+        return precioValido && habitacionesValidas && banosValidos && serviciosValidos && parqueaderoValido && alicuotaValida && mascotasValidas && categoriaValida;
     });
 
     const totalPaginas = Math.max(1, Math.ceil(propiedadesFiltradas.length / propiedadesPorPagina));
@@ -240,9 +263,9 @@ export const Home = () => {
 
     const limpiarFiltrosAdicionales = () => {
         const vacio = {
-            alicuotaIncluida: "",
+            alicuota: "",
             parqueadero: "",
-            inmobiliario: "",
+            mascotas: "",
         };
         setFiltrosAdicionales(vacio);
         setFiltrosAdicionalesAplicados(vacio);
@@ -540,23 +563,23 @@ export const Home = () => {
 
                                     <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
                                         <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">Precio mensual incluye alicuota</p>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">Si tiene alicuota</p>
                                             <div className="flex items-center gap-4 text-sm text-gray-700">
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="alicuotaIncluida"
-                                                        checked={filtrosAdicionales.alicuotaIncluida === 'si'}
-                                                        onChange={() => handleFiltroAdicionalChange('alicuotaIncluida', 'si')}
+                                                        name="alicuota"
+                                                        checked={filtrosAdicionales.alicuota === 'si'}
+                                                        onChange={() => handleFiltroAdicionalChange('alicuota', 'si')}
                                                     />
                                                     Si
                                                 </label>
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="alicuotaIncluida"
-                                                        checked={filtrosAdicionales.alicuotaIncluida === 'no'}
-                                                        onChange={() => handleFiltroAdicionalChange('alicuotaIncluida', 'no')}
+                                                        name="alicuota"
+                                                        checked={filtrosAdicionales.alicuota === 'no'}
+                                                        onChange={() => handleFiltroAdicionalChange('alicuota', 'no')}
                                                     />
                                                     No
                                                 </label>
@@ -588,23 +611,23 @@ export const Home = () => {
                                         </div>
 
                                         <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">Inmobiliario</p>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">Mascotas</p>
                                             <div className="flex items-center gap-4 text-sm text-gray-700">
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="inmobiliario"
-                                                        checked={filtrosAdicionales.inmobiliario === 'si'}
-                                                        onChange={() => handleFiltroAdicionalChange('inmobiliario', 'si')}
+                                                        name="mascotas"
+                                                        checked={filtrosAdicionales.mascotas === 'si'}
+                                                        onChange={() => handleFiltroAdicionalChange('mascotas', 'si')}
                                                     />
                                                     Si
                                                 </label>
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
                                                         type="radio"
-                                                        name="inmobiliario"
-                                                        checked={filtrosAdicionales.inmobiliario === 'no'}
-                                                        onChange={() => handleFiltroAdicionalChange('inmobiliario', 'no')}
+                                                        name="mascotas"
+                                                        checked={filtrosAdicionales.mascotas === 'no'}
+                                                        onChange={() => handleFiltroAdicionalChange('mascotas', 'no')}
                                                     />
                                                     No
                                                 </label>
