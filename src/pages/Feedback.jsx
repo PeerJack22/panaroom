@@ -174,9 +174,20 @@ const Feedback = () => {
                     <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
                         {items.map((item) => (
                             <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                                <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
+                                    </div>
+
+                                    <div className="ml-3 flex-shrink-0">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                            No revisado
+                                        </span>
+                                    </div>
+                                </div>
+
                                 <p className="text-xs text-gray-500 mt-2">
-                                    Estudiante: {item.estudiante} • Departamento:{" "}
+                                    Estudiante: {item.estudiante} • Departamento: {" "}
                                     {item.departamentoId ? (
                                         <Link
                                             to={`/dashboard/visualizar/${item.departamentoId}`}
