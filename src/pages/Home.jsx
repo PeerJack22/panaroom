@@ -563,7 +563,7 @@ export const Home = () => {
 
                                     <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
                                         <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">Si tiene alicuota</p>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">Alicuota</p>
                                             <div className="flex items-center gap-4 text-sm text-gray-700">
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
@@ -611,7 +611,7 @@ export const Home = () => {
                                         </div>
 
                                         <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">Mascotas</p>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">¿Se permiten mascotas?</p>
                                             <div className="flex items-center gap-4 text-sm text-gray-700">
                                                 <label className="inline-flex items-center gap-2">
                                                     <input
