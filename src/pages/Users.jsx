@@ -48,7 +48,7 @@ const Users = () => {
 
             // Endpoint principal para listar arrendatarios
             const usersResponse = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`,
+                `${import.meta.env.VITE_BACKEND_URL}/administrador/listarArrendatarios`,
                 { headers }
             );
 
