@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth'
@@ -26,21 +26,6 @@ const Dashboard = () => {
         ...(["administrador", "arrendatario"].includes(rol) ? [{ to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias' }] : []),
         ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios' }] : []),
     ];
-
-    // simple page transition state: toggle on pathname change to restart CSS transition
-    const [pageKey, setPageKey] = useState(urlActual);
-    const [entering, setEntering] = useState(true);
-
-    useEffect(() => {
-        // start exit animation
-        setEntering(false);
-        const t = setTimeout(() => {
-            // update key and enter
-            setPageKey(urlActual);
-            setEntering(true);
-        }, 60); // small delay to allow CSS exit
-        return () => clearTimeout(t);
-    }, [urlActual]);
 
     return (
         <div className="md:flex md:min-h-screen bg-gray-100">
@@ -203,14 +188,7 @@ const Dashboard = () => {
 
                                 {/* Contenido dinámico */}
                 <main className="flex-1 overflow-y-auto p-6 bg-gray-100">
-                    <div
-                        key={pageKey}
-                        className={`transition-all duration-500 ease-out transform ${
-                            entering ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
-                        }`
-                    >
-                        <Outlet />
-                    </div>
+                    <Outlet />
                 </main>
 
                 {/* Footer oscuro */}

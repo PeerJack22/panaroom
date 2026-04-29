@@ -1,5 +1,5 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaYoutube, FaGithub } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -50,6 +50,7 @@ const tieneParqueadero = (valor) => {
 };
 
 export const Home = () => {
+    const navigate = useNavigate();
     const [servicios, setServicios] = useState([]);
     const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
     const [abierto, setAbierto] = useState(false);
@@ -77,6 +78,7 @@ export const Home = () => {
     const [mostrarFormularioArrendatario, setMostrarFormularioArrendatario] = useState(false);
     const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
     const [estadoSolicitud, setEstadoSolicitud] = useState({ tipo: "", mensaje: "" });
+    const [navegandoSuave, setNavegandoSuave] = useState(false);
     const [datosSolicitud, setDatosSolicitud] = useState({
         nombre: "",
         apellido: "",
@@ -330,8 +332,16 @@ export const Home = () => {
         }
     };
 
+    const irALoginConTransicion = () => {
+        if (navegandoSuave) return;
+        setNavegandoSuave(true);
+        setTimeout(() => {
+            navigate("/login");
+        }, 220);
+    };
+
     return (
-        <>
+        <div className={`transition-opacity duration-300 ease-out ${navegandoSuave ? 'opacity-0' : 'opacity-100'}`}>
             <header className="sticky top-0 z-50 w-full py-3 px-6 bg-slate-800/95 backdrop-blur-sm text-white flex flex-col md:flex-row justify-between items-center shadow-md">
                 {/* Logo + Título */}
                 <div className="flex items-center gap-3 mb-3 md:mb-0">
@@ -349,9 +359,13 @@ export const Home = () => {
                         <li><a href="#servicios" className="hover:text-cyan-400 transition-colors">Servicios</a></li>
                         <li><a href="#contacto" className="hover:text-cyan-400 transition-colors">Contacto</a></li>
                     </ul>
-                    <Link to="/login" className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-1.5 px-5 rounded-full text-sm md:text-base transition-colors">
+                    <button
+                        type="button"
+                        onClick={irALoginConTransicion}
+                        className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-1.5 px-5 rounded-full text-sm md:text-base transition-colors"
+                    >
                         Ingresar
-                    </Link>
+                    </button>
                 </div>
             </header>
 
@@ -929,6 +943,6 @@ export const Home = () => {
                     </div>
                 </div>
             </footer>
-        </>
+        </div>
     );
 };
