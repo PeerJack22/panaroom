@@ -271,15 +271,19 @@ const Details = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-stretch">
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Información general</h2>
-                        <ul className="space-y-3 text-gray-700">
-                            <li><strong className="text-gray-900">Título:</strong> {departamento.titulo}</li>
-                            <li><strong className="text-gray-900">Descripción:</strong> {departamento.descripcion}</li>
-                            <li><strong className="text-gray-900">Dirección:</strong> {departamento.direccion}</li>
-                            <li><strong className="text-gray-900">Precio mensual:</strong> $ {departamento.precioMensual}</li>
-                            <li><strong className="text-gray-900">Habitaciones:</strong> {departamento.numeroHabitaciones}</li>
-                            <li><strong className="text-gray-900">Baños:</strong> {departamento.numeroBanos}</li>
-                            <li><strong className="text-gray-900">Parqueadero:</strong> {departamento.parqueadero ? "Sí" : "No"}</li>
-                        </ul>
+                            <ul className="space-y-3 text-gray-700">
+                                <li><strong className="text-gray-900">Título:</strong> {departamento.titulo}</li>
+                                <li><strong className="text-gray-900">Descripción:</strong> {departamento.descripcion}</li>
+                                <li><strong className="text-gray-900">Dirección:</strong> {departamento.direccion}</li>
+                                <li><strong className="text-gray-900">Precio mensual:</strong> $ {departamento.precioMensual}</li>
+                                <li><strong className="text-gray-900">Habitaciones:</strong> {departamento.numeroHabitaciones}</li>
+                                <li><strong className="text-gray-900">Baños:</strong> {departamento.numeroBanos}</li>
+                                <li><strong className="text-gray-900">Parqueadero:</strong> {departamento.parqueadero ? "Sí" : "No"}</li>
+                                <li><strong className="text-gray-900">Categoría:</strong> {departamento.categoria ? formatearServicio(departamento.categoria) : "No definida"}</li>
+                                <li><strong className="text-gray-900">Monto de alícuota:</strong> {departamento.alicuotaMonto != null ? `$ ${departamento.alicuotaMonto}` : "No aplica"}</li>
+                                <li><strong className="text-gray-900">Número de parqueaderos:</strong> {departamento.numParqueaderos != null ? departamento.numParqueaderos : (departamento.parqueadero ? "1" : "0")}</li>
+                                <li><strong className="text-gray-900">Permite mascotas:</strong> {departamento.mascotas ? "Sí" : "No"}</li>
+                            </ul>
 
                         <div className="mt-5">
                             <h3 className="text-lg font-semibold text-gray-800 mb-3">Servicios incluidos</h3>
