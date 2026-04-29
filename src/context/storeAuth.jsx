@@ -6,11 +6,11 @@ const storeAuth = create(
         (set) => ({
             token: null,
             rol: null,
-            user: null, // ✅ Agregamos el estado 'user'
+            user: null, 
             setToken: (token) => set({ token }),
             setRol: (rol) => set({ rol }),
-            setUser: (user) => set({ user }), // ✅ Agregamos un método para guardar el usuario
-            clearToken: () => set({ token: null, rol: null, user: null }), // ✅ Limpiamos todo al salir
+            setUser: (user) => set({ user }), 
+            clearToken: () => set({ token: null, rol: null, user: null }), 
         }),
         { name: "auth-token" }
     )

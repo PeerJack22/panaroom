@@ -87,8 +87,8 @@ export const Form = () => {
     }, [currentMapUrl]);
 
     const stepFields = {
-        1: ["titulo", "descripcion", "direccion", "urlMapa"],
-        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero"],
+        1: ["titulo", "descripcion", "direccion", "urlMapa", "categoria"],
+        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "alicuota", "alicoutaMonto", "mascotas", "numParqueaderos"],
         3: ["imagen"],
     };
 
@@ -176,6 +176,15 @@ export const Form = () => {
                 return;
             } else if (key === "parqueadero") {
                 formData.append("parqueadero", data[key] === "true" ? "true" : "false");
+            } else if (key === "alicuota") {
+                formData.append("alicuota", data[key] === "true" ? "true" : "false");
+            } else if (key === "mascotas") {
+                formData.append("mascotas", data[key] === "true" ? "true" : "false");
+            } else if (key === "numParqueaderos") {
+                formData.append("numParqueaderos", data[key] || "0");
+            } else if (key === "precioMensual" || key === "numeroHabitaciones" || key === "numeroBanos" || key === "alicoutaMonto") {
+                // Asegurar que se envían valores numéricos como strings
+                formData.append(key, String(data[key] ?? ""));
             } else {
                 formData.append(key, data[key]);
             }
@@ -287,6 +296,23 @@ export const Form = () => {
 
                         <input type="hidden" {...register("ciudad")} />
 
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold">Categoría</label>
+                            <select
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                                defaultValue=""
+                                {...register("categoria", {
+                                    required: "Debes seleccionar una categoría.",
+                                    validate: (v) => ["departamento", "suite"].includes(String(v)) || "Categoría inválida.",
+                                })}
+                            >
+                                <option value="" disabled>Seleccionar categoría...</option>
+                                <option value="departamento">Departamento</option>
+                                <option value="suite">Suite</option>
+                            </select>
+                            {errors.categoria && <p className="text-red-500 text-xs italic">{errors.categoria.message}</p>}
+                        </div>
+
                         <input
                             type="hidden"
                             {...register("urlMapa", {
@@ -353,6 +379,52 @@ export const Form = () => {
                             {errors.precioMensual && <p className="text-red-500 text-xs italic">{errors.precioMensual.message}</p>}
                         </div>
 
+                        <div className="mt-4">
+                            <label className="mb-2 block text-sm font-semibold">Alicuota</label>
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2">
+                                    <input type="radio" value="true" {...register("alicuota", { required: "Indica si aplica alícuota." })} />
+                                    Sí
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input type="radio" value="false" {...register("alicuota", { required: "Indica si aplica alícuota." })} />
+                                    No
+                                </label>
+                            </div>
+                            {errors.alicuota && <p className="text-red-500 text-xs italic">{errors.alicuota.message}</p>}
+                        </div>
+
+                        {values.alicuota === "true" && (
+                            <div className="mt-3">
+                                <label className="mb-2 block text-sm font-semibold">Monto alícuota</label>
+                                <input
+                                    type="number"
+                                    placeholder="Ingresar monto de alícuota"
+                                    className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                                    {...register("alicoutaMonto", {
+                                        required: values.alicuota === "true" ? "Debes indicar el monto de alícuota." : false,
+                                        min: { value: 0, message: "El monto no puede ser negativo." },
+                                    })}
+                                />
+                                {errors.alicoutaMonto && <p className="text-red-500 text-xs italic">{errors.alicoutaMonto.message}</p>}
+                            </div>
+                        )}
+
+                        <div className="mt-4">
+                            <label className="mb-2 block text-sm font-semibold">¿Se permiten mascotas?</label>
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2">
+                                    <input type="radio" value="true" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />
+                                    Sí
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input type="radio" value="false" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />
+                                    No
+                                </label>
+                            </div>
+                            {errors.mascotas && <p className="text-red-500 text-xs italic">{errors.mascotas.message}</p>}
+                        </div>
+
                         <div>
                             <label className="mb-2 block text-sm font-semibold">Número de habitaciones</label>
                             <input
@@ -398,6 +470,21 @@ export const Form = () => {
                                 <option value="false">No</option>
                             </select>
                             {errors.parqueadero && <p className="text-red-500 text-xs italic">{errors.parqueadero.message}</p>}
+                            {values.parqueadero === "true" && (
+                                <div className="mt-3">
+                                    <label className="mb-2 block text-sm font-semibold">Número de parqueaderos</label>
+                                    <input
+                                        type="number"
+                                        placeholder="Ingrese número de parqueaderos"
+                                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
+                                        {...register("numParqueaderos", {
+                                            required: values.parqueadero === "true" ? "Indica cuántos parqueaderos tiene." : false,
+                                            min: { value: 1, message: "Debe ser al menos 1." },
+                                        })}
+                                    />
+                                    {errors.numParqueaderos && <p className="text-red-500 text-xs italic">{errors.numParqueaderos.message}</p>}
+                                </div>
+                            )}
                         </div>
                     </>
                 )}
@@ -461,7 +548,11 @@ export const Form = () => {
                     <div className="space-y-3 text-sm text-gray-700">
                         <p><span className="font-semibold">Título:</span> {values.titulo || "-"}</p>
                         <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
+                        <p><span className="font-semibold">Categoría:</span> {values.categoria || "-"}</p>
                         <p><span className="font-semibold">Precio mensual:</span> {values.precioMensual || "-"}</p>
+                        <p><span className="font-semibold">Alícuota:</span> {values.alicuota === "true" ? "Sí" : values.alicuota === "false" ? "No" : "-"}</p>
+                        {values.alicuota === "true" && <p><span className="font-semibold">Monto alícuota:</span> {values.alicoutaMonto || "-"}</p>}
+                        <p><span className="font-semibold">Mascotas:</span> {values.mascotas === "true" ? "Sí" : values.mascotas === "false" ? "No" : "-"}</p>
                         <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
                         <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>
                         <p><span className="font-semibold">Parqueadero:</span> {
@@ -471,6 +562,7 @@ export const Form = () => {
                                     ? "No"
                                     : "-"
                         }</p>
+                        {values.parqueadero === "true" && <p><span className="font-semibold"># Parqueaderos:</span> {values.numParqueaderos || "-"}</p>}
                         <p><span className="font-semibold">Servicios:</span> {
                             Array.isArray(values.servicios)
                                 ? values.servicios.join(", ")
