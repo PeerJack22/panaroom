@@ -20,7 +20,8 @@ const getCurrentRole = () => {
 
 const getProfileEndpoint = (rol) => {
     if (rol === "administrador") return "perfilAd";
-    if (rol === "estudiante") return "estudiante/perfil";
+    // Ruta proporcionada por el usuario para perfil estudiante
+    if (rol === "estudiante") return "api/perfilEstudiante";
     return "arrendatario/perfil";
 };
 
