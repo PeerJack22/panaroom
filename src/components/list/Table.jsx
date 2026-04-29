@@ -42,6 +42,7 @@ const Table = () => {
     const [adminFilters, setAdminFilters] = useState({
         titulo: "",
         estado: "",
+        categoria: "",
     });
     const [paginaActual, setPaginaActual] = useState(1);
     const elementosPorPagina = 6;
@@ -187,7 +188,11 @@ const Table = () => {
                 !estadoFiltro ||
                 (estadoFiltro === "habilitado" ? dep?.disponible !== false : dep?.disponible === false);
 
-            return matchTitulo && matchEstado;
+            const categoriaFiltroAdmin = String(adminFilters.categoria || "").trim().toLowerCase();
+            const categoriaDepartamento = String(dep?.categoria || "").trim().toLowerCase();
+            const matchCategoriaAdmin = !categoriaFiltroAdmin || !categoriaDepartamento || categoriaDepartamento === categoriaFiltroAdmin;
+
+            return matchTitulo && matchEstado && matchCategoriaAdmin;
         }
 
         // Estudiante: solo departamentos disponibles
@@ -281,7 +286,7 @@ const Table = () => {
         <>
             <div className="w-full mt-5 mb-4 p-4 rounded-lg bg-white shadow-lg border border-gray-200">
                 {isAdminOrArrendatario ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <input
                             type="text"
                             value={adminFilters.titulo}
@@ -298,6 +303,16 @@ const Table = () => {
                             <option value="">Todos los departamentos</option>
                             <option value="habilitado">Habilitados</option>
                             <option value="deshabilitado">Deshabilitados</option>
+                        </select>
+
+                        <select
+                            value={adminFilters.categoria}
+                            onChange={(e) => setAdminFilters((prev) => ({ ...prev, categoria: e.target.value }))}
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        >
+                            <option value="">Todas las categorías</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="suite">Suite</option>
                         </select>
 
                         <button
