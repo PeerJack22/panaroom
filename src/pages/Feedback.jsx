@@ -151,7 +151,7 @@ const Feedback = () => {
         return (
             <div className="bg-white border border-gray-200 rounded-xl shadow p-6">
                 <h1 className="font-black text-3xl text-gray-700">Quejas y sugerencias</h1>
-                <p className="mt-4 text-gray-600">Este módulo está disponible para administrador y arrendatario.</p>
+                <p className="mt-4 text-gray-600">Este módulo te permite gestionar quejas y sugerencias de los usuarios</p>
             </div>
         );
     }
