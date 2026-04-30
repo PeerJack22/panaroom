@@ -253,7 +253,7 @@ const Details = () => {
                                 <li><strong className="text-gray-900">Baños:</strong> {departamento.numeroBanos}</li>
                                 <li><strong className="text-gray-900">Parqueadero:</strong> {departamento.parqueadero ? "Sí" : "No"}</li>
                                 <li><strong className="text-gray-900">Categoría:</strong> {departamento.categoria ? formatearServicio(departamento.categoria) : "No definida"}</li>
-                                <li><strong className="text-gray-900">Monto de alícuota:</strong> {departamento.alicuotaMonto != null ? `$ ${departamento.alicuotaMonto}` : "No aplica"}</li>
+                                <li><strong className="text-gray-900">Monto de alícuota:</strong> {departamento.alicoutaMonto != null ? `$ ${departamento.alicoutaMonto}` : "No aplica"}</li>
                                 <li><strong className="text-gray-900">Número de parqueaderos:</strong> {departamento.numParqueaderos != null ? departamento.numParqueaderos : (departamento.parqueadero ? "1" : "0")}</li>
                                 <li><strong className="text-gray-900">Permite mascotas:</strong> {departamento.mascotas ? "Sí" : "No"}</li>
                             </ul>
