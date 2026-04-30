@@ -164,45 +164,18 @@ const Details = () => {
 
                 if (ownerIdString) {
                     try {
-                        // Intentar primero con /arrendatarios (plural) y luego con /arrendatario (singular)
-                        let arrendatariosResponse;
-                        try {
-                            arrendatariosResponse = await fetchDataBackend(
-                                `${import.meta.env.VITE_BACKEND_URL}/arrendatarios`,
-                                null,
-                                "GET",
-                                headers
-                            );
-                        } catch {
-                            arrendatariosResponse = await fetchDataBackend(
-                                `${import.meta.env.VITE_BACKEND_URL}/arrendatario`,
-                                null,
-                                "GET",
-                                headers
-                            );
-                        }
-
-                        console.log("Respuesta completa de arrendatarios:", arrendatariosResponse);
-
-                        // Buscar al propietario en la lista
-                        // La respuesta puede venir como array directo o dentro de .data
-                        let arrendatariosList = [];
-                        
-                        if (Array.isArray(arrendatariosResponse)) {
-                            arrendatariosList = arrendatariosResponse;
-                        } else if (Array.isArray(arrendatariosResponse?.data)) {
-                            arrendatariosList = arrendatariosResponse.data;
-                        } else if (arrendatariosResponse?.data?.arrendatarios) {
-                            arrendatariosList = arrendatariosResponse.data.arrendatarios;
-                        } else if (arrendatariosResponse?.data?.data) {
-                            arrendatariosList = arrendatariosResponse.data.data;
-                        }
-
-                        const owner = arrendatariosList.find(
-                            (arr) => arr._id === ownerIdString || arr.id === ownerIdString
+                        // Llamar directamente al endpoint con el ID del arrendatario
+                        const ownerResponse = await fetchDataBackend(
+                            `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${ownerIdString}`,
+                            null,
+                            "GET",
+                            headers
                         );
 
-                        if (owner) {
+                        // El propietario puede venir como objeto directo o dentro de .data
+                        const owner = Array.isArray(ownerResponse) ? ownerResponse[0] : (ownerResponse?.data || ownerResponse);
+                        
+                        if (owner && (owner.nombre || owner.email)) {
                             setPropietario(owner);
                         }
                     } catch (ownerError) {
