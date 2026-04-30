@@ -175,8 +175,15 @@ const Table = () => {
 
     const departamentosFiltrados = departamentos.filter((dep) => {
         if (isAdminOrArrendatario) {
-            if (isArrendatario && String(dep?.arrendatario || "") !== String(userId || "")) {
-                return false;
+            if (isArrendatario) {
+                // Extraer el ID del arrendatario, ya sea string o objeto
+                const arrendatarioId = typeof dep?.arrendatario === "object" 
+                    ? (dep?.arrendatario?._id || dep?.arrendatario?.id) 
+                    : dep?.arrendatario;
+                
+                if (String(arrendatarioId || "") !== String(userId || "")) {
+                    return false;
+                }
             }
 
             const tituloFiltro = String(adminFilters.titulo || "").trim().toLowerCase();
@@ -651,7 +658,11 @@ const Table = () => {
                                         </button>
                                     )}
 
-                                    {(userRol === "arrendador" && dep.arrendatario === userId && dep?.disponible === false) && (
+                                    {(userRol === "arrendador" && (
+                                        typeof dep.arrendatario === "object" 
+                                            ? (dep.arrendatario?._id || dep.arrendatario?.id) === userId
+                                            : dep.arrendatario === userId
+                                    ) && dep?.disponible === false) && (
                                         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 bg-red-50 text-sm font-medium">
                                             <MdToggleOff className="h-5 w-5" />
                                             Desactivado
