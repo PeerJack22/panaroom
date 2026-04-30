@@ -34,12 +34,8 @@ const Table = () => {
 
     const storedUser = JSON.parse(localStorage.getItem("auth-token"));
     const userRol = storedUser?.state?.rol || "";
-    const userId = storedUser?.state?.id || storedUser?.state?._id || "";
+    const userId = storedUser?.state?.user?._id || "";
     const userToken = storedUser?.state?.token || "";
-    
-    // DEBUG: ver estructura del storedUser
-    console.log("storedUser.state completo:", storedUser?.state);
-    console.log("userId extraído:", userId);
     const isArrendatario = userRol === "arrendatario" || userRol === "arrendador";
     const isAdminOrArrendatario = userRol === "administrador" || isArrendatario;
 
@@ -185,9 +181,7 @@ const Table = () => {
                     ? (dep?.arrendatario?._id || dep?.arrendatario?.id) 
                     : dep?.arrendatario;
                 
-                // DEBUG
-                console.log("Comparando:", { arrendatarioId, userId, match: String(arrendatarioId || "") === String(userId || "") });
-                
+
                 if (String(arrendatarioId || "") !== String(userId || "")) {
                     return false;
                 }
