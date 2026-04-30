@@ -321,6 +321,13 @@ const Details = () => {
                                     <p className="text-lg font-medium text-gray-900">{propietario.celular || "No disponible"}</p>
                                 </div>
                             </div>
+
+                            <button
+                                type="button"
+                                className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-600 transition-colors"
+                            >
+                                Chatear con el propietario
+                            </button>
                         </section>
                     )}
                 </div>
