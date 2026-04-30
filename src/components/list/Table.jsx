@@ -181,6 +181,9 @@ const Table = () => {
                     ? (dep?.arrendatario?._id || dep?.arrendatario?.id) 
                     : dep?.arrendatario;
                 
+                // DEBUG
+                console.log("Comparando:", { arrendatarioId, userId, match: String(arrendatarioId || "") === String(userId || "") });
+                
                 if (String(arrendatarioId || "") !== String(userId || "")) {
                     return false;
                 }
