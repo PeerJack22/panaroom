@@ -455,20 +455,26 @@ export const Form = () => {
 
                         <div className="mt-5">
                             <label className="mb-2 block text-sm font-semibold">Parqueadero</label>
-                            <select
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                                defaultValue=""
-                                {...register("parqueadero", {
-                                    required: "Debes indicar si tiene parqueadero.",
-                                    validate: (value) =>
-                                        ["true", "false"].includes(String(value)) ||
-                                        "Selecciona una opción válida.",
-                                })}
-                            >
-                                <option value="" disabled>Seleccionar...</option>
-                                <option value="true">Sí</option>
-                                <option value="false">No</option>
-                            </select>
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2">
+                                    <input type="radio" value="true" {...register("parqueadero", {
+                                        required: "Debes indicar si tiene parqueadero.",
+                                        validate: (value) =>
+                                            ["true", "false"].includes(String(value)) ||
+                                            "Selecciona una opción válida.",
+                                    })} />
+                                    Sí
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input type="radio" value="false" {...register("parqueadero", {
+                                        required: "Debes indicar si tiene parqueadero.",
+                                        validate: (value) =>
+                                            ["true", "false"].includes(String(value)) ||
+                                            "Selecciona una opción válida.",
+                                    })} />
+                                    No
+                                </label>
+                            </div>
                             {errors.parqueadero && <p className="text-red-500 text-xs italic">{errors.parqueadero.message}</p>}
                             {values.parqueadero === "true" && (
                                 <div className="mt-3">
