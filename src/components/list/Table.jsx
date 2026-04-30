@@ -175,7 +175,7 @@ const Table = () => {
 
     const departamentosFiltrados = departamentos.filter((dep) => {
         if (isAdminOrArrendatario) {
-            if (isArrendatario && String(dep?.creador || "") !== String(userId || "")) {
+            if (isArrendatario && String(dep?.arrendatario || "") !== String(userId || "")) {
                 return false;
             }
 
@@ -651,7 +651,7 @@ const Table = () => {
                                         </button>
                                     )}
 
-                                    {(userRol === "arrendador" && dep.creador === userId && dep?.disponible === false) && (
+                                    {(userRol === "arrendador" && dep.arrendatario === userId && dep?.disponible === false) && (
                                         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 bg-red-50 text-sm font-medium">
                                             <MdToggleOff className="h-5 w-5" />
                                             Desactivado
