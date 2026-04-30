@@ -45,6 +45,7 @@ const Table = () => {
         categoria: "",
     });
     const [paginaActual, setPaginaActual] = useState(1);
+    const [animandoDepartamentos, setAnimandoDepartamentos] = useState(false);
     const elementosPorPagina = 6;
 
     useEffect(() => {
@@ -287,7 +288,13 @@ const Table = () => {
 
     const cambiarPagina = (pagina) => {
         const siguiente = Math.min(Math.max(pagina, 1), totalPaginas);
-        setPaginaActual(siguiente);
+        if (siguiente === paginaActual) return;
+
+        setAnimandoDepartamentos(true);
+        setTimeout(() => {
+            setPaginaActual(siguiente);
+            setAnimandoDepartamentos(false);
+        }, 180);
     };
 
     return (
@@ -602,7 +609,7 @@ const Table = () => {
                 </div>
             ) : (
                 <div className="mt-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ease-out ${animandoDepartamentos ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
                         {departamentosPaginados.map((dep) => (
                             <article key={dep._id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
                                 <img
