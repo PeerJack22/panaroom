@@ -34,11 +34,11 @@ const Table = () => {
 
     const storedUser = JSON.parse(localStorage.getItem("auth-token"));
     const userRol = storedUser?.state?.rol || "";
-    const userId = storedUser?.state?.id || "";
+    const userId = storedUser?.state?.id || storedUser?.state?._id || "";
     const userToken = storedUser?.state?.token || "";
     
     // DEBUG: ver estructura del storedUser
-    console.log("storedUser completo:", storedUser);
+    console.log("storedUser.state completo:", storedUser?.state);
     console.log("userId extraído:", userId);
     const isArrendatario = userRol === "arrendatario" || userRol === "arrendador";
     const isAdminOrArrendatario = userRol === "administrador" || isArrendatario;
