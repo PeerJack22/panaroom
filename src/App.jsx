@@ -9,6 +9,7 @@ import AuthSuccess from './pages/AuthSuccess'
 import Dashboard from './layout/Dashboard'
 import Profile from './pages/Profile'
 import List from './pages/List'
+import MisResidencias from './pages/MisResidencias'
 import Details from './pages/Details'
 import Create from './pages/Create'
 import Update from './pages/Update'
@@ -63,6 +64,7 @@ function App() {
                 <Route element={<Dashboard />}>
                   <Route index element={<Profile />} />
                   <Route path='listar' element={<List />} />
+                  <Route path='mis-residencias' element={<MisResidencias />} />
                   <Route path='visualizar/:id' element={<Details />} />
                   <Route path='crear' element={<Create />} />
                   <Route path='quejas-sugerencias' element={<Feedback />} />
