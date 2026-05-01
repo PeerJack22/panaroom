@@ -26,14 +26,17 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
-  const { profile} = storeProfile()
+  const { profile, clearUser } = storeProfile()
   const { token } = storeAuth()
 
   useEffect(() => {
     if(token){
       profile()
+      return
     }
-  }, [token, profile])
+
+    clearUser()
+  }, [token, profile, clearUser])
 
   return (
     <>

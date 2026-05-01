@@ -10,12 +10,13 @@ const Dashboard = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { clearToken } = storeAuth()
-    const{user} = storeProfile()
+    const{user, clearUser} = storeProfile()
     const { rol } = storeAuth()
 
     const handleLogout = () => {
         // Limpia cualquier toast en curso antes de salir al login
         toast.dismiss();
+        clearUser();
         clearToken();
     };
 

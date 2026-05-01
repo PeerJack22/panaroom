@@ -27,6 +27,9 @@ const FormularioPerfil = () => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (uploadedImagePreview && !uploadedImagePreview.includes("http")) {
+                URL.revokeObjectURL(uploadedImagePreview);
+            }
             const imageUrl = URL.createObjectURL(file);
             setUploadedImagePreview(imageUrl);
         }
@@ -93,10 +96,10 @@ const FormularioPerfil = () => {
                 email: user?.email,
             });
 
-            if (user?.avatarUrl) {
-                // Mostrar la imagen existente del usuario
-                setUploadedImagePreview(user.avatarUrl);
-            }
+            // Si el usuario no tiene avatar, limpiamos la preview anterior.
+            setUploadedImagePreview(user?.avatarUrl || null);
+        } else {
+            setUploadedImagePreview(null);
         }
     }, [user, reset]);
 
