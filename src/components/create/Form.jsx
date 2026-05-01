@@ -152,8 +152,14 @@ export const Form = () => {
                 ? [data.servicios]
                 : [];
 
+        const mapServicioBackend = {
+            agua: "Agua",
+            luz: "Luz",
+            internet: "Internet",
+        };
+
         const serviciosNormalizados = serviciosSeleccionados
-            .map((serv) => String(serv).trim().toLowerCase())
+            .map((serv) => mapServicioBackend[String(serv).trim().toLowerCase()] || null)
             .filter(Boolean);
 
         if (!serviciosNormalizados.length) {
@@ -182,6 +188,10 @@ export const Form = () => {
                 formData.append("mascotas", data[key] === "true" ? "true" : "false");
             } else if (key === "numParqueaderos") {
                 formData.append("numParqueaderos", data[key] || "0");
+            } else if (key === "alicoutaMonto") {
+                if (data.alicuota === "true") {
+                    formData.append("alicoutaMonto", String(data[key] ?? "0"));
+                }
             } else if (key === "precioMensual" || key === "numeroHabitaciones" || key === "numeroBanos" || key === "alicoutaMonto") {
                 // Asegurar que se envían valores numéricos como strings
                 formData.append(key, String(data[key] ?? ""));
