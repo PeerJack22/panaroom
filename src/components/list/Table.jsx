@@ -73,7 +73,7 @@ const Table = () => {
             return;
         }
 
-        const nuevoEstado = !dep.disponible;
+        const nuevoEstado = !esBooleanoTrue(dep.disponible);
         
         // Pedir confirmación si va a desactivar
         if (!nuevoEstado) {
