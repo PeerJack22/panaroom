@@ -73,7 +73,8 @@ const Table = () => {
             return;
         }
 
-        const nuevoEstado = !esBooleanoTrue(dep.disponible);
+        const disponibleActual = dep.disponible === true || dep.disponible === "true";
+        const nuevoEstado = !disponibleActual;
         
         // Pedir confirmación si va a desactivar
         if (!nuevoEstado) {
@@ -84,27 +85,20 @@ const Table = () => {
         }
 
         try {
-            const safeId = encodeURIComponent(String(departamentoId).trim());
-            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${safeId}`;
+            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${departamentoId}`;
             const headers = {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userToken}`,
             };
-            // Log headers with token partially masked for debugging
-            console.log("toggleDisponibilidad -> headers:", {
-                "Content-Type": headers["Content-Type"],
-                Authorization: headers.Authorization ? headers.Authorization.slice(0, 10) + '...[masked]' : null,
-            });
-            const payload = { disponible: nuevoEstado, idDepartamento: departamentoId };
+            const payload = { disponible: nuevoEstado };
 
-            console.log("toggleDisponibilidad -> dep:", dep);
             console.log("toggleDisponibilidad -> departamentoId:", departamentoId);
             console.log("toggleDisponibilidad -> URL:", url, "payload:", payload);
             const resp = await axios.put(url, payload, { headers });
 
             if (resp?.data) {
                 setDepartamentos((prev) =>
-                    prev.map((d) => (d._id === dep._id ? { ...d, disponible: nuevoEstado } : d))
+                    prev.map((d) => (String(d._id) === String(departamentoId) ? { ...d, disponible: nuevoEstado } : d))
                 );
                 toast.success(nuevoEstado ? "Departamento activado correctamente" : "Departamento desactivado correctamente");
             }
@@ -122,34 +116,6 @@ const Table = () => {
                 }
             } else {
                 toast.error("Error al cambiar el estado del departamento.");
-            }
-
-            // Si el backend indica que el ID no es válido, intentar reintentos con el id en el body
-            if (serverData && String(serverData?.msg || '').toLowerCase().includes('id de departamento no válido')) {
-                const altUrl = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad`;
-                const retryHeaders = { "Content-Type": "application/json", Authorization: `Bearer ${userToken}` };
-                const altBodies = [
-                    { idDepartamento: departamentoId, disponible: nuevoEstado },
-                    { departamentoId: departamentoId, disponible: nuevoEstado },
-                    { _id: departamentoId, disponible: nuevoEstado },
-                ];
-
-                for (const body of altBodies) {
-                    try {
-                        console.log('toggleDisponibilidad -> retry URL:', altUrl, 'body:', body);
-                        const retryResp = await axios.put(altUrl, body, { headers: retryHeaders });
-                        console.log('toggleDisponibilidad -> retry response:', retryResp?.data);
-                        if (retryResp?.data) {
-                            setDepartamentos((prev) =>
-                                prev.map((d) => (d._id === dep._id ? { ...d, disponible: nuevoEstado } : d))
-                            );
-                            toast.success(nuevoEstado ? 'Departamento activado correctamente' : 'Departamento desactivado correctamente');
-                            return;
-                        }
-                    } catch (retryError) {
-                        console.debug('toggleDisponibilidad retry failed:', retryError?.response?.data || retryError?.message || retryError);
-                    }
-                }
             }
         }
     };
