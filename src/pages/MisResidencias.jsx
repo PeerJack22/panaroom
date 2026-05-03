@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import storeAuth from "../context/storeAuth";
@@ -6,14 +6,16 @@ import storeAuth from "../context/storeAuth";
 const MisResidencias = () => {
     const navigate = useNavigate();
     const { fetchDataBackend } = useFetch();
-    const { user, token, rol } = storeAuth();
+    const { token, rol } = storeAuth();
     const [residencias, setResidencias] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
+    const [filtroNombre, setFiltroNombre] = useState("");
+    const [filtroCategoria, setFiltroCategoria] = useState("");
 
     useEffect(() => {
         const cargarResidencias = async () => {
-            if (!token || !user?._id) {
+            if (!token) {
                 setError("No se pudo identificar tu sesión.");
                 setCargando(false);
                 return;
@@ -21,22 +23,14 @@ const MisResidencias = () => {
 
             try {
                 setCargando(true);
-                const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
+                const url = `${import.meta.env.VITE_BACKEND_URL}/estudiante/departamentos`;
                 const response = await fetchDataBackend(url, null, "GET", {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 });
 
                 const lista = Array.isArray(response) ? response : [];
-                const filtradas = lista.filter((dep) => {
-                    const propietarioId = typeof dep?.arrendatario === "object"
-                        ? dep?.arrendatario?._id || dep?.arrendatario?.id
-                        : dep?.arrendatario;
-
-                    return String(propietarioId || "") === String(user._id || "");
-                });
-
-                setResidencias(filtradas);
+                setResidencias(lista);
             } catch (err) {
                 console.error("Error al cargar mis residencias:", err);
                 setError("No se pudieron cargar tus residencias.");
@@ -51,24 +45,74 @@ const MisResidencias = () => {
             setCargando(false);
             setError("Esta vista está disponible solo para estudiantes.");
         }
-    }, [fetchDataBackend, rol, token, user?._id]);
+    }, [fetchDataBackend, rol, token]);
+
+    // Obtener categorías únicas para el filtro
+    const categorias = useMemo(() => {
+        const cats = residencias
+            .map((dep) => dep.categoria)
+            .filter((cat) => cat && cat.trim() !== "");
+        return [...new Set(cats)].sort();
+    }, [residencias]);
+
+    // Filtrar residencias según nombre y categoría
+    const residenciasFiltradas = useMemo(() => {
+        return residencias.filter((dep) => {
+            const coincideNombre =
+                !filtroNombre ||
+                (dep.titulo || "").toLowerCase().includes(filtroNombre.toLowerCase());
+            const coincideCategoria = !filtroCategoria || dep.categoria === filtroCategoria;
+
+            return coincideNombre && coincideCategoria;
+        });
+    }, [residencias, filtroNombre, filtroCategoria]);
 
     return (
         <div>
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                    <h1 className="font-black text-4xl text-gray-500">Mis residencias</h1>
-                    <hr className="my-4 border-t-2 border-gray-300" />
-                    <p className="mb-8">Aquí verás las residencias asociadas a tu usuario.</p>
-                </div>
-                <button
-                    type="button"
-                    onClick={() => navigate("/dashboard/crear")}
-                    className="h-fit rounded-md bg-blue-700 px-4 py-2 text-white hover:bg-blue-600 transition-colors"
-                >
-                    Crear residencia
-                </button>
+            <div>
+                <h1 className="font-black text-4xl text-gray-500">Mis residencias</h1>
+                <hr className="my-4 border-t-2 border-gray-300" />
+                <p className="mb-6">Aquí verás las residencias asignadas a tu usuario.</p>
             </div>
+
+            {!cargando && !error && residencias.length > 0 && (
+                <section className="bg-white border border-gray-200 rounded-xl shadow p-5 mb-6">
+                    <h2 className="text-lg font-bold text-gray-800 mb-4">Filtros</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="filtro-nombre" className="block text-sm font-medium text-gray-700 mb-2">
+                                Buscar por nombre
+                            </label>
+                            <input
+                                id="filtro-nombre"
+                                type="text"
+                                placeholder="Ej: Departamento en el Centro"
+                                value={filtroNombre}
+                                onChange={(e) => setFiltroNombre(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="filtro-categoria" className="block text-sm font-medium text-gray-700 mb-2">
+                                Filtrar por categoría
+                            </label>
+                            <select
+                                id="filtro-categoria"
+                                value={filtroCategoria}
+                                onChange={(e) => setFiltroCategoria(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            >
+                                <option value="">Todas las categorías</option>
+                                {categorias.map((cat) => (
+                                    <option key={cat} value={cat}>
+                                        {cat}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {cargando ? (
                 <div className="p-4 text-sm text-blue-800 rounded-lg bg-blue-50">
@@ -80,11 +124,15 @@ const MisResidencias = () => {
                 </div>
             ) : residencias.length === 0 ? (
                 <div className="p-4 text-sm text-amber-800 rounded-lg bg-amber-50" role="alert">
-                    <span className="font-medium">Aún no tienes residencias registradas.</span>
+                    <span className="font-medium">Aún no tienes residencias asignadas.</span>
+                </div>
+            ) : residenciasFiltradas.length === 0 ? (
+                <div className="p-4 text-sm text-amber-800 rounded-lg bg-amber-50" role="alert">
+                    <span className="font-medium">No se encontraron residencias que coincidan con tus filtros.</span>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                    {residencias.map((dep) => (
+                    {residenciasFiltradas.map((dep) => (
                         <article key={dep._id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
                             <img
                                 src={dep?.imagenes?.[0]?.url || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"}
