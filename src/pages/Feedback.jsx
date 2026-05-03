@@ -61,6 +61,7 @@ const getListFromResponse = (responseData) => {
 
 const normalizeFeedbackItem = (item, index) => ({
     id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
+    _id: item?._id,
     mensaje: toText(item?.mensaje || item?.descripcion || item?.comentario, "Sin descripción"),
     estudiante: toText(
         item?.estudiante?.nombre ||
@@ -88,6 +89,7 @@ const normalizeFeedbackItem = (item, index) => ({
         item?.residencia?.id ||
         null,
     fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
+    disponible: item?.disponible !== undefined ? item.disponible : false,
 });
 
 const formatDate = (value) => {
@@ -103,6 +105,7 @@ const Feedback = () => {
     const { rol, token } = storeAuth();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [filtro, setFiltro] = useState("todos"); // "todos", "pendientes", "revisados"
 
     const roleNormalized = String(rol || "").toLowerCase();
     const isAdmin = roleNormalized === "administrador";
@@ -147,6 +150,65 @@ const Feedback = () => {
         fetchFeedback();
     }, [canViewFeedback, endpoint, token]);
 
+    const cambiarEstado = async (queja) => {
+        if (!queja?._id) {
+            toast.error("Error: No se pudo identificar la queja.");
+            return;
+        }
+
+        const nuevoEstado = !queja.disponible;
+        
+        // Pedir confirmación si va a marcar como revisado
+        if (nuevoEstado) {
+            const confirmar = window.confirm(
+                `¿Estás seguro de marcar esta queja como revisada?`
+            );
+            if (!confirmar) return;
+        }
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/admin/quejaSugerencia/estado/${queja._id}`;
+            const response = await axios.put(
+                url,
+                { disponible: nuevoEstado },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response?.data) {
+                // Actualizar el estado local
+                setItems((prev) =>
+                    prev.map((item) =>
+                        item.id === queja.id ? { ...item, disponible: nuevoEstado } : item
+                    )
+                );
+                toast.success(
+                    nuevoEstado
+                        ? "Queja marcada como revisada"
+                        : "Queja marcada como pendiente"
+                );
+            }
+        } catch (error) {
+            const errorMessage =
+                error?.response?.data?.msg ||
+                error?.response?.data?.message ||
+                "Error al cambiar el estado de la queja";
+            toast.error(errorMessage);
+            console.error("Error:", error);
+        }
+    };
+
+    // Filtrar items basándose en el estado
+    const itemsFiltrados = useMemo(() => {
+        if (filtro === "pendientes") return items.filter((item) => !item.disponible);
+        if (filtro === "revisados") return items.filter((item) => item.disponible);
+        return items;
+    }, [items, filtro]);
+
     if (!canViewFeedback) {
         return (
             <div className="bg-white border border-gray-200 rounded-xl shadow p-6">
@@ -162,27 +224,79 @@ const Feedback = () => {
             <hr className="my-4 border-t-2 border-gray-300" />
 
             <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">
-                    {isAdmin ? "Todas las quejas y sugerencias" : "Quejas y sugerencias de mis departamentos"}
-                </h2>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-gray-800">
+                        {isAdmin ? "Todas las quejas y sugerencias" : "Quejas y sugerencias de mis departamentos"}
+                    </h2>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setFiltro("todos")}
+                            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                filtro === "todos"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
+                        >
+                            Todos ({items.length})
+                        </button>
+                        <button
+                            onClick={() => setFiltro("pendientes")}
+                            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                filtro === "pendientes"
+                                    ? "bg-yellow-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
+                        >
+                            Pendientes ({items.filter((i) => !i.disponible).length})
+                        </button>
+                        <button
+                            onClick={() => setFiltro("revisados")}
+                            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                filtro === "revisados"
+                                    ? "bg-green-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
+                        >
+                            Revisados ({items.filter((i) => i.disponible).length})
+                        </button>
+                    </div>
+                </div>
 
                 {loading ? (
                     <p className="text-gray-500">Cargando registros...</p>
-                ) : !items.length ? (
+                ) : !itemsFiltrados.length ? (
                     <p className="text-gray-500">No existen registros para mostrar.</p>
                 ) : (
                     <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
-                        {items.map((item) => (
+                        {itemsFiltrados.map((item) => (
                             <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
                                     </div>
 
-                                    <div className="ml-3 flex-shrink-0">
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-                                            No revisado
+                                    <div className="ml-3 flex-shrink-0 flex flex-col items-end gap-2">
+                                        <span
+                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                                item.disponible
+                                                    ? "bg-green-100 text-green-800"
+                                                    : "bg-yellow-100 text-yellow-800"
+                                            }`}
+                                        >
+                                            {item.disponible ? "Revisado" : "Pendiente"}
                                         </span>
+                                        {isAdmin && (
+                                            <button
+                                                onClick={() => cambiarEstado(item)}
+                                                className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                                                    item.disponible
+                                                        ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                                                        : "bg-green-500 text-white hover:bg-green-600"
+                                                }`}
+                                            >
+                                                {item.disponible ? "Marcar pendiente" : "Marcar revisado"}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
 
