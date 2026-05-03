@@ -66,7 +66,9 @@ const Table = () => {
     }, [fetchDataBackend, userToken]);
 
     const toggleDisponibilidad = async (dep) => {
-        if (!dep || !dep._id) {
+        const departamentoId = dep?._id || dep?.id || dep?.departamento?._id || dep?._doc?._id || null;
+        if (!dep || !departamentoId) {
+            console.error("toggleDisponibilidad: departamento o id faltante", dep);
             toast.error("Error: No se pudo identificar el departamento.");
             return;
         }
@@ -82,13 +84,14 @@ const Table = () => {
         }
 
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${dep._id}`;
+            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${departamentoId}`;
             const headers = {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userToken}`,
             };
             const payload = { disponible: nuevoEstado };
 
+            console.debug("toggleDisponibilidad -> URL:", url, "payload:", payload);
             const resp = await axios.put(url, payload, { headers });
 
             if (resp?.data) {
