@@ -123,6 +123,34 @@ const Table = () => {
             } else {
                 toast.error("Error al cambiar el estado del departamento.");
             }
+
+            // Si el backend indica que el ID no es válido, intentar reintentos con el id en el body
+            if (serverData && String(serverData?.msg || '').toLowerCase().includes('id de departamento no válido')) {
+                const altUrl = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad`;
+                const retryHeaders = { "Content-Type": "application/json", Authorization: `Bearer ${userToken}` };
+                const altBodies = [
+                    { idDepartamento: departamentoId, disponible: nuevoEstado },
+                    { departamentoId: departamentoId, disponible: nuevoEstado },
+                    { _id: departamentoId, disponible: nuevoEstado },
+                ];
+
+                for (const body of altBodies) {
+                    try {
+                        console.log('toggleDisponibilidad -> retry URL:', altUrl, 'body:', body);
+                        const retryResp = await axios.put(altUrl, body, { headers: retryHeaders });
+                        console.log('toggleDisponibilidad -> retry response:', retryResp?.data);
+                        if (retryResp?.data) {
+                            setDepartamentos((prev) =>
+                                prev.map((d) => (d._id === dep._id ? { ...d, disponible: nuevoEstado } : d))
+                            );
+                            toast.success(nuevoEstado ? 'Departamento activado correctamente' : 'Departamento desactivado correctamente');
+                            return;
+                        }
+                    } catch (retryError) {
+                        console.debug('toggleDisponibilidad retry failed:', retryError?.response?.data || retryError?.message || retryError);
+                    }
+                }
+            }
         }
     };
 
