@@ -64,8 +64,49 @@ const Table = () => {
         listarDepartamentos();
     }, [fetchDataBackend, userToken]);
 
-    const toggleDisponibilidad = async () => {
-        toast.info("Esta funcionalidad está en desarrollo. Pronto podrás activar/desactivar departamentos.");
+    const toggleDisponibilidad = async (dep) => {
+        if (!dep || !dep._id) {
+            toast.error("Error: No se pudo identificar el departamento.");
+            return;
+        }
+
+        const nuevoEstado = !dep.disponible;
+        
+        // Pedir confirmación si va a desactivar
+        if (!nuevoEstado) {
+            const confirmar = window.confirm(
+                `¿Estás seguro de que deseas desactivar "${dep.titulo}"? Los estudiantes no podrán verlo.`
+            );
+            if (!confirmar) return;
+        }
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${dep._id}`;
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userToken}`,
+            };
+            const payload = { disponible: nuevoEstado };
+            
+            const response = await fetchDataBackend(url, payload, "PUT", headers);
+            
+            if (response) {
+                // Actualizar el estado local
+                setDepartamentos((prev) =>
+                    prev.map((d) =>
+                        d._id === dep._id ? { ...d, disponible: nuevoEstado } : d
+                    )
+                );
+                toast.success(
+                    nuevoEstado
+                        ? "Departamento activado correctamente"
+                        : "Departamento desactivado correctamente"
+                );
+            }
+        } catch (error) {
+            console.error("Error al cambiar disponibilidad:", error);
+            toast.error("Error al cambiar el estado del departamento.");
+        }
     };
 
     const handleFilterChange = (e) => {
@@ -650,7 +691,7 @@ const Table = () => {
                                                     ? "border-green-300 text-green-700 hover:bg-green-50"
                                                     : "border-red-300 text-red-700 hover:bg-red-50"
                                             }`}
-                                            onClick={toggleDisponibilidad}
+                                            onClick={() => toggleDisponibilidad(dep)}
                                         >
                                             {dep?.disponible === false ? (
                                                 <>
