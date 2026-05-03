@@ -169,38 +169,65 @@ const Feedback = () => {
         }
 
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/admin/quejaSugerencia/estado/${queja._id}`;
-            const response = await axios.put(
-                url,
-                { disponible: nuevoEstado },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            // Construir prefijos candidatos basados en el endpoint de listado
+            const parts = (endpoint || "/admin").split("/").filter(Boolean); // ['administrador','quejas']
+            const prefix = parts.length ? `/${parts[0]}` : "/admin";
 
-            if (response?.data) {
-                // Actualizar el estado local
-                setItems((prev) =>
-                    prev.map((item) =>
-                        item.id === queja.id ? { ...item, disponible: nuevoEstado } : item
-                    )
-                );
-                toast.success(
-                    nuevoEstado
-                        ? "Queja marcada como revisada"
-                        : "Queja marcada como pendiente"
-                );
+            const candidates = [
+                `${import.meta.env.VITE_BACKEND_URL}${prefix}/quejaSugerencia/estado/${queja._id}`,
+                `${import.meta.env.VITE_BACKEND_URL}/administrador/quejaSugerencia/estado/${queja._id}`,
+                `${import.meta.env.VITE_BACKEND_URL}/admin/quejaSugerencia/estado/${queja._id}`,
+            ].filter((v, i, a) => a.indexOf(v) === i);
+
+            let lastError = null;
+            let success = false;
+
+            for (const url of candidates) {
+                try {
+                    console.info("cambiarEstado -> intentando URL:", url);
+                    const response = await axios.put(
+                        url,
+                        { disponible: nuevoEstado },
+                        {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                            },
+                        }
+                    );
+
+                    console.info("cambiarEstado -> respuesta recibida:", response?.data);
+
+                    if (response?.data) {
+                        setItems((prev) =>
+                            prev.map((item) =>
+                                item.id === queja.id ? { ...item, disponible: nuevoEstado } : item
+                            )
+                        );
+                        toast.success(
+                            nuevoEstado ? "Queja marcada como revisada" : "Queja marcada como pendiente"
+                        );
+                        success = true;
+                        break;
+                    }
+                } catch (err) {
+                    lastError = err;
+                    console.error("cambiarEstado -> fallo en URL:", url, err?.response?.data || err.message || err);
+                    // continuar con el siguiente candidato
+                }
+            }
+
+            if (!success) {
+                const errorMessage =
+                    lastError?.response?.data?.msg || lastError?.response?.data?.message || "Error al cambiar el estado de la queja";
+                toast.error(errorMessage);
+                console.error("cambiarEstado -> error final:", lastError);
             }
         } catch (error) {
             const errorMessage =
-                error?.response?.data?.msg ||
-                error?.response?.data?.message ||
-                "Error al cambiar el estado de la queja";
+                error?.response?.data?.msg || error?.response?.data?.message || "Error al cambiar el estado de la queja";
             toast.error(errorMessage);
-            console.error("Error:", error);
+            console.error("cambiarEstado -> excepción inesperada:", error);
         }
     };
 
