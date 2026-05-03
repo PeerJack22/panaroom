@@ -91,7 +91,9 @@ const Table = () => {
             };
             const payload = { disponible: nuevoEstado };
 
-            console.debug("toggleDisponibilidad -> URL:", url, "payload:", payload);
+            console.log("toggleDisponibilidad -> dep:", dep);
+            console.log("toggleDisponibilidad -> departamentoId:", departamentoId);
+            console.log("toggleDisponibilidad -> URL:", url, "payload:", payload);
             const resp = await axios.put(url, payload, { headers });
 
             if (resp?.data) {
@@ -102,9 +104,16 @@ const Table = () => {
             }
         } catch (error) {
             console.error("Error al cambiar disponibilidad:", error);
-            const serverMsg = error?.response?.data?.msg || error?.response?.data?.message || error?.response?.data || null;
+            const serverData = error?.response?.data || null;
+            console.error("toggleDisponibilidad - server response data:", serverData);
+            const serverMsg = serverData?.msg || serverData?.message || serverData || null;
             if (serverMsg) {
-                toast.error(String(serverMsg));
+                try {
+                    const text = typeof serverMsg === 'string' ? serverMsg : JSON.stringify(serverMsg);
+                    toast.error(text);
+                } catch {
+                    toast.error(String(serverMsg));
+                }
             } else {
                 toast.error("Error al cambiar el estado del departamento.");
             }
