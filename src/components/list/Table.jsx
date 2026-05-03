@@ -1,4 +1,5 @@
 import { MdToggleOn, MdToggleOff, MdInfo} from "react-icons/md";
+import axios from "axios";
 import useFetch from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
@@ -87,25 +88,23 @@ const Table = () => {
                 Authorization: `Bearer ${userToken}`,
             };
             const payload = { disponible: nuevoEstado };
-            
-            const response = await fetchDataBackend(url, payload, "PUT", headers);
-            
-            if (response) {
-                // Actualizar el estado local
+
+            const resp = await axios.put(url, payload, { headers });
+
+            if (resp?.data) {
                 setDepartamentos((prev) =>
-                    prev.map((d) =>
-                        d._id === dep._id ? { ...d, disponible: nuevoEstado } : d
-                    )
+                    prev.map((d) => (d._id === dep._id ? { ...d, disponible: nuevoEstado } : d))
                 );
-                toast.success(
-                    nuevoEstado
-                        ? "Departamento activado correctamente"
-                        : "Departamento desactivado correctamente"
-                );
+                toast.success(nuevoEstado ? "Departamento activado correctamente" : "Departamento desactivado correctamente");
             }
         } catch (error) {
             console.error("Error al cambiar disponibilidad:", error);
-            toast.error("Error al cambiar el estado del departamento.");
+            const serverMsg = error?.response?.data?.msg || error?.response?.data?.message || error?.response?.data || null;
+            if (serverMsg) {
+                toast.error(String(serverMsg));
+            } else {
+                toast.error("Error al cambiar el estado del departamento.");
+            }
         }
     };
 
