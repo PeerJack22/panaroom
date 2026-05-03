@@ -110,13 +110,15 @@ const Feedback = () => {
     const roleNormalized = String(rol || "").toLowerCase();
     const isAdmin = roleNormalized === "administrador";
     const isArrendatario = roleNormalized === "arrendatario";
-    const canViewFeedback = isAdmin || isArrendatario;
+    const isEstudiante = roleNormalized === "estudiante";
+    const canViewFeedback = isAdmin || isArrendatario || isEstudiante;
 
     const endpoint = useMemo(() => {
         if (isAdmin) return "/administrador/quejas";
         if (isArrendatario) return "/arrendatario/comentarios";
+        if (isEstudiante) return "/estudiante/listarcomentarios";
         return null;
-    }, [isAdmin, isArrendatario]);
+    }, [isAdmin, isArrendatario, isEstudiante]);
 
     useEffect(() => {
         const fetchFeedback = async () => {
@@ -226,7 +228,7 @@ const Feedback = () => {
             <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold text-gray-800">
-                        {isAdmin ? "Todas las quejas y sugerencias" : "Quejas y sugerencias de mis departamentos"}
+                        {isAdmin ? "Todas las quejas y sugerencias" : isArrendatario ? "Quejas y sugerencias de mis departamentos" : "Mis quejas y sugerencias"}
                     </h2>
                     <div className="flex gap-2">
                         <button
