@@ -95,7 +95,7 @@ const Table = () => {
                 "Content-Type": headers["Content-Type"],
                 Authorization: headers.Authorization ? headers.Authorization.slice(0, 10) + '...[masked]' : null,
             });
-            const payload = { disponible: nuevoEstado };
+            const payload = { disponible: nuevoEstado, idDepartamento: departamentoId };
 
             console.log("toggleDisponibilidad -> dep:", dep);
             console.log("toggleDisponibilidad -> departamentoId:", departamentoId);
