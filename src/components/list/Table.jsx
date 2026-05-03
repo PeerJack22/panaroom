@@ -84,11 +84,17 @@ const Table = () => {
         }
 
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${departamentoId}`;
+            const safeId = encodeURIComponent(String(departamentoId).trim());
+            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${safeId}`;
             const headers = {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userToken}`,
             };
+            // Log headers with token partially masked for debugging
+            console.log("toggleDisponibilidad -> headers:", {
+                "Content-Type": headers["Content-Type"],
+                Authorization: headers.Authorization ? headers.Authorization.slice(0, 10) + '...[masked]' : null,
+            });
             const payload = { disponible: nuevoEstado };
 
             console.log("toggleDisponibilidad -> dep:", dep);
