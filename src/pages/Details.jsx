@@ -158,28 +158,45 @@ const Details = () => {
 
             // Obtener datos del propietario (arrendatario)
             if (response?.arrendatario) {
-                const ownerIdString = typeof response.arrendatario === "object" 
-                    ? response.arrendatario._id || response.arrendatario.id 
+                const ownerIdString = typeof response.arrendatario === "object"
+                    ? response.arrendatario._id || response.arrendatario.id
                     : response.arrendatario;
 
                 if (ownerIdString) {
                     try {
-                        // Llamar directamente al endpoint con el ID del arrendatario
-                        const ownerResponse = await fetchDataBackend(
-                            `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${ownerIdString}`,
-                            null,
-                            "GET",
-                            headers
-                        );
+                        // Intentar obtener al arrendatario buscando en la lista general
+                        const listUrl = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/listararrendatarios`;
+                        const listResp = await fetchDataBackend(listUrl, null, "GET", headers);
 
-                        // El propietario puede venir como objeto directo o dentro de .data
-                        const owner = Array.isArray(ownerResponse) ? ownerResponse[0] : (ownerResponse?.data || ownerResponse);
-                        
+                        let arrendatarios = [];
+                        if (Array.isArray(listResp)) arrendatarios = listResp;
+                        else if (Array.isArray(listResp?.data)) arrendatarios = listResp.data;
+                        else if (Array.isArray(listResp?.arrendatarios)) arrendatarios = listResp.arrendatarios;
+
+                        const owner = arrendatarios.find((a) => String(a?._id || a?.id) === String(ownerIdString));
+
                         if (owner && (owner.nombre || owner.email)) {
                             setPropietario(owner);
+                        } else {
+                            // Fallback: si el endpoint individual existe, intentar llamarlo
+                            try {
+                                const ownerResponse = await fetchDataBackend(
+                                    `${import.meta.env.VITE_BACKEND_URL}/arrendatario/${ownerIdString}`,
+                                    null,
+                                    "GET",
+                                    headers
+                                );
+                                const singleOwner = Array.isArray(ownerResponse) ? ownerResponse[0] : (ownerResponse?.data || ownerResponse);
+                                if (singleOwner && (singleOwner.nombre || singleOwner.email)) {
+                                    setPropietario(singleOwner);
+                                }
+                            } catch (innerErr) {
+                                // No hacer nada, ya logueado más abajo
+                                console.debug("Fallback: no se obtuvo propietario por id:", innerErr);
+                            }
                         }
                     } catch (ownerError) {
-                        console.error("Error al obtener datos del propietario:", ownerError);
+                        console.error("Error al obtener datos del propietario (listar):", ownerError);
                     }
                 }
             }
