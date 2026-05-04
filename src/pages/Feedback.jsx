@@ -59,38 +59,44 @@ const getListFromResponse = (responseData) => {
     return [];
 };
 
-const normalizeFeedbackItem = (item, index) => ({
-    id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
-    _id: item?._id,
-    mensaje: toText(item?.mensaje || item?.descripcion || item?.comentario, "Sin descripción"),
-    estudiante: toText(
-        item?.estudiante?.nombre ||
-        item?.estudiante ||
-        item?.usuario ||
-        item?.userName ||
-        item?.autor ||
-        item?.creadoPor,
-        "No disponible"
-    ),
-    departamento: toText(
-        item?.departamento?.titulo ||
-        item?.departamento?.nombre ||
-        item?.departamento ||
-        item?.inmueble ||
-        item?.residencia,
-        "No disponible"
-    ),
-    departamentoId:
-        item?.departamento?._id ||
-        item?.departamento?.id ||
-        item?.inmueble?._id ||
-        item?.inmueble?.id ||
-        item?.residencia?._id ||
-        item?.residencia?.id ||
-        null,
-    fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
-    disponible: item?.disponible !== undefined ? item.disponible : false,
-});
+const normalizeFeedbackItem = (item, index) => {
+    // El campo `estudiante` puede venir como: string(id|nombre), objeto, o array. Normalizamos a texto legible.
+    let estudianteRaw = item?.estudiante ?? item?.usuario ?? item?.userName ?? item?.autor ?? item?.creadoPor;
+    let estudianteNormalizado = "No disponible";
+
+    if (Array.isArray(estudianteRaw)) {
+        // Si viene un arreglo, preferimos el primer elemento con datos significativos
+        const first = estudianteRaw.find((el) => el && (el.nombre || el.apellido || el.email || typeof el === "string")) || estudianteRaw[0];
+        estudianteNormalizado = toText(first, "No disponible");
+    } else {
+        estudianteNormalizado = toText(estudianteRaw, "No disponible");
+    }
+
+    return {
+        id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
+        _id: item?._id,
+        mensaje: toText(item?.mensaje || item?.descripcion || item?.comentario, "Sin descripción"),
+        estudiante: estudianteNormalizado,
+        departamento: toText(
+            item?.departamento?.titulo ||
+            item?.departamento?.nombre ||
+            item?.departamento ||
+            item?.inmueble ||
+            item?.residencia,
+            "No disponible"
+        ),
+        departamentoId:
+            item?.departamento?._id ||
+            item?.departamento?.id ||
+            item?.inmueble?._id ||
+            item?.inmueble?.id ||
+            item?.residencia?._id ||
+            item?.residencia?.id ||
+            null,
+        fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
+        disponible: item?.disponible !== undefined ? item.disponible : false,
+    };
+};
 
 const formatDate = (value) => {
     if (!value) return "No disponible";
@@ -331,7 +337,7 @@ const Feedback = () => {
                                 </div>
 
                                 <p className="text-xs text-gray-500 mt-2">
-                                    {!isEstudiante && (
+                                    {isAdmin && (
                                         <>
                                             Estudiante: {item.estudiante} • {" "}
                                         </>
