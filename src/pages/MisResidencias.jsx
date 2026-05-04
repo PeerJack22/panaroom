@@ -67,26 +67,40 @@ const MisResidencias = () => {
         });
     }, [residencias, filtroNombre, filtroCategoria]);
 
+    const limpiarFiltros = () => {
+        setFiltroNombre("");
+        setFiltroCategoria("");
+    };
+
     return (
         <div>
             <div>
                 <h1 className="font-black text-4xl text-gray-500">Mis residencias</h1>
                 <hr className="my-4 border-t-2 border-gray-300" />
-                <p className="mb-6">Aquí verás las residencias asignadas a tu usuario.</p>
+                <p className="mb-6">Módulo para gestionar tus residencias asignadas.</p>
             </div>
 
             {!cargando && !error && residencias.length > 0 && (
                 <section className="bg-white border border-gray-200 rounded-xl shadow p-5 mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-4">Filtros</h2>
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                        <h2 className="text-lg font-bold text-gray-800">Filtros</h2>
+                        <button
+                            type="button"
+                            onClick={limpiarFiltros}
+                            className="inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                        >
+                            Limpiar filtros
+                        </button>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="filtro-nombre" className="block text-sm font-medium text-gray-700 mb-2">
-                                Buscar por nombre
+                                Buscar por título
                             </label>
                             <input
                                 id="filtro-nombre"
                                 type="text"
-                                placeholder="Ej: Departamento en el Centro"
+                                placeholder="Ej: Departamento en el centro"
                                 value={filtroNombre}
                                 onChange={(e) => setFiltroNombre(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"

@@ -280,6 +280,7 @@ const Details = () => {
 
     const tieneEstudianteAsignado = Boolean(
         departamento?.estudianteId ||
+        departamento?.estudiante ||
         departamento?.estudiante?._id ||
         departamento?.estudiante?.id
     );

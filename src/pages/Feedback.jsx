@@ -251,6 +251,7 @@ const Feedback = () => {
         <div>
             <h1 className="font-black text-4xl text-gray-500">Quejas y sugerencias</h1>
             <hr className="my-4 border-t-2 border-gray-300" />
+            <p className="mb-6">Este módulo te permite gestionar quejas y sugerencias</p>
 
             <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
                 <div className="flex items-center justify-between mb-4">

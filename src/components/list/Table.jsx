@@ -226,6 +226,17 @@ const Table = () => {
         return false;
     };
 
+    const tieneEstudianteAsignado = (dep) => {
+        const estudianteId =
+            typeof dep?.estudiante === "object"
+                ? (dep?.estudiante?._id || dep?.estudiante?.id)
+                : dep?.estudiante;
+
+        const estudianteIdDirecto = dep?.estudianteId;
+
+        return Boolean(estudianteId || estudianteIdDirecto);
+    };
+
     const departamentosFiltrados = departamentos.filter((dep) => {
         if (isAdminOrArrendatario) {
             if (isArrendatario) {
@@ -258,6 +269,7 @@ const Table = () => {
 
         // Estudiante: solo departamentos disponibles
         if (dep?.disponible === false) return false;
+        if (tieneEstudianteAsignado(dep)) return false;
         
         const precio = Number(dep?.precioMensual);
         const min = filters.arriendoMin === "" ? null : Number(filters.arriendoMin);
