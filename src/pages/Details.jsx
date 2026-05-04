@@ -57,6 +57,8 @@ const Details = () => {
     const [mostrarFormularioQueja, setMostrarFormularioQueja] = useState(false);
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [contratandoDepartamento, setContratandoDepartamento] = useState(false);
+    const [terminandoContrato, setTerminandoContrato] = useState(false);
+    const [flujoTerminarContrato, setFlujoTerminarContrato] = useState(false);
 
     const isEstudiante = rol === 'estudiante';
     const estudianteId = user?._id || null;
@@ -133,6 +135,14 @@ const Details = () => {
             toast.success(response?.data?.msg || 'Queja/sugerencia enviada correctamente');
             setMostrarFormularioQueja(false);
             reset();
+
+            // Si estamos en flujo de terminar contrato, ejecutar terminación
+            if (flujoTerminarContrato) {
+                setFlujoTerminarContrato(false);
+                setTimeout(() => {
+                    ejecutarTerminarContrato();
+                }, 1000);
+            }
         } catch (error) {
             toast.dismiss(loadingToast);
             const errorMessage =
@@ -178,6 +188,56 @@ const Details = () => {
             toast.error(errorMessage);
         } finally {
             setContratandoDepartamento(false);
+        }
+    };
+
+    const iniciarTerminarContrato = () => {
+        const desea = window.confirm(
+            "¿Deseas dejar una queja o sugerencia antes de terminar el contrato?"
+        );
+        if (desea) {
+            setFlujoTerminarContrato(true);
+            setMostrarFormularioQueja(true);
+        } else {
+            ejecutarTerminarContrato();
+        }
+    };
+
+    const ejecutarTerminarContrato = async () => {
+        if (!departamento?._id || terminandoContrato) return;
+
+        setTerminandoContrato(true);
+        const loadingToast = toast.loading("Terminando contrato...");
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/quitarEstudiante`;
+            const payload = {
+                departamentoId: departamento._id,
+            };
+
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const response = await axios.put(url, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${storedUser?.state?.token}`,
+                },
+            });
+
+            toast.dismiss(loadingToast);
+            toast.success(response?.data?.msg || "Contrato terminado correctamente");
+            
+            setTimeout(() => {
+                navigate("/dashboard/mis-residencias");
+            }, 1500);
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            const errorMessage =
+                error?.response?.data?.msg ||
+                error?.response?.data?.message ||
+                "No se pudo terminar el contrato";
+            toast.error(errorMessage);
+        } finally {
+            setTerminandoContrato(false);
         }
     };
 
@@ -367,6 +427,17 @@ const Details = () => {
                                     {contratandoDepartamento ? "Contratando..." : "Contratar departamento"}
                                 </button>
                             )}
+
+                            {isEstudiante && tieneEstudianteAsignado && (
+                                <button
+                                    type="button"
+                                    onClick={iniciarTerminarContrato}
+                                    disabled={terminandoContrato || flujoTerminarContrato}
+                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-red-700 text-white font-semibold hover:bg-red-600 disabled:bg-red-400 transition-colors"
+                                >
+                                    {terminandoContrato ? "Terminando contrato..." : "Terminar contrato"}
+                                </button>
+                            )}
                         </section>
                     )}
                 </div>
@@ -459,11 +530,14 @@ const Details = () => {
                                         type="button"
                                         onClick={() => {
                                             setMostrarFormularioQueja(false);
+                                            if (flujoTerminarContrato) {
+                                                setFlujoTerminarContrato(false);
+                                            }
                                             reset();
                                         }}
                                         className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
                                     >
-                                        Cancelar
+                                        {flujoTerminarContrato ? 'Cancelar todo' : 'Cancelar'}
                                     </button>
                                 </div>
                             </form>
