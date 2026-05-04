@@ -286,7 +286,7 @@ export const Form = () => {
                         <div>
                             <label className="mb-2 block text-sm font-semibold">Descripción</label>
                             <textarea
-                                placeholder="Ingresa la descripción de forma general"
+                                placeholder="Ingresa la descripción de forma general como características del inmueble, mobiliario, etc."
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("descripcion", { required: "La descripción es obligatoria." })}
                             />
