@@ -47,14 +47,6 @@ const MisResidencias = () => {
         }
     }, [fetchDataBackend, rol, token]);
 
-    // Obtener categorías únicas para el filtro
-    const categorias = useMemo(() => {
-        const cats = residencias
-            .map((dep) => dep.categoria)
-            .filter((cat) => cat && cat.trim() !== "");
-        return [...new Set(cats)].sort();
-    }, [residencias]);
-
     // Filtrar residencias según nombre y categoría
     const residenciasFiltradas = useMemo(() => {
         return residencias.filter((dep) => {
@@ -82,33 +74,29 @@ const MisResidencias = () => {
 
             {!cargando && !error && residencias.length > 0 && (
                 <div className="w-full mt-5 mb-4 p-4 rounded-lg bg-white shadow-lg border border-gray-200">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input
                             type="text"
                             placeholder="Filtrar por título"
                             value={filtroNombre}
                             onChange={(e) => setFiltroNombre(e.target.value)}
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
 
                         <select
                             value={filtroCategoria}
                             onChange={(e) => setFiltroCategoria(e.target.value)}
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         >
                             <option value="">Todas las categorías</option>
-                            {categorias.map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {cat}
-                                </option>
-                            ))}
+                            <option value="departamento">Departamento</option>
+                            <option value="suite">Suite</option>
                         </select>
-                    </div>
-                    <div className="mt-4 flex justify-end">
+
                         <button
                             type="button"
                             onClick={limpiarFiltros}
-                            className="w-full md:w-auto px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                            className="w-full px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
                         >
                             Limpiar filtros
                         </button>
