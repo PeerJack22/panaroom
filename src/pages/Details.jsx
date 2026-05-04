@@ -240,6 +240,12 @@ const Details = () => {
         );
     }
 
+    const tieneEstudianteAsignado = Boolean(
+        departamento?.estudianteId ||
+        departamento?.estudiante?._id ||
+        departamento?.estudiante?.id
+    );
+
     const servicios = getServicios(departamento);
     const markerCoords = extractMarkerCoordinates(departamento?.urlMapa);
     const mapCenter = markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1])
@@ -366,7 +372,7 @@ const Details = () => {
                     </section>
                 )}
 
-                {isEstudiante && (
+                {isEstudiante && tieneEstudianteAsignado && (
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Queja o Sugerencia</h2>
                         
