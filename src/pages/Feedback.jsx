@@ -331,7 +331,12 @@ const Feedback = () => {
                                 </div>
 
                                 <p className="text-xs text-gray-500 mt-2">
-                                    Estudiante: {item.estudiante} • Departamento: {" "}
+                                    {!isEstudiante && (
+                                        <>
+                                            Estudiante: {item.estudiante} • {" "}
+                                        </>
+                                    )}
+                                    Departamento: {" "}
                                     {item.departamentoId ? (
                                         <Link
                                             to={`/dashboard/visualizar/${item.departamentoId}`}

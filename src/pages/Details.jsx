@@ -156,6 +156,14 @@ const Details = () => {
     const contratarDepartamento = async () => {
         if (!departamento?._id || !estudianteId || contratandoDepartamento) return;
 
+        const confirmacionContratacion = window.confirm(
+            "Está a punto de formalizar la contratación de esta residencia. Esta acción genera una asignación contractual dentro del sistema y tiene implicaciones administrativas para ambas partes. Confirme que ya revisó las condiciones y coordinó previamente los términos con el propietario antes de continuar."
+        );
+
+        if (!confirmacionContratacion) {
+            return;
+        }
+
         setContratandoDepartamento(true);
         const loadingToast = toast.loading("Asignando departamento...");
 
@@ -519,7 +527,7 @@ const Details = () => {
                                         disabled={enviandoQueja}
                                         className="w-full bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg font-medium transition-colors"
                                     >
-                                        {enviandoQueja ? 'Enviando...' : 'Enviar queja'}
+                                        {enviandoQueja ? 'Enviando...' : 'Enviar'}
                                     </button>
                                     <button
                                         type="button"
