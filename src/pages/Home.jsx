@@ -131,6 +131,8 @@ export const Home = () => {
                     serviciosIncluidos: obtenerServicios(item),
                     imagenPrincipal: item?.imagenes?.[0]?.url || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c',
                     disponible: item?.disponible !== false,
+                    estudianteId: item?.estudianteId,
+                    estudiante: item?.estudiante,
                 }));
 
                 setPropiedades(normalizados);
@@ -149,6 +151,11 @@ export const Home = () => {
     const propiedadesFiltradas = propiedades.filter((propiedad) => {
         // Filtrar solo propiedades disponibles
         if (propiedad.disponible === false) return false;
+        
+        // Excluir residencias con estudiante ya asignado
+        if (propiedad?.estudianteId || (propiedad?.estudiante && String(propiedad.estudiante).trim() !== "")) {
+            return false;
+        }
         
         const min = precioMin === '' ? null : Number(precioMin);
         const max = precioMax === '' ? null : Number(precioMax);
