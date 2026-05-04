@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
 import storeAuth from "../context/storeAuth";
 import { CircleMarker, MapContainer, TileLayer } from "react-leaflet";
+import { createPortal } from "react-dom";
 
 const DEFAULT_CENTER = [-0.2106, -78.4897];
 const EPN_BOUNDS = {
@@ -494,8 +495,8 @@ const Details = () => {
                     </section>
                 )}
 
-                {isEstudiante && tieneEstudianteAsignado && flujoTerminarContrato && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+                {isEstudiante && tieneEstudianteAsignado && flujoTerminarContrato && createPortal(
+                    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4">
                         <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
                             <h3 className="text-2xl font-bold text-gray-800 mb-3">Queja o Sugerencia</h3>
                             <p className="text-gray-600 leading-relaxed mb-4">
@@ -533,7 +534,7 @@ const Details = () => {
                                         type="button"
                                         onClick={() => {
                                             setFlujoTerminarContrato(false);
-                                            reset()
+                                            reset();
                                             setTimeout(() => {
                                                 ejecutarTerminarContrato();
                                             }, 300);
@@ -555,12 +556,13 @@ const Details = () => {
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
 
-                {imagenActiva !== null && departamento.imagenes?.length > 0 && (
+                {imagenActiva !== null && departamento.imagenes?.length > 0 && createPortal(
                     <div
-                        className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
+                        className="fixed inset-0 z-[99999] bg-black/85 flex items-center justify-center p-4"
                         onClick={cerrarLightbox}
                     >
                         <button
@@ -610,7 +612,8 @@ const Details = () => {
                                 ›
                             </button>
                         )}
-                    </div>
+                    </div>,
+                    document.body
                 )}
             </div>
         </div>
