@@ -54,7 +54,6 @@ const Details = () => {
     const [departamento, setDepartamento] = useState(null);
     const [propietario, setPropietario] = useState(null);
     const [imagenActiva, setImagenActiva] = useState(null);
-    const [mostrarFormularioQueja, setMostrarFormularioQueja] = useState(false);
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [contratandoDepartamento, setContratandoDepartamento] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
@@ -133,7 +132,6 @@ const Details = () => {
 
             toast.dismiss(loadingToast);
             toast.success(response?.data?.msg || 'Queja/sugerencia enviada correctamente');
-            setMostrarFormularioQueja(false);
             reset();
 
             // Si estamos en flujo de terminar contrato, ejecutar terminación
@@ -197,7 +195,6 @@ const Details = () => {
         );
         if (desea) {
             setFlujoTerminarContrato(true);
-            setMostrarFormularioQueja(true);
         } else {
             ejecutarTerminarContrato();
         }
@@ -476,84 +473,6 @@ const Details = () => {
                 )}
 
                 {isEstudiante && tieneEstudianteAsignado && (
-                    <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Queja o Sugerencia</h2>
-                        
-                        {!mostrarFormularioQueja && !flujoTerminarContrato ? (
-                            <button
-                                type="button"
-                                onClick={() => setMostrarFormularioQueja(true)}
-                                className="text-sm text-gray-600 border border-gray-300 px-3 py-1.5 rounded hover:bg-gray-100 transition-colors"
-                            >
-                                Dejar una queja o sugerencia
-                            </button>
-                        ) : (
-                            <form onSubmit={handleSubmit(enviarQueja)} className="space-y-4">
-                                {flujoTerminarContrato && (
-                                    <p className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
-                                        Puedes dejar una queja o sugerencia antes de terminar el contrato. Es opcional.
-                                    </p>
-                                )}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Descripción
-                                    </label>
-                                    <textarea
-                                        placeholder="Cuéntanos tu queja o sugerencia..."
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 resize-none"
-                                        rows="5"
-                                        {...register("descripcion", { 
-                                            required: "La descripción es obligatoria",
-                                            minLength: { value: 10, message: "Mínimo 10 caracteres" }
-                                        })}
-                                    />
-                                    {errors.descripcion && (
-                                        <p className="text-sm text-red-600 mt-1">{errors.descripcion.message}</p>
-                                    )}
-                                </div>
-
-                                <div className="flex gap-3">
-                                    <button
-                                        type="submit"
-                                        disabled={enviandoQueja}
-                                        className="flex-1 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                                    >
-                                        {enviandoQueja ? 'Enviando...' : 'Enviar'}
-                                    </button>
-                                    {flujoTerminarContrato ? (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setMostrarFormularioQueja(false);
-                                                setFlujoTerminarContrato(false);
-                                                reset();
-                                                setTimeout(() => {
-                                                    ejecutarTerminarContrato();
-                                                }, 300);
-                                            }}
-                                            className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                                        >
-                                            Saltarse
-                                        </button>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setMostrarFormularioQueja(false);
-                                                reset();
-                                            }}
-                                            className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                                        >
-                                            Cancelar
-                                        </button>
-                                    )}
-                                </div>
-                            </form>
-                        )}
-                    </section>
-                )}
-
-                {isEstudiante && tieneEstudianteAsignado && (
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Terminar contrato</h2>
                         <button
@@ -565,6 +484,70 @@ const Details = () => {
                             {terminandoContrato ? "Terminando contrato..." : "Terminar contrato"}
                         </button>
                     </section>
+                )}
+
+                {isEstudiante && tieneEstudianteAsignado && flujoTerminarContrato && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+                        <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-3">Queja o Sugerencia</h3>
+                            <p className="text-gray-600 leading-relaxed mb-4">
+                                Puedes dejar una queja o sugerencia antes de terminar el contrato. Es opcional.
+                            </p>
+
+                            <form onSubmit={handleSubmit(enviarQueja)} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Descripción
+                                    </label>
+                                    <textarea
+                                        placeholder="Cuéntanos tu queja o sugerencia..."
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 resize-none"
+                                        rows="4"
+                                        {...register("descripcion", { 
+                                            required: "La descripción es obligatoria",
+                                            minLength: { value: 10, message: "Mínimo 10 caracteres" }
+                                        })}
+                                    />
+                                    {errors.descripcion && (
+                                        <p className="text-sm text-red-600 mt-1">{errors.descripcion.message}</p>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        type="submit"
+                                        disabled={enviandoQueja}
+                                        className="w-full bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                    >
+                                        {enviandoQueja ? 'Enviando...' : 'Enviar queja'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setFlujoTerminarContrato(false);
+                                            reset()
+                                            setTimeout(() => {
+                                                ejecutarTerminarContrato();
+                                            }, 300);
+                                        }}
+                                        className="w-full bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                    >
+                                        Saltarse
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setFlujoTerminarContrato(false);
+                                            reset();
+                                        }}
+                                        className="w-full border border-gray-300 text-gray-700 hover:bg-gray-100 py-2 px-4 rounded-lg font-medium transition-colors"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 )}
 
                 {imagenActiva !== null && departamento.imagenes?.length > 0 && (
