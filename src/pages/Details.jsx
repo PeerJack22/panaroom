@@ -427,17 +427,6 @@ const Details = () => {
                                     {contratandoDepartamento ? "Contratando..." : "Contratar departamento"}
                                 </button>
                             )}
-
-                            {isEstudiante && tieneEstudianteAsignado && (
-                                <button
-                                    type="button"
-                                    onClick={iniciarTerminarContrato}
-                                    disabled={terminandoContrato || flujoTerminarContrato}
-                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-red-700 text-white font-semibold hover:bg-red-600 disabled:bg-red-400 transition-colors"
-                                >
-                                    {terminandoContrato ? "Terminando contrato..." : "Terminar contrato"}
-                                </button>
-                            )}
                         </section>
                     )}
                 </div>
@@ -490,7 +479,7 @@ const Details = () => {
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Queja o Sugerencia</h2>
                         
-                        {!mostrarFormularioQueja ? (
+                        {!mostrarFormularioQueja && !flujoTerminarContrato ? (
                             <button
                                 type="button"
                                 onClick={() => setMostrarFormularioQueja(true)}
@@ -500,6 +489,11 @@ const Details = () => {
                             </button>
                         ) : (
                             <form onSubmit={handleSubmit(enviarQueja)} className="space-y-4">
+                                {flujoTerminarContrato && (
+                                    <p className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                        Puedes dejar una queja o sugerencia antes de terminar el contrato. Es opcional.
+                                    </p>
+                                )}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Descripción
@@ -526,22 +520,50 @@ const Details = () => {
                                     >
                                         {enviandoQueja ? 'Enviando...' : 'Enviar'}
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setMostrarFormularioQueja(false);
-                                            if (flujoTerminarContrato) {
+                                    {flujoTerminarContrato ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMostrarFormularioQueja(false);
                                                 setFlujoTerminarContrato(false);
-                                            }
-                                            reset();
-                                        }}
-                                        className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                                    >
-                                        {flujoTerminarContrato ? 'Cancelar todo' : 'Cancelar'}
-                                    </button>
+                                                reset();
+                                                setTimeout(() => {
+                                                    ejecutarTerminarContrato();
+                                                }, 300);
+                                            }}
+                                            className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                        >
+                                            Saltarse
+                                        </button>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setMostrarFormularioQueja(false);
+                                                reset();
+                                            }}
+                                            className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    )}
                                 </div>
                             </form>
                         )}
+                    </section>
+                )}
+
+                {isEstudiante && tieneEstudianteAsignado && (
+                    <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Terminar contrato</h2>
+                        <button
+                            type="button"
+                            onClick={iniciarTerminarContrato}
+                            disabled={terminandoContrato || flujoTerminarContrato}
+                            className="w-full px-4 py-2 rounded-lg bg-red-700 text-white font-semibold hover:bg-red-600 disabled:bg-red-400 transition-colors"
+                        >
+                            {terminandoContrato ? "Terminando contrato..." : "Terminar contrato"}
+                        </button>
                     </section>
                 )}
 

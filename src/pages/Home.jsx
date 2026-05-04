@@ -790,13 +790,20 @@ export const Home = () => {
                     <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
                         <h3 className="text-2xl font-bold text-gray-800 mb-3">Información de la propiedad</h3>
                         <p className="text-gray-600 leading-relaxed mb-6">
-                            Si quieres saber la información de contacto y más detalles de la propiedad, crea una cuenta.
+                            Si quieres saber la información de contacto y más detalles de la propiedad, por favor inicia sesión o crea una cuenta.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                        <div className="flex flex-col gap-3 justify-end">
+                            <button
+                                type="button"
+                                onClick={irALoginConTransicion}
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-700 hover:bg-blue-600 text-white transition-colors"
+                            >
+                                Iniciar sesión
+                            </button>
                             <Link
                                 to="/register"
-                                className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-700 hover:bg-blue-600 text-white transition-colors"
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-blue-700 text-blue-700 hover:bg-blue-50 transition-colors"
                             >
                                 Crear cuenta
                             </Link>
