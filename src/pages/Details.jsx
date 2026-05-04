@@ -48,7 +48,7 @@ const Details = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { fetchDataBackend } = useFetch();
-    const { rol } = storeAuth();
+    const { rol, user } = storeAuth();
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const [departamento, setDepartamento] = useState(null);
@@ -56,8 +56,10 @@ const Details = () => {
     const [imagenActiva, setImagenActiva] = useState(null);
     const [mostrarFormularioQueja, setMostrarFormularioQueja] = useState(false);
     const [enviandoQueja, setEnviandoQueja] = useState(false);
+    const [contratandoDepartamento, setContratandoDepartamento] = useState(false);
 
     const isEstudiante = rol === 'estudiante';
+    const estudianteId = user?._id || null;
 
     const abrirLightbox = (index) => setImagenActiva(index);
     const cerrarLightbox = () => setImagenActiva(null);
@@ -140,6 +142,42 @@ const Details = () => {
             toast.error(errorMessage);
         } finally {
             setEnviandoQueja(false);
+        }
+    };
+
+    const contratarDepartamento = async () => {
+        if (!departamento?._id || !estudianteId || contratandoDepartamento) return;
+
+        setContratandoDepartamento(true);
+        const loadingToast = toast.loading("Asignando departamento...");
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/asignarEstudiante`;
+            const payload = {
+                departamentoId: departamento._id,
+                estudianteId,
+            };
+
+            const response = await axios.put(url, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.token || JSON.parse(localStorage.getItem("auth-token"))?.state?.token}`,
+                },
+            });
+
+            toast.dismiss(loadingToast);
+            toast.success(response?.data?.msg || "Departamento contratado correctamente");
+
+            setDepartamento((prev) => prev ? { ...prev, estudianteId } : prev);
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            const errorMessage =
+                error?.response?.data?.msg ||
+                error?.response?.data?.message ||
+                "No se pudo contratar el departamento";
+            toast.error(errorMessage);
+        } finally {
+            setContratandoDepartamento(false);
         }
     };
 
@@ -318,12 +356,16 @@ const Details = () => {
                                 </div>
                             </div>
 
-                            <button
-                                type="button"
-                                className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-600 transition-colors"
-                            >
-                                Chatear con el propietario
-                            </button>
+                            {isEstudiante && !tieneEstudianteAsignado && (
+                                <button
+                                    type="button"
+                                    onClick={contratarDepartamento}
+                                    disabled={contratandoDepartamento}
+                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-600 disabled:bg-blue-400 transition-colors"
+                                >
+                                    {contratandoDepartamento ? "Contratando..." : "Contratar departamento"}
+                                </button>
+                            )}
                         </section>
                     )}
                 </div>
