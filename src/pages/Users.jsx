@@ -32,25 +32,46 @@ const Users = () => {
     };
 
     const normalizarDocumentos = (documentos) => {
+        // Aceptar diferentes formas en las que el backend puede devolver los documentos
+        if (!documentos) return [];
+
+        // Si vienen dentro de un objeto con llave (ej: { imagenesDocumentos: [...] })
+        if (!Array.isArray(documentos) && typeof documentos === "object") {
+            // intentar encontrar el primer array dentro del objeto
+            const nested = Object.values(documentos).find((v) => Array.isArray(v));
+            if (Array.isArray(nested)) documentos = nested;
+            else return [];
+        }
+
         if (!Array.isArray(documentos)) return [];
 
         return documentos
             .map((doc, index) => {
                 if (!doc) return null;
+
+                // Si doc es string
                 if (typeof doc === "string") {
                     return { url: doc, public_id: `${doc}-${index}` };
                 }
 
-                if (typeof doc === "object") {
-                    return {
-                        url: doc?.url || doc?.secure_url || doc?.path || doc?.imagen || null,
-                        public_id: doc?.public_id || doc?._id || doc?.id || `${index}`,
-                    };
+                // Si doc tiene el campo url como string directo
+                if (typeof doc.url === "string") {
+                    return { url: doc.url, public_id: doc.public_id || doc._id || doc.id || `${index}` };
                 }
+
+                // Si doc.url es un objeto (por ejemplo { secure_url })
+                if (typeof doc.url === "object" && doc.url !== null) {
+                    const possible = doc.url.secure_url || doc.url.url || doc.url.path || Object.values(doc.url).find(v => typeof v === 'string');
+                    if (possible) return { url: possible, public_id: doc.public_id || doc._id || doc.id || `${index}` };
+                }
+
+                // Algunas respuestas pueden tener directamente secure_url u otros campos
+                const fallbackUrl = doc.secure_url || doc.url_secure || doc.path || doc.imagen || doc.imagenUrl || doc.image || null;
+                if (typeof fallbackUrl === "string") return { url: fallbackUrl, public_id: doc.public_id || doc._id || doc.id || `${index}` };
 
                 return null;
             })
-            .filter((doc) => doc?.url);
+            .filter((d) => d && d.url);
     };
 
     const fetchUsers = useCallback(async () => {
