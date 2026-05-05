@@ -87,8 +87,8 @@ export const Form = () => {
     }, [currentMapUrl]);
 
     const stepFields = {
-        1: ["titulo", "descripcion", "direccion", "urlMapa", "categoria"],
-        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "alicuota", "alicoutaMonto", "mascotas", "numParqueaderos"],
+        1: ["titulo", "descripcion", "direccion", "referencia", "urlMapa", "categoria"],
+        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "alicuota", "alicoutaMonto", "mascotas", "numParqueaderos"],
         3: ["imagen"],
     };
 
@@ -304,6 +304,17 @@ export const Form = () => {
                             {errors.direccion && <p className="text-red-500 text-xs italic">{errors.direccion.message}</p>}
                         </div>
 
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold">Referencia</label>
+                            <input
+                                type="text"
+                                placeholder="Ingresar referencia del lugar"
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                                {...register("referencia", { required: "La referencia es obligatoria." })}
+                            />
+                            {errors.referencia && <p className="text-red-500 text-xs italic">{errors.referencia.message}</p>}
+                        </div>
+
                         <input type="hidden" {...register("ciudad")} />
 
                         <div>
@@ -502,6 +513,39 @@ export const Form = () => {
                                 </div>
                             )}
                         </div>
+
+                        <div className="mt-4">
+                            <label className="mb-2 block text-sm font-semibold">Bodega</label>
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        value="true"
+                                        {...register("bodega", {
+                                            required: "Debes indicar si tiene bodega.",
+                                            validate: (value) =>
+                                                ["true", "false"].includes(String(value)) ||
+                                                "Selecciona una opción válida.",
+                                        })}
+                                    />
+                                    Sí
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        value="false"
+                                        {...register("bodega", {
+                                            required: "Debes indicar si tiene bodega.",
+                                            validate: (value) =>
+                                                ["true", "false"].includes(String(value)) ||
+                                                "Selecciona una opción válida.",
+                                        })}
+                                    />
+                                    No
+                                </label>
+                            </div>
+                            {errors.bodega && <p className="text-red-500 text-xs italic">{errors.bodega.message}</p>}
+                        </div>
                     </>
                 )}
 
@@ -564,6 +608,7 @@ export const Form = () => {
                     <div className="space-y-3 text-sm text-gray-700">
                         <p><span className="font-semibold">Título:</span> {values.titulo || "-"}</p>
                         <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
+                        <p><span className="font-semibold">Referencia:</span> {values.referencia || "-"}</p>
                         <p><span className="font-semibold">Categoría:</span> {values.categoria || "-"}</p>
                         <p><span className="font-semibold">Precio mensual:</span> {values.precioMensual || "-"}</p>
                         <p><span className="font-semibold">Alícuota:</span> {values.alicuota === "true" ? "Sí" : values.alicuota === "false" ? "No" : "-"}</p>
@@ -579,6 +624,7 @@ export const Form = () => {
                                     : "-"
                         }</p>
                         {values.parqueadero === "true" && <p><span className="font-semibold"># Parqueaderos:</span> {values.numParqueaderos || "-"}</p>}
+                        <p><span className="font-semibold">Bodega:</span> {values.bodega === "true" ? "Sí" : values.bodega === "false" ? "No" : "-"}</p>
                         <p><span className="font-semibold">Servicios:</span> {
                             Array.isArray(values.servicios)
                                 ? values.servicios.join(", ")
