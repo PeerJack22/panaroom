@@ -90,7 +90,10 @@ const Table = () => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userToken}`,
             };
-            const payload = { disponible: nuevoEstado };
+            const payload = {
+                departamentoId,
+                disponible: nuevoEstado,
+            };
 
             console.log("toggleDisponibilidad -> departamentoId:", departamentoId);
             console.log("toggleDisponibilidad -> URL:", url, "payload:", payload);
