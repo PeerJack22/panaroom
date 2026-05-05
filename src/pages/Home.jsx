@@ -336,6 +336,15 @@ export const Home = () => {
             return;
         }
 
+        // Validación: asegurar que el usuario haya adjuntado al menos un documento
+        if (!documentosArrendatario || documentosArrendatario.length === 0) {
+            setEstadoSolicitud({
+                tipo: "error",
+                mensaje: "Selecciona al menos un documento de identidad antes de enviar.",
+            });
+            return;
+        }
+
         setEnviandoSolicitud(true);
 
         try {
@@ -968,7 +977,6 @@ export const Home = () => {
                                         multiple
                                         onChange={manejarCambioDocumentos}
                                         className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
-                                        required
                                     />
                                     <p className="mt-2 text-xs text-slate-300">
                                         Sube una o varias imágenes de tu cédula u otros documentos.
