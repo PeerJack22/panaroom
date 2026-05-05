@@ -171,7 +171,7 @@ const Feedback = () => {
         // Pedir confirmación si va a marcar como revisado
         if (nuevoEstado) {
             const confirmar = window.confirm(
-                `¿Estás seguro de marcar esta queja como revisada?`
+                `¿Estás seguro de cambiar el estado de este registro a revisado?`
             );
             if (!confirmar) return;
         }
@@ -183,7 +183,6 @@ const Feedback = () => {
                 estado: nuevoEstado,
             };
 
-            console.info("cambiarEstado -> intentando URL:", url);
             const response = await axios.put(
                 url,
                 payload,
@@ -195,24 +194,24 @@ const Feedback = () => {
                 }
             );
 
-            console.info("cambiarEstado -> respuesta recibida:", response?.data);
-
-            if (response?.data) {
+            if (response?.status >= 200 && response?.status < 300) {
                 setItems((prev) =>
                     prev.map((item) =>
                         item.id === queja.id ? { ...item, disponible: nuevoEstado } : item
                     )
                 );
                 toast.success(
-                    nuevoEstado ? "Queja marcada como revisada" : "Queja marcada como pendiente"
+                    nuevoEstado ? "Cambio guardado: Revisado" : "Cambio guardado: Pendiente"
                 );
+            } else {
+                toast.error("El servidor no confirmó el cambio.");
             }
         } catch (error) {
             const errorMessage =
-                error?.response?.data?.msg || error?.response?.data?.message || "Error al cambiar el estado de la queja";
+                error?.response?.data?.msg || error?.response?.data?.message || "Error al cambiar el estado";
             toast.error(errorMessage);
-            console.error("cambiarEstado -> error:", error?.response?.data || error);
         }
+
     };
 
     // Filtrar items basándose en el estado
