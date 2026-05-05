@@ -360,11 +360,18 @@ export const Home = () => {
             });
 
             const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/crear`;
-            const response = await axios.post(url, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+
+            // DEBUG: listar entradas de FormData para verificar archivos antes de enviar
+            for (const pair of formData.entries()) {
+                if (pair[0] === "imagenesDocumentos") {
+                    console.log("FormData archivo:", pair[0], pair[1]?.name || pair[1]);
+                } else {
+                    console.log("FormData campo:", pair[0], pair[1]);
+                }
+            }
+
+            // No forzar "Content-Type" — el navegador añade el boundary automáticamente
+            const response = await axios.post(url, formData);
 
             setEstadoSolicitud({
                 tipo: "ok",
