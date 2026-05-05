@@ -85,7 +85,7 @@ const Table = () => {
         }
 
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/cambiarDisponibilidad/${departamentoId}`;
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/cambiarDisponibilidad`;
             const headers = {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userToken}`,
