@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,6 +16,7 @@ const Users = () => {
     const [filtroRol, setFiltroRol] = useState("todos");
     const [soloNoConfirmados, setSoloNoConfirmados] = useState(false);
     const [arrendatariosNoConfirmadosIds, setArrendatariosNoConfirmadosIds] = useState([]);
+    const [arrendatarioSeleccionado, setArrendatarioSeleccionado] = useState(null);
 
     const obtenerIdArrendatario = (valor) => {
         if (!valor) return null;
@@ -27,6 +29,28 @@ const Users = () => {
         const valor = String(rol || "").trim().toLowerCase();
         if (valor === "arrendador") return "arrendatario";
         return valor;
+    };
+
+    const normalizarDocumentos = (documentos) => {
+        if (!Array.isArray(documentos)) return [];
+
+        return documentos
+            .map((doc, index) => {
+                if (!doc) return null;
+                if (typeof doc === "string") {
+                    return { url: doc, public_id: `${doc}-${index}` };
+                }
+
+                if (typeof doc === "object") {
+                    return {
+                        url: doc?.url || doc?.secure_url || doc?.path || doc?.imagen || null,
+                        public_id: doc?.public_id || doc?._id || doc?.id || `${index}`,
+                    };
+                }
+
+                return null;
+            })
+            .filter((doc) => doc?.url);
     };
 
     const fetchUsers = useCallback(async () => {
@@ -248,6 +272,15 @@ const Users = () => {
         return nombreOk && rolOk && noConfirmadoOk;
     });
 
+    const abrirDetalleArrendatario = (user) => {
+        if (normalizarRol(user?.rol) !== "arrendatario") return;
+        setArrendatarioSeleccionado(user);
+    };
+
+    const cerrarDetalleArrendatario = () => {
+        setArrendatarioSeleccionado(null);
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -310,7 +343,20 @@ const Users = () => {
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {usuariosFiltrados.map(user => (
-                        <div key={user._id} className="bg-white rounded-lg shadow p-6">
+                        <div
+                            key={user._id}
+                            className={`bg-white rounded-lg shadow p-6 ${normalizarRol(user.rol) === "arrendatario" ? "cursor-pointer transition-transform hover:-translate-y-0.5 hover:shadow-lg" : ""}`}
+                            onClick={() => abrirDetalleArrendatario(user)}
+                            role={normalizarRol(user.rol) === "arrendatario" ? "button" : undefined}
+                            tabIndex={normalizarRol(user.rol) === "arrendatario" ? 0 : undefined}
+                            onKeyDown={(e) => {
+                                if (normalizarRol(user.rol) !== "arrendatario") return;
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    abrirDetalleArrendatario(user);
+                                }
+                            }}
+                        >
                             <h2 className="text-xl font-bold text-blue-800 mb-2">
                                 {user.nombre} {user.apellido}
                             </h2>
@@ -356,7 +402,10 @@ const Users = () => {
                                         <div className="mt-3 flex justify-end">
                                             <button
                                                 type="button"
-                                                onClick={() => handleConfirmArrendatario(user)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleConfirmArrendatario(user);
+                                                }}
                                                 disabled={confirmingArrendatarioId === (user?._id || user?.id)}
                                                 className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-60"
                                             >
@@ -384,6 +433,120 @@ const Users = () => {
                         </div>
                     ))}
                 </div>
+            )}
+
+            {arrendatarioSeleccionado && createPortal(
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/70 px-4 py-6">
+                    <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-gray-200">
+                        <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-800">Detalle del arrendatario</h3>
+                                <p className="text-sm text-gray-500">Revisa la información y los documentos antes de confirmar.</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={cerrarDetalleArrendatario}
+                                className="rounded-full border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+
+                        <div className="grid gap-6 p-6 lg:grid-cols-[1.1fr_0.9fr]">
+                            <section className="space-y-3">
+                                <h4 className="text-xl font-bold text-blue-800">
+                                    {arrendatarioSeleccionado.nombre} {arrendatarioSeleccionado.apellido}
+                                </h4>
+                                <p><span className="font-semibold">Email:</span> {arrendatarioSeleccionado.email || "No disponible"}</p>
+                                <p><span className="font-semibold">Teléfono:</span> {arrendatarioSeleccionado.celular || "No disponible"}</p>
+                                <p><span className="font-semibold">Dirección:</span> {arrendatarioSeleccionado.direccion || "No disponible"}</p>
+                                <p><span className="font-semibold">Rol:</span> {normalizarRol(arrendatarioSeleccionado.rol)}</p>
+                                <p>
+                                    <span className="font-semibold">Confirmación:</span>{" "}
+                                    {arrendatariosNoConfirmadosIds.includes(arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)
+                                        ? "Pendiente"
+                                        : "Confirmado"}
+                                </p>
+
+                                <div className="rounded-xl bg-gray-50 p-4">
+                                    <h5 className="mb-2 text-lg font-semibold text-gray-800">Documentos subidos</h5>
+                                    {normalizarDocumentos(arrendatarioSeleccionado?.imagenesDocumentos).length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {normalizarDocumentos(arrendatarioSeleccionado?.imagenesDocumentos).map((doc) => (
+                                                <a
+                                                    key={doc.public_id || doc.url}
+                                                    href={doc.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="block overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
+                                                >
+                                                    <img
+                                                        src={doc.url}
+                                                        alt="Documento de identidad"
+                                                        className="h-52 w-full object-cover"
+                                                    />
+                                                    <div className="px-3 py-2 text-xs text-gray-500">
+                                                        Clic para abrir en tamaño completo
+                                                    </div>
+                                                </a>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No hay documentos cargados.</p>
+                                    )}
+                                </div>
+                            </section>
+
+                            <section className="space-y-4">
+                                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                                    <h5 className="mb-3 text-lg font-semibold text-gray-800">Departamentos asociados</h5>
+                                    {userDepartamentos[arrendatarioSeleccionado._id] && userDepartamentos[arrendatarioSeleccionado._id].length > 0 ? (
+                                        <ul className="space-y-2">
+                                            {userDepartamentos[arrendatarioSeleccionado._id].map((depa) => (
+                                                <li key={depa._id} className="text-gray-700">
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigate(`/dashboard/visualizar/${depa._id}`);
+                                                        }}
+                                                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                                                    >
+                                                        {depa.titulo}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No tiene departamentos asociados.</p>
+                                    )}
+                                </div>
+
+                                {arrendatariosNoConfirmadosIds.includes(arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id) && (
+                                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                                        <p className="mb-3 text-sm text-emerald-900">
+                                            Este arrendatario todavía no ha sido confirmado.
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleConfirmArrendatario(arrendatarioSeleccionado);
+                                            }}
+                                            disabled={confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)}
+                                            className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors disabled:opacity-60"
+                                        >
+                                            {confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)
+                                                ? "Confirmando..."
+                                                : "Confirmar arrendatario"}
+                                        </button>
+                                    </div>
+                                )}
+                            </section>
+                        </div>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );
