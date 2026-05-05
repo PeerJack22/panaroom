@@ -159,13 +159,15 @@ const Feedback = () => {
     }, [canViewFeedback, endpoint, token]);
 
     const cambiarEstado = async (queja) => {
-        if (!queja?._id) {
+        const quejaId = queja?.id || queja?._id;
+
+        if (!quejaId) {
             toast.error("Error: No se pudo identificar la queja.");
             return;
         }
 
         const nuevoEstado = !queja.disponible;
-        
+
         // Pedir confirmación si va a marcar como revisado
         if (nuevoEstado) {
             const confirmar = window.confirm(
@@ -175,65 +177,41 @@ const Feedback = () => {
         }
 
         try {
-            // Construir prefijos candidatos basados en el endpoint de listado
-            const parts = (endpoint || "/admin").split("/").filter(Boolean); // ['administrador','quejas']
-            const prefix = parts.length ? `/${parts[0]}` : "/admin";
+            const url = `${import.meta.env.VITE_BACKEND_URL}/quejaSugerencia/estado`;
+            const payload = {
+                id: quejaId,
+                estado: nuevoEstado,
+            };
 
-            const candidates = [
-                `${import.meta.env.VITE_BACKEND_URL}${prefix}/quejaSugerencia/estado/${queja._id}`,
-                `${import.meta.env.VITE_BACKEND_URL}/administrador/quejaSugerencia/estado/${queja._id}`,
-                `${import.meta.env.VITE_BACKEND_URL}/admin/quejaSugerencia/estado/${queja._id}`,
-            ].filter((v, i, a) => a.indexOf(v) === i);
-
-            let lastError = null;
-            let success = false;
-
-            for (const url of candidates) {
-                try {
-                    console.info("cambiarEstado -> intentando URL:", url);
-                    const response = await axios.put(
-                        url,
-                        { disponible: nuevoEstado },
-                        {
-                            headers: {
-                                "Content-Type": "application/json",
-                                Authorization: `Bearer ${token}`,
-                            },
-                        }
-                    );
-
-                    console.info("cambiarEstado -> respuesta recibida:", response?.data);
-
-                    if (response?.data) {
-                        setItems((prev) =>
-                            prev.map((item) =>
-                                item.id === queja.id ? { ...item, disponible: nuevoEstado } : item
-                            )
-                        );
-                        toast.success(
-                            nuevoEstado ? "Queja marcada como revisada" : "Queja marcada como pendiente"
-                        );
-                        success = true;
-                        break;
-                    }
-                } catch (err) {
-                    lastError = err;
-                    console.error("cambiarEstado -> fallo en URL:", url, err?.response?.data || err.message || err);
-                    // continuar con el siguiente candidato
+            console.info("cambiarEstado -> intentando URL:", url);
+            const response = await axios.put(
+                url,
+                payload,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            }
+            );
 
-            if (!success) {
-                const errorMessage =
-                    lastError?.response?.data?.msg || lastError?.response?.data?.message || "Error al cambiar el estado de la queja";
-                toast.error(errorMessage);
-                console.error("cambiarEstado -> error final:", lastError);
+            console.info("cambiarEstado -> respuesta recibida:", response?.data);
+
+            if (response?.data) {
+                setItems((prev) =>
+                    prev.map((item) =>
+                        item.id === queja.id ? { ...item, disponible: nuevoEstado } : item
+                    )
+                );
+                toast.success(
+                    nuevoEstado ? "Queja marcada como revisada" : "Queja marcada como pendiente"
+                );
             }
         } catch (error) {
             const errorMessage =
                 error?.response?.data?.msg || error?.response?.data?.message || "Error al cambiar el estado de la queja";
             toast.error(errorMessage);
-            console.error("cambiarEstado -> excepción inesperada:", error);
+            console.error("cambiarEstado -> error:", error?.response?.data || error);
         }
     };
 
