@@ -94,7 +94,7 @@ const normalizeFeedbackItem = (item, index) => {
             item?.residencia?.id ||
             null,
         fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
-        disponible: item?.disponible !== undefined ? item.disponible : false,
+        estado: item?.estado !== undefined ? item.estado : false,
     };
 };
 
@@ -166,7 +166,7 @@ const Feedback = () => {
             return;
         }
 
-        const nuevoEstado = !queja.disponible;
+        const nuevoEstado = !queja.estado;
 
         // Pedir confirmación si va a marcar como revisado
         if (nuevoEstado) {
@@ -197,7 +197,7 @@ const Feedback = () => {
             if (response?.status >= 200 && response?.status < 300) {
                 setItems((prev) =>
                     prev.map((item) =>
-                        item.id === queja.id ? { ...item, disponible: nuevoEstado } : item
+                        item.id === queja.id ? { ...item, estado: nuevoEstado } : item
                     )
                 );
                 toast.success(
@@ -216,8 +216,8 @@ const Feedback = () => {
 
     // Filtrar items basándose en el estado
     const itemsFiltrados = useMemo(() => {
-        if (filtro === "pendientes") return items.filter((item) => !item.disponible);
-        if (filtro === "revisados") return items.filter((item) => item.disponible);
+        if (filtro === "pendientes") return items.filter((item) => !item.estado);
+        if (filtro === "revisados") return items.filter((item) => item.estado);
         return items;
     }, [items, filtro]);
 
@@ -260,7 +260,7 @@ const Feedback = () => {
                                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
-                            Pendientes ({items.filter((i) => !i.disponible).length})
+                            Pendientes ({items.filter((i) => !i.estado).length})
                         </button>
                         <button
                             onClick={() => setFiltro("revisados")}
@@ -270,7 +270,7 @@ const Feedback = () => {
                                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
-                            Revisados ({items.filter((i) => i.disponible).length})
+                            Revisados ({items.filter((i) => i.estado).length})
                         </button>
                     </div>
                 </div>
@@ -291,23 +291,23 @@ const Feedback = () => {
                                     <div className="ml-3 flex-shrink-0 flex flex-col items-end gap-2">
                                         <span
                                             className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                                item.disponible
+                                                item.estado
                                                     ? "bg-green-100 text-green-800"
                                                     : "bg-yellow-100 text-yellow-800"
                                             }`}
                                         >
-                                            {item.disponible ? "Revisado" : "Pendiente"}
+                                            {item.estado ? "Revisado" : "Pendiente"}
                                         </span>
                                         {isAdmin && (
                                             <button
                                                 onClick={() => cambiarEstado(item)}
                                                 className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
-                                                    item.disponible
+                                                    item.estado
                                                         ? "bg-yellow-500 text-white hover:bg-yellow-600"
                                                         : "bg-green-500 text-white hover:bg-green-600"
                                                 }`}
                                             >
-                                                {item.disponible ? "Marcar pendiente" : "Marcar revisado"}
+                                                {item.estado ? "Marcar pendiente" : "Marcar revisado"}
                                             </button>
                                         )}
                                     </div>
