@@ -61,6 +61,7 @@ const esBooleanoTrue = (valor) => {
 export const Home = () => {
     const navigate = useNavigate();
     const [servicios, setServicios] = useState([]);
+    const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
     const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
     const [abierto, setAbierto] = useState(false);
     const [abiertoPrecio, setAbiertoPrecio] = useState(false);
@@ -306,6 +307,14 @@ export const Home = () => {
         setDatosSolicitud((prev) => ({ ...prev, [name]: value }));
     };
 
+    const manejarCambioDocumentos = (e) => {
+        const nuevosArchivos = Array.from(e.target.files || []);
+        if (!nuevosArchivos.length) return;
+
+        setDocumentosArrendatario((prev) => [...prev, ...nuevosArchivos]);
+        e.target.value = "";
+    };
+
     const enviarSolicitudArrendatario = async (e) => {
         e.preventDefault();
         if (enviandoSolicitud) return;
@@ -330,16 +339,23 @@ export const Home = () => {
         setEnviandoSolicitud(true);
 
         try {
-            const payload = {
-                nombre: datosSolicitud.nombre.trim(),
-                apellido: datosSolicitud.apellido.trim(),
-                direccion: datosSolicitud.direccion.trim(),
-                celular: datosSolicitud.celular.trim(),
-                email: datosSolicitud.email.trim().toLowerCase(),
-            };
+            const formData = new FormData();
+            formData.append("nombre", datosSolicitud.nombre.trim());
+            formData.append("apellido", datosSolicitud.apellido.trim());
+            formData.append("direccion", datosSolicitud.direccion.trim());
+            formData.append("celular", datosSolicitud.celular.trim());
+            formData.append("email", datosSolicitud.email.trim().toLowerCase());
+
+            documentosArrendatario.forEach((archivo) => {
+                formData.append("imagenesDocumentos", archivo);
+            });
 
             const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/crear`;
-            const response = await axios.post(url, payload);
+            const response = await axios.post(url, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
             setEstadoSolicitud({
                 tipo: "ok",
@@ -352,6 +368,7 @@ export const Home = () => {
                 celular: "",
                 email: "",
             });
+            setDocumentosArrendatario([]);
         } catch (error) {
             setEstadoSolicitud({
                 tipo: "error",
@@ -940,6 +957,28 @@ export const Home = () => {
                                     className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
                                     required
                                 />
+
+                                <div className="md:col-span-2">
+                                    <label className="mb-2 block text-sm font-medium text-slate-200">
+                                        Documentos de identidad
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={manejarCambioDocumentos}
+                                        className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
+                                        required
+                                    />
+                                    <p className="mt-2 text-xs text-slate-300">
+                                        Sube una o varias imágenes de tu cédula u otros documentos.
+                                    </p>
+                                    {documentosArrendatario.length > 0 && (
+                                        <p className="mt-1 text-xs text-cyan-300">
+                                            {documentosArrendatario.length} archivo(s) seleccionado(s)
+                                        </p>
+                                    )}
+                                </div>
 
                                 <div className="md:col-span-2 flex justify-end mt-1">
                                     <button
