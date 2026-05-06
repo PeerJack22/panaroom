@@ -198,7 +198,7 @@ const FormularioPerfil = () => {
                             <img
                                 src={uploadedImagePreview}
                                 alt="Imagen subida"
-                                className="w-24 h-24 object-cover rounded-full"
+                                className="w-24 h-24 object-cover"
                             />
                         </div>
                     )}
