@@ -394,7 +394,7 @@ const Table = () => {
                         >
                             <option value="">Todas las categorías</option>
                             <option value="departamento">Departamento</option>
-                            <option value="suite">Suite</option>
+                            <option value="suit">Suite</option>
                         </select>
 
                         <button
@@ -487,7 +487,7 @@ const Table = () => {
                         >
                             <option value="">Todas las categorías</option>
                             <option value="departamento">Departamento</option>
-                            <option value="suite">Suite</option>
+                            <option value="suit">Suite</option>
                         </select>
 
                         <div className="relative">

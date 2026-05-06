@@ -324,12 +324,12 @@ export const Form = () => {
                                 defaultValue=""
                                 {...register("categoria", {
                                     required: "Debes seleccionar una categoría.",
-                                    validate: (v) => ["departamento", "suite"].includes(String(v)) || "Categoría inválida.",
+                                    validate: (v) => ["departamento", "suit"].includes(String(v)) || "Categoría inválida.",
                                 })}
                             >
                                 <option value="" disabled>Seleccionar categoría...</option>
                                 <option value="departamento">Departamento</option>
-                                <option value="suite">Suite</option>
+                                <option value="suit">Suite</option>
                             </select>
                             {errors.categoria && <p className="text-red-500 text-xs italic">{errors.categoria.message}</p>}
                         </div>

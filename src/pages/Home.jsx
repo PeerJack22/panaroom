@@ -101,7 +101,7 @@ export const Home = () => {
     const opcionesCategorias = [
         { value: "todas", label: "Todas las categorías" },
         { value: "departamento", label: "Departamento" },
-        { value: "suite", label: "Suite" },
+        { value: "suit", label: "Suite" },
     ];
 
     const [propiedades, setPropiedades] = useState([]);

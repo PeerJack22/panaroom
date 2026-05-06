@@ -90,7 +90,7 @@ const MisResidencias = () => {
                         >
                             <option value="">Todas las categorías</option>
                             <option value="departamento">Departamento</option>
-                            <option value="suite">Suite</option>
+                            <option value="suit">Suite</option>
                         </select>
 
                         <button
