@@ -399,11 +399,11 @@ export const Home = () => {
         }
     };
 
-    const irALoginConTransicion = () => {
+    const irALoginConTransicion = (rutaLogin = "/login") => {
         if (navegandoSuave) return;
         setNavegandoSuave(true);
         setTimeout(() => {
-            navigate("/login");
+            navigate(rutaLogin);
         }, 220);
     };
 
@@ -863,7 +863,7 @@ export const Home = () => {
                         <div className="flex flex-col gap-3 justify-end">
                             <button
                                 type="button"
-                                onClick={irALoginConTransicion}
+                                onClick={() => irALoginConTransicion("/loginEstudiante")}
                                 className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-700 hover:bg-blue-600 text-white transition-colors"
                             >
                                 Iniciar sesión
