@@ -36,12 +36,31 @@ const findFirstArrayInObject = (value, depth = 0) => {
     return [];
 };
 
+const attachParentContextToItems = (items, parentData = {}) => {
+    if (!Array.isArray(items)) return [];
+
+    return items.map((item) => ({
+        ...parentData,
+        ...item,
+        departamento: item?.departamento ?? parentData?.departamento,
+        arrendatarioId: item?.arrendatarioId ?? parentData?.arrendatarioId,
+    }));
+};
+
 const getListFromResponse = (responseData) => {
     if (Array.isArray(responseData)) return responseData;
     if (Array.isArray(responseData?.data)) return responseData.data;
     if (Array.isArray(responseData?.quejas)) return responseData.quejas;
-    if (Array.isArray(responseData?.comentarios)) return responseData.comentarios;
+    if (Array.isArray(responseData?.comentarios)) {
+        return attachParentContextToItems(responseData.comentarios, responseData);
+    }
     if (Array.isArray(responseData?.results)) return responseData.results;
+    if (Array.isArray(responseData?.data?.comentarios)) {
+        return attachParentContextToItems(responseData.data.comentarios, responseData.data);
+    }
+    if (Array.isArray(responseData?.data?.quejas)) {
+        return attachParentContextToItems(responseData.data.quejas, responseData.data);
+    }
 
     // Fallback genérico para estructuras anidadas: data.items, data.comentarios, etc.
     const nestedArray = findFirstArrayInObject(responseData);
@@ -80,6 +99,7 @@ const normalizeFeedbackItem = (item, index) => {
         departamento: toText(
             item?.departamento?.titulo ||
             item?.departamento?.nombre ||
+            item?.departamento?.descripcion ||
             item?.departamento ||
             item?.inmueble ||
             item?.residencia,

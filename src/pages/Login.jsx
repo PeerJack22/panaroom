@@ -13,12 +13,21 @@ const Login = () => {
     const isStudentLogin = location.pathname === '/loginEstudiante';
     const [tipoAcceso, setTipoAcceso] = useState(isStudentLogin ? 'estudiante' : 'arrendatario');
     const [showPassword, setShowPassword] = useState(false);
+    const [redirectAfterLogin, setRedirectAfterLogin] = useState(null);
     const { register, handleSubmit, formState: { errors } } = useForm()
-    const { setToken, setRol, setUser } = storeAuth(); 
+    const { token, setToken, setRol, setUser } = storeAuth();
 
 useEffect(() => {
     setTipoAcceso(isStudentLogin ? 'estudiante' : 'arrendatario');
 }, [isStudentLogin]);
+
+useEffect(() => {
+    if (!token || !redirectAfterLogin) return;
+
+    const destino = redirectAfterLogin;
+    setRedirectAfterLogin(null);
+    navigate(destino, { replace: true });
+}, [token, redirectAfterLogin, navigate]);
 
 const loginUser = async (data) => {
     const loadingToast = toast.loading('Procesando solicitud...');
@@ -120,7 +129,7 @@ const loginUser = async (data) => {
             sessionStorage.removeItem(DETALLE_REDIRECT_KEY);
         }
 
-        navigate(destinoFinal);
+        setRedirectAfterLogin(destinoFinal);
     } catch (error) {
         toast.dismiss(loadingToast);
         console.error("Error en el login:", error);
