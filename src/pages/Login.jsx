@@ -5,29 +5,20 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
 
-const DETALLE_REDIRECT_KEY = 'panaroomDetallePendiente';
+
 
 const Login = () => {
     const navigate = useNavigate()
     const location = useLocation();
-    const isStudentLogin = location.pathname === '/loginEstudiante';
-    const [tipoAcceso, setTipoAcceso] = useState(isStudentLogin ? 'estudiante' : 'arrendatario');
+    const [tipoAcceso, setTipoAcceso] = useState('arrendatario');
     const [showPassword, setShowPassword] = useState(false);
-    const [redirectAfterLogin, setRedirectAfterLogin] = useState(null);
+    
     const { register, handleSubmit, formState: { errors } } = useForm()
     const { token, setToken, setRol, setUser } = storeAuth();
 
-useEffect(() => {
-    setTipoAcceso(isStudentLogin ? 'estudiante' : 'arrendatario');
-}, [isStudentLogin]);
-
-useEffect(() => {
-    if (!token || !redirectAfterLogin) return;
-
-    const destino = redirectAfterLogin;
-    setRedirectAfterLogin(null);
-    navigate(destino, { replace: true });
-}, [token, redirectAfterLogin, navigate]);
+    useEffect(() => {
+        // Mantener el tipo de acceso actual en el estado; por defecto 'arrendatario'.
+    }, []);
 
 const loginUser = async (data) => {
     const loadingToast = toast.loading('Procesando solicitud...');
@@ -109,27 +100,7 @@ const loginUser = async (data) => {
         setUser(user);
 
         toast.dismiss(loadingToast);
-        let destinoFinal = '/dashboard';
-
-        if (rolRecibido === 'estudiante') {
-            const detallePendienteRaw = sessionStorage.getItem(DETALLE_REDIRECT_KEY);
-
-            if (detallePendienteRaw) {
-                try {
-                    const detallePendiente = JSON.parse(detallePendienteRaw);
-                    if (detallePendiente?.destino) {
-                        destinoFinal = detallePendiente.destino;
-                    }
-                } catch {
-                    destinoFinal = '/dashboard';
-                }
-                sessionStorage.removeItem(DETALLE_REDIRECT_KEY);
-            }
-        } else {
-            sessionStorage.removeItem(DETALLE_REDIRECT_KEY);
-        }
-
-        setRedirectAfterLogin(destinoFinal);
+        navigate('/dashboard', { replace: true });
     } catch (error) {
         toast.dismiss(loadingToast);
         console.error("Error en el login:", error);

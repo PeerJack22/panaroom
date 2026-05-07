@@ -61,7 +61,7 @@ const esBooleanoTrue = (valor) => {
 
 export const Home = () => {
     const navigate = useNavigate();
-    const { token, rol } = storeAuth();
+    const { token } = storeAuth();
     const [servicios, setServicios] = useState([]);
     const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
     const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
@@ -100,7 +100,7 @@ export const Home = () => {
     });
     const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
     const propiedadesPorPagina = 6;
-    const DETALLE_REDIRECT_KEY = "panaroomDetallePendiente";
+    
     const opcionesServicios = ['luz', 'agua', 'internet'];
     const opcionesCategorias = [
         { value: "todas", label: "Todas las categorías" },
@@ -408,30 +408,17 @@ export const Home = () => {
     };
 
     const cerrarModalDetalle = () => {
-        sessionStorage.removeItem(DETALLE_REDIRECT_KEY);
         setDetalleSeleccionado(null);
         setMostrarMensajeDetalle(false);
     };
 
-    const prepararDetallePendiente = (propiedad) => {
-        const destino = `/dashboard/visualizar/${propiedad.id}`;
-        sessionStorage.setItem(DETALLE_REDIRECT_KEY, JSON.stringify({ destino }));
-        setDetalleSeleccionado(propiedad);
-    };
-
     const manejarClickDetalles = (propiedad) => {
-        const rolNormalizado = String(rol || "").toLowerCase();
-
         if (token) {
-            // El retorno temporal solo aplica al flujo del estudiante.
             navigate(`/dashboard/visualizar/${propiedad.id}`);
             return;
         }
 
-        if (!rolNormalizado || rolNormalizado === "estudiante") {
-            prepararDetallePendiente(propiedad);
-        }
-
+        setDetalleSeleccionado(propiedad);
         setMostrarMensajeDetalle(true);
     };
 
@@ -863,7 +850,7 @@ export const Home = () => {
                         <div className="flex flex-col gap-3 justify-end">
                             <button
                                 type="button"
-                                onClick={() => irALoginConTransicion("/loginEstudiante")}
+                                onClick={() => irALoginConTransicion("/login")}
                                 className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-700 hover:bg-blue-600 text-white transition-colors"
                             >
                                 Iniciar sesión
