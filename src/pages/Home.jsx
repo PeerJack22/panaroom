@@ -90,7 +90,6 @@ export const Home = () => {
     const [mostrarFormularioArrendatario, setMostrarFormularioArrendatario] = useState(false);
     const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
     const [estadoSolicitud, setEstadoSolicitud] = useState({ tipo: "", mensaje: "" });
-    const [navegandoSuave, setNavegandoSuave] = useState(false);
     const [datosSolicitud, setDatosSolicitud] = useState({
         nombre: "",
         apellido: "",
@@ -399,14 +398,6 @@ export const Home = () => {
         }
     };
 
-    const irALoginConTransicion = (rutaLogin = "/login") => {
-        if (navegandoSuave) return;
-        setNavegandoSuave(true);
-        setTimeout(() => {
-            navigate(rutaLogin);
-        }, 220);
-    };
-
     const cerrarModalDetalle = () => {
         setDetalleSeleccionado(null);
         setMostrarMensajeDetalle(false);
@@ -423,7 +414,7 @@ export const Home = () => {
     };
 
     return (
-        <div className={`transition-opacity duration-300 ease-out ${navegandoSuave ? 'opacity-0' : 'opacity-100'}`}>
+        <div>
             <header className="sticky top-0 z-50 w-full py-3 px-6 bg-slate-800/95 backdrop-blur-sm text-white flex flex-col md:flex-row justify-between items-center shadow-md">
                 {/* Logo + Título */}
                 <div className="flex items-center gap-3 mb-3 md:mb-0">
@@ -443,7 +434,7 @@ export const Home = () => {
                     </ul>
                     <button
                         type="button"
-                        onClick={irALoginConTransicion}
+                        onClick={() => navigate("/login")}
                         className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-1.5 px-5 rounded-full text-sm md:text-base transition-colors"
                     >
                         Ingresar
@@ -850,7 +841,7 @@ export const Home = () => {
                         <div className="flex flex-col gap-3 justify-end">
                             <button
                                 type="button"
-                                onClick={() => irALoginConTransicion("/login")}
+                                onClick={() => navigate("/login")}
                                 className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-700 hover:bg-blue-600 text-white transition-colors"
                             >
                                 Iniciar sesión
