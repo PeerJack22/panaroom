@@ -5,6 +5,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
 
+const DETALLE_REDIRECT_KEY = 'panaroomDetallePendiente';
+
 const Login = () => {
     const navigate = useNavigate()
     const location = useLocation();
@@ -98,7 +100,27 @@ const loginUser = async (data) => {
         setUser(user);
 
         toast.dismiss(loadingToast);
-        navigate('/dashboard');
+        let destinoFinal = '/dashboard';
+
+        if (rolRecibido === 'estudiante') {
+            const detallePendienteRaw = sessionStorage.getItem(DETALLE_REDIRECT_KEY);
+
+            if (detallePendienteRaw) {
+                try {
+                    const detallePendiente = JSON.parse(detallePendienteRaw);
+                    if (detallePendiente?.destino) {
+                        destinoFinal = detallePendiente.destino;
+                    }
+                } catch {
+                    destinoFinal = '/dashboard';
+                }
+                sessionStorage.removeItem(DETALLE_REDIRECT_KEY);
+            }
+        } else {
+            sessionStorage.removeItem(DETALLE_REDIRECT_KEY);
+        }
+
+        navigate(destinoFinal);
     } catch (error) {
         toast.dismiss(loadingToast);
         console.error("Error en el login:", error);

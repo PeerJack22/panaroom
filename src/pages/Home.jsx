@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaYoutube, FaGithub } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import storeAuth from '../context/storeAuth';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^\d{7,15}$/;
@@ -60,6 +61,7 @@ const esBooleanoTrue = (valor) => {
 
 export const Home = () => {
     const navigate = useNavigate();
+    const { token, rol } = storeAuth();
     const [servicios, setServicios] = useState([]);
     const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
     const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
@@ -96,7 +98,9 @@ export const Home = () => {
         celular: "",
         email: "",
     });
+    const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
     const propiedadesPorPagina = 6;
+    const DETALLE_REDIRECT_KEY = "panaroomDetallePendiente";
     const opcionesServicios = ['luz', 'agua', 'internet'];
     const opcionesCategorias = [
         { value: "todas", label: "Todas las categorías" },
@@ -401,6 +405,34 @@ export const Home = () => {
         setTimeout(() => {
             navigate("/login");
         }, 220);
+    };
+
+    const cerrarModalDetalle = () => {
+        sessionStorage.removeItem(DETALLE_REDIRECT_KEY);
+        setDetalleSeleccionado(null);
+        setMostrarMensajeDetalle(false);
+    };
+
+    const prepararDetallePendiente = (propiedad) => {
+        const destino = `/dashboard/visualizar/${propiedad.id}`;
+        sessionStorage.setItem(DETALLE_REDIRECT_KEY, JSON.stringify({ destino }));
+        setDetalleSeleccionado(propiedad);
+    };
+
+    const manejarClickDetalles = (propiedad) => {
+        const rolNormalizado = String(rol || "").toLowerCase();
+
+        if (token) {
+            // El retorno temporal solo aplica al flujo del estudiante.
+            navigate(`/dashboard/visualizar/${propiedad.id}`);
+            return;
+        }
+
+        if (!rolNormalizado || rolNormalizado === "estudiante") {
+            prepararDetallePendiente(propiedad);
+        }
+
+        setMostrarMensajeDetalle(true);
     };
 
     return (
@@ -742,7 +774,7 @@ export const Home = () => {
                                 <div className="mt-auto flex justify-end gap-3 pt-2">
                                     <button
                                         type="button"
-                                        onClick={() => setMostrarMensajeDetalle(true)}
+                                        onClick={() => manejarClickDetalles(propiedad)}
                                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
                                     >
                                         Detalles
@@ -823,7 +855,9 @@ export const Home = () => {
                     <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
                         <h3 className="text-2xl font-bold text-gray-800 mb-3">Información de la propiedad</h3>
                         <p className="text-gray-600 leading-relaxed mb-6">
-                            Si quieres saber la información de contacto y más detalles de la propiedad, por favor inicia sesión o crea una cuenta.
+                            {detalleSeleccionado?.titulo
+                                ? `Para ver más detalles de ${detalleSeleccionado.titulo}, inicia sesión o crea una cuenta.`
+                                : "Si quieres saber la información de contacto y más detalles de la propiedad, por favor inicia sesión o crea una cuenta."}
                         </p>
 
                         <div className="flex flex-col gap-3 justify-end">
@@ -842,7 +876,7 @@ export const Home = () => {
                             </Link>
                             <button
                                 type="button"
-                                onClick={() => setMostrarMensajeDetalle(false)}
+                                onClick={cerrarModalDetalle}
                                 className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
                             >
                                 Cancelar

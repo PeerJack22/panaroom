@@ -17,6 +17,7 @@ const Users = () => {
     const [soloNoConfirmados, setSoloNoConfirmados] = useState(false);
     const [arrendatariosNoConfirmadosIds, setArrendatariosNoConfirmadosIds] = useState([]);
     const [arrendatarioSeleccionado, setArrendatarioSeleccionado] = useState(null);
+    const [documentoVisualizadoIndex, setDocumentoVisualizadoIndex] = useState(0);
 
     const obtenerIdArrendatario = (valor) => {
         if (!valor) return null;
@@ -296,11 +297,40 @@ const Users = () => {
     const abrirDetalleArrendatario = (user) => {
         if (normalizarRol(user?.rol) !== "arrendatario") return;
         setArrendatarioSeleccionado(user);
+        setDocumentoVisualizadoIndex(0);
     };
 
     const cerrarDetalleArrendatario = () => {
         setArrendatarioSeleccionado(null);
+        setDocumentoVisualizadoIndex(0);
     };
+
+    const documentosArrendatarioSeleccionado = arrendatarioSeleccionado
+        ? normalizarDocumentos(arrendatarioSeleccionado?.imagenesDocumentos)
+        : [];
+
+    const documentoActual = documentosArrendatarioSeleccionado[documentoVisualizadoIndex] || null;
+
+    const abrirDocumentoEnIndice = (index) => {
+        const totalDocumentos = documentosArrendatarioSeleccionado.length;
+        if (!totalDocumentos) return;
+
+        const indexNormalizado = ((index % totalDocumentos) + totalDocumentos) % totalDocumentos;
+        setDocumentoVisualizadoIndex(indexNormalizado);
+    };
+
+    useEffect(() => {
+        if (!arrendatarioSeleccionado) return undefined;
+
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                cerrarDetalleArrendatario();
+            }
+        };
+
+        window.addEventListener("keydown", handleEscape);
+        return () => window.removeEventListener("keydown", handleEscape);
+    }, [arrendatarioSeleccionado]);
 
     if (loading) {
         return (
@@ -457,8 +487,14 @@ const Users = () => {
             )}
 
             {arrendatarioSeleccionado && createPortal(
-                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/70 px-4 py-6">
-                    <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-gray-200">
+                <div
+                    className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/70 px-4 py-6"
+                    onClick={cerrarDetalleArrendatario}
+                >
+                    <div
+                        className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-gray-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
                             <div>
                                 <h3 className="text-2xl font-bold text-gray-800">Detalle del arrendatario</h3>
@@ -491,26 +527,68 @@ const Users = () => {
 
                                 <div className="rounded-xl bg-gray-50 p-4">
                                     <h5 className="mb-2 text-lg font-semibold text-gray-800">Documentos subidos</h5>
-                                    {normalizarDocumentos(arrendatarioSeleccionado?.imagenesDocumentos).length > 0 ? (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {normalizarDocumentos(arrendatarioSeleccionado?.imagenesDocumentos).map((doc) => (
-                                                <a
-                                                    key={doc.public_id || doc.url}
-                                                    href={doc.url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="block overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
-                                                >
-                                                    <img
-                                                        src={doc.url}
-                                                        alt="Documento de identidad"
-                                                        className="h-52 w-full object-cover"
-                                                    />
-                                                    <div className="px-3 py-2 text-xs text-gray-500">
-                                                        Clic para abrir en tamaño completo
-                                                    </div>
-                                                </a>
-                                            ))}
+                                    {documentosArrendatarioSeleccionado.length > 0 ? (
+                                        <div className="space-y-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => window.open(documentoActual?.url, "_blank", "noopener,noreferrer")}
+                                                className="group relative block w-full overflow-hidden rounded-2xl border border-gray-200 bg-black shadow-lg"
+                                                title="Abrir imagen en tamaño completo"
+                                            >
+                                                <img
+                                                    src={documentoActual?.url}
+                                                    alt="Documento de identidad"
+                                                    className="h-[420px] w-full object-contain bg-black"
+                                                />
+                                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-sm text-white">
+                                                    Clic para abrir en una pestaña nueva
+                                                </div>
+                                            </button>
+
+                                            {documentosArrendatarioSeleccionado.length > 1 && (
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => abrirDocumentoEnIndice(documentoVisualizadoIndex - 1)}
+                                                        className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                                                    >
+                                                        Anterior
+                                                    </button>
+
+                                                    <p className="text-sm text-gray-500">
+                                                        {documentoVisualizadoIndex + 1} de {documentosArrendatarioSeleccionado.length}
+                                                    </p>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => abrirDocumentoEnIndice(documentoVisualizadoIndex + 1)}
+                                                        className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                                                    >
+                                                        Siguiente
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+                                                {documentosArrendatarioSeleccionado.map((doc, index) => (
+                                                    <button
+                                                        key={doc.public_id || doc.url || index}
+                                                        type="button"
+                                                        onClick={() => abrirDocumentoEnIndice(index)}
+                                                        className={`overflow-hidden rounded-lg border-2 transition-all ${
+                                                            index === documentoVisualizadoIndex
+                                                                ? "border-blue-600 ring-2 ring-blue-200"
+                                                                : "border-gray-200 hover:border-gray-300"
+                                                        }`}
+                                                    >
+                                                        <img
+                                                            src={doc.url}
+                                                            alt={`Documento ${index + 1}`}
+                                                            className="h-24 w-full object-cover"
+                                                        />
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     ) : (
                                         <p className="text-sm text-gray-500">No hay documentos cargados.</p>
