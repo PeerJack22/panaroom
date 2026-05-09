@@ -23,6 +23,30 @@ const EPN_MAX_BOUNDS = [
 const MAP_MIN_ZOOM = 14;
 const MAP_MAX_ZOOM = 18;
 
+const COMENTARIOS_MOCK = [
+    {
+        id: 1,
+        nombre: "Camila R.",
+        fecha: "02/05/2026",
+        calificacion: 5,
+        comentario: "El lugar es tranquilo y muy cerca de la universidad. El propietario responde rapido.",
+    },
+    {
+        id: 2,
+        nombre: "Mateo P.",
+        fecha: "24/04/2026",
+        calificacion: 4,
+        comentario: "Buen departamento, limpio y comodo. Solo mejoraria el tema del internet en horas pico.",
+    },
+    {
+        id: 3,
+        nombre: "Valeria S.",
+        fecha: "11/04/2026",
+        calificacion: 5,
+        comentario: "Excelente opcion para estudiantes. Me senti segura y con buenas areas comunes.",
+    },
+];
+
 const extractMarkerCoordinates = (url) => {
     if (!url || typeof url !== "string") return null;
     const markerMatch = url.match(/marker=([-\d.]+)%2C([-\d.]+)/i) || url.match(/marker=([-\d.]+),([-\d.]+)/i);
@@ -356,6 +380,9 @@ const Details = () => {
     const mapCenter = markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1])
         ? markerCoords
         : DEFAULT_CENTER;
+    const promedioCalificacion = COMENTARIOS_MOCK.length
+        ? (COMENTARIOS_MOCK.reduce((acc, item) => acc + item.calificacion, 0) / COMENTARIOS_MOCK.length).toFixed(1)
+        : "0.0";
 
     return (
         <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
@@ -480,6 +507,45 @@ const Details = () => {
                         </div>
                     </section>
                 )}
+
+                {
+                    <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                            <h2 className="text-xl font-semibold text-gray-800">Comentarios de usuarios</h2>
+                            <p className="text-sm text-gray-600">
+                                Calificación promedio: <span className="font-semibold text-gray-800">{promedioCalificacion}/5</span>
+                            </p>
+                        </div>
+
+                        <div className="space-y-4">
+                            {COMENTARIOS_MOCK.map((item) => (
+                                <article key={item.id} className="rounded-lg border border-gray-200 bg-white p-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                                        <p className="font-semibold text-gray-800">{item.nombre}</p>
+                                        <p className="text-xs text-gray-500">{item.fecha}</p>
+                                    </div>
+
+                                    <div className="mb-2 flex items-center gap-2">
+                                        <div className="text-amber-500 leading-none">
+                                            {Array.from({ length: 5 }).map((_, index) => (
+                                                <span key={`${item.id}-star-${index}`} aria-hidden="true">
+                                                    {index < item.calificacion ? "★" : "☆"}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <span className="text-xs text-gray-600">{item.calificacion}.0/5</span>
+                                    </div>
+
+                                    <p className="text-sm text-gray-700 leading-relaxed">{item.comentario}</p>
+                                </article>
+                            ))}
+                        </div>
+
+                        <p className="text-xs text-gray-500 mt-4">
+                            Estos comentarios son de ejemplo mientras se integra el endpoint real.
+                        </p>
+                    </section>
+                }
 
                 {isEstudiante && tieneEstudianteAsignado && (
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
