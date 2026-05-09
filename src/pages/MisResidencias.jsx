@@ -69,7 +69,7 @@ const MisResidencias = () => {
             <div>
                 <h1 className="font-black text-4xl text-gray-500">Mis residencias</h1>
                 <hr className="my-4 border-t-2 border-gray-300" />
-                <p className="mb-6">Módulo para gestionar tus residencias asignadas.</p>
+                <p className="mb-6">Este módulo te permite gestionar tus residencias contratadas.</p>
             </div>
 
             {!cargando && !error && residencias.length > 0 && (

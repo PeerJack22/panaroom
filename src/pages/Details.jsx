@@ -83,7 +83,7 @@ const Details = () => {
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [contratandoDepartamento, setContratandoDepartamento] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
-    const [flujoTerminarContrato, setFlujoTerminarContrato] = useState(false);
+    const [modoComentario, setModoComentario] = useState(null);
 
     const isEstudiante = rol === 'estudiante';
     const estudianteId = user?._id || null;
@@ -135,11 +135,33 @@ const Details = () => {
         return servicios;
     };
 
-    const enviarQueja = async (data) => {
+    const cerrarModalComentario = () => {
+        setModoComentario(null);
+        reset();
+    };
+
+    const abrirModalComentario = () => {
+        setModoComentario("comentario");
+        reset();
+    };
+
+    const abrirModalTerminarContrato = () => {
+        const deseaContinuar = window.confirm(
+            "¿Estás seguro de terminar el contrato? Antes de continuar debes escribir un comentario."
+        );
+
+        if (!deseaContinuar) return;
+
+        setModoComentario("terminar");
+        reset();
+    };
+
+    const enviarComentario = async (data) => {
         if (!departamento?._id || !data?.descripcion || enviandoQueja) return;
 
         setEnviandoQueja(true);
-        const loadingToast = toast.loading('Enviando queja/sugerencia...');
+        const esTerminacion = modoComentario === "terminar";
+        const loadingToast = toast.loading(esTerminacion ? "Enviando comentario y terminando contrato..." : "Enviando comentario...");
 
         try {
             const payload = {
@@ -157,22 +179,23 @@ const Details = () => {
             });
 
             toast.dismiss(loadingToast);
-            toast.success(response?.data?.msg || 'Queja/sugerencia enviada correctamente');
+            toast.success(response?.data?.msg || (esTerminacion ? "Comentario enviado correctamente" : "Comentario enviado correctamente"));
             reset();
 
-            // Si estamos en flujo de terminar contrato, ejecutar terminación
-            if (flujoTerminarContrato) {
-                setFlujoTerminarContrato(false);
+            if (esTerminacion) {
+                setModoComentario(null);
                 setTimeout(() => {
                     ejecutarTerminarContrato();
                 }, 1000);
+            } else {
+                cerrarModalComentario();
             }
         } catch (error) {
             toast.dismiss(loadingToast);
             const errorMessage =
                 error?.response?.data?.msg ||
                 error?.response?.data?.message ||
-                'No se pudo enviar la queja/sugerencia';
+                'No se pudo enviar el comentario';
             toast.error(errorMessage);
         } finally {
             setEnviandoQueja(false);
@@ -220,17 +243,6 @@ const Details = () => {
             toast.error(errorMessage);
         } finally {
             setContratandoDepartamento(false);
-        }
-    };
-
-    const iniciarTerminarContrato = () => {
-        const desea = window.confirm(
-            "¿Deseas dejar una queja o sugerencia antes de terminar el contrato?"
-        );
-        if (desea) {
-            setFlujoTerminarContrato(true);
-        } else {
-            ejecutarTerminarContrato();
         }
     };
 
@@ -547,38 +559,52 @@ const Details = () => {
 
                 {isEstudiante && tieneEstudianteAsignado && (
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Terminar contrato</h2>
-                        <button
-                            type="button"
-                            onClick={iniciarTerminarContrato}
-                            disabled={terminandoContrato || flujoTerminarContrato}
-                            className="w-full px-4 py-2 rounded-lg bg-red-700 text-white font-semibold hover:bg-red-600 disabled:bg-red-400 transition-colors"
-                        >
-                            {terminandoContrato ? "Terminando contrato..." : "Terminar contrato"}
-                        </button>
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Acciones del contrato</h2>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <button
+                                type="button"
+                                onClick={abrirModalComentario}
+                                disabled={enviandoQueja || terminandoContrato}
+                                className="w-full sm:w-1/2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+                            >
+                                Dejar comentario
+                            </button>
+                            <button
+                                type="button"
+                                onClick={abrirModalTerminarContrato}
+                                disabled={terminandoContrato || enviandoQueja}
+                                className="w-full sm:w-1/2 px-4 py-2 rounded-lg bg-red-700 text-white font-semibold hover:bg-red-600 disabled:bg-red-400 transition-colors"
+                            >
+                                {terminandoContrato ? "Terminando contrato..." : "Terminar contrato"}
+                            </button>
+                        </div>
                     </section>
                 )}
 
-                {isEstudiante && tieneEstudianteAsignado && flujoTerminarContrato && createPortal(
+                {isEstudiante && tieneEstudianteAsignado && modoComentario && createPortal(
                     <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4">
                         <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-3">Queja o Sugerencia</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-3">
+                                {modoComentario === "terminar" ? "Comentario antes de terminar el contrato" : "Dejar comentario"}
+                            </h3>
                             <p className="text-gray-600 leading-relaxed mb-4">
-                                Puedes dejar una queja o sugerencia antes de terminar el contrato. Es opcional.
+                                {modoComentario === "terminar"
+                                    ? "Escribe tu comentario antes de terminar el contrato."
+                                    : "Escribe tu comentario o sugerencia sobre la residencia."}
                             </p>
 
-                            <form onSubmit={handleSubmit(enviarQueja)} className="space-y-4">
+                            <form onSubmit={handleSubmit(enviarComentario)} className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Descripción
                                     </label>
                                     <textarea
-                                        placeholder="Cuéntanos tu queja o sugerencia..."
+                                        placeholder={modoComentario === "terminar" ? "Escribe tu comentario antes de terminar el contrato..." : "Cuéntanos tu comentario o sugerencia..."}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 resize-none"
                                         rows="4"
                                         {...register("descripcion", { 
-                                            required: "La descripción es obligatoria",
-                                            minLength: { value: 10, message: "Mínimo 10 caracteres" }
+                                            required: "La descripción es obligatoria.",
+                                            minLength: { value: 10, message: "Mínimo 10 caracteres." }
                                         })}
                                     />
                                     {errors.descripcion && (
@@ -592,27 +618,11 @@ const Details = () => {
                                         disabled={enviandoQueja}
                                         className="w-full bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg font-medium transition-colors"
                                     >
-                                        {enviandoQueja ? 'Enviando...' : 'Enviar'}
+                                        {enviandoQueja ? 'Enviando...' : (modoComentario === "terminar" ? 'Enviar comentario y terminar' : 'Enviar comentario')}
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            setFlujoTerminarContrato(false);
-                                            reset();
-                                            setTimeout(() => {
-                                                ejecutarTerminarContrato();
-                                            }, 300);
-                                        }}
-                                        className="w-full bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                                    >
-                                        Saltarse
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setFlujoTerminarContrato(false);
-                                            reset();
-                                        }}
+                                        onClick={cerrarModalComentario}
                                         className="w-full border border-gray-300 text-gray-700 hover:bg-gray-100 py-2 px-4 rounded-lg font-medium transition-colors"
                                     >
                                         Cancelar
