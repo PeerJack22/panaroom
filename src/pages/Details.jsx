@@ -599,7 +599,7 @@ const Details = () => {
                                         Descripción
                                     </label>
                                     <textarea
-                                        placeholder={modoComentario === "terminar" ? "Escribe tu comentario antes de terminar el contrato..." : "Cuéntanos tu comentario o sugerencia..."}
+                                        placeholder={modoComentario === "terminar" ? "Escribe tu queja o sugerencia antes de terminar el contrato..." : "Cuéntanos tu queja o sugerencia..."}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 resize-none"
                                         rows="4"
                                         {...register("descripcion", { 
@@ -618,7 +618,7 @@ const Details = () => {
                                         disabled={enviandoQueja}
                                         className="w-full bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg font-medium transition-colors"
                                     >
-                                        {enviandoQueja ? 'Enviando...' : (modoComentario === "terminar" ? 'Enviar comentario y terminar' : 'Enviar comentario')}
+                                        {enviandoQueja ? 'Enviando...' : (modoComentario === "terminar" ? 'Enviar queja/sugerencia y terminar' : 'Enviar queja/sugerencia')}
                                     </button>
                                     <button
                                         type="button"
