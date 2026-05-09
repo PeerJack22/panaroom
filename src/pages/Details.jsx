@@ -567,7 +567,7 @@ const Details = () => {
                                 disabled={enviandoQueja || terminandoContrato}
                                 className="w-full sm:w-1/2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
                             >
-                                Dejar comentario
+                                Queja o sugerencia
                             </button>
                             <button
                                 type="button"
@@ -585,12 +585,12 @@ const Details = () => {
                     <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4">
                         <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
                             <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                                {modoComentario === "terminar" ? "Comentario antes de terminar el contrato" : "Dejar comentario"}
+                                {modoComentario === "terminar" ? "Comentario antes de terminar el contrato" : "Queja o sugerencia"}
                             </h3>
                             <p className="text-gray-600 leading-relaxed mb-4">
                                 {modoComentario === "terminar"
                                     ? "Escribe tu comentario antes de terminar el contrato."
-                                    : "Escribe tu comentario o sugerencia sobre la residencia."}
+                                    : "Escribe tu queja o sugerencia sobre la residencia."}
                             </p>
 
                             <form onSubmit={handleSubmit(enviarComentario)} className="space-y-4">
