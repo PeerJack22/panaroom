@@ -715,7 +715,7 @@ const Table = () => {
                                         type="button"
                                         title="Más información"
                                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
-                                        onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)}
+                                        onClick={() => navigate(`/dashboard/visualizar/${dep._id}`, { state: { from: "/dashboard/listar" } })}
                                     >
                                         <MdInfo className="h-5 w-5" />
                                         Ver más

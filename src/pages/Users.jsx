@@ -435,7 +435,10 @@ const Users = () => {
                                             {userDepartamentos[user._id].map(depa => (
                                                 <li key={depa._id} className="text-gray-600">
                                                     <button
-                                                        onClick={() => navigate(`/dashboard/visualizar/${depa._id}`)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigate(`/dashboard/visualizar/${depa._id}`, { state: { from: "/dashboard/usuarios" } });
+                                                        }}
                                                         className="text-blue-600 hover:text-blue-800 hover:underline font-medium transition-colors duration-200"
                                                     >
                                                         {depa.titulo}

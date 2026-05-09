@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import storeAuth from "../context/storeAuth";
 
+const FEEDBACK_ROUTE = "/dashboard/quejas-sugerencias";
+
 const toText = (value, fallback = "-") => {
     if (value === null || value === undefined) return fallback;
     if (["string", "number", "boolean"].includes(typeof value)) return String(value);
@@ -343,6 +345,7 @@ const Feedback = () => {
                                     {item.departamentoId ? (
                                         <Link
                                             to={`/dashboard/visualizar/${item.departamentoId}`}
+                                            state={{ from: FEEDBACK_ROUTE }}
                                             className="text-blue-600 hover:text-blue-700 underline"
                                         >
                                             {item.departamento}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -72,6 +72,7 @@ const isWithinEpnBounds = (lat, lng) => {
 const Details = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const { fetchDataBackend } = useFetch();
     const { rol, user } = storeAuth();
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -383,13 +384,14 @@ const Details = () => {
     const promedioCalificacion = COMENTARIOS_MOCK.length
         ? (COMENTARIOS_MOCK.reduce((acc, item) => acc + item.calificacion, 0) / COMENTARIOS_MOCK.length).toFixed(1)
         : "0.0";
+    const rutaRegreso = location?.state?.from || "/dashboard/listar";
 
     return (
         <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
             <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 md:p-8">
                 <button
                     type="button"
-                    onClick={() => navigate("/dashboard/listar")}
+                    onClick={() => navigate(rutaRegreso)}
                     className="mb-4 inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                     ← Atrás
