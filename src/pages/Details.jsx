@@ -540,10 +540,6 @@ const Details = () => {
                                 </article>
                             ))}
                         </div>
-
-                        <p className="text-xs text-gray-500 mt-4">
-                            Estos comentarios son de ejemplo mientras se integra el endpoint real.
-                        </p>
                     </section>
                 }
 

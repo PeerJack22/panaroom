@@ -24,7 +24,6 @@ const Dashboard = () => {
         { to: '/dashboard', label: 'Perfil' },
         { to: '/dashboard/listar', label: 'Residencias' },
         ...(rol === 'estudiante' ? [{ to: '/dashboard/mis-residencias', label: 'Mis residencias' }] : []),
-        ... (rol === 'arrendatario' ? [{ to: '/dashboard/crear', label: 'Crear residencia' }] : []),
         { to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias' },
         ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios' }] : []),
     ];
