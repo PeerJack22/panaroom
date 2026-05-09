@@ -236,6 +236,16 @@ export const Form = () => {
             onSubmit={handleSubmit(registerResidencia)}
             className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
         >
+            <div className="mb-4 flex justify-end">
+                <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                    ← Regresar
+                </button>
+            </div>
+
             <div className="mb-8">
                 <div className="flex items-center justify-between">
                     {[1, 2, 3, 4].map((n) => (
