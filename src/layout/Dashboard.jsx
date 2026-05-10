@@ -25,6 +25,7 @@ const Dashboard = () => {
         { to: '/dashboard/listar', label: 'Residencias' },
         ...(rol === 'estudiante' ? [{ to: '/dashboard/mis-residencias', label: 'Mis residencias' }] : []),
         { to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias' },
+        { to: '/dashboard/chat', label: 'Chat' },
         ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios' }] : []),
     ];
 

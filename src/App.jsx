@@ -16,6 +16,7 @@ import Update from './pages/Update'
 import Reset from './pages/Reset'
 import Users from './pages/Users'
 import Feedback from './pages/Feedback'
+import Chat from './pages/Chat'
 import PublicRoute from './routes/PublicRoute'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { useEffect } from 'react'
@@ -68,6 +69,7 @@ function App() {
                   <Route path='visualizar/:id' element={<Details />} />
                   <Route path='crear' element={<Create />} />
                   <Route path='quejas-sugerencias' element={<Feedback />} />
+                  <Route path='chat' element={<Chat />} />
                   <Route path='actualizar/:id' element={<Update />} />
                   <Route path='usuarios' element={
                     <PrivateRouteWithRole>
