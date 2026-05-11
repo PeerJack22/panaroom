@@ -50,36 +50,60 @@ const attachParentContextToItems = (items, parentData = {}) => {
 };
 
 const getListFromResponse = (responseData) => {
+    console.log("[getListFromResponse] Entrando con:", responseData);
+    
     if (Array.isArray(responseData)) {
+        console.log("[getListFromResponse] Es un array, longitud:", responseData.length);
         // Si es un array, podría ser de comentarios directos o de objetos departamento-comentarios
         if (responseData.length > 0) {
             const first = responseData[0];
+            console.log("[getListFromResponse] Primer elemento:", first);
             // Si cada elemento tiene un array de comentarios anidado, aplanarlos
             if (first?.comentarios && Array.isArray(first.comentarios)) {
-                return responseData.flatMap((item) =>
+                console.log("[getListFromResponse] Detectado estructura anidada (departamento-comentarios)");
+                const result = responseData.flatMap((item) =>
                     attachParentContextToItems(item.comentarios, { departamento: item.departamento })
                 );
+                console.log("[getListFromResponse] Resultado flatMap:", result);
+                return result;
             }
         }
+        console.log("[getListFromResponse] Retornando array directo");
         return responseData;
     }
     
-    if (Array.isArray(responseData?.data)) return responseData.data;
-    if (Array.isArray(responseData?.quejas)) return responseData.quejas;
+    if (Array.isArray(responseData?.data)) {
+        console.log("[getListFromResponse] Encontrado responseData.data");
+        return responseData.data;
+    }
+    if (Array.isArray(responseData?.quejas)) {
+        console.log("[getListFromResponse] Encontrado responseData.quejas");
+        return responseData.quejas;
+    }
     if (Array.isArray(responseData?.comentarios)) {
+        console.log("[getListFromResponse] Encontrado responseData.comentarios");
         return attachParentContextToItems(responseData.comentarios, responseData);
     }
-    if (Array.isArray(responseData?.results)) return responseData.results;
+    if (Array.isArray(responseData?.results)) {
+        console.log("[getListFromResponse] Encontrado responseData.results");
+        return responseData.results;
+    }
     if (Array.isArray(responseData?.data?.comentarios)) {
+        console.log("[getListFromResponse] Encontrado responseData.data.comentarios");
         return attachParentContextToItems(responseData.data.comentarios, responseData.data);
     }
     if (Array.isArray(responseData?.data?.quejas)) {
+        console.log("[getListFromResponse] Encontrado responseData.data.quejas");
         return attachParentContextToItems(responseData.data.quejas, responseData.data);
     }
 
     // Fallback genérico para estructuras anidadas: data.items, data.comentarios, etc.
+    console.log("[getListFromResponse] Buscando array anidado genérico");
     const nestedArray = findFirstArrayInObject(responseData);
-    if (nestedArray.length) return nestedArray;
+    if (nestedArray.length) {
+        console.log("[getListFromResponse] Encontrado array anidado:", nestedArray);
+        return nestedArray;
+    }
 
     // Algunos backends devuelven un solo objeto en lugar de lista.
     if (
@@ -87,13 +111,16 @@ const getListFromResponse = (responseData) => {
         typeof responseData === "object" &&
         (responseData?.descripcion || responseData?.mensaje || responseData?.comentario || responseData?._id || responseData?.id)
     ) {
+        console.log("[getListFromResponse] Retornando como array de un solo objeto");
         return [responseData];
     }
 
+    console.log("[getListFromResponse] Retornando array vacío");
     return [];
 };
 
 const normalizeFeedbackItem = (item, index) => {
+    console.log(`[normalizeFeedbackItem] Item ${index}:`, item);
     // El campo `estudiante` puede venir como: string(id|nombre), objeto, o array. Normalizamos a texto legible.
     let estudianteRaw = item?.estudiante ?? item?.usuario ?? item?.userName ?? item?.autor ?? item?.creadoPor;
     let estudianteNormalizado = "No disponible";
@@ -112,7 +139,7 @@ const normalizeFeedbackItem = (item, index) => {
         : "sin-tipo";
     const manejaEstado = tipoNormalizado !== "comentario";
 
-    return {
+    const normalizado = {
         id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
         _id: item?._id,
         tipo: tipoNormalizado,
@@ -139,6 +166,9 @@ const normalizeFeedbackItem = (item, index) => {
         fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
         estado: manejaEstado ? (item?.estado !== undefined ? item.estado : false) : null,
     };
+    
+    console.log(`[normalizeFeedbackItem] Item ${index} normalizado:`, normalizado);
+    return normalizado;
 };
 
 const formatDate = (value) => {
@@ -163,6 +193,10 @@ const Feedback = () => {
     const isEstudiante = roleNormalized === "estudiante";
     const canViewFeedback = isAdmin || isArrendatario || isEstudiante;
 
+    console.log("[Feedback] Rol:", rol, "| Rol normalizado:", roleNormalized);
+    console.log("[Feedback] isAdmin:", isAdmin, "| isArrendatario:", isArrendatario, "| isEstudiante:", isEstudiante);
+    console.log("[Feedback] canViewFeedback:", canViewFeedback);
+
     const endpoint = useMemo(() => {
         if (isAdmin) return "/administrador/quejas";
         if (isArrendatario) return "/arrendatario/comentarios";
@@ -172,11 +206,19 @@ const Feedback = () => {
 
     useEffect(() => {
         const fetchFeedback = async () => {
-            if (!canViewFeedback || !endpoint) return;
+            if (!canViewFeedback || !endpoint) {
+                console.log("[Feedback] No se puede ver feedback o no hay endpoint", {
+                    canViewFeedback,
+                    endpoint,
+                });
+                return;
+            }
 
+            console.log("[Feedback] Iniciando fetch desde endpoint:", endpoint);
             setLoading(true);
             try {
                 const url = `${import.meta.env.VITE_BACKEND_URL}${endpoint}`;
+                console.log("[Feedback] URL completa:", url);
                 const response = await axios.get(url, {
                     headers: {
                         "Content-Type": "application/json",
@@ -184,10 +226,16 @@ const Feedback = () => {
                     },
                 });
 
+                console.log("[Feedback] Respuesta del servidor:", response?.data);
                 const rawList = getListFromResponse(response?.data);
-                const normalizedList = rawList.map((item, index) => normalizeFeedbackItem(item, index));
+                console.log("[Feedback] rawList después de getListFromResponse:", rawList);
+                const normalizedList = rawList.map((item, index) =>
+                    normalizeFeedbackItem(item, index)
+                );
+                console.log("[Feedback] normalizedList después de normalizeFeedbackItem:", normalizedList);
                 setItems(normalizedList);
             } catch (error) {
+                console.error("[Feedback] Error al cargar:", error);
                 const errorMessage =
                     error?.response?.data?.msg ||
                     error?.response?.data?.message ||
