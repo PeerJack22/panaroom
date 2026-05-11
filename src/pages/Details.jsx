@@ -74,19 +74,17 @@ const Details = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { fetchDataBackend } = useFetch();
-    const { rol, user } = storeAuth();
+    const { rol } = storeAuth();
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const [departamento, setDepartamento] = useState(null);
     const [propietario, setPropietario] = useState(null);
     const [imagenActiva, setImagenActiva] = useState(null);
     const [enviandoQueja, setEnviandoQueja] = useState(false);
-    const [contratandoDepartamento, setContratandoDepartamento] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
     const [modoComentario, setModoComentario] = useState(null);
 
     const isEstudiante = rol === 'estudiante';
-    const estudianteId = user?._id || null;
 
     const abrirLightbox = (index) => setImagenActiva(index);
     const cerrarLightbox = () => setImagenActiva(null);
@@ -199,52 +197,6 @@ const Details = () => {
             toast.error(errorMessage);
         } finally {
             setEnviandoQueja(false);
-        }
-    };
-
-    
-
-    const enviarMensajeInicialChat = async () => {
-        if (!departamento?._id || !estudianteId) return;
-
-        if (contratandoDepartamento) return;
-        setContratandoDepartamento(true);
-
-        const arrendatarioId = typeof departamento?.arrendatario === 'object'
-            ? (departamento.arrendatario._id || departamento.arrendatario.id)
-            : departamento.arrendatario;
-
-        if (!arrendatarioId) {
-            toast.error('No se pudo identificar al arrendatario.');
-            return;
-        }
-
-        const storedUser = JSON.parse(localStorage.getItem('auth-token'));
-        const token = storedUser?.state?.token || user?.token;
-
-        const payload = {
-            mensaje: "Hola, estoy interesado en esta residencia. ¿Podemos conversar?",
-            remitente: "estudiante",
-            arrendatarioId,
-            estudianteId,
-        };
-
-        try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/chat/mensaje`;
-            await axios.post(url, payload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            // Abrir la página de chat y pasar contexto para abrir la conversación
-            navigate('/dashboard/chat', { state: { arrendatarioId, estudianteId, departamentoId: departamento._id } });
-        } catch (error) {
-            const msg = error?.response?.data?.msg || error?.response?.data?.message || 'No se pudo enviar el mensaje';
-            toast.error(msg);
-        } finally {
-            setContratandoDepartamento(false);
         }
     };
 
@@ -469,11 +421,10 @@ const Details = () => {
                             {isEstudiante && !tieneEstudianteAsignado && (
                                 <button
                                     type="button"
-                                    onClick={enviarMensajeInicialChat}
-                                    disabled={contratandoDepartamento}
-                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-600 disabled:bg-blue-400 transition-colors"
+                                    disabled={true}
+                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-gray-400 text-white font-semibold cursor-not-allowed transition-colors"
                                 >
-                                    {contratandoDepartamento ? "Enviando..." : "Chatear con el arrendatario"}
+                                    Contratar departamento (En desarrollo)
                                 </button>
                             )}
                         </section>
