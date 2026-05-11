@@ -367,21 +367,80 @@ const Details = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-stretch">
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Información general</h2>
-                            <ul className="space-y-3 text-gray-700">
-                                <li><strong className="text-gray-900">Título:</strong> {departamento.titulo}</li>
-                                <li><strong className="text-gray-900">Descripción:</strong> {departamento.descripcion}</li>
-                                <li><strong className="text-gray-900">Dirección:</strong> {departamento.direccion}</li>
-                                <li><strong className="text-gray-900">Precio mensual:</strong> $ {departamento.precioMensual}</li>
-                                <li><strong className="text-gray-900">Habitaciones:</strong> {departamento.numeroHabitaciones}</li>
-                                <li><strong className="text-gray-900">Baños:</strong> {departamento.numeroBanos}</li>
-                                <li><strong className="text-gray-900">Parqueadero:</strong> {departamento.parqueadero ? "Sí" : "No"}</li>
-                                <li><strong className="text-gray-900">Categoría:</strong> {departamento.categoria ? formatearServicio(departamento.categoria) : "No definida"}</li>
-                                <li><strong className="text-gray-900">Monto de alícuota:</strong> {departamento.alicoutaMonto != null ? `$ ${departamento.alicoutaMonto}` : "No aplica"}</li>
-                                <li><strong className="text-gray-900">Número de parqueaderos:</strong> {departamento.numParqueaderos != null ? departamento.numParqueaderos : (departamento.parqueadero ? "1" : "0")}</li>
-                                <li><strong className="text-gray-900">Permite mascotas:</strong> {departamento.mascotas ? "Sí" : "No"}</li>
-                            </ul>
+                        
+                        <div className="space-y-4">
+                            <div className="pb-4 border-b border-gray-200">
+                                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Título</p>
+                                <p className="text-gray-900 font-medium">{departamento.titulo}</p>
+                            </div>
 
-                        <div className="mt-5">
+                            <div className="pb-4 border-b border-gray-200">
+                                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Descripción</p>
+                                <p className="text-gray-700 text-sm">{departamento.descripcion}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Dirección</p>
+                                    <p className="text-gray-900">{departamento.direccion}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Referencia</p>
+                                    <p className="text-gray-900">{departamento.referencia || "-"}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Categoría</p>
+                                    <p className="text-gray-900">{departamento.categoria ? formatearServicio(departamento.categoria) : "No definida"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Bodega</p>
+                                    <p className="text-gray-900">{departamento.bodega ? "Sí" : "No"}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Precio mensual</p>
+                                    <p className="text-gray-900 font-semibold">$ {departamento.precioMensual}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Monto de alícuota</p>
+                                    <p className="text-gray-900">{departamento.alicoutaMonto != null ? `$ ${departamento.alicoutaMonto}` : "No aplica"}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Habitaciones</p>
+                                    <p className="text-gray-900">{departamento.numeroHabitaciones}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Baños</p>
+                                    <p className="text-gray-900">{departamento.numeroBanos}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Parqueadero</p>
+                                    <p className="text-gray-900">{departamento.parqueadero ? "Sí" : "No"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Número de parqueaderos</p>
+                                    <p className="text-gray-900">{departamento.numParqueaderos != null ? departamento.numParqueaderos : (departamento.parqueadero ? "1" : "0")}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Permite mascotas</p>
+                                <p className="text-gray-900">{departamento.mascotas ? "Sí" : "No"}</p>
+                            </div>
+                        </div>
+
+                        <div className="mt-5 pt-4 border-t border-gray-200">
                             <h3 className="text-lg font-semibold text-gray-800 mb-3">Servicios incluidos</h3>
                             {servicios.length > 0 ? (
                                 <div className="flex flex-wrap gap-2">
