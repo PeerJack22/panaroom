@@ -50,7 +50,20 @@ const attachParentContextToItems = (items, parentData = {}) => {
 };
 
 const getListFromResponse = (responseData) => {
-    if (Array.isArray(responseData)) return responseData;
+    if (Array.isArray(responseData)) {
+        // Si es un array, podría ser de comentarios directos o de objetos departamento-comentarios
+        if (responseData.length > 0) {
+            const first = responseData[0];
+            // Si cada elemento tiene un array de comentarios anidado, aplanarlos
+            if (first?.comentarios && Array.isArray(first.comentarios)) {
+                return responseData.flatMap((item) =>
+                    attachParentContextToItems(item.comentarios, { departamento: item.departamento })
+                );
+            }
+        }
+        return responseData;
+    }
+    
     if (Array.isArray(responseData?.data)) return responseData.data;
     if (Array.isArray(responseData?.quejas)) return responseData.quejas;
     if (Array.isArray(responseData?.comentarios)) {
