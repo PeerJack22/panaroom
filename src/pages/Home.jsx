@@ -215,6 +215,7 @@ export const Home = () => {
         if (nuevaPagina < 1 || nuevaPagina > totalPaginas || nuevaPagina === paginaActual) return;
 
         setAnimandoResidencias(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => {
             setPaginaActual(nuevaPagina);
             setAnimandoResidencias(false);

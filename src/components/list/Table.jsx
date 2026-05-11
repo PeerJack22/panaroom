@@ -359,6 +359,7 @@ const Table = () => {
         if (siguiente === paginaActual) return;
 
         setAnimandoDepartamentos(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => {
             setPaginaActual(siguiente);
             setAnimandoDepartamentos(false);
