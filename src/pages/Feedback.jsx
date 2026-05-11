@@ -93,9 +93,17 @@ const normalizeFeedbackItem = (item, index) => {
         estudianteNormalizado = toText(estudianteRaw, "No disponible");
     }
 
+    const tipoRaw = String(item?.tipo || item?.categoria || item?.category || item?.clase || "").trim().toLowerCase();
+    const tipoNormalizado = ["queja", "sugerencia", "comentario"].includes(tipoRaw)
+        ? tipoRaw
+        : "comentario";
+    const manejaEstado = tipoNormalizado !== "comentario";
+
     return {
         id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
         _id: item?._id,
+        tipo: tipoNormalizado,
+        manejaEstado,
         mensaje: toText(item?.mensaje || item?.descripcion || item?.comentario, "Sin descripción"),
         estudiante: estudianteNormalizado,
         departamento: toText(
@@ -116,7 +124,7 @@ const normalizeFeedbackItem = (item, index) => {
             item?.residencia?.id ||
             null,
         fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
-        estado: item?.estado !== undefined ? item.estado : false,
+        estado: manejaEstado ? (item?.estado !== undefined ? item.estado : false) : null,
     };
 };
 
@@ -182,6 +190,8 @@ const Feedback = () => {
     }, [canViewFeedback, endpoint, token]);
 
     const cambiarEstado = async (queja) => {
+        if (!queja?.manejaEstado) return;
+
         const quejaId = queja?.id || queja?._id;
 
         if (!quejaId) {
@@ -239,10 +249,27 @@ const Feedback = () => {
 
     // Filtrar items basándose en el estado
     const itemsFiltrados = useMemo(() => {
-        if (filtro === "pendientes") return items.filter((item) => !item.estado);
-        if (filtro === "revisados") return items.filter((item) => item.estado);
-        return items.filter((item) => !item.estado);
-    }, [items, filtro]);
+        const itemsPorTipo =
+            filtroTipo === "todos"
+                ? items
+                : items.filter((item) => item.tipo === filtroTipo);
+        const itemsConEstado = itemsPorTipo.filter((item) => item.manejaEstado);
+
+        if (filtroTipo === "comentario") return itemsPorTipo;
+        if (filtro === "pendientes") return itemsConEstado.filter((item) => !item.estado);
+        if (filtro === "revisados") return itemsConEstado.filter((item) => item.estado);
+        return itemsConEstado.filter((item) => !item.estado);
+    }, [items, filtro, filtroTipo]);
+
+    const conteoPendientes = useMemo(
+        () => items.filter((item) => item.manejaEstado && !item.estado).length,
+        [items]
+    );
+
+    const conteoRevisados = useMemo(
+        () => items.filter((item) => item.manejaEstado && item.estado).length,
+        [items]
+    );
 
     if (!canViewFeedback) {
         return (
@@ -265,28 +292,30 @@ const Feedback = () => {
                         {isAdmin ? "Todas las quejas y sugerencias" : isArrendatario ? "Quejas y sugerencias de mis departamentos" : "Mis quejas y sugerencias"}
                     </h2>
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setFiltro("pendientes")}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                                    filtro === "pendientes"
-                                        ? "bg-yellow-600 text-white"
-                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                }`}
-                            >
-                                Pendientes ({items.filter((i) => !i.estado).length})
-                            </button>
-                            <button
-                                onClick={() => setFiltro("revisados")}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                                    filtro === "revisados"
-                                        ? "bg-green-600 text-white"
-                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                }`}
-                            >
-                                Revisados ({items.filter((i) => i.estado).length})
-                            </button>
-                        </div>
+                        {filtroTipo !== "comentario" && (
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setFiltro("pendientes")}
+                                    className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
+                                        filtro === "pendientes"
+                                            ? "border-blue-600 bg-blue-600 text-white"
+                                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    Pendientes ({conteoPendientes})
+                                </button>
+                                <button
+                                    onClick={() => setFiltro("revisados")}
+                                    className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
+                                        filtro === "revisados"
+                                            ? "border-blue-600 bg-blue-600 text-white"
+                                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    Revisados ({conteoRevisados})
+                                </button>
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-2">
                             <label htmlFor="filtroTipo" className="text-sm font-medium text-gray-700">
@@ -321,16 +350,18 @@ const Feedback = () => {
                                     </div>
 
                                     <div className="ml-3 flex-shrink-0 flex flex-col items-end gap-2">
-                                        <span
-                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                                item.estado
-                                                    ? "bg-green-100 text-green-800"
-                                                    : "bg-yellow-100 text-yellow-800"
-                                            }`}
-                                        >
-                                            {item.estado ? "Revisado" : "Pendiente"}
-                                        </span>
-                                        {isAdmin && (
+                                        {item.manejaEstado && (
+                                            <span
+                                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                                    item.estado
+                                                        ? "bg-green-100 text-green-800"
+                                                        : "bg-yellow-100 text-yellow-800"
+                                                }`}
+                                            >
+                                                {item.estado ? "Revisado" : "Pendiente"}
+                                            </span>
+                                        )}
+                                        {isAdmin && item.manejaEstado && (
                                             <button
                                                 onClick={() => cambiarEstado(item)}
                                                 className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
