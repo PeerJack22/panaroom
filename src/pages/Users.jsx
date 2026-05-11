@@ -551,10 +551,10 @@ const Users = () => {
                     onClick={cerrarDetalleArrendatario}
                 >
                     <div
-                        className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-gray-200"
+                        className="relative isolate w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-gray-200"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+                        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
                             <div>
                                 <h3 className="text-2xl font-bold text-gray-800">Detalle del arrendatario</h3>
                                 <p className="text-sm text-gray-500">Revisa la información y los documentos antes de confirmar.</p>
