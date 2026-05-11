@@ -96,7 +96,7 @@ const normalizeFeedbackItem = (item, index) => {
     const tipoRaw = String(item?.tipo || item?.categoria || item?.category || item?.clase || "").trim().toLowerCase();
     const tipoNormalizado = ["queja", "sugerencia", "comentario"].includes(tipoRaw)
         ? tipoRaw
-        : "comentario";
+        : "sin-tipo";
     const manejaEstado = tipoNormalizado !== "comentario";
 
     return {
@@ -247,19 +247,13 @@ const Feedback = () => {
 
     };
 
-    // Filtrar items basándose en el estado
+    // Filtrar items basándose en el estado (el filtro por tipo es solo visual por ahora)
     const itemsFiltrados = useMemo(() => {
-        const itemsPorTipo =
-            filtroTipo === "todos"
-                ? items
-                : items.filter((item) => item.tipo === filtroTipo);
-        const itemsConEstado = itemsPorTipo.filter((item) => item.manejaEstado);
-
-        if (filtroTipo === "comentario") return itemsPorTipo;
+        const itemsConEstado = items.filter((item) => item.manejaEstado);
         if (filtro === "pendientes") return itemsConEstado.filter((item) => !item.estado);
         if (filtro === "revisados") return itemsConEstado.filter((item) => item.estado);
         return itemsConEstado.filter((item) => !item.estado);
-    }, [items, filtro, filtroTipo]);
+    }, [items, filtro]);
 
     const conteoPendientes = useMemo(
         () => items.filter((item) => item.manejaEstado && !item.estado).length,
@@ -292,30 +286,28 @@ const Feedback = () => {
                         {isAdmin ? "Todas las quejas y sugerencias" : isArrendatario ? "Quejas y sugerencias de mis departamentos" : "Mis quejas y sugerencias"}
                     </h2>
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        {filtroTipo !== "comentario" && (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setFiltro("pendientes")}
-                                    className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
-                                        filtro === "pendientes"
-                                            ? "border-blue-600 bg-blue-600 text-white"
-                                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
-                                    }`}
-                                >
-                                    Pendientes ({conteoPendientes})
-                                </button>
-                                <button
-                                    onClick={() => setFiltro("revisados")}
-                                    className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
-                                        filtro === "revisados"
-                                            ? "border-blue-600 bg-blue-600 text-white"
-                                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
-                                    }`}
-                                >
-                                    Revisados ({conteoRevisados})
-                                </button>
-                            </div>
-                        )}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setFiltro("pendientes")}
+                                className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
+                                    filtro === "pendientes"
+                                        ? "border-blue-600 bg-blue-600 text-white"
+                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                }`}
+                            >
+                                Pendientes ({conteoPendientes})
+                            </button>
+                            <button
+                                onClick={() => setFiltro("revisados")}
+                                className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
+                                    filtro === "revisados"
+                                        ? "border-blue-600 bg-blue-600 text-white"
+                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                }`}
+                            >
+                                Revisados ({conteoRevisados})
+                            </button>
+                        </div>
 
                         <div className="flex items-center gap-2">
                             <label htmlFor="filtroTipo" className="text-sm font-medium text-gray-700">
