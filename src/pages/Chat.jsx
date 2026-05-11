@@ -12,9 +12,7 @@ const Chat = () => {
     const [mensajes, setMensajes] = useState([]);
     const [texto, setTexto] = useState('');
     const [enviando, setEnviando] = useState(false);
-    const pollingRef = useRef(null);
     const scrollRef = useRef(null);
-    const [noHistoryAvailable, setNoHistoryAvailable] = useState(false);
 
     const asignarEstudiante = async () => {
         if (!departamentoId || !estudianteId) {
@@ -55,44 +53,36 @@ const Chat = () => {
         }
     };
 
-    const fetchMensajes = async () => {
-        if (!arrendatarioId || !estudianteId) return;
-        try {
-            const token = JSON.parse(localStorage.getItem('auth-token'))?.state?.token || user?.token;
-            const url = `${import.meta.env.VITE_BACKEND_URL}/chat/mensajes?arrendatarioId=${arrendatarioId}&estudianteId=${estudianteId}`;
-            const resp = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            const data = resp?.data || [];
-            setMensajes(Array.isArray(data) ? data : (data?.mensajes || []));
-            // scroll to bottom
-            setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-        } catch (err) {
-            // Si el servidor responde 404 significa que no provee endpoint de historial
-            const status = err?.response?.status;
-            if (status === 404) {
-                console.info('Historial de chat no disponible en el servidor (404). Se detendrá el polling.');
-                setNoHistoryAvailable(true);
-                if (pollingRef.current) clearInterval(pollingRef.current);
-                return;
-            }
-
-            console.debug('No se pudo obtener historial de mensajes:', err?.message || err);
-        }
-    };
-
+    // Cargar mensajes iniciales: preferir `location.state.initialMensajes`, sino usar mock simple.
     useEffect(() => {
-        // initial fetch
-        fetchMensajes();
-        // start polling only if historial disponible
-        if (!noHistoryAvailable) {
-            if (pollingRef.current) clearInterval(pollingRef.current);
-            pollingRef.current = setInterval(fetchMensajes, 5000);
+        const initial = location.state?.initialMensajes;
+        if (Array.isArray(initial) && initial.length > 0) {
+            setMensajes(initial);
+            setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+            return;
         }
-        return () => clearInterval(pollingRef.current);
+
+        // Mock de ejemplo si no hay historial en el servidor
+        if (arrendatarioId && estudianteId) {
+            const mock = [
+                {
+                    mensaje: 'Hola, llego a las 6pm.',
+                    remitente: 'estudiante',
+                    arrendatarioId,
+                    estudianteId,
+                    createdAt: new Date().toISOString(),
+                },
+                {
+                    mensaje: 'Hola, ¿a qué hora llegas al departamento?',
+                    remitente: 'arrendatario',
+                    arrendatarioId,
+                    estudianteId,
+                    createdAt: new Date().toISOString(),
+                },
+            ];
+            setMensajes(mock);
+            setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [arrendatarioId, estudianteId]);
 
@@ -142,10 +132,7 @@ const Chat = () => {
                 )}
 
                 <div className="mt-4 bg-white border border-gray-200 rounded-lg p-4 max-h-80 overflow-y-auto">
-                    {noHistoryAvailable && (
-                        <p className="text-sm text-yellow-600">Historial no disponible en el servidor; la conversación comenzará aquí.</p>
-                    )}
-                    {mensajes.length === 0 && !noHistoryAvailable && <p className="text-sm text-gray-500">No hay mensajes aún. Escribe el primer mensaje abajo.</p>}
+                        {mensajes.length === 0 && <p className="text-sm text-gray-500">No hay mensajes aún. Escribe el primer mensaje abajo.</p>}
                     {mensajes.map((m, i) => {
                         const remit = m.remitente || m.from || m.remitenteType || '';
                         const isOwn = (remit === 'arrendatario' && rol === 'arrendatario') || (remit === 'estudiante' && rol === 'estudiante');
