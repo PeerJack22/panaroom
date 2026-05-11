@@ -202,45 +202,47 @@ const Details = () => {
         }
     };
 
-    const contratarDepartamento = async () => {
-        if (!departamento?._id || !estudianteId || contratandoDepartamento) return;
+    
 
-        const confirmacionContratacion = window.confirm(
-            "Está a punto de formalizar la contratación de esta residencia. Esta acción genera una asignación contractual dentro del sistema y tiene implicaciones administrativas para ambas partes. Confirme que ya revisó las condiciones y coordinó previamente los términos con el propietario antes de continuar."
-        );
+    const enviarMensajeInicialChat = async () => {
+        if (!departamento?._id || !estudianteId) return;
 
-        if (!confirmacionContratacion) {
+        if (contratandoDepartamento) return;
+        setContratandoDepartamento(true);
+
+        const arrendatarioId = typeof departamento?.arrendatario === 'object'
+            ? (departamento.arrendatario._id || departamento.arrendatario.id)
+            : departamento.arrendatario;
+
+        if (!arrendatarioId) {
+            toast.error('No se pudo identificar al arrendatario.');
             return;
         }
 
-        setContratandoDepartamento(true);
-        const loadingToast = toast.loading("Asignando departamento...");
+        const storedUser = JSON.parse(localStorage.getItem('auth-token'));
+        const token = storedUser?.state?.token || user?.token;
+
+        const payload = {
+            mensaje: "Hola, estoy interesado en esta residencia. ¿Podemos conversar?",
+            remitente: "estudiante",
+            arrendatarioId,
+            estudianteId,
+        };
 
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/asignarEstudiante`;
-            const payload = {
-                departamentoId: departamento._id,
-                estudianteId,
-            };
-
-            const response = await axios.put(url, payload, {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/chat/mensaje`;
+            await axios.post(url, payload, {
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${user?.token || JSON.parse(localStorage.getItem("auth-token"))?.state?.token}`,
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
-            toast.dismiss(loadingToast);
-            toast.success(response?.data?.msg || "Departamento contratado correctamente");
-
-            setDepartamento((prev) => prev ? { ...prev, estudianteId } : prev);
+            // Abrir la página de chat y pasar contexto para abrir la conversación
+            navigate('/dashboard/chat', { state: { arrendatarioId, estudianteId, departamentoId: departamento._id } });
         } catch (error) {
-            toast.dismiss(loadingToast);
-            const errorMessage =
-                error?.response?.data?.msg ||
-                error?.response?.data?.message ||
-                "No se pudo contratar el departamento";
-            toast.error(errorMessage);
+            const msg = error?.response?.data?.msg || error?.response?.data?.message || 'No se pudo enviar el mensaje';
+            toast.error(msg);
         } finally {
             setContratandoDepartamento(false);
         }
@@ -467,11 +469,11 @@ const Details = () => {
                             {isEstudiante && !tieneEstudianteAsignado && (
                                 <button
                                     type="button"
-                                    onClick={contratarDepartamento}
+                                    onClick={enviarMensajeInicialChat}
                                     disabled={contratandoDepartamento}
                                     className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-600 disabled:bg-blue-400 transition-colors"
                                 >
-                                    {contratandoDepartamento ? "Contratando..." : "Contratar departamento"}
+                                    {contratandoDepartamento ? "Enviando..." : "Chatear con el arrendatario"}
                                 </button>
                             )}
                         </section>
