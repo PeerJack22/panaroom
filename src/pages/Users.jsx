@@ -18,6 +18,7 @@ const Users = () => {
     const [arrendatariosNoConfirmadosIds, setArrendatariosNoConfirmadosIds] = useState([]);
     const [arrendatarioSeleccionado, setArrendatarioSeleccionado] = useState(null);
     const [documentoVisualizadoIndex, setDocumentoVisualizadoIndex] = useState(0);
+    const [documentoLightboxIndex, setDocumentoLightboxIndex] = useState(null);
 
     const obtenerIdArrendatario = (valor) => {
         if (!valor) return null;
@@ -298,11 +299,13 @@ const Users = () => {
         if (normalizarRol(user?.rol) !== "arrendatario") return;
         setArrendatarioSeleccionado(user);
         setDocumentoVisualizadoIndex(0);
+        setDocumentoLightboxIndex(null);
     };
 
     const cerrarDetalleArrendatario = () => {
         setArrendatarioSeleccionado(null);
         setDocumentoVisualizadoIndex(0);
+        setDocumentoLightboxIndex(null);
     };
 
     const documentosArrendatarioSeleccionado = arrendatarioSeleccionado
@@ -319,18 +322,71 @@ const Users = () => {
         setDocumentoVisualizadoIndex(indexNormalizado);
     };
 
+    const abrirLightboxDocumento = (index) => {
+        const totalDocumentos = documentosArrendatarioSeleccionado.length;
+        if (!totalDocumentos) return;
+
+        const indexNormalizado = ((index % totalDocumentos) + totalDocumentos) % totalDocumentos;
+        setDocumentoLightboxIndex(indexNormalizado);
+    };
+
+    const cerrarLightboxDocumento = () => {
+        setDocumentoLightboxIndex(null);
+    };
+
+    const irDocumentoAnterior = () => {
+        const totalDocumentos = documentosArrendatarioSeleccionado.length;
+        if (!totalDocumentos) return;
+
+        setDocumentoLightboxIndex((prev) => {
+            if (prev === null) return 0;
+            return (prev - 1 + totalDocumentos) % totalDocumentos;
+        });
+    };
+
+    const irDocumentoSiguiente = () => {
+        const totalDocumentos = documentosArrendatarioSeleccionado.length;
+        if (!totalDocumentos) return;
+
+        setDocumentoLightboxIndex((prev) => {
+            if (prev === null) return 0;
+            return (prev + 1) % totalDocumentos;
+        });
+    };
+
     useEffect(() => {
         if (!arrendatarioSeleccionado) return undefined;
+        const totalDocumentos = documentosArrendatarioSeleccionado.length;
 
-        const handleEscape = (event) => {
+        const handleKeyDown = (event) => {
             if (event.key === "Escape") {
+                if (documentoLightboxIndex !== null) {
+                    cerrarLightboxDocumento();
+                    return;
+                }
                 cerrarDetalleArrendatario();
+            }
+
+            if (documentoLightboxIndex !== null && event.key === "ArrowRight") {
+                if (!totalDocumentos) return;
+                setDocumentoLightboxIndex((prev) => {
+                    if (prev === null) return 0;
+                    return (prev + 1) % totalDocumentos;
+                });
+            }
+
+            if (documentoLightboxIndex !== null && event.key === "ArrowLeft") {
+                if (!totalDocumentos) return;
+                setDocumentoLightboxIndex((prev) => {
+                    if (prev === null) return 0;
+                    return (prev - 1 + totalDocumentos) % totalDocumentos;
+                });
             }
         };
 
-        window.addEventListener("keydown", handleEscape);
-        return () => window.removeEventListener("keydown", handleEscape);
-    }, [arrendatarioSeleccionado]);
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [arrendatarioSeleccionado, documentoLightboxIndex, documentosArrendatarioSeleccionado.length]);
 
     if (loading) {
         return (
@@ -534,9 +590,9 @@ const Users = () => {
                                         <div className="space-y-4">
                                             <button
                                                 type="button"
-                                                onClick={() => window.open(documentoActual?.url, "_blank", "noopener,noreferrer")}
+                                                onClick={() => abrirLightboxDocumento(documentoVisualizadoIndex)}
                                                 className="group relative block w-full overflow-hidden rounded-2xl border border-gray-200 bg-black shadow-lg"
-                                                title="Abrir imagen en tamaño completo"
+                                                title="Abrir imagen en visor"
                                             >
                                                 <img
                                                     src={documentoActual?.url}
@@ -544,7 +600,7 @@ const Users = () => {
                                                     className="h-[420px] w-full object-contain bg-black"
                                                 />
                                                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-sm text-white">
-                                                    Clic para abrir en una pestaña nueva
+                                                    Clic para abrir en visor completo
                                                 </div>
                                             </button>
 
@@ -647,6 +703,62 @@ const Users = () => {
                             </section>
                         </div>
                     </div>
+                </div>,
+                document.body
+            )}
+
+            {arrendatarioSeleccionado && documentoLightboxIndex !== null && documentosArrendatarioSeleccionado.length > 0 && createPortal(
+                <div
+                    className="fixed inset-0 z-[100000] bg-black/85 flex items-center justify-center p-4"
+                    onClick={cerrarLightboxDocumento}
+                >
+                    <button
+                        type="button"
+                        className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white text-2xl w-10 h-10 rounded-full"
+                        onClick={cerrarLightboxDocumento}
+                        aria-label="Cerrar visor"
+                    >
+                        ×
+                    </button>
+
+                    {documentosArrendatarioSeleccionado.length > 1 && (
+                        <button
+                            type="button"
+                            className="absolute left-4 md:left-8 bg-white/10 hover:bg-white/20 text-white text-2xl w-11 h-11 rounded-full"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                irDocumentoAnterior();
+                            }}
+                            aria-label="Documento anterior"
+                        >
+                            ‹
+                        </button>
+                    )}
+
+                    <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
+                        <img
+                            src={documentosArrendatarioSeleccionado[documentoLightboxIndex]?.url}
+                            alt={`Documento ${documentoLightboxIndex + 1}`}
+                            className="w-full max-h-[82vh] object-contain rounded-xl"
+                        />
+                        <p className="text-white text-sm mt-3 text-center">
+                            Documento {documentoLightboxIndex + 1} de {documentosArrendatarioSeleccionado.length}
+                        </p>
+                    </div>
+
+                    {documentosArrendatarioSeleccionado.length > 1 && (
+                        <button
+                            type="button"
+                            className="absolute right-4 md:right-8 bg-white/10 hover:bg-white/20 text-white text-2xl w-11 h-11 rounded-full"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                irDocumentoSiguiente();
+                            }}
+                            aria-label="Siguiente documento"
+                        >
+                            ›
+                        </button>
+                    )}
                 </div>,
                 document.body
             )}
