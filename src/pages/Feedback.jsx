@@ -133,7 +133,8 @@ const Feedback = () => {
     const { rol, token } = storeAuth();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [filtro, setFiltro] = useState("todos"); // "todos", "pendientes", "revisados"
+    const [filtro, setFiltro] = useState("pendientes"); // "pendientes", "revisados"
+    const [filtroTipo, setFiltroTipo] = useState("todos"); // Placeholder UI, aun sin filtro real
 
     const roleNormalized = String(rol || "").toLowerCase();
     const isAdmin = roleNormalized === "administrador";
@@ -240,7 +241,7 @@ const Feedback = () => {
     const itemsFiltrados = useMemo(() => {
         if (filtro === "pendientes") return items.filter((item) => !item.estado);
         if (filtro === "revisados") return items.filter((item) => item.estado);
-        return items;
+        return items.filter((item) => !item.estado);
     }, [items, filtro]);
 
     if (!canViewFeedback) {
@@ -259,41 +260,50 @@ const Feedback = () => {
             <p className="mb-6">Este módulo te permite gestionar quejas y sugerencias</p>
 
             <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
                     <h2 className="text-xl font-bold text-gray-800">
                         {isAdmin ? "Todas las quejas y sugerencias" : isArrendatario ? "Quejas y sugerencias de mis departamentos" : "Mis quejas y sugerencias"}
                     </h2>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setFiltro("todos")}
-                            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                                filtro === "todos"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
-                        >
-                            Todos ({items.length})
-                        </button>
-                        <button
-                            onClick={() => setFiltro("pendientes")}
-                            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                                filtro === "pendientes"
-                                    ? "bg-yellow-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
-                        >
-                            Pendientes ({items.filter((i) => !i.estado).length})
-                        </button>
-                        <button
-                            onClick={() => setFiltro("revisados")}
-                            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                                filtro === "revisados"
-                                    ? "bg-green-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
-                        >
-                            Revisados ({items.filter((i) => i.estado).length})
-                        </button>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setFiltro("pendientes")}
+                                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                    filtro === "pendientes"
+                                        ? "bg-yellow-600 text-white"
+                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                            >
+                                Pendientes ({items.filter((i) => !i.estado).length})
+                            </button>
+                            <button
+                                onClick={() => setFiltro("revisados")}
+                                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                    filtro === "revisados"
+                                        ? "bg-green-600 text-white"
+                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                            >
+                                Revisados ({items.filter((i) => i.estado).length})
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <label htmlFor="filtroTipo" className="text-sm font-medium text-gray-700">
+                                Tipo:
+                            </label>
+                            <select
+                                id="filtroTipo"
+                                value={filtroTipo}
+                                onChange={(e) => setFiltroTipo(e.target.value)}
+                                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="todos">Todos los tipos</option>
+                                <option value="queja">Queja</option>
+                                <option value="sugerencia">Sugerencia</option>
+                                <option value="comentario">Comentario</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 

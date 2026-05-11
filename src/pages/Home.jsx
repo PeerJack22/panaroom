@@ -877,8 +877,8 @@ export const Home = () => {
                 <div className='grid gap-6 sm:grid-cols-2 md:grid-cols-4'>
                     {[
                         {
-                            titulo: "Gestión de publicaciones de Habitaciones",
-                            contenido: "Publica y administra habitaciones de forma sencilla y eficiente."
+                            titulo: "Gestión de publicaciones de Residencias",
+                            contenido: "Publica y administra residencias de forma sencilla y eficiente."
                         },
                         {
                             titulo: "Perfiles de Usuarios",
