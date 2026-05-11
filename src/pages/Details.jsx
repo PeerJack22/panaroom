@@ -362,7 +362,7 @@ const Details = () => {
                 >
                     ← Atrás
                 </button>
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">Detalles del departamento</h1>
+                <h1 className="text-3xl font-bold text-gray-800 mb-6">Detalles de la residencia</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-stretch">
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
@@ -460,20 +460,20 @@ const Details = () => {
                     </section>
 
                     {propietario && (
-                        <section className="bg-gray-50 rounded-xl p-8 border border-gray-200 flex flex-col justify-start">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-6">Datos del propietario</h3>
-                            <div className="space-y-4 text-gray-700">
-                                <div>
-                                    <p className="text-sm text-gray-500 mb-1">Nombre completo</p>
-                                    <p className="text-lg font-medium text-gray-900">{propietario.nombre} {propietario.apellido}</p>
+                        <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-4">Información del propietario</h3>
+                            <div className="space-y-4">
+                                <div className="pb-4 border-b border-gray-200">
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Nombre completo</p>
+                                    <p className="text-gray-900 font-medium">{propietario.nombre} {propietario.apellido}</p>
+                                </div>
+                                <div className="pb-4 border-b border-gray-200">
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Correo electrónico</p>
+                                    <p className="text-gray-900">{propietario.email}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500 mb-1">Correo electrónico</p>
-                                    <p className="text-lg font-medium text-gray-900">{propietario.email}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500 mb-1">Teléfono de contacto</p>
-                                    <p className="text-lg font-medium text-gray-900">{propietario.celular || "No disponible"}</p>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Teléfono de contacto</p>
+                                    <p className="text-gray-900">{propietario.celular || "No disponible"}</p>
                                 </div>
                             </div>
 
@@ -519,7 +519,7 @@ const Details = () => {
 
                 {departamento.imagenes?.length > 0 && (
                     <section className="mt-8 mb-8">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Imágenes del departamento</h2>
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Imágenes de la residencia</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {departamento.imagenes.map((img, index) => (
                                 <img
