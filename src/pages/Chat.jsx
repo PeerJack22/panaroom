@@ -10,8 +10,6 @@ const Chat = () => {
     const { arrendatarioId, estudianteId, departamentoId } = location.state || {};
     const [asignando, setAsignando] = useState(false);
     const [mensajes, setMensajes] = useState([]);
-    const [texto, setTexto] = useState('');
-    const [enviando, setEnviando] = useState(false);
     const scrollRef = useRef(null);
 
     const asignarEstudiante = async () => {
@@ -86,39 +84,7 @@ const Chat = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [arrendatarioId, estudianteId]);
 
-    const enviarMensaje = async (e) => {
-        e?.preventDefault?.();
-        if (!texto || !arrendatarioId || !estudianteId || enviando) return;
-        setEnviando(true);
-        const payload = {
-            mensaje: texto,
-            remitente: rol === 'arrendatario' ? 'arrendatario' : 'estudiante',
-            arrendatarioId,
-            estudianteId,
-        };
-
-        try {
-            const token = JSON.parse(localStorage.getItem('auth-token'))?.state?.token || user?.token;
-            const url = `${import.meta.env.VITE_BACKEND_URL}/chat/mensaje`;
-            const resp = await axios.post(url, payload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            // Append locally for responsiveness
-            const nuevo = resp?.data || payload;
-            setMensajes((prev) => [...prev, nuevo]);
-            setTexto('');
-            setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-        } catch (err) {
-            const msg = err?.response?.data?.msg || err?.response?.data?.message || 'No se pudo enviar el mensaje';
-            toast.error(msg);
-        } finally {
-            setEnviando(false);
-        }
-    };
+    
 
     return (
         <div>
@@ -126,7 +92,7 @@ const Chat = () => {
             <hr className='my-4 border-t-2 border-gray-300' />
 
             <div className="mb-6">
-                <p className="text-gray-700">Aquí aparecerá la conversación entre estudiante y arrendatario.</p>
+                <p className="text-gray-700">Aquí se mostrará la lista de mensajes que tenga el usuario pendiente.</p>
                 {arrendatarioId && estudianteId && (
                     <p className="text-sm text-gray-500 mt-1">Conversación: arrendatario <strong>{arrendatarioId}</strong> · estudiante <strong>{estudianteId}</strong></p>
                 )}
@@ -148,21 +114,7 @@ const Chat = () => {
                     <div ref={scrollRef} />
                 </div>
 
-                <form onSubmit={enviarMensaje} className="mt-3 flex gap-2">
-                    <input
-                        value={texto}
-                        onChange={(e) => setTexto(e.target.value)}
-                        placeholder="Escribe un mensaje..."
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-                    />
-                    <button
-                        type="submit"
-                        disabled={enviando || !texto}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 disabled:bg-blue-300"
-                    >
-                        {enviando ? 'Enviando...' : 'Enviar'}
-                    </button>
-                </form>
+                {/* Envío deshabilitado: el chat mostrará los mensajes pendientes del usuario */}
 
                 {arrendatarioId && estudianteId && String(user?._id) === String(arrendatarioId) && (
                     <div className="mt-4">
