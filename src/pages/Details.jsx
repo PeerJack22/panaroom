@@ -541,7 +541,7 @@ const Details = () => {
                             <p className="text-sm text-yellow-700 mb-4">Este departamento se encuentra desactivado. Si deseas conocer el motivo, puedes contactar con el administrador.</p>
                             <button
                                 type="button"
-                                onClick={() => navigate("/dashboard/chat", { state: { administradorId: "admin-default", departamentoNombre: departamento?.titulo } })}
+                                onClick={() => navigate("/dashboard/chat", { state: { abrirChatAdministrador: true, departamentoNombre: departamento?.titulo } })}
                                 className="w-full px-4 py-2 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 transition-colors"
                             >
                                 Ver motivo de desactivación

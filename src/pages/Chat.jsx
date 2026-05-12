@@ -24,6 +24,11 @@ const Chat = () => {
     const roleNormalized = String(rol || "").toLowerCase();
     const isEstudiante = roleNormalized === "estudiante";
     const isArrendatario = roleNormalized === "arrendatario";
+    const isAdministrador = roleNormalized === "administrador";
+
+    const [contactos, setContactos] = useState([]);
+    const [cargandoContactos, setCargandoContactos] = useState(false);
+    const [cargandoHistorial, setCargandoHistorial] = useState(false);
 
     const normalizarMensaje = useCallback((m) => ({
         id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
@@ -42,6 +47,9 @@ const Chat = () => {
         const estId = m.estudianteId || m.estudiante || null;
 
         if (isEstudiante) {
+            if (contactoActivo?.tipo === "administrador") {
+                return String(userId || "") === String(estId || "") && String(contactoActivo?.id || "") === String(adminId || "");
+            }
             return String(contactoActivo?.id || "") === String(arrId || "") && String(userId || "") === String(estId || "");
         }
 
@@ -52,8 +60,35 @@ const Chat = () => {
             return String(userId || "") === String(arrId || "") && (!contactoActivo || String(contactoActivo?.id || "") === String(estId || contactoActivo?.id || ""));
         }
 
+        if (isAdministrador) {
+            if (contactoActivo?.tipo === "arrendatario") {
+                return String(userId || "") === String(adminId || "") && String(contactoActivo?.id || "") === String(arrId || "");
+            }
+            if (contactoActivo?.tipo === "estudiante") {
+                return String(userId || "") === String(adminId || "") && String(contactoActivo?.id || "") === String(estId || "");
+            }
+        }
+
         return false;
-    }, [contactoActivo, isArrendatario, isEstudiante, userId]);
+    }, [contactoActivo, isAdministrador, isArrendatario, isEstudiante, userId]);
+
+    const obtenerParamsContacto = useCallback((contacto) => {
+        const params = {};
+        if (isArrendatario) {
+            params.arrendatarioId = userId;
+            if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
+            if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
+        } else if (isEstudiante) {
+            params.estudianteId = userId;
+            if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
+            if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
+        } else if (isAdministrador) {
+            params.administradorId = userId;
+            if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
+            if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
+        }
+        return params;
+    }, [isAdministrador, isArrendatario, isEstudiante, userId]);
 
     // Si viene desde Details.jsx, cargar el propietario automáticamente
     useEffect(() => {
@@ -84,6 +119,89 @@ const Chat = () => {
             }
         }
     }, [location, isArrendatario, isEstudiante]);
+
+    // Cargar contactos desde backend
+    useEffect(() => {
+        const cargarContactos = async () => {
+            if (!token || !userId) return;
+            setCargandoContactos(true);
+            try {
+                const params = {};
+                if (isArrendatario) params.arrendatarioId = userId;
+                if (isEstudiante) params.estudianteId = userId;
+                if (isAdministrador) params.administradorId = userId;
+
+                const url = `${import.meta.env.VITE_BACKEND_URL}/listar-contactos`;
+                const response = await axios.get(url, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params,
+                });
+
+                const raw = Array.isArray(response?.data)
+                    ? response.data
+                    : (Array.isArray(response?.data?.contactos) ? response.data.contactos : []);
+
+                const mapped = raw
+                    .map((item) => {
+                        const id = item?._id || item?.id || item?.contactoId || item?.arrendatarioId || item?.estudianteId || item?.administradorId;
+                        if (!id) return null;
+
+                        let tipo = (item?.tipo || item?.rol || "").toLowerCase();
+                        if (!tipo) {
+                            if (item?.administradorId && String(item.administradorId) === String(id)) tipo = "administrador";
+                            else if (item?.estudianteId && String(item.estudianteId) === String(id)) tipo = "estudiante";
+                            else if (item?.arrendatarioId && String(item.arrendatarioId) === String(id)) tipo = "arrendatario";
+                        }
+
+                        const nombre = item?.nombreCompleto || `${item?.nombre || ""} ${item?.apellido || ""}`.trim() || (tipo === "administrador" ? "Administrador" : "Contacto");
+
+                        return { id, tipo, nombre };
+                    })
+                    .filter(Boolean);
+
+                setContactos(mapped);
+
+                if (location?.state?.abrirChatAdministrador && !contactoActivo) {
+                    const admin = mapped.find((c) => c.tipo === "administrador");
+                    if (admin) setContactoActivo(admin);
+                }
+            } catch (error) {
+                console.error("[Chat] Error cargando contactos:", error);
+            } finally {
+                setCargandoContactos(false);
+            }
+        };
+
+        cargarContactos();
+    }, [contactoActivo, isAdministrador, isArrendatario, isEstudiante, location?.state?.abrirChatAdministrador, token, userId]);
+
+    // Cargar historial por conversación activa
+    useEffect(() => {
+        const cargarHistorial = async () => {
+            if (!token || !contactoActivo?.id) return;
+            setCargandoHistorial(true);
+            try {
+                const url = `${import.meta.env.VITE_BACKEND_URL}/listar-chats`;
+                const params = obtenerParamsContacto(contactoActivo);
+                const response = await axios.get(url, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params,
+                });
+
+                const raw = Array.isArray(response?.data)
+                    ? response.data
+                    : (Array.isArray(response?.data?.chats) ? response.data.chats : []);
+
+                setMensajes(raw.map((m) => normalizarMensaje(m)));
+            } catch (error) {
+                console.error("[Chat] Error cargando historial:", error);
+            } finally {
+                setCargandoHistorial(false);
+            }
+        };
+
+        cargarHistorial();
+    }, [contactoActivo, normalizarMensaje, obtenerParamsContacto, token]);
 
     const asignarResidenciaAlEstudiante = async () => {
         const departamentoId = location?.state?.departamentoId || propietarioInfo?.departamentoId;
@@ -298,6 +416,9 @@ const Chat = () => {
                                             Iniciar chat
                                         </button>
                                     )}
+                                    {isArrendatario && (
+                                        <p className="text-sm text-gray-500">Selecciona un contacto del listado para iniciar.</p>
+                                    )}
                                 </div>
                             </div>
                         ) : (
@@ -315,6 +436,24 @@ const Chat = () => {
                                 >
                                     Cambiar contacto
                                 </button>
+                            </div>
+                        )}
+
+                        {cargandoContactos ? (
+                            <p className="text-xs text-gray-500 mt-3">Cargando contactos...</p>
+                        ) : (
+                            <div className="mt-3 space-y-2 overflow-y-auto">
+                                {contactos.map((c) => (
+                                    <button
+                                        key={`${c.tipo}-${c.id}`}
+                                        type="button"
+                                        onClick={() => setContactoActivo(c)}
+                                        className={`w-full text-left p-3 rounded-lg border transition-colors ${String(contactoActivo?.id || "") === String(c.id) ? "border-blue-600 bg-blue-50" : "border-gray-200 bg-white hover:bg-gray-50"}`}
+                                    >
+                                        <p className="text-sm font-semibold text-gray-800">{c.nombre}</p>
+                                        <p className="text-xs text-gray-500 capitalize">{c.tipo || "contacto"}</p>
+                                    </button>
+                                ))}
                             </div>
                         )}
                     </div>
@@ -342,7 +481,11 @@ const Chat = () => {
 
                             {/* Mensajes */}
                             <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
-                                {mensajes.length === 0 ? (
+                                {cargandoHistorial ? (
+                                    <div className="flex items-center justify-center h-full text-gray-500">
+                                        <p>Cargando historial...</p>
+                                    </div>
+                                ) : mensajes.length === 0 ? (
                                     <div className="flex items-center justify-center h-full text-gray-500">
                                         <p>No hay mensajes aún. ¡Inicia la conversación!</p>
                                     </div>
