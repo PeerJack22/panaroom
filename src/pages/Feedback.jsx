@@ -139,6 +139,14 @@ const normalizeFeedbackItem = (item, index) => {
         : "sin-tipo";
     const manejaEstado = tipoNormalizado !== "comentario";
 
+    // Capturar comentarios de respuesta (pueden venir como array o como un único objeto)
+    let comentariosRespuesta = [];
+    if (Array.isArray(item?.comentarios)) {
+        comentariosRespuesta = item.comentarios;
+    } else if (item?.comentario && typeof item.comentario === "object") {
+        comentariosRespuesta = [item.comentario];
+    }
+
     const normalizado = {
         id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
         _id: item?._id,
@@ -165,6 +173,8 @@ const normalizeFeedbackItem = (item, index) => {
             null,
         fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
         estado: manejaEstado ? (item?.estado !== undefined ? item.estado : false) : null,
+        comentariosRespuesta: comentariosRespuesta,
+        tieneRespuesta: comentariosRespuesta.length > 0,
     };
     
     console.log(`[normalizeFeedbackItem] Item ${index} normalizado:`, normalizado);
@@ -186,6 +196,10 @@ const Feedback = () => {
     const [loading, setLoading] = useState(false);
     const [filtro, setFiltro] = useState("pendientes"); // "pendientes", "revisados"
     const [filtroTipo, setFiltroTipo] = useState("todos"); // Placeholder UI, aun sin filtro real
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [quejaSeleccionada, setQuejaSeleccionada] = useState(null);
+    const [comentarioAdmin, setComentarioAdmin] = useState("");
+    const [enviandoComentario, setEnviandoComentario] = useState(false);
 
     const roleNormalized = String(rol || "").toLowerCase();
     const isAdmin = roleNormalized === "administrador";
@@ -250,62 +264,104 @@ const Feedback = () => {
         fetchFeedback();
     }, [canViewFeedback, endpoint, token]);
 
-    const cambiarEstado = async (queja) => {
-        if (!queja?.manejaEstado) return;
+    const abrirModalComentario = (queja) => {
+        if (!queja?.manejaEstado || queja?.tieneRespuesta) return;
+        setQuejaSeleccionada(queja);
+        setComentarioAdmin("");
+        setModalAbierto(true);
+    };
 
-        const quejaId = queja?.id || queja?._id;
+    const cerrarModalComentario = () => {
+        setModalAbierto(false);
+        setQuejaSeleccionada(null);
+        setComentarioAdmin("");
+    };
 
+    const enviarComentarioRespuesta = async () => {
+        if (!quejaSeleccionada || !comentarioAdmin.trim()) {
+            toast.error("Por favor, escribe un comentario.");
+            return;
+        }
+
+        const quejaId = quejaSeleccionada?.id || quejaSeleccionada?._id;
         if (!quejaId) {
             toast.error("Error: No se pudo identificar la queja.");
             return;
         }
 
-        const nuevoEstado = !queja.estado;
-
-        // Pedir confirmación si va a marcar como revisado
-        if (nuevoEstado) {
-            const confirmar = window.confirm(
-                `¿Estás seguro de cambiar el estado de este registro a revisado?`
-            );
-            if (!confirmar) return;
-        }
-
+        setEnviandoComentario(true);
         try {
-            const url = `${import.meta.env.VITE_BACKEND_URL}/quejaSugerencia/estado`;
-            const payload = {
+            // 1. Enviar comentario
+            const urlComentario = `${import.meta.env.VITE_BACKEND_URL}/queja-sugerencia/comentario`;
+            const payloadComentario = {
                 id: quejaId,
-                estado: nuevoEstado,
+                comentarioUsuario: comentarioAdmin,
             };
 
-            const response = await axios.put(
-                url,
-                payload,
-                {
+            console.log("[enviarComentario] Enviando comentario al endpoint:", urlComentario);
+            console.log("[enviarComentario] Payload:", payloadComentario);
+
+            const responseComentario = await axios.put(urlComentario, payloadComentario, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (responseComentario?.status >= 200 && responseComentario?.status < 300) {
+                // 2. Cambiar estado a revisado (disponible: true)
+                const urlEstado = `${import.meta.env.VITE_BACKEND_URL}/admin/quejaSugerencia/estado/${quejaId}`;
+                const payloadEstado = {
+                    disponible: true,
+                };
+
+                console.log("[enviarComentario] Cambiando estado al endpoint:", urlEstado);
+                console.log("[enviarComentario] Payload estado:", payloadEstado);
+
+                const responseEstado = await axios.put(urlEstado, payloadEstado, {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                }
-            );
+                });
 
-            if (response?.status >= 200 && response?.status < 300) {
-                setItems((prev) =>
-                    prev.map((item) =>
-                        item.id === queja.id ? { ...item, estado: nuevoEstado } : item
-                    )
-                );
-                toast.success(
-                    nuevoEstado ? "Cambio guardado: Revisado" : "Cambio guardado: Pendiente"
-                );
+                if (responseEstado?.status >= 200 && responseEstado?.status < 300) {
+                    // Actualizar el item con la nueva respuesta
+                    const nuevoComentario = {
+                        texto: comentarioAdmin,
+                        autor: "Administrador",
+                        fecha: new Date().toISOString(),
+                    };
+
+                    setItems((prev) =>
+                        prev.map((item) =>
+                            item.id === quejaSeleccionada.id
+                                ? {
+                                      ...item,
+                                      estado: true, // Automáticamente revisado
+                                      comentariosRespuesta: [...(item.comentariosRespuesta || []), nuevoComentario],
+                                      tieneRespuesta: true,
+                                  }
+                                : item
+                        )
+                    );
+
+                    toast.success("Comentario guardado. Queja marcada como revisada.");
+                    cerrarModalComentario();
+                } else {
+                    toast.error("El servidor no confirmó el cambio de estado.");
+                }
             } else {
-                toast.error("El servidor no confirmó el cambio.");
+                toast.error("El servidor no confirmó el envío del comentario.");
             }
         } catch (error) {
+            console.error("[enviarComentario] Error:", error);
             const errorMessage =
-                error?.response?.data?.msg || error?.response?.data?.message || "Error al cambiar el estado";
+                error?.response?.data?.msg || error?.response?.data?.message || "Error al enviar comentario";
             toast.error(errorMessage);
+        } finally {
+            setEnviandoComentario(false);
         }
-
     };
 
     // Filtrar items basándose en el estado (el filtro por tipo es solo visual por ahora)
@@ -414,17 +470,18 @@ const Feedback = () => {
                                                 {item.estado ? "Revisado" : "Pendiente"}
                                             </span>
                                         )}
-                                        {isAdmin && item.manejaEstado && (
+                                        {isAdmin && item.manejaEstado && !item.tieneRespuesta && (
                                             <button
-                                                onClick={() => cambiarEstado(item)}
-                                                className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
-                                                    item.estado
-                                                        ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                                                        : "bg-green-500 text-white hover:bg-green-600"
-                                                }`}
+                                                onClick={() => abrirModalComentario(item)}
+                                                className="px-2 py-1 rounded text-xs font-semibold transition-colors bg-green-500 text-white hover:bg-green-600"
                                             >
-                                                {item.estado ? "Marcar pendiente" : "Marcar revisado"}
+                                                Responder
                                             </button>
+                                        )}
+                                        {item.tieneRespuesta && (
+                                            <span className="text-xs text-green-600 font-semibold">
+                                                ✓ Respondido
+                                            </span>
                                         )}
                                     </div>
                                 </div>
@@ -449,11 +506,70 @@ const Feedback = () => {
                                     )}
                                     {" "}• Fecha: {formatDate(item.fecha)}
                                 </p>
+
+                                {item.comentariosRespuesta && item.comentariosRespuesta.length > 0 && (
+                                    <div className="mt-3 pt-3 border-t border-gray-300 space-y-2">
+                                        <p className="text-xs font-semibold text-gray-700">Respuestas:</p>
+                                        {item.comentariosRespuesta.map((comentario, idx) => (
+                                            <div key={idx} className="bg-white rounded p-2 ml-2 border-l-2 border-green-500">
+                                                <p className="text-xs text-gray-800">{comentario?.texto || comentario?.descripcion || comentario?.comentario || "Sin contenido"}</p>
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    {comentario?.autor || "Admin"} • {formatDate(comentario?.fecha || comentario?.createdAt)}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </article>
                         ))}
                     </div>
                 )}
             </section>
+
+            {/* Modal de comentario */}
+            {modalAbierto && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 p-6">
+                        <h3 className="text-lg font-bold text-gray-800 mb-4">
+                            Responder a {quejaSeleccionada?.tipo === "queja" ? "Queja" : "Sugerencia"}
+                        </h3>
+
+                        <div className="mb-4 p-3 bg-gray-100 rounded border border-gray-300 max-h-[150px] overflow-y-auto">
+                            <p className="text-sm text-gray-700 font-semibold mb-2">Mensaje original:</p>
+                            <p className="text-sm text-gray-600 whitespace-pre-wrap">{quejaSeleccionada?.mensaje}</p>
+                        </div>
+
+                        <label htmlFor="comentario" className="block text-sm font-semibold text-gray-700 mb-2">
+                            Tu respuesta:
+                        </label>
+                        <textarea
+                            id="comentario"
+                            value={comentarioAdmin}
+                            onChange={(e) => setComentarioAdmin(e.target.value)}
+                            placeholder="Escribe tu comentario de respuesta..."
+                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                            rows="4"
+                        />
+
+                        <div className="flex gap-3 mt-6 justify-end">
+                            <button
+                                onClick={cerrarModalComentario}
+                                disabled={enviandoComentario}
+                                className="px-4 py-2 rounded-lg text-gray-700 bg-gray-300 hover:bg-gray-400 font-semibold transition-colors disabled:opacity-50"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={enviarComentarioRespuesta}
+                                disabled={enviandoComentario || !comentarioAdmin.trim()}
+                                className="px-4 py-2 rounded-lg text-white bg-green-500 hover:bg-green-600 font-semibold transition-colors disabled:opacity-50"
+                            >
+                                {enviandoComentario ? "Enviando..." : "Enviar respuesta"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
