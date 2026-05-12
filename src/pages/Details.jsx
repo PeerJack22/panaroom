@@ -83,6 +83,7 @@ const Details = () => {
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
     const [modoComentario, setModoComentario] = useState(null);
+    const [tipoComentario, setTipoComentario] = useState("queja");
 
     const isEstudiante = rol === 'estudiante';
 
@@ -135,11 +136,13 @@ const Details = () => {
 
     const cerrarModalComentario = () => {
         setModoComentario(null);
+        setTipoComentario("queja");
         reset();
     };
 
     const abrirModalComentario = () => {
         setModoComentario("comentario");
+        setTipoComentario("queja");
         reset();
     };
 
@@ -160,11 +163,13 @@ const Details = () => {
         setEnviandoQueja(true);
         const esTerminacion = modoComentario === "terminar";
         const loadingToast = toast.loading(esTerminacion ? "Enviando comentario y terminando contrato..." : "Enviando comentario...");
+        const tipoComentarioNormalizado = esTerminacion ? "comentario" : String(tipoComentario || "queja").toLowerCase();
 
         try {
             const payload = {
                 descripcion: data.descripcion,
                 departamento: departamento._id,
+                tipoComentario: tipoComentarioNormalizado,
             };
 
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
@@ -606,6 +611,38 @@ const Details = () => {
                             </p>
 
                             <form onSubmit={handleSubmit(enviarComentario)} className="space-y-4">
+                                {modoComentario !== "terminar" && (
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Tipo de comentario
+                                        </label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setTipoComentario("queja")}
+                                                className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
+                                                    tipoComentario === "queja"
+                                                        ? "border-blue-600 bg-blue-600 text-white"
+                                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                                }`}
+                                            >
+                                                Queja
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setTipoComentario("sugerencia")}
+                                                className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
+                                                    tipoComentario === "sugerencia"
+                                                        ? "border-blue-600 bg-blue-600 text-white"
+                                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                                }`}
+                                            >
+                                                Sugerencia
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Descripción
