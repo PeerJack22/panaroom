@@ -391,17 +391,32 @@ const Feedback = () => {
 
     // Filtrar items por estado y tipoComentario
     const itemsFiltrados = useMemo(() => {
-        const itemsConEstado = items.filter((item) => item.manejaEstado);
-        const itemsPorEstado =
+        // Separar comentarios (manejaEstado: false) de quejas/sugerencias (manejaEstado: true)
+        const itemsQuejas = items.filter((item) => item.manejaEstado);
+        const itemsComentarios = items.filter((item) => !item.manejaEstado);
+
+        // Aplicar filtro de estado solo a quejas/sugerencias
+        const quejasPorEstado =
             filtro === "pendientes"
-                ? itemsConEstado.filter((item) => !item.estado)
+                ? itemsQuejas.filter((item) => !item.estado)
                 : filtro === "revisados"
-                    ? itemsConEstado.filter((item) => item.estado)
-                    : itemsConEstado.filter((item) => !item.estado);
+                    ? itemsQuejas.filter((item) => item.estado)
+                    : itemsQuejas;
 
-        if (filtroTipo === "todos") return itemsPorEstado;
+        // Combinar: si filtroTipo es "comentario", mostrar solo comentarios
+        // Si es "queja"/"sugerencia", mostrar solo esos tipos de las quejas
+        // Si es "todos", mostrar quejas + comentarios
+        let resultado = [];
 
-        return itemsPorEstado.filter((item) => item.tipo === filtroTipo);
+        if (filtroTipo === "comentario") {
+            resultado = itemsComentarios;
+        } else if (filtroTipo === "todos") {
+            resultado = [...quejasPorEstado, ...itemsComentarios];
+        } else {
+            resultado = quejasPorEstado.filter((item) => item.tipo === filtroTipo);
+        }
+
+        return resultado;
     }, [items, filtro, filtroTipo]);
 
     const conteoPendientes = useMemo(

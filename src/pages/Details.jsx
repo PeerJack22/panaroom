@@ -173,6 +173,8 @@ const Details = () => {
                 tipo: tipoComentarioNormalizado,
             };
 
+            console.log("[Details] Enviando payload:", payload);
+            
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const url = `${import.meta.env.VITE_BACKEND_URL}/estudiante/queja-sugerencia`;
             const response = await axios.post(url, payload, {
@@ -181,6 +183,8 @@ const Details = () => {
                     Authorization: `Bearer ${storedUser?.state?.token}`,
                 },
             });
+            
+            console.log("[Details] Respuesta del servidor:", response?.data);
 
             toast.dismiss(loadingToast);
             toast.success(response?.data?.msg || (esTerminacion ? "Comentario enviado correctamente" : "Comentario enviado correctamente"));
