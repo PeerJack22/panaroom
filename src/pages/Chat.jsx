@@ -310,7 +310,7 @@ const Chat = () => {
                                 {contactoActivo.departamento && (
                                     <p className="text-sm text-gray-600">{contactoActivo.departamento}</p>
                                 )}
-                                {isArrendatario && contactoActivo.tipo === "estudiante" && (location?.state?.departamentoId || propietarioInfo?.departamentoId) && (
+                                {isArrendatario && contactoActivo?.id && contactoActivo?.tipo !== "administrador" && (location?.state?.departamentoId || propietarioInfo?.departamentoId) && (
                                     <button
                                         type="button"
                                         onClick={asignarResidenciaAlEstudiante}
