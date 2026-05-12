@@ -29,6 +29,7 @@ const Chat = () => {
         id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
         mensaje: m?.mensaje,
         remitente: String(m?.remitente || "").toLowerCase(),
+        administradorId: m?.administradorId || null,
         arrendatarioId: m?.arrendatarioId || null,
         estudianteId: m?.estudianteId || null,
         createdAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
@@ -36,6 +37,7 @@ const Chat = () => {
 
     const esMiConversacion = useCallback((m) => {
         if (!m) return false;
+        const adminId = m.administradorId || m.administrador || null;
         const arrId = m.arrendatarioId || m.arrendatario || null;
         const estId = m.estudianteId || m.estudiante || null;
 
@@ -44,6 +46,9 @@ const Chat = () => {
         }
 
         if (isArrendatario) {
+            if (contactoActivo?.tipo === "administrador") {
+                return String(userId || "") === String(arrId || "") && String(contactoActivo?.id || "") === String(adminId || "");
+            }
             return String(userId || "") === String(arrId || "") && (!contactoActivo || String(contactoActivo?.id || "") === String(estId || contactoActivo?.id || ""));
         }
 
@@ -66,6 +71,17 @@ const Chat = () => {
                 nombre: location.state.estudianteNombre || "Estudiante",
                 tipo: "estudiante",
             });
+        } else if (location?.state?.administradorId) {
+            // Cuando viene desde Details.jsx por departamento desactivado
+            setContactoActivo({
+                id: location.state.administradorId,
+                nombre: "Administrador",
+                tipo: "administrador",
+            });
+            // Si viene departamentoNombre, lo guardamos para referencia
+            if (location.state.departamentoNombre) {
+                setPropietarioInfo({ departamentoNombre: location.state.departamentoNombre });
+            }
         }
     }, [location, isArrendatario, isEstudiante]);
 
@@ -176,11 +192,13 @@ const Chat = () => {
         setEnviando(true);
 
         try {
+            const contactoEsAdmin = contactoActivo?.tipo === "administrador";
             const payload = {
                 mensaje: data.mensaje,
                 remitente: roleNormalized,
-                arrendatarioId: isArrendatario ? userId : (isEstudiante ? contactoActivo.id : null),
-                estudianteId: isEstudiante ? userId : (isArrendatario ? contactoActivo.id : null),
+                administradorId: contactoEsAdmin ? contactoActivo.id : null,
+                arrendatarioId: isArrendatario ? userId : (isEstudiante && !contactoEsAdmin ? contactoActivo.id : null),
+                estudianteId: isEstudiante ? userId : (isArrendatario && !contactoEsAdmin ? contactoActivo.id : null),
             };
 
             console.log("[Chat] Enviando mensaje:", payload);

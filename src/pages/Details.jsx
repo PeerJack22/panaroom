@@ -87,6 +87,7 @@ const Details = () => {
     const [calificacion, setCalificacion] = useState(0);
 
     const isEstudiante = rol === 'estudiante';
+    const isArrendatario = rol === 'arrendatario';
 
     const abrirLightbox = (index) => setImagenActiva(index);
     const cerrarLightbox = () => setImagenActiva(null);
@@ -531,6 +532,20 @@ const Details = () => {
                                     Chatear con propietario
                                 </button>
                             )}
+                        </section>
+                    )}
+
+                    {isArrendatario && departamento?.disponible === false && (
+                        <section className="bg-yellow-50 rounded-xl p-5 border border-yellow-200">
+                            <h3 className="text-lg font-semibold text-yellow-800 mb-3">Departamento desactivado</h3>
+                            <p className="text-sm text-yellow-700 mb-4">Este departamento se encuentra desactivado. Si deseas conocer el motivo, puedes contactar con el administrador.</p>
+                            <button
+                                type="button"
+                                onClick={() => navigate("/dashboard/chat", { state: { administradorId: "admin-default", departamentoNombre: departamento?.titulo } })}
+                                className="w-full px-4 py-2 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 transition-colors"
+                            >
+                                Ver motivo de desactivación
+                            </button>
                         </section>
                     )}
                 </div>
