@@ -36,52 +36,6 @@ const Chat = () => {
         }
     }, [location, isEstudiante]);
 
-    // Cargar historial de mensajes cuando se selecciona un contacto
-    useEffect(() => {
-        const fetchMensajes = async () => {
-            if (!contactoActivo) return;
-            try {
-                setEnviando(true);
-                const params = {};
-                if (isEstudiante) {
-                    params.arrendatarioId = contactoActivo.id;
-                    params.estudianteId = userId;
-                } else if (isArrendatario) {
-                    params.arrendatarioId = userId;
-                    // si el contacto es admin o estudiante
-                    if (contactoActivo.tipo === 'administrador') {
-                        params.administradorId = contactoActivo.id;
-                    } else {
-                        params.estudianteId = contactoActivo.id;
-                    }
-                }
-
-                const url = `${import.meta.env.VITE_BACKEND_URL}/chat`;
-                const response = await axios.get(url, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    params,
-                });
-
-                console.log('[Chat] Historial recibido:', response?.data);
-                // Si viene un arreglo de chats, mapear
-                const items = Array.isArray(response?.data) ? response.data : (response?.data?.chats || []);
-                setMensajes(items.map((m) => ({
-                    mensaje: m.mensaje,
-                    remitente: String(m.remitente || '').toLowerCase(),
-                    arrendatarioId: m.arrendatarioId || null,
-                    estudianteId: m.estudianteId || null,
-                    createdAt: m.createdAt ? new Date(m.createdAt) : new Date(),
-                })));
-            } catch (error) {
-                console.error('[Chat] Error cargando historial:', error);
-            } finally {
-                setEnviando(false);
-            }
-        };
-
-        fetchMensajes();
-    }, [contactoActivo, isArrendatario, isEstudiante, token, userId]);
-
     // Conexión Socket.IO para recibir mensajes en tiempo real
     useEffect(() => {
         // Base URL del socket (remueve "/api" si está presente)
@@ -89,8 +43,9 @@ const Chat = () => {
         if (!socketBase) return;
 
         const socket = io(socketBase, {
-            transports: ["websocket"],
+            transports: ["polling", "websocket"],
             auth: { token },
+            withCredentials: true,
         });
 
         const onNuevoMensaje = (payload) => {
@@ -113,13 +68,18 @@ const Chat = () => {
 
                 if (belongsToConversation) {
                     const nuevo = {
+                        id: m._id || m.id || `${m.mensaje}-${m.createdAt}`,
                         mensaje: m.mensaje,
                         remitente: String(m.remitente || "").toLowerCase(),
                         arrendatarioId: m.arrendatarioId || null,
                         estudianteId: m.estudianteId || null,
                         createdAt: m.createdAt ? new Date(m.createdAt) : new Date(),
                     };
-                    setMensajes((prev) => [...prev, nuevo]);
+                    setMensajes((prev) => {
+                        const exists = prev.some((mm) => mm.id && nuevo.id && String(mm.id) === String(nuevo.id));
+                        if (exists) return prev;
+                        return [...prev, nuevo];
+                    });
                 }
             } catch (e) {
                 console.error("[Chat] error manejando evento socket:", e);
@@ -127,11 +87,13 @@ const Chat = () => {
         };
 
         socket.on("nuevo-mensaje-chat", onNuevoMensaje);
+        socket.on("enviar-mensaje-front-back", onNuevoMensaje);
 
         socket.on("connect_error", (err) => console.warn("[Chat] socket connect_error:", err));
 
         return () => {
             socket.off("nuevo-mensaje-chat", onNuevoMensaje);
+            socket.off("enviar-mensaje-front-back", onNuevoMensaje);
             socket.disconnect();
         };
     }, [contactoActivo, isEstudiante, isArrendatario, token, userId]);
@@ -174,6 +136,7 @@ const Chat = () => {
             let nuevoMensaje;
             if (serverChat && typeof serverChat === "object") {
                 nuevoMensaje = {
+                    id: serverChat._id || serverChat.id || `${serverChat.mensaje}-${serverChat.createdAt}`,
                     mensaje: serverChat.mensaje || payload.mensaje,
                     remitente: (String(serverChat.remitente || payload.remitente)).toLowerCase(),
                     arrendatarioId: serverChat.arrendatarioId || payload.arrendatarioId || null,
@@ -181,11 +144,19 @@ const Chat = () => {
                     createdAt: serverChat.createdAt ? new Date(serverChat.createdAt) : new Date(),
                 };
             } else {
-                nuevoMensaje = { ...payload, createdAt: new Date() };
+                nuevoMensaje = {
+                    id: `${payload.mensaje}-${Date.now()}`,
+                    ...payload,
+                    createdAt: new Date(),
+                };
             }
 
-            // Agregar el mensaje localmente
-            setMensajes((prev) => [...prev, nuevoMensaje]);
+            // Agregar el mensaje localmente solo si no existe (evitar duplicados)
+            setMensajes((prev) => {
+                const exists = prev.some((m) => m.id && nuevoMensaje.id && String(m.id) === String(nuevoMensaje.id));
+                if (exists) return prev;
+                return [...prev, nuevoMensaje];
+            });
             reset({ mensaje: "" });
             toast.success("Mensaje enviado");
         } catch (error) {
