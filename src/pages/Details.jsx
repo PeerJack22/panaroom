@@ -525,10 +525,10 @@ const Details = () => {
                             {isEstudiante && !tieneEstudianteAsignado && (
                                 <button
                                     type="button"
-                                    disabled={true}
-                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-gray-400 text-white font-semibold cursor-not-allowed transition-colors"
+                                    onClick={() => navigate("/dashboard/chat", { state: { propietarioId: propietario?._id, departamentoNombre: departamento?.titulo } })}
+                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
                                 >
-                                    Contratar departamento (En desarrollo)
+                                    Chatear con propietario
                                 </button>
                             )}
                         </section>
