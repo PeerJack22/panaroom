@@ -162,7 +162,14 @@ const normalizeFeedbackItem = (item, index) => {
         estudianteNormalizado = toText(estudianteRaw, "No disponible");
     }
 
-    const tipoRaw = String(item?.tipo || item?.categoria || item?.category || item?.clase || "").trim().toLowerCase();
+    const tipoRaw = String(
+        item?.tipoComentario ||
+        item?.tipo ||
+        item?.categoria ||
+        item?.category ||
+        item?.clase ||
+        ""
+    ).trim().toLowerCase();
     const tipoNormalizado = ["queja", "sugerencia", "comentario"].includes(tipoRaw)
         ? tipoRaw
         : "sin-tipo";
@@ -365,13 +372,20 @@ const Feedback = () => {
         }
     };
 
-    // Filtrar items basándose en el estado (el filtro por tipo es solo visual por ahora)
+    // Filtrar items por estado y tipoComentario
     const itemsFiltrados = useMemo(() => {
         const itemsConEstado = items.filter((item) => item.manejaEstado);
-        if (filtro === "pendientes") return itemsConEstado.filter((item) => !item.estado);
-        if (filtro === "revisados") return itemsConEstado.filter((item) => item.estado);
-        return itemsConEstado.filter((item) => !item.estado);
-    }, [items, filtro]);
+        const itemsPorEstado =
+            filtro === "pendientes"
+                ? itemsConEstado.filter((item) => !item.estado)
+                : filtro === "revisados"
+                    ? itemsConEstado.filter((item) => item.estado)
+                    : itemsConEstado.filter((item) => !item.estado);
+
+        if (filtroTipo === "todos") return itemsPorEstado;
+
+        return itemsPorEstado.filter((item) => item.tipo === filtroTipo);
+    }, [items, filtro, filtroTipo]);
 
     const conteoPendientes = useMemo(
         () => items.filter((item) => item.manejaEstado && !item.estado).length,
