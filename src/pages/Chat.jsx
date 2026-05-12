@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import storeAuth from "../context/storeAuth";
 
@@ -80,6 +81,60 @@ const Chat = () => {
 
         fetchMensajes();
     }, [contactoActivo, isArrendatario, isEstudiante, token, userId]);
+
+    // Conexión Socket.IO para recibir mensajes en tiempo real
+    useEffect(() => {
+        // Base URL del socket (remueve "/api" si está presente)
+        const socketBase = String(import.meta.env.VITE_BACKEND_URL || "").replace(/\/api\/?$/, "");
+        if (!socketBase) return;
+
+        const socket = io(socketBase, {
+            transports: ["websocket"],
+            auth: { token },
+        });
+
+        const onNuevoMensaje = (payload) => {
+            try {
+                console.log("[Chat] socket nuevo-mensaje-chat:", payload);
+                const m = payload?.chat || payload;
+                // Verificar si el mensaje pertenece a la conversación abierta
+                const belongsToConversation = (() => {
+                    if (!m) return false;
+                    const arrId = m.arrendatarioId || m.arrendatario || null;
+                    const estId = m.estudianteId || m.estudiante || null;
+                    // Si no hay contacto activo, ignorar
+                    if (!contactoActivo) return false;
+                    // Si soy estudiante, mi contactoActivo.id es arrendatarioId
+                    if (isEstudiante) return String(contactoActivo.id) === String(arrId);
+                    // Si soy arrendatario, mi userId es arrendatarioId y contactoActivo.id es estudianteId (o admin)
+                    if (isArrendatario) return String(userId) === String(arrId) && String(contactoActivo.id) === String(estId || contactoActivo.id);
+                    return false;
+                })();
+
+                if (belongsToConversation) {
+                    const nuevo = {
+                        mensaje: m.mensaje,
+                        remitente: String(m.remitente || "").toLowerCase(),
+                        arrendatarioId: m.arrendatarioId || null,
+                        estudianteId: m.estudianteId || null,
+                        createdAt: m.createdAt ? new Date(m.createdAt) : new Date(),
+                    };
+                    setMensajes((prev) => [...prev, nuevo]);
+                }
+            } catch (e) {
+                console.error("[Chat] error manejando evento socket:", e);
+            }
+        };
+
+        socket.on("nuevo-mensaje-chat", onNuevoMensaje);
+
+        socket.on("connect_error", (err) => console.warn("[Chat] socket connect_error:", err));
+
+        return () => {
+            socket.off("nuevo-mensaje-chat", onNuevoMensaje);
+            socket.disconnect();
+        };
+    }, [contactoActivo, isEstudiante, isArrendatario, token, userId]);
 
     const enviarMensaje = async (data) => {
         if (!contactoActivo) {
