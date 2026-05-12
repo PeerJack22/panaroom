@@ -178,9 +178,10 @@ const normalizeFeedbackItem = (item, index) => {
         item?.clase ||
         ""
     ).trim().toLowerCase();
+    // Usar "queja" como fallback si no encuentra tipo conocido
     const tipoNormalizado = ["queja", "sugerencia", "comentario"].includes(tipoRaw)
         ? tipoRaw
-        : "sin-tipo";
+        : "queja"; // Cambiar de "sin-tipo" a "queja" como default
     const manejaEstado = tipoNormalizado !== "comentario";
 
     const comentariosRespuesta = extractRespuestaComentarios(item);
