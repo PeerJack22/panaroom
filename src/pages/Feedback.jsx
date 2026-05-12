@@ -126,15 +126,23 @@ const getListFromResponse = (responseData) => {
     
     if (Array.isArray(responseData?.data)) return responseData.data;
     if (Array.isArray(responseData?.quejas)) return responseData.quejas;
+    if (Array.isArray(responseData?.sugerencias)) return responseData.sugerencias;
     if (Array.isArray(responseData?.comentarios)) {
-        return attachParentContextToItems(responseData.comentarios, responseData);
+        if (responseData.comentarios.length > 0) {
+            return attachParentContextToItems(responseData.comentarios, responseData);
+        }
     }
     if (Array.isArray(responseData?.results)) return responseData.results;
     if (Array.isArray(responseData?.data?.comentarios)) {
-        return attachParentContextToItems(responseData.data.comentarios, responseData.data);
+        if (responseData.data.comentarios.length > 0) {
+            return attachParentContextToItems(responseData.data.comentarios, responseData.data);
+        }
     }
     if (Array.isArray(responseData?.data?.quejas)) {
         return attachParentContextToItems(responseData.data.quejas, responseData.data);
+    }
+    if (Array.isArray(responseData?.data?.sugerencias)) {
+        return attachParentContextToItems(responseData.data.sugerencias, responseData.data);
     }
 
     const nestedArray = findFirstArrayInObject(responseData);
