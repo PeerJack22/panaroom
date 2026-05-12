@@ -170,6 +170,7 @@ const Details = () => {
                 descripcion: data.descripcion,
                 departamento: departamento._id,
                 tipoComentario: tipoComentarioNormalizado,
+                tipo: tipoComentarioNormalizado,
             };
 
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
