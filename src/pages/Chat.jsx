@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -22,6 +22,31 @@ const Chat = () => {
     const roleNormalized = String(rol || "").toLowerCase();
     const isEstudiante = roleNormalized === "estudiante";
     const isArrendatario = roleNormalized === "arrendatario";
+
+    const normalizarMensaje = useCallback((m) => ({
+        id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
+        mensaje: m?.mensaje,
+        remitente: String(m?.remitente || "").toLowerCase(),
+        arrendatarioId: m?.arrendatarioId || null,
+        estudianteId: m?.estudianteId || null,
+        createdAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
+    }), []);
+
+    const esMiConversacion = useCallback((m) => {
+        if (!m) return false;
+        const arrId = m.arrendatarioId || m.arrendatario || null;
+        const estId = m.estudianteId || m.estudiante || null;
+
+        if (isEstudiante) {
+            return String(contactoActivo?.id || "") === String(arrId || "") && String(userId || "") === String(estId || "");
+        }
+
+        if (isArrendatario) {
+            return String(userId || "") === String(arrId || "") && (!contactoActivo || String(contactoActivo?.id || "") === String(estId || contactoActivo?.id || ""));
+        }
+
+        return false;
+    }, [contactoActivo, isArrendatario, isEstudiante, userId]);
 
     // Si viene desde Details.jsx, cargar el propietario automáticamente
     useEffect(() => {
@@ -53,28 +78,19 @@ const Chat = () => {
                 console.log("[Chat] socket nuevo-mensaje-chat:", payload);
                 const m = payload?.chat || payload;
                 // Verificar si el mensaje pertenece a la conversación abierta
-                const belongsToConversation = (() => {
-                    if (!m) return false;
-                    const arrId = m.arrendatarioId || m.arrendatario || null;
-                    const estId = m.estudianteId || m.estudiante || null;
-                    // Si no hay contacto activo, ignorar
-                    if (!contactoActivo) return false;
-                    // Si soy estudiante, mi contactoActivo.id es arrendatarioId
-                    if (isEstudiante) return String(contactoActivo.id) === String(arrId);
-                    // Si soy arrendatario, mi userId es arrendatarioId y contactoActivo.id es estudianteId (o admin)
-                    if (isArrendatario) return String(userId) === String(arrId) && String(contactoActivo.id) === String(estId || contactoActivo.id);
-                    return false;
-                })();
+                const belongsToConversation = esMiConversacion(m);
 
                 if (belongsToConversation) {
-                    const nuevo = {
-                        id: m._id || m.id || `${m.mensaje}-${m.createdAt}`,
-                        mensaje: m.mensaje,
-                        remitente: String(m.remitente || "").toLowerCase(),
-                        arrendatarioId: m.arrendatarioId || null,
-                        estudianteId: m.estudianteId || null,
-                        createdAt: m.createdAt ? new Date(m.createdAt) : new Date(),
-                    };
+                    const nuevo = normalizarMensaje(m);
+
+                    if (!contactoActivo && isArrendatario) {
+                        setContactoActivo({
+                            id: nuevo.estudianteId,
+                            nombre: "Estudiante",
+                            tipo: "estudiante",
+                        });
+                    }
+
                     setMensajes((prev) => {
                         const exists = prev.some((mm) => mm.id && nuevo.id && String(mm.id) === String(nuevo.id));
                         if (exists) return prev;
@@ -96,7 +112,7 @@ const Chat = () => {
             socket.off("enviar-mensaje-front-back", onNuevoMensaje);
             socket.disconnect();
         };
-    }, [contactoActivo, isEstudiante, isArrendatario, token, userId]);
+    }, [contactoActivo, esMiConversacion, isArrendatario, isEstudiante, normalizarMensaje, token, userId]);
 
     const enviarMensaje = async (data) => {
         if (!contactoActivo) {
@@ -135,20 +151,29 @@ const Chat = () => {
             const serverChat = response?.data?.chat || response?.data;
             let nuevoMensaje;
             if (serverChat && typeof serverChat === "object") {
-                nuevoMensaje = {
-                    id: serverChat._id || serverChat.id || `${serverChat.mensaje}-${serverChat.createdAt}`,
-                    mensaje: serverChat.mensaje || payload.mensaje,
-                    remitente: (String(serverChat.remitente || payload.remitente)).toLowerCase(),
-                    arrendatarioId: serverChat.arrendatarioId || payload.arrendatarioId || null,
-                    estudianteId: serverChat.estudianteId || payload.estudianteId || null,
-                    createdAt: serverChat.createdAt ? new Date(serverChat.createdAt) : new Date(),
-                };
+                nuevoMensaje = normalizarMensaje({ ...serverChat, remitente: serverChat.remitente || payload.remitente });
             } else {
                 nuevoMensaje = {
                     id: `${payload.mensaje}-${Date.now()}`,
                     ...payload,
                     createdAt: new Date(),
                 };
+            }
+
+            if (isEstudiante && !contactoActivo) {
+                setContactoActivo({
+                    id: payload.arrendatarioId,
+                    nombre: "Propietario",
+                    tipo: "arrendatario",
+                });
+            }
+
+            if (isArrendatario && !contactoActivo) {
+                setContactoActivo({
+                    id: payload.estudianteId,
+                    nombre: "Estudiante",
+                    tipo: "estudiante",
+                });
             }
 
             // Agregar el mensaje localmente solo si no existe (evitar duplicados)
