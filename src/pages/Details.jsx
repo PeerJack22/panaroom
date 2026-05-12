@@ -178,7 +178,6 @@ const Details = () => {
                 descripcion: data.descripcion,
                 departamento: departamento._id,
                 tipoComentario: tipoComentarioNormalizado,
-                tipo: tipoComentarioNormalizado,
             };
 
             console.log("[Details] Enviando payload:", payload);
