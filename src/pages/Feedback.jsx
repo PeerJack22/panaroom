@@ -49,6 +49,70 @@ const attachParentContextToItems = (items, parentData = {}) => {
     }));
 };
 
+const normalizeResponseComment = (comment, fallbackAutor = "Administrador") => {
+    if (comment === null || comment === undefined) return null;
+
+    if (typeof comment === "string" || typeof comment === "number" || typeof comment === "boolean") {
+        const texto = String(comment).trim();
+        return texto
+            ? {
+                  texto,
+                  autor: fallbackAutor,
+                  fecha: null,
+              }
+            : null;
+    }
+
+    if (typeof comment === "object") {
+        const texto = toText(
+            comment?.texto ||
+                comment?.comentarioUsuario ||
+                comment?.comentarioAdmin ||
+                comment?.comentario ||
+                comment?.descripcion ||
+                comment?.mensaje,
+            ""
+        );
+
+        return texto
+            ? {
+                  texto,
+                  autor: toText(comment?.autor || comment?.usuario || comment?.user || fallbackAutor, fallbackAutor),
+                  fecha: comment?.fecha || comment?.createdAt || comment?.updatedAt || null,
+              }
+            : null;
+    }
+
+    return null;
+};
+
+const extractRespuestaComentarios = (item) => {
+    const respuestas = [];
+
+    if (Array.isArray(item?.comentarios)) {
+        respuestas.push(...item.comentarios.map((comentario) => normalizeResponseComment(comentario)).filter(Boolean));
+    }
+
+    const responseFields = [
+        item?.comentario,
+        item?.comentarioUsuario,
+        item?.comentarioAdmin,
+        item?.respuesta,
+        item?.respuestaUsuario,
+        item?.respuestaAdmin,
+        item?.observacion,
+        item?.retroalimentacion,
+        item?.comentarioRevision,
+    ];
+
+    responseFields
+        .map((comentario) => normalizeResponseComment(comentario))
+        .filter(Boolean)
+        .forEach((comentario) => respuestas.push(comentario));
+
+    return respuestas;
+};
+
 const getListFromResponse = (responseData) => {
     if (Array.isArray(responseData)) {
         if (responseData.length > 0) {
@@ -106,12 +170,7 @@ const normalizeFeedbackItem = (item, index) => {
         : "sin-tipo";
     const manejaEstado = tipoNormalizado !== "comentario";
 
-    let comentariosRespuesta = [];
-    if (Array.isArray(item?.comentarios)) {
-        comentariosRespuesta = item.comentarios;
-    } else if (item?.comentario && typeof item.comentario === "object") {
-        comentariosRespuesta = [item.comentario];
-    }
+    const comentariosRespuesta = extractRespuestaComentarios(item);
 
     return {
         id: item?._id || item?.id || `${index}-${item?.createdAt || item?.fecha || Date.now()}`,
