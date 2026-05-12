@@ -84,6 +84,7 @@ const Details = () => {
     const [terminandoContrato, setTerminandoContrato] = useState(false);
     const [modoComentario, setModoComentario] = useState(null);
     const [tipoComentario, setTipoComentario] = useState("queja");
+    const [calificacion, setCalificacion] = useState(0);
 
     const isEstudiante = rol === 'estudiante';
 
@@ -137,6 +138,7 @@ const Details = () => {
     const cerrarModalComentario = () => {
         setModoComentario(null);
         setTipoComentario("queja");
+        setCalificacion(0);
         reset();
     };
 
@@ -159,6 +161,12 @@ const Details = () => {
 
     const enviarComentario = async (data) => {
         if (!departamento?._id || !data?.descripcion || enviandoQueja) return;
+
+        // Validar calificación si es terminación
+        if (modoComentario === "terminar" && calificacion === 0) {
+            toast.error("Por favor, selecciona una calificación de estrellas.");
+            return;
+        }
 
         setEnviandoQueja(true);
         const esTerminacion = modoComentario === "terminar";
@@ -186,12 +194,40 @@ const Details = () => {
             
             console.log("[Details] Respuesta del servidor:", response?.data);
 
+            const comentarioId = response?.data?._id || response?.data?.id;
+
+            // Si es terminación, enviar también la calificación
+            if (esTerminacion && comentarioId && calificacion > 0) {
+                try {
+                    const calificacionUrl = `${import.meta.env.VITE_BACKEND_URL}/queja-sugerencia/calificacion`;
+                    const calificacionPayload = {
+                        id: comentarioId,
+                        calificacion: calificacion,
+                    };
+
+                    console.log("[Details] Enviando calificación:", calificacionPayload);
+
+                    const calificacionResponse = await axios.put(calificacionUrl, calificacionPayload, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${storedUser?.state?.token}`,
+                        },
+                    });
+
+                    console.log("[Details] Calificación enviada:", calificacionResponse?.data);
+                } catch (calificacionError) {
+                    console.error("[Details] Error al enviar calificación:", calificacionError);
+                    // No lanzar error, continuar con el proceso
+                }
+            }
+
             toast.dismiss(loadingToast);
             toast.success(response?.data?.msg || (esTerminacion ? "Comentario enviado correctamente" : "Comentario enviado correctamente"));
             reset();
 
             if (esTerminacion) {
                 setModoComentario(null);
+                setCalificacion(0);
                 setTimeout(() => {
                     ejecutarTerminarContrato();
                 }, 1000);
@@ -648,6 +684,35 @@ const Details = () => {
                                     </div>
                                 )}
 
+                                {modoComentario === "terminar" && (
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                                            Calificación de la residencia (Obligatoria)
+                                        </label>
+                                        <div className="flex gap-2 justify-center">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    type="button"
+                                                    onClick={() => setCalificacion(star)}
+                                                    className={`text-4xl transition-transform hover:scale-110 ${
+                                                        star <= calificacion
+                                                            ? "text-amber-400"
+                                                            : "text-gray-300"
+                                                    }`}
+                                                >
+                                                    ★
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {calificacion > 0 && (
+                                            <p className="text-center text-sm text-gray-600 mt-2">
+                                                Calificación: <span className="font-semibold">{calificacion}/5</span>
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Descripción
@@ -669,7 +734,7 @@ const Details = () => {
                                 <div className="flex flex-col gap-2">
                                     <button
                                         type="submit"
-                                        disabled={enviandoQueja}
+                                        disabled={enviandoQueja || (modoComentario === "terminar" && calificacion === 0)}
                                         className="w-full bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg font-medium transition-colors"
                                     >
                                         {enviandoQueja ? 'Enviando...' : (modoComentario === "terminar" ? 'Enviar queja/sugerencia y terminar' : 'Enviar queja/sugerencia')}
