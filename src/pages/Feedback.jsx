@@ -58,7 +58,6 @@ const normalizeResponseComment = (comment, fallbackAutor = "Administrador") => {
             ? {
                   texto,
                   autor: fallbackAutor,
-                  fecha: null,
               }
             : null;
     }
@@ -78,7 +77,6 @@ const normalizeResponseComment = (comment, fallbackAutor = "Administrador") => {
             ? {
                   texto,
                   autor: toText(comment?.autor || comment?.usuario || comment?.user || fallbackAutor, fallbackAutor),
-                  fecha: comment?.fecha || comment?.createdAt || comment?.updatedAt || null,
               }
             : null;
     }
@@ -516,9 +514,7 @@ const Feedback = () => {
                                         {item.comentariosRespuesta.map((comentario, idx) => (
                                             <div key={idx} className="bg-white rounded p-2 ml-2 border-l-2 border-green-500">
                                                 <p className="text-xs text-gray-800">{comentario?.texto || comentario?.descripcion || comentario?.comentario || "Sin contenido"}</p>
-                                                <p className="text-xs text-gray-500 mt-1">
-                                                    {comentario?.autor || "Admin"} • {formatDate(comentario?.fecha || comentario?.createdAt)}
-                                                </p>
+                                                <p className="text-xs text-gray-500 mt-1">{comentario?.autor || "Admin"}</p>
                                             </div>
                                         ))}
                                     </div>
