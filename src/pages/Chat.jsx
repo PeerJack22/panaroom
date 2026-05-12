@@ -50,7 +50,7 @@ const Chat = () => {
         try {
             const payload = {
                 mensaje: data.mensaje,
-                remitente: rol,
+                remitente: roleNormalized,
                 arrendatarioId: isArrendatario ? userId : (isEstudiante ? contactoActivo.id : null),
                 estudianteId: isEstudiante ? userId : (isArrendatario ? contactoActivo.id : null),
             };
@@ -67,8 +67,23 @@ const Chat = () => {
 
             console.log("[Chat] Respuesta del servidor:", response?.data);
 
+            // Preferir el objeto devuelto por el servidor si existe
+            const serverChat = response?.data?.chat || response?.data;
+            let nuevoMensaje;
+            if (serverChat && typeof serverChat === "object") {
+                nuevoMensaje = {
+                    mensaje: serverChat.mensaje || payload.mensaje,
+                    remitente: (String(serverChat.remitente || payload.remitente)).toLowerCase(),
+                    arrendatarioId: serverChat.arrendatarioId || payload.arrendatarioId || null,
+                    estudianteId: serverChat.estudianteId || payload.estudianteId || null,
+                    createdAt: serverChat.createdAt ? new Date(serverChat.createdAt) : new Date(),
+                };
+            } else {
+                nuevoMensaje = { ...payload, createdAt: new Date() };
+            }
+
             // Agregar el mensaje localmente
-            setMensajes((prev) => [...prev, { ...payload, createdAt: new Date() }]);
+            setMensajes((prev) => [...prev, nuevoMensaje]);
             reset({ mensaje: "" });
             toast.success("Mensaje enviado");
         } catch (error) {
