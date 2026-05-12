@@ -8,7 +8,8 @@ import storeAuth from "../context/storeAuth";
 const Chat = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { rol, token, userId } = storeAuth();
+    const { rol, token, user } = storeAuth();
+    const userId = user?._id || user?.id || null;
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
     const [mensajes, setMensajes] = useState([]);
@@ -33,6 +34,52 @@ const Chat = () => {
             setPropietarioInfo(location.state);
         }
     }, [location, isEstudiante]);
+
+    // Cargar historial de mensajes cuando se selecciona un contacto
+    useEffect(() => {
+        const fetchMensajes = async () => {
+            if (!contactoActivo) return;
+            try {
+                setEnviando(true);
+                const params = {};
+                if (isEstudiante) {
+                    params.arrendatarioId = contactoActivo.id;
+                    params.estudianteId = userId;
+                } else if (isArrendatario) {
+                    params.arrendatarioId = userId;
+                    // si el contacto es admin o estudiante
+                    if (contactoActivo.tipo === 'administrador') {
+                        params.administradorId = contactoActivo.id;
+                    } else {
+                        params.estudianteId = contactoActivo.id;
+                    }
+                }
+
+                const url = `${import.meta.env.VITE_BACKEND_URL}/chat`;
+                const response = await axios.get(url, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params,
+                });
+
+                console.log('[Chat] Historial recibido:', response?.data);
+                // Si viene un arreglo de chats, mapear
+                const items = Array.isArray(response?.data) ? response.data : (response?.data?.chats || []);
+                setMensajes(items.map((m) => ({
+                    mensaje: m.mensaje,
+                    remitente: String(m.remitente || '').toLowerCase(),
+                    arrendatarioId: m.arrendatarioId || null,
+                    estudianteId: m.estudianteId || null,
+                    createdAt: m.createdAt ? new Date(m.createdAt) : new Date(),
+                })));
+            } catch (error) {
+                console.error('[Chat] Error cargando historial:', error);
+            } finally {
+                setEnviando(false);
+            }
+        };
+
+        fetchMensajes();
+    }, [contactoActivo, isArrendatario, isEstudiante, token, userId]);
 
     const enviarMensaje = async (data) => {
         if (!contactoActivo) {
