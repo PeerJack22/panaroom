@@ -266,10 +266,18 @@ const Feedback = () => {
                     },
                 });
 
+                console.log("[Feedback] Respuesta bruta del servidor:", response?.data);
+                
                 const rawList = getListFromResponse(response?.data);
-                const normalizedList = rawList.map((item, index) =>
-                    normalizeFeedbackItem(item, index)
-                );
+                console.log("[Feedback] Lista extraída por parser:", rawList);
+                
+                const normalizedList = rawList.map((item, index) => {
+                    const normalized = normalizeFeedbackItem(item, index);
+                    console.log("[Feedback] Item normalizado:", normalized);
+                    return normalized;
+                });
+                
+                console.log("[Feedback] Lista normalizada completa:", normalizedList);
                 setItems(normalizedList);
             } catch (error) {
                 console.error("[Feedback] Error al cargar:", error);
