@@ -11,11 +11,13 @@ const Chat = () => {
     const navigate = useNavigate();
     const { rol, token, user } = storeAuth();
     const userId = user?._id || user?.id || null;
+    const miNombre = `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
     const [mensajes, setMensajes] = useState([]);
     const [contactoActivo, setContactoActivo] = useState(null);
     const [enviando, setEnviando] = useState(false);
+    const [asignando, setAsignando] = useState(false);
     const [propietarioInfo, setPropietarioInfo] = useState(null);
     const [modalContacto, setModalContacto] = useState(false);
 
@@ -53,13 +55,59 @@ const Chat = () => {
         if (location?.state?.propietarioId && isEstudiante) {
             setContactoActivo({
                 id: location.state.propietarioId,
-                nombre: "Propietario",
+                nombre: location.state.propietarioNombre || "Propietario",
                 tipo: "arrendatario",
                 departamento: location.state.departamentoNombre,
             });
             setPropietarioInfo(location.state);
+        } else if (location?.state?.estudianteId && isArrendatario) {
+            setContactoActivo({
+                id: location.state.estudianteId,
+                nombre: location.state.estudianteNombre || "Estudiante",
+                tipo: "estudiante",
+            });
         }
-    }, [location, isEstudiante]);
+    }, [location, isArrendatario, isEstudiante]);
+
+    const asignarResidenciaAlEstudiante = async () => {
+        const departamentoId = location?.state?.departamentoId || propietarioInfo?.departamentoId;
+        const estudianteId = contactoActivo?.id;
+
+        if (!isArrendatario) {
+            toast.error("Solo el arrendatario puede asignar la residencia");
+            return;
+        }
+
+        if (!departamentoId) {
+            toast.error("No hay un departamento seleccionado para asignar");
+            return;
+        }
+
+        if (!estudianteId) {
+            toast.error("Selecciona un estudiante primero");
+            return;
+        }
+
+        setAsignando(true);
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/asignarEstudiante`;
+            const response = await axios.put(url, { departamentoId, estudianteId }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            console.log("[Chat] Departamento asignado:", response?.data);
+            toast.success("Residencia asignada al estudiante");
+        } catch (error) {
+            console.error("[Chat] Error asignando residencia:", error);
+            const errorMessage = error?.response?.data?.msg || error?.response?.data?.message || "No se pudo asignar la residencia";
+            toast.error(errorMessage);
+        } finally {
+            setAsignando(false);
+        }
+    };
 
     // Conexión Socket.IO para recibir mensajes en tiempo real
     useEffect(() => {
@@ -86,7 +134,7 @@ const Chat = () => {
                     if (!contactoActivo && isArrendatario) {
                         setContactoActivo({
                             id: nuevo.estudianteId,
-                            nombre: "Estudiante",
+                            nombre: nuevo.estudianteNombre || "Estudiante",
                             tipo: "estudiante",
                         });
                     }
@@ -163,7 +211,7 @@ const Chat = () => {
             if (isEstudiante && !contactoActivo) {
                 setContactoActivo({
                     id: payload.arrendatarioId,
-                    nombre: "Propietario",
+                    nombre: propietarioInfo?.propietarioNombre || "Propietario",
                     tipo: "arrendatario",
                 });
             }
@@ -171,7 +219,7 @@ const Chat = () => {
             if (isArrendatario && !contactoActivo) {
                 setContactoActivo({
                     id: payload.estudianteId,
-                    nombre: "Estudiante",
+                    nombre: miNombre || "Estudiante",
                     tipo: "estudiante",
                 });
             }
@@ -215,9 +263,9 @@ const Chat = () => {
                 <h1 className="text-4xl font-bold text-gray-500 mb-6">Chat</h1>
                 <hr className="my-4 border-t-2 border-gray-300" />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px] min-h-0">
                     {/* Lista de contactos */}
-                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 flex flex-col">
+                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 flex flex-col min-h-0">
                         <h2 className="text-lg font-semibold text-gray-800 mb-4">Contactos</h2>
 
                         {!contactoActivo ? (
@@ -255,17 +303,27 @@ const Chat = () => {
 
                     {/* Área de chat */}
                     {contactoActivo ? (
-                        <div className="lg:col-span-2 border border-gray-200 rounded-lg flex flex-col bg-white">
+                        <div className="lg:col-span-2 border border-gray-200 rounded-lg flex flex-col bg-white min-h-0 overflow-hidden">
                             {/* Header del chat */}
                             <div className="border-b border-gray-200 p-4 bg-gray-50 rounded-t-lg">
-                                <h3 className="text-lg font-semibold text-gray-800">{contactoActivo.nombre}</h3>
+                                <h3 className="text-lg font-semibold text-gray-800">{contactoActivo.nombre || (isArrendatario ? miNombre : "Contacto")}</h3>
                                 {contactoActivo.departamento && (
                                     <p className="text-sm text-gray-600">{contactoActivo.departamento}</p>
+                                )}
+                                {isArrendatario && contactoActivo.tipo === "estudiante" && (location?.state?.departamentoId || propietarioInfo?.departamentoId) && (
+                                    <button
+                                        type="button"
+                                        onClick={asignarResidenciaAlEstudiante}
+                                        disabled={asignando}
+                                        className="mt-3 inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
+                                    >
+                                        {asignando ? "Asignando..." : "Asignar mi residencia al estudiante"}
+                                    </button>
                                 )}
                             </div>
 
                             {/* Mensajes */}
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
                                 {mensajes.length === 0 ? (
                                     <div className="flex items-center justify-center h-full text-gray-500">
                                         <p>No hay mensajes aún. ¡Inicia la conversación!</p>
@@ -342,7 +400,7 @@ const Chat = () => {
                                     }}
                                     className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-800 font-semibold hover:bg-gray-100 transition-colors text-left"
                                 >
-                                    Propietario
+                                    {propietarioInfo?.propietarioNombre || "Propietario"}
                                     {propietarioInfo?.departamentoNombre && (
                                         <p className="text-xs text-gray-600 mt-1">{propietarioInfo.departamentoNombre}</p>
                                     )}
