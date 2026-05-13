@@ -11,6 +11,9 @@ const Chat = () => {
   const navigate = useNavigate();
   const { rol, token, user } = storeAuth();
   const userId = user?._id || user?.id || null;
+  const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
+  const administradorDestinoId = location?.state?.administradorId || null;
+  const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
   const roleNormalized = String(rol || "").toLowerCase();
   const isEstudiante = roleNormalized === "estudiante";
   const isArrendatario = roleNormalized === "arrendatario";
@@ -81,9 +84,18 @@ const Chat = () => {
         }).filter(Boolean);
         setContactos(mapped);
 
-        if (location?.state?.abrirChatAdministrador && !contactoActivo) {
+        if (abrirChatAdministrador && !contactoActivo) {
           const admin = mapped.find(c => c.tipo === 'administrador');
-          if (admin) setContactoActivo(admin);
+          if (admin) {
+            setContactoActivo(admin);
+          } else if (administradorDestinoId) {
+            setContactoActivo({
+              id: administradorDestinoId,
+              tipo: 'administrador',
+              nombre: administradorDestinoNombre,
+              unread: 0,
+            });
+          }
         }
       } catch (err) {
         console.error('[Chat] cargar contactos', err);
@@ -92,7 +104,7 @@ const Chat = () => {
       }
     };
     cargar();
-  }, [token, userId, isArrendatario, isEstudiante, isAdministrador, location?.state, contactoActivo]);
+  }, [token, userId, isArrendatario, isEstudiante, isAdministrador, abrirChatAdministrador, administradorDestinoId, administradorDestinoNombre, contactoActivo]);
 
   // cargar historial cuando cambia contacto
   useEffect(() => {
@@ -199,13 +211,22 @@ const Chat = () => {
     if (!data.mensaje || !data.mensaje.trim()) { toast.error('El mensaje no puede estar vacío'); return; }
     setEnviando(true);
     try {
-      const esAdminContacto = contactoActivo?.tipo === 'administrador';
+      const esChatConAdministrador = abrirChatAdministrador || contactoActivo?.tipo === 'administrador';
+      const administradorIdFinal = contactoActivo?.tipo === 'administrador'
+        ? contactoActivo.id
+        : (esChatConAdministrador ? (administradorDestinoId || contactoActivo?.id || null) : null);
+
+      if (esChatConAdministrador && !administradorIdFinal) {
+        toast.error('No se pudo identificar al administrador para este chat');
+        return;
+      }
+
       const payload = {
         mensaje: data.mensaje,
         remitente: roleNormalized,
-        administradorId: esAdminContacto ? contactoActivo.id : null,
-        arrendatarioId: isArrendatario ? userId : (isEstudiante && !esAdminContacto ? contactoActivo.id : null),
-        estudianteId: isEstudiante ? userId : (isArrendatario && !esAdminContacto ? contactoActivo.id : null),
+        administradorId: esChatConAdministrador ? administradorIdFinal : null,
+        arrendatarioId: isArrendatario ? userId : (isEstudiante && !esChatConAdministrador ? contactoActivo.id : null),
+        estudianteId: isEstudiante ? userId : (isArrendatario && !esChatConAdministrador ? contactoActivo.id : null),
       };
       const url = `${import.meta.env.VITE_BACKEND_URL}/chat/mensaje`;
       const res = await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } });
