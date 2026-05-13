@@ -330,8 +330,8 @@ const Chat = () => {
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
       <h1 className="font-black text-4xl text-gray-500">Chat</h1>
-      <p className="mb-6">Este módulo te permite gestionar tus chats</p>
       <hr className="my-4 border-t-2 border-gray-300" />
+      <p className="mb-6">Este módulo te permite gestionar tus chats</p>
 
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 md:p-8">
 
