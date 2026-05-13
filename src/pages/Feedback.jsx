@@ -571,8 +571,7 @@ const Feedback = () => {
 
             {/* Modal de comentario */}
             {modalAbierto && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-                    <div className="absolute inset-0 bg-transparent backdrop-blur-[1px]" aria-hidden="true" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
                     <div className="relative z-10 bg-white/95 rounded-lg shadow-lg max-w-lg w-full mx-4 p-6 border border-gray-200">
                         <h3 className="text-lg font-bold text-gray-800 mb-4">
                             Responder a {quejaSeleccionada?.tipo === "queja" ? "Queja" : "Sugerencia"}
