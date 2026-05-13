@@ -178,6 +178,11 @@ const normalizeFeedbackItem = (item, index) => {
         item?.clase ||
         ""
     ).trim().toLowerCase();
+
+    if (tipoRaw === "comentario") {
+        return null;
+    }
+
     // Usar "queja" como fallback si no encuentra tipo conocido
     const tipoNormalizado = ["queja", "sugerencia", "comentario"].includes(tipoRaw)
         ? tipoRaw
@@ -276,7 +281,7 @@ const Feedback = () => {
                     const normalized = normalizeFeedbackItem(item, index);
                     console.log("[Feedback] Item normalizado:", normalized);
                     return normalized;
-                });
+                }).filter(Boolean);
                 
                 console.log("[Feedback] Lista normalizada completa:", normalizedList);
                 setItems(normalizedList);
@@ -404,9 +409,8 @@ const Feedback = () => {
                     ? itemsQuejas.filter((item) => item.estado)
                     : itemsQuejas;
 
-        // Combinar: si filtroTipo es "comentario", mostrar solo comentarios
-        // Si es "queja"/"sugerencia", mostrar solo esos tipos de las quejas
-        // Si es "todos", mostrar quejas + comentarios
+        // Combinar: si filtroTipo es "queja" o "sugerencia", mostrar solo ese tipo
+        // Si es "todos", mostrar quejas + sugerencias
         let resultado = [];
 
         if (filtroTipo === "comentario") {
@@ -487,7 +491,6 @@ const Feedback = () => {
                                 <option value="todos">Todos los tipos</option>
                                 <option value="queja">Queja</option>
                                 <option value="sugerencia">Sugerencia</option>
-                                <option value="comentario">Comentario</option>
                             </select>
                         </div>
                     </div>
