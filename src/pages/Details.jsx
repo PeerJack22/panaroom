@@ -172,7 +172,9 @@ const Details = () => {
         setEnviandoQueja(true);
         const esTerminacion = modoComentario === "terminar";
         const loadingToast = toast.loading(esTerminacion ? "Enviando comentario y terminando contrato..." : "Enviando comentario...");
-        const tipoComentarioNormalizado = esTerminacion ? "comentario" : String(tipoComentario || "queja").toLowerCase();
+        const tipoComentarioNormalizado = esTerminacion
+            ? "comentario"
+            : String(tipoComentario || "queja").toLowerCase();
 
         try {
             const payload = {
