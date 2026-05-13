@@ -39,6 +39,7 @@ const FormularioPerfil = () => {
         if (isSubmitting) return; // Evitar múltiples envíos
         
         setIsSubmitting(true);
+        const fieldName = isAdmin ? "telefono" : "celular";
         try {
             const formData = new FormData();
 
@@ -52,35 +53,53 @@ const FormularioPerfil = () => {
             formData.append("email", data.email);
             
             if (!isAdmin) {
-                formData.append("profileImageOption", "upload");
-
-                // Añadir solo imagen subida
+                // Solo indicar opción upload si hay archivo
                 if (data.imagenPerfil && data.imagenPerfil[0]) {
+                    formData.append("profileImageOption", "upload");
                     formData.append("avatarArren", data.imagenPerfil[0]);
-                    console.log("Imagen a subir:", data.imagenPerfil[0].name, data.imagenPerfil[0].size);
                 }
             }
 
-            // Mostrar todos los campos del FormData para depuración
-            for (let [key, value] of formData.entries()) {
-                if (key !== "avatarArren") {
-                    console.log(`FormData campo: ${key} = ${value}`);
-                } else {
-                    console.log(`FormData campo: ${key} = [Contenido del archivo]`);
-                }
-            }
-
+            // Intento principal con FormData
             await updateProfile(formData, user._id);
-            
-            // Si updateProfile ya muestra un toast, comenta esta línea
-            toast.success("Perfil actualizado correctamente", {
-                toastId: "profile-update-success" // Usar un ID único para evitar duplicados
-            });
+            toast.success("Perfil actualizado correctamente", { toastId: "profile-update-success" });
         } catch (error) {
-            console.error("Error al actualizar el perfil:", error);
-            toast.error("Error al actualizar el perfil. Inténtalo de nuevo más tarde.", {
-                toastId: "profile-update-error" // Usar un ID único para evitar duplicados
-            });
+            console.error("Error al actualizar el perfil (FormData):", error);
+            // Si hay una imagen y el intento con FormData falla, reintentar enviando la imagen como base64
+            try {
+                if (!isAdmin && data.imagenPerfil && data.imagenPerfil[0]) {
+                    const file = data.imagenPerfil[0];
+                    const toBase64 = (file) => new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = (err) => reject(err);
+                        reader.readAsDataURL(file);
+                    });
+
+                    toast.info("Reintentando subida de imagen como base64...", { toastId: "profile-retry-base64" });
+                    const base64 = await toBase64(file);
+
+                    // Construir payload JSON que el backend acepta en la rama 'ia' (profileImageOption: 'ia')
+                    const payload = {
+                        nombre: data.nombre,
+                        apellido: data.apellido,
+                        direccion: data.direccion || "",
+                        [fieldName]: data.celular || "",
+                        email: data.email,
+                        profileImageOption: 'ia',
+                        avatarArrenIA: base64,
+                    };
+
+                    // Reintento con JSON (backend en controlador soporta avatarArrenIA)
+                    await updateProfile(payload, user._id);
+                    toast.success("Perfil actualizado (subida base64) correctamente", { toastId: "profile-update-success-2" });
+                } else {
+                    throw error;
+                }
+            } catch (err2) {
+                console.error("Error reintentando subida base64:", err2);
+                toast.error(err2.response?.data?.msg || 'Error al actualizar el perfil. Inténtalo de nuevo más tarde.', { toastId: "profile-update-error" });
+            }
         } finally {
             setIsSubmitting(false);
         }
