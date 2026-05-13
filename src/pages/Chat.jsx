@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
@@ -8,7 +8,6 @@ import storeAuth from "../context/storeAuth";
 
 const Chat = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { rol, token, user } = storeAuth();
   const userId = user?._id || user?.id || null;
   const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
@@ -330,10 +329,11 @@ const Chat = () => {
 
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
+      <h1 className="font-black text-4xl text-gray-500">Chat</h1>
+      <p className="mb-6">Este módulo te permite gestionar tus chats</p>
+      <hr className="my-4 border-t-2 border-gray-300" />
+
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 md:p-8">
-        <h1 className="text-4xl font-bold text-gray-500 mb-6">Chat</h1>
-        <p className="mb-6 text-sm text-gray-600">Este módulo te permite gestionar tus chats</p>
-        <hr className="my-4 border-t-2 border-gray-300" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px] min-h-0">
           <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 flex flex-col min-h-0">
