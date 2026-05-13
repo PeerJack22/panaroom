@@ -191,34 +191,6 @@ const loginUser = async (data) => {
                         <div className="my-4">
                             <button className="py-2 w-full block text-center bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition duration-300">Iniciar sesión</button>
                         </div>
-
-                        {/* Separador Ó */}
-                        <div className="flex items-center my-4">
-                            <div className="flex-grow border-t border-gray-300"></div>
-                            <span className="mx-4 text-gray-500">Ó</span>
-                            <div className="flex-grow border-t border-gray-300"></div>
-                        </div>
-
-                        {/* Botón de Google */}
-                        <div className="my-4">
-                            <button
-                                onClick={() => {
-                                    toast.info('Redirigiendo a Google...', {
-                                        position: "top-right",
-                                        autoClose: 2000
-                                    });
-                                    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
-                                }}
-                                className="py-2 w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl shadow hover:bg-gray-100 transition duration-300"
-                            >
-                                <img
-                                    src="https://developers.google.com/identity/images/g-logo.png"
-                                    alt="Logo Google"
-                                    className="w-6 h-6"
-                                />
-                                <span className="text-gray-700 font-medium">Iniciar sesión con Google</span>
-                            </button>
-                        </div>
                     </form>
 
                     {/* Olvidaste tu contraseña */}
