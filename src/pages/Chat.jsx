@@ -88,13 +88,40 @@ const Chat = () => {
           const admin = mapped.find(c => c.tipo === 'administrador');
           if (admin) {
             setContactoActivo(admin);
-          } else if (administradorDestinoId) {
-            setContactoActivo({
-              id: administradorDestinoId,
-              tipo: 'administrador',
-              nombre: administradorDestinoNombre,
-              unread: 0,
-            });
+          } else {
+            // Si no hay admin en contactos, obtener de /listarAdministradores
+            try {
+              const adminUrl = `${import.meta.env.VITE_BACKEND_URL}/listarAdministradores`;
+              const adminRes = await axios.get(adminUrl, { headers: { Authorization: `Bearer ${token}` } });
+              const admins = Array.isArray(adminRes?.data) ? adminRes.data : (adminRes?.data?.administradores || []);
+              if (admins.length > 0) {
+                const firstAdmin = admins[0];
+                const adminId = firstAdmin?._id || firstAdmin?.id;
+                const adminNombre = `${firstAdmin?.nombre || ""} ${firstAdmin?.apellido || ""}`.trim() || "Administrador";
+                const adminContact = {
+                  id: adminId,
+                  tipo: 'administrador',
+                  nombre: adminNombre,
+                  unread: 0,
+                };
+                setContactoActivo(adminContact);
+                setContactos(prevContactos => {
+                  const exists = prevContactos.some(c => c.id === adminId && c.tipo === 'administrador');
+                  return exists ? prevContactos : [...prevContactos, adminContact];
+                });
+              }
+            } catch (adminErr) {
+              console.error('[Chat] obtener administrador', adminErr);
+              // Fallback si existe administradorDestinoId
+              if (administradorDestinoId) {
+                setContactoActivo({
+                  id: administradorDestinoId,
+                  tipo: 'administrador',
+                  nombre: administradorDestinoNombre,
+                  unread: 0,
+                });
+              }
+            }
           }
         }
       } catch (err) {
