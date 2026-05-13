@@ -236,6 +236,7 @@ const Feedback = () => {
     const [quejaSeleccionada, setQuejaSeleccionada] = useState(null);
     const [comentarioAdmin, setComentarioAdmin] = useState("");
     const [enviandoComentario, setEnviandoComentario] = useState(false);
+    const tiposConRevision = ["queja", "sugerencia"];
 
     const roleNormalized = String(rol || "").toLowerCase();
     const isAdmin = roleNormalized === "administrador";
@@ -296,7 +297,7 @@ const Feedback = () => {
     }, [canViewFeedback, endpoint, token]);
 
     const abrirModalComentario = (queja) => {
-        if (!queja?.manejaEstado || queja?.tieneRespuesta) return;
+        if (!tiposConRevision.includes(queja?.tipo) || queja?.tieneRespuesta) return;
         setQuejaSeleccionada(queja);
         setComentarioAdmin("");
         setModalAbierto(true);
@@ -391,7 +392,7 @@ const Feedback = () => {
 
     // Filtrar items por estado y tipoComentario
     const itemsFiltrados = useMemo(() => {
-        // Separar comentarios (manejaEstado: false) de quejas/sugerencias (manejaEstado: true)
+        // Separar comentarios (sin revisión) de quejas/sugerencias (con revisión)
         const itemsQuejas = items.filter((item) => item.manejaEstado);
         const itemsComentarios = items.filter((item) => !item.manejaEstado);
 
