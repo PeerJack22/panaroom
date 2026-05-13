@@ -61,7 +61,10 @@ const FormularioPerfil = () => {
             }
 
             // Intento principal con FormData
-            await updateProfile(formData, user._id);
+            const respuesta = await updateProfile(formData, user._id);
+            // Actualizar preview con la URL que devuelva el backend (si viene)
+            const nuevaUrl = respuesta?.data?.avatarUrl || respuesta?.data?.user?.avatarUrl || respuesta?.data?.perfil?.avatarUrl;
+            if (nuevaUrl) setUploadedImagePreview(nuevaUrl);
             toast.success("Perfil actualizado correctamente", { toastId: "profile-update-success" });
         } catch (error) {
             console.error("Error al actualizar el perfil (FormData):", error);
@@ -91,7 +94,9 @@ const FormularioPerfil = () => {
                     };
 
                     // Reintento con JSON (backend en controlador soporta avatarArrenIA)
-                    await updateProfile(payload, user._id);
+                    const respuesta2 = await updateProfile(payload, user._id);
+                    const nuevaUrl2 = respuesta2?.data?.avatarUrl || respuesta2?.data?.user?.avatarUrl || respuesta2?.data?.perfil?.avatarUrl;
+                    if (nuevaUrl2) setUploadedImagePreview(nuevaUrl2);
                     toast.success("Perfil actualizado (subida base64) correctamente", { toastId: "profile-update-success-2" });
                 } else {
                     throw error;
