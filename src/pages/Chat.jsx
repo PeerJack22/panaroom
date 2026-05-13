@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -55,7 +55,7 @@ const Chat = () => {
   }, [isAdministrador, isArrendatario, isEstudiante, userId]);
 
   // cargar contactos
-  useEffect(() => {
+    useEffect(() => {
     const cargar = async () => {
       if (!token || !userId) return;
       setCargandoContactos(true);
@@ -92,7 +92,7 @@ const Chat = () => {
       }
     };
     cargar();
-  }, [token, userId, isArrendatario, isEstudiante, isAdministrador, location?.state]);
+  }, [token, userId, isArrendatario, isEstudiante, isAdministrador, location?.state, contactoActivo]);
 
   // cargar historial cuando cambia contacto
   useEffect(() => {
@@ -122,7 +122,6 @@ const Chat = () => {
 
     const onNuevo = (payload) => {
       const m = payload?.chat || payload;
-      const params = obtenerParamsContacto(contactoActivo || {});
       // decide if message belongs to active conversation
       const belongs = (() => {
         if (!m) return false;
@@ -147,7 +146,7 @@ const Chat = () => {
         if (remit && remit !== roleNormalized && Notification && Notification.permission === 'granted') {
           new Notification(m.remitente || 'Nuevo mensaje', { body: m.mensaje || '' });
         }
-      } catch (e) { /* noop */ }
+      } catch (err) { console.warn('Notification error', err); }
 
       if (belongs) {
         const nuevo = normalizarMensaje(m);
@@ -187,7 +186,7 @@ const Chat = () => {
 
   // request notifications
   useEffect(() => {
-    try { if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission(); } catch {}
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission();
   }, []);
 
   // autoscroll
@@ -253,7 +252,7 @@ const Chat = () => {
                   <p className="text-xs text-gray-500">Cargando contactos...</p>
                 ) : contactos.length === 0 ? (
                   <p className="text-xs text-gray-500">No hay contactos.</p>
-                ) : contactos.map(c => (
+                ) : contactos.filter(c => String(c.id) !== String(contactoActivo?.id)).map(c => (
                   <button key={`${c.tipo}-${c.id}`} type="button" onClick={() => { setContactoActivo(c); setContactos(prev => prev.map(p => p.id===c.id?{...p,unread:0}:p)); }}
                     className={`w-full text-left p-3 rounded-lg border flex items-center gap-3 ${String(contactoActivo?.id||'')===String(c.id)?'border-blue-600 bg-blue-50':'border-gray-200 bg-white hover:bg-gray-50'}`}>
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700">{(c.nombre||'?').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
