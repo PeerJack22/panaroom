@@ -272,18 +272,12 @@ const Feedback = () => {
                     },
                 });
 
-                console.log("[Feedback] Respuesta bruta del servidor:", response?.data);
-                
                 const rawList = getListFromResponse(response?.data);
-                console.log("[Feedback] Lista extraída por parser:", rawList);
                 
                 const normalizedList = rawList.map((item, index) => {
                     const normalized = normalizeFeedbackItem(item, index);
-                    console.log("[Feedback] Item normalizado:", normalized);
                     return normalized;
                 }).filter(Boolean);
-                
-                console.log("[Feedback] Lista normalizada completa:", normalizedList);
                 setItems(normalizedList);
             } catch (error) {
                 console.error("[Feedback] Error al cargar:", error);
@@ -577,8 +571,9 @@ const Feedback = () => {
 
             {/* Modal de comentario */}
             {modalAbierto && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 p-6">
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                    <div className="absolute inset-0 bg-transparent backdrop-blur-[1px]" aria-hidden="true" />
+                    <div className="relative z-10 bg-white/95 rounded-lg shadow-lg max-w-lg w-full mx-4 p-6 border border-gray-200">
                         <h3 className="text-lg font-bold text-gray-800 mb-4">
                             Responder a {quejaSeleccionada?.tipo === "queja" ? "Queja" : "Sugerencia"}
                         </h3>
