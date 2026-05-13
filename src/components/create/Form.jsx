@@ -88,7 +88,7 @@ export const Form = () => {
 
     const stepFields = {
         1: ["titulo", "descripcion", "direccion", "referencia", "urlMapa", "categoria"],
-        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "alicuota", "alicoutaMonto", "mascotas", "numParqueaderos"],
+        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "alicuota", "alicoutaMonto", "mascotas", "numParqueaderos"],
         3: ["imagen"],
     };
 
@@ -186,6 +186,8 @@ export const Form = () => {
                 formData.append("alicuota", data[key] === "true" ? "true" : "false");
             } else if (key === "mascotas") {
                 formData.append("mascotas", data[key] === "true" ? "true" : "false");
+            } else if (key === "guardiania") {
+                formData.append("guardiania", data[key] === "true" ? "true" : "false");
             } else if (key === "numParqueaderos") {
                 formData.append("numParqueaderos", data[key] || "0");
             } else if (key === "alicoutaMonto") {
@@ -454,6 +456,29 @@ export const Form = () => {
                                 </label>
                             </div>
                             {errors.mascotas && <p className="text-red-500 text-xs italic">{errors.mascotas.message}</p>}
+                        </div>
+
+                        <div className="mt-4">
+                            <label className="mb-2 block text-sm font-semibold">¿Cuenta con guardianía?</label>
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        value="true"
+                                        {...register("guardiania", { required: "Indica si cuenta con guardianía." })}
+                                    />
+                                    Sí
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        value="false"
+                                        {...register("guardiania", { required: "Indica si cuenta con guardianía." })}
+                                    />
+                                    No
+                                </label>
+                            </div>
+                            {errors.guardiania && <p className="text-red-500 text-xs italic">{errors.guardiania.message}</p>}
                         </div>
 
                         <div>

@@ -449,6 +449,13 @@ const Details = () => {
 
                             <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
                                 <div>
+                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Guardianía</p>
+                                    <p className="text-gray-900">{departamento.guardiania ? "Sí" : "No"}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                                <div>
                                     <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Precio mensual</p>
                                     <p className="text-gray-900 font-semibold">$ {departamento.precioMensual}</p>
                                 </div>

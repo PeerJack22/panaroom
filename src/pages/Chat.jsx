@@ -247,7 +247,7 @@ const Chat = () => {
                 </div>
               )}
 
-              <div className="space-y-2 overflow-y-auto">
+              <div className="space-y-2 overflow-y-auto flex-1">
                 {cargandoContactos ? (
                   <p className="text-xs text-gray-500">Cargando contactos...</p>
                 ) : contactos.length === 0 ? (
