@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -29,6 +29,7 @@ const Chat = () => {
     const [contactos, setContactos] = useState([]);
     const [cargandoContactos, setCargandoContactos] = useState(false);
     const [cargandoHistorial, setCargandoHistorial] = useState(false);
+    const mensajesRef = useRef(null);
 
     const normalizarMensaje = useCallback((m) => ({
         id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
@@ -203,6 +204,29 @@ const Chat = () => {
         cargarHistorial();
     }, [contactoActivo, normalizarMensaje, obtenerParamsContacto, token]);
 
+    // Pedir permiso para notificaciones al montar
+    useEffect(() => {
+        try {
+            if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+                Notification.requestPermission().then(() => {});
+            }
+        } catch {
+            // noop
+        }
+    }, []);
+
+    // Auto-scroll cuando cambian los mensajes
+    useEffect(() => {
+        try {
+            const el = mensajesRef.current;
+            if (el) {
+                el.scrollTop = el.scrollHeight;
+            }
+        } catch {
+            // noop
+        }
+    }, [mensajes]);
+
     const asignarResidenciaAlEstudiante = async () => {
         const departamentoId = location?.state?.departamentoId || propietarioInfo?.departamentoId;
         const estudianteId = contactoActivo?.id;
@@ -262,6 +286,19 @@ const Chat = () => {
                 // Verificar si el mensaje pertenece a la conversación abierta
                 const belongsToConversation = esMiConversacion(m);
 
+                // Mostrar notificación para mensajes entrantes (si no son nuestros)
+                const remitenteStr = String(m?.remitente || "").toLowerCase();
+                if (remitenteStr && remitenteStr !== roleNormalized) {
+                    toast.info(`Nuevo mensaje de ${m.remitente || 'contacto'}`);
+                    try {
+                        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                            new Notification(m.remitente || 'Nuevo mensaje', { body: m.mensaje || '' });
+                        }
+                    } catch (e) {
+                        console.warn('Notification error', e);
+                    }
+                }
+
                 if (belongsToConversation) {
                     const nuevo = normalizarMensaje(m);
 
@@ -279,6 +316,28 @@ const Chat = () => {
                         return [...prev, nuevo];
                     });
                 }
+                else {
+                    // Si no pertenece a la conversación abierta, actualizar listado de contactos con un badge
+                    try {
+                        const otherId = m.arrendatarioId && String(m.arrendatarioId) !== String(userId) ? m.arrendatarioId
+                            : m.estudianteId && String(m.estudianteId) !== String(userId) ? m.estudianteId
+                            : m.administradorId && String(m.administradorId) !== String(userId) ? m.administradorId
+                            : null;
+                        const tipo = m.administradorId ? 'administrador' : (m.arrendatarioId ? 'arrendatario' : 'estudiante');
+                        if (otherId) {
+                            setContactos((prev) => {
+                                const found = prev.find((c) => String(c.id) === String(otherId));
+                                if (found) {
+                                    return prev.map((c) => c.id === found.id ? { ...c, unread: (c.unread||0) + 1 } : c);
+                                }
+                                const nombre = tipo === 'administrador' ? 'Administrador' : 'Contacto';
+                                return [{ id: otherId, tipo, nombre, unread: 1 }, ...prev];
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('update contacts on socket message', e);
+                    }
+                }
             } catch (e) {
                 console.error("[Chat] error manejando evento socket:", e);
             }
@@ -294,7 +353,7 @@ const Chat = () => {
             socket.off("enviar-mensaje-front-back", onNuevoMensaje);
             socket.disconnect();
         };
-    }, [contactoActivo, esMiConversacion, isArrendatario, isEstudiante, normalizarMensaje, token, userId]);
+    }, [contactoActivo, esMiConversacion, isArrendatario, isEstudiante, normalizarMensaje, token, userId, roleNormalized]);
 
     const enviarMensaje = async (data) => {
         if (!contactoActivo) {
@@ -422,7 +481,7 @@ const Chat = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-2 flex-1 overflow-y-auto">
+                            <div className="space-y-2 flex-1">
                                 <div className="p-3 rounded-lg bg-white border-2 border-blue-600 cursor-pointer hover:bg-blue-50 transition-colors">
                                     <p className="font-semibold text-gray-800">{contactoActivo.nombre}</p>
                                     {contactoActivo.departamento && (
@@ -436,6 +495,34 @@ const Chat = () => {
                                 >
                                     Cambiar contacto
                                 </button>
+
+                                {cargandoContactos ? (
+                                    <p className="text-xs text-gray-500 mt-3">Cargando contactos...</p>
+                                ) : (
+                                    <div className="mt-3 space-y-2 overflow-y-auto">
+                                        {contactos.map((c) => (
+                                            <button
+                                                key={`${c.tipo}-${c.id}`}
+                                                type="button"
+                                                onClick={() => { setContactoActivo(c); setContactos((prev) => prev.map(p => p.id===c.id?{...p,unread:0}:p)); }}
+                                                className={`w-full text-left p-3 rounded-lg border transition-colors flex items-center gap-3 ${String(contactoActivo?.id || "") === String(c.id) ? "border-blue-600 bg-blue-50" : "border-gray-200 bg-white hover:bg-gray-50"}`}
+                                            >
+                                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700">
+                                                    { (c.nombre||"?").split(' ').map(s=>s[0]).slice(0,2).join('') }
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-sm font-semibold text-gray-800">{c.nombre}</p>
+                                                        {c.unread > 0 && (
+                                                            <span className="inline-flex items-center justify-center bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6">{c.unread}</span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 capitalize">{c.tipo || "contacto"}</p>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -480,7 +567,7 @@ const Chat = () => {
                             </div>
 
                             {/* Mensajes */}
-                            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
+                            <div ref={mensajesRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
                                 {cargandoHistorial ? (
                                     <div className="flex items-center justify-center h-full text-gray-500">
                                         <p>Cargando historial...</p>
