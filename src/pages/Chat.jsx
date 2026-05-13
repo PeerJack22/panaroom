@@ -331,8 +331,8 @@ const Chat = () => {
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 md:p-8">
-        <button onClick={() => navigate('/dashboard')} className="mb-4 inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm">← Atrás</button>
         <h1 className="text-4xl font-bold text-gray-500 mb-6">Chat</h1>
+        <p className="mb-6 text-sm text-gray-600">Este módulo te permite gestionar tus chats</p>
         <hr className="my-4 border-t-2 border-gray-300" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px] min-h-0">
