@@ -14,6 +14,7 @@ const Chat = () => {
   const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
   const administradorDestinoId = location?.state?.administradorId || null;
   const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
+  const arrendatarioNombre = location?.state?.arrendatarioNombre || null;
   const roleNormalized = String(rol || "").toLowerCase();
   const isEstudiante = roleNormalized === "estudiante";
   const isArrendatario = roleNormalized === "arrendatario";
@@ -200,12 +201,25 @@ const Chat = () => {
           : m.estudianteId && String(m.estudianteId) !== String(userId) ? m.estudianteId
           : m.administradorId && String(m.administradorId) !== String(userId) ? m.administradorId
           : null;
-        const tipo = m.administradorId ? 'administrador' : (m.arrendatarioId ? 'arrendatario' : 'estudiante');
+        const tipo = m.administradorId && String(m.administradorId) !== String(userId) ? 'administrador' 
+          : (m.arrendatarioId && String(m.arrendatarioId) !== String(userId) ? 'arrendatario' : 'estudiante');
         if (otherId) {
           setContactos(prev => {
             const found = prev.find(c => String(c.id) === String(otherId));
             if (found) return prev.map(c => c.id === found.id ? { ...c, unread: (c.unread||0)+1 } : c);
-            const nombre = tipo === 'administrador' ? 'Administrador' : 'Contacto';
+            // Obtener nombre del payload si está disponible
+            let nombre = m?.nombreRemitente || m?.nombre || m?.nombreCompleto || `${m?.nombreRemitente || ''} ${m?.apellidoRemitente || ''}`.trim();
+            
+            // Si no hay nombre en el payload, buscar en localStorage
+            if (!nombre || nombre.trim() === '') {
+              const userMap = JSON.parse(localStorage.getItem('userNameMap') || '{}');
+              nombre = userMap[otherId] || '';
+            }
+            
+            // Fallback a nombre genérico si sigue sin nombre
+            if (!nombre || nombre.trim() === '') {
+              nombre = tipo === 'administrador' ? 'Administrador' : (tipo === 'arrendatario' ? 'Arrendatario' : 'Estudiante');
+            }
             return [{ id: otherId, tipo, nombre, unread: 1 }, ...prev];
           });
         }
@@ -238,23 +252,60 @@ const Chat = () => {
     if (!data.mensaje || !data.mensaje.trim()) { toast.error('El mensaje no puede estar vacío'); return; }
     setEnviando(true);
     try {
-      const esChatConAdministrador = abrirChatAdministrador || contactoActivo?.tipo === 'administrador';
-      const administradorIdFinal = contactoActivo?.tipo === 'administrador'
-        ? contactoActivo.id
-        : (esChatConAdministrador ? (administradorDestinoId || contactoActivo?.id || null) : null);
+      // Determinar si es chat con administrador basado en el tipo de contacto activo
+      const esChatConAdministrador = contactoActivo?.tipo === 'administrador';
 
-      if (esChatConAdministrador && !administradorIdFinal) {
-        toast.error('No se pudo identificar al administrador para este chat');
-        return;
+      // Obtener nombre del remitente
+      let nombreRemitente = `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
+      if (isArrendatario && arrendatarioNombre) {
+        nombreRemitente = arrendatarioNombre;
       }
 
       const payload = {
         mensaje: data.mensaje,
         remitente: roleNormalized,
-        administradorId: esChatConAdministrador ? administradorIdFinal : null,
-        arrendatarioId: isArrendatario ? userId : (isEstudiante && !esChatConAdministrador ? contactoActivo.id : null),
-        estudianteId: isEstudiante ? userId : (isArrendatario && !esChatConAdministrador ? contactoActivo.id : null),
+        nombreRemitente: nombreRemitente || "Usuario",
       };
+
+      // Guardar mapeo de ID -> nombre en localStorage para que otros usuarios lo usen
+      if (isArrendatario && nombreRemitente) {
+        const userMap = JSON.parse(localStorage.getItem('userNameMap') || '{}');
+        userMap[userId] = nombreRemitente;
+        localStorage.setItem('userNameMap', JSON.stringify(userMap));
+      } else if (isEstudiante && nombreRemitente) {
+        const userMap = JSON.parse(localStorage.getItem('userNameMap') || '{}');
+        userMap[userId] = nombreRemitente;
+        localStorage.setItem('userNameMap', JSON.stringify(userMap));
+      } else if (isAdministrador && nombreRemitente) {
+        const userMap = JSON.parse(localStorage.getItem('userNameMap') || '{}');
+        userMap[userId] = nombreRemitente;
+        localStorage.setItem('userNameMap', JSON.stringify(userMap));
+      }
+
+      // Asignar IDs según el rol y tipo de contacto
+      if (isArrendatario) {
+        payload.arrendatarioId = userId;
+        if (esChatConAdministrador) {
+          payload.administradorId = contactoActivo.id;
+        } else {
+          payload.estudianteId = contactoActivo.id;
+        }
+      } else if (isEstudiante) {
+        payload.estudianteId = userId;
+        if (esChatConAdministrador) {
+          payload.administradorId = contactoActivo.id;
+        } else {
+          payload.arrendatarioId = contactoActivo.id;
+        }
+      } else if (isAdministrador) {
+        payload.administradorId = userId;
+        if (contactoActivo?.tipo === 'arrendatario') {
+          payload.arrendatarioId = contactoActivo.id;
+        } else if (contactoActivo?.tipo === 'estudiante') {
+          payload.estudianteId = contactoActivo.id;
+        }
+      }
+
       const url = `${import.meta.env.VITE_BACKEND_URL}/chat/mensaje`;
       const res = await axios.post(url, payload, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } });
       const serverChat = res?.data?.chat || res?.data;

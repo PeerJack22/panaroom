@@ -74,7 +74,7 @@ const Details = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { fetchDataBackend } = useFetch();
-    const { rol } = storeAuth();
+    const { rol, user } = storeAuth();
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const [departamento, setDepartamento] = useState(null);
@@ -550,7 +550,7 @@ const Details = () => {
                             <p className="text-sm text-yellow-700 mb-4">Este departamento se encuentra desactivado. Si deseas conocer el motivo, puedes contactar con el administrador.</p>
                             <button
                                 type="button"
-                                onClick={() => navigate("/dashboard/chat", { state: { abrirChatAdministrador: true, departamentoNombre: departamento?.titulo } })}
+                                onClick={() => navigate("/dashboard/chat", { state: { abrirChatAdministrador: true, departamentoNombre: departamento?.titulo, arrendatarioNombre: `${user?.nombre || ""} ${user?.apellido || ""}`.trim() } })}
                                 className="w-full px-4 py-2 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 transition-colors"
                             >
                                 Ver motivo de desactivación
