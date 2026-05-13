@@ -9,9 +9,7 @@ const AuthSuccess = () => {
     const { setToken, setRol, setUser } = storeAuth();
 
     useEffect(() => {
-        // Debugging: Mostrar todos los parámetros recibidos
-        console.log('AuthSuccess: URL completa =', window.location.href);
-        console.log('AuthSuccess: Todos los parámetros =', Object.fromEntries(searchParams.entries()));
+        // Debugging logs removed
 
         try {
             // Simplificar el proceso usando directamente los parámetros de la URL
@@ -36,7 +34,7 @@ const AuthSuccess = () => {
                 rol: searchParams.get('rol') || 'arrendatario'
             };
             
-            console.log('AuthSuccess: Datos de usuario construidos =', userData);
+            // Debugging logs removed
             
             // Guardar token, rol y datos de usuario
             setToken(userData.token);
@@ -53,12 +51,12 @@ const AuthSuccess = () => {
             
             setUser(user);
             
-            console.log('AuthSuccess: Datos guardados en store, redirigiendo a dashboard');
+            // Debugging logs removed
             
             // Redirigir al dashboard - intentar con redirección directa
             toast.success('¡Inicio de sesión exitoso!');
             
-            console.log('AuthSuccess: Intentando redirección a /dashboard');
+            // Debugging logs removed
             
             // Usar window.location directamente para mayor seguridad
             setTimeout(() => {

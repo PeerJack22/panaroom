@@ -366,13 +366,7 @@ export const Home = () => {
             const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/crear`;
 
             // DEBUG: listar entradas de FormData para verificar archivos antes de enviar
-            for (const pair of formData.entries()) {
-                if (pair[0] === "imagenesDocumentos") {
-                    console.log("FormData archivo:", pair[0], pair[1]?.name || pair[1]);
-                } else {
-                    console.log("FormData campo:", pair[0], pair[1]);
-                }
-            }
+            // Debugging logs removed: previously listed FormData entries here
 
             // No forzar "Content-Type" — el navegador añade el boundary automáticamente
             const response = await axios.post(url, formData);

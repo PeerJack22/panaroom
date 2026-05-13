@@ -63,7 +63,7 @@ const FormularioPerfil = () => {
             // Intento principal con FormData
             const respuesta = await updateProfile(formData, user._id);
             // Forzar recarga del perfil desde el backend para sincronizar el store
-            try { await profile(); } catch (e) { /* ignore */ }
+            try { await profile(); } catch { /* ignore */ }
             const usuarioActualizado = storeProfile.getState().user;
             const nuevaUrl = usuarioActualizado?.avatarUrl || respuesta?.data?.avatarUrl || respuesta?.data?.user?.avatarUrl || respuesta?.data?.perfil?.avatarUrl;
             if (nuevaUrl) setUploadedImagePreview(nuevaUrl);
@@ -97,7 +97,7 @@ const FormularioPerfil = () => {
 
                     // Reintento con JSON (backend en controlador soporta avatarArrenIA)
                     const respuesta2 = await updateProfile(payload, user._id);
-                    try { await profile(); } catch (e) { /* ignore */ }
+                    try { await profile(); } catch { /* ignore */ }
                     const usuarioActualizado2 = storeProfile.getState().user;
                     const nuevaUrl2 = usuarioActualizado2?.avatarUrl || respuesta2?.data?.avatarUrl || respuesta2?.data?.user?.avatarUrl || respuesta2?.data?.perfil?.avatarUrl;
                     if (nuevaUrl2) setUploadedImagePreview(nuevaUrl2);

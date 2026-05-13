@@ -96,8 +96,7 @@ const Table = () => {
                 disponible: nuevoEstado,
             };
 
-            console.log("toggleDisponibilidad -> departamentoId:", departamentoId);
-            console.log("toggleDisponibilidad -> URL:", url, "payload:", payload);
+            // Debug logs removed
             const resp = await axios.put(url, payload, { headers });
 
             if (resp?.data) {

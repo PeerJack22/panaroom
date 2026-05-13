@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { toast } from "react-toastify";
+import storeAuth from "./storeAuth";
 
 
 const getAuthHeaders = (isFormData = false) => {
@@ -57,16 +58,22 @@ const storeProfile = create((set) => ({
             try {
                 // Detectar si data es un FormData para no enviar Content-Type
                 const isFormData = data instanceof FormData;
-                console.log("Enviando con FormData:", isFormData);
 
                 const rol = getCurrentRole();
                 const url = getUpdateProfileEndpoint(rol, id);
                 const respuesta = await axios.put(url, data, getAuthHeaders(isFormData));
 
-                set({ user: respuesta.data?.user || respuesta.data?.data || respuesta.data?.perfil || respuesta.data })
+                const usuarioActualizado = respuesta.data?.user || respuesta.data?.data || respuesta.data?.perfil || respuesta.data;
+                set({ user: usuarioActualizado });
+                // Sincronizar también el storeAuth persistente para que componentes que leen auth-token se actualicen
+                try {
+                    const setUserFn = storeAuth.getState().setUser;
+                    if (typeof setUserFn === 'function') setUserFn(usuarioActualizado);
+                } catch (e) { console.warn('No se pudo sincronizar storeAuth', e); }
+
                 return respuesta; // Añadir return para poder manejar la respuesta
             } catch (error) {
-                console.log(error)
+                console.error(error)
                 toast.error(error.response?.data?.msg || "Error al actualizar el perfil")
                 throw error; // Re-lanzar el error para manejarlo en el componente
             }
@@ -87,7 +94,7 @@ const storeProfile = create((set) => ({
                 toast.success(respuesta?.data?.msg)
                 return respuesta
             } catch (error) {
-                console.log(error)
+                console.error(error)
                 toast.error(error.response?.data?.msg)
             }
         }

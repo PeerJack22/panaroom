@@ -183,7 +183,7 @@ const Details = () => {
                 tipoComentario: tipoComentarioNormalizado,
             };
 
-            console.log("[Details] Enviando payload:", payload);
+            // Debugging logs removed
             
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const url = `${import.meta.env.VITE_BACKEND_URL}/estudiante/queja-sugerencia`;
@@ -194,7 +194,7 @@ const Details = () => {
                 },
             });
             
-            console.log("[Details] Respuesta del servidor:", response?.data);
+            // Debugging logs removed
 
             const comentarioId = response?.data?._id || response?.data?.id;
 
@@ -207,7 +207,7 @@ const Details = () => {
                         calificacion: calificacion,
                     };
 
-                    console.log("[Details] Enviando calificación:", calificacionPayload);
+                    // Debugging logs removed
 
                     const calificacionResponse = await axios.put(calificacionUrl, calificacionPayload, {
                         headers: {
@@ -216,7 +216,7 @@ const Details = () => {
                         },
                     });
 
-                    console.log("[Details] Calificación enviada:", calificacionResponse?.data);
+                    // Debugging logs removed
                 } catch (calificacionError) {
                     console.error("[Details] Error al enviar calificación:", calificacionError);
                     // No lanzar error, continuar con el proceso
