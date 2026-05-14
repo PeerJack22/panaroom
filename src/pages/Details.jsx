@@ -412,6 +412,22 @@ const Details = () => {
                 </button>
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Detalles de la residencia</h1>
 
+                {isArrendatario && departamento?.disponible === false && (
+                    <section className="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p className="text-sm font-semibold text-yellow-800">Departamento desactivado</p>
+                            <p className="text-sm text-yellow-700">Si necesitas conocer el motivo, puedes escribir al administrador.</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => navigate("/dashboard/chat", { state: { abrirChatAdministrador: true, departamentoNombre: departamento?.titulo, arrendatarioNombre: `${user?.nombre || ""} ${user?.apellido || ""}`.trim() } })}
+                            className="shrink-0 rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-yellow-700"
+                        >
+                            Saber por qué se desactivó
+                        </button>
+                    </section>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-stretch">
                     <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Información general</h2>
@@ -544,19 +560,6 @@ const Details = () => {
                         </section>
                     )}
 
-                    {isArrendatario && departamento?.disponible === false && (
-                        <section className="bg-yellow-50 rounded-xl p-5 border border-yellow-200">
-                            <h3 className="text-lg font-semibold text-yellow-800 mb-3">Departamento desactivado</h3>
-                            <p className="text-sm text-yellow-700 mb-4">Este departamento se encuentra desactivado. Si deseas conocer el motivo, puedes contactar con el administrador.</p>
-                            <button
-                                type="button"
-                                onClick={() => navigate("/dashboard/chat", { state: { abrirChatAdministrador: true, departamentoNombre: departamento?.titulo, arrendatarioNombre: `${user?.nombre || ""} ${user?.apellido || ""}`.trim() } })}
-                                className="w-full px-4 py-2 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 transition-colors"
-                            >
-                                Ver motivo de desactivación
-                            </button>
-                        </section>
-                    )}
                 </div>
 
                 <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
