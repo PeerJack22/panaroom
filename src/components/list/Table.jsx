@@ -77,6 +77,12 @@ const Table = () => {
 
         const disponibleActual = dep.disponible === true || dep.disponible === "true";
         const nuevoEstado = !disponibleActual;
+        const estaOcupado = tieneEstudianteAsignado(dep);
+
+        if (!nuevoEstado && estaOcupado) {
+            toast.error("No puedes desactivar esta residencia porque tiene un estudiante asignado.");
+            return;
+        }
         
         // Pedir confirmación si va a desactivar
         if (!nuevoEstado) {

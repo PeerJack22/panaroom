@@ -424,7 +424,7 @@ const Details = () => {
                             onClick={() => navigate("/dashboard/chat", { state: { abrirChatAdministrador: true, departamentoNombre: departamento?.titulo, arrendatarioNombre: `${user?.nombre || ""} ${user?.apellido || ""}`.trim() } })}
                             className="shrink-0 rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-yellow-700"
                         >
-                            Saber por qué se desactivó
+                            Contactar con el administrador
                         </button>
                     </section>
                 )}
