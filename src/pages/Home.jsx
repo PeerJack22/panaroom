@@ -409,23 +409,23 @@ export const Home = () => {
     };
 
     return (
-        <div>
-            <header className="sticky top-0 z-50 w-full py-3 px-6 bg-slate-800/95 backdrop-blur-sm text-white flex flex-col md:flex-row justify-between items-center shadow-md">
+        <div style={{fontFamily: '"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'}}>
+            <header className="sticky top-0 z-50 w-full py-3 px-6 bg-white/80 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center shadow-sm">
                 {/* Logo + Título */}
                 <div className="flex items-center gap-3 mb-3 md:mb-0">
                     <img className="w-14 h-14" src={logo_proyecto} alt="Logo PanaRoom" />
-                    <h1 className="font-bold text-2xl text-cyan-400 leading-none">
-                        Pana<span className="text-white">Room</span>
+                    <h1 className="font-bold text-2xl text-gray-900 leading-none">
+                        Pana<span className="text-blue-700">Room</span>
                     </h1>
                 </div>
 
                 {/* Navegación + Botón */}
                 <div className="flex flex-col md:flex-row items-center gap-3">
                     <ul className="flex gap-4 justify-center flex-wrap text-sm md:text-base">
-                        <li><a href="#" className="hover:text-cyan-400 transition-colors">Inicio</a></li>
-                        <li><a href="#acerca" className="hover:text-cyan-400 transition-colors">Acerca de</a></li>
-                        <li><a href="#servicios" className="hover:text-cyan-400 transition-colors">Servicios</a></li>
-                        <li><a href="#contacto" className="hover:text-cyan-400 transition-colors">Contacto</a></li>
+                        <li><a href="#" className="hover:text-blue-600 transition-colors">Inicio</a></li>
+                        <li><a href="#acerca" className="hover:text-blue-600 transition-colors">Acerca de</a></li>
+                        <li><a href="#servicios" className="hover:text-blue-600 transition-colors">Servicios</a></li>
+                        <li><a href="#contacto" className="hover:text-blue-600 transition-colors">Contacto</a></li>
                     </ul>
                     <button
                         type="button"
@@ -536,25 +536,25 @@ export const Home = () => {
                                         <span className="text-gray-500 px-2 py-1">Servicios incluidos</span>
                                     )}
 
-                                    {servicios.map((servicio) => (
-                                        <span
-                                            key={servicio}
-                                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
-                                        >
-                                            {servicio.charAt(0).toUpperCase() + servicio.slice(1)}
-                                            <button
-                                                type="button"
-                                                className="text-blue-800 hover:text-blue-900"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    removerServicio(servicio);
-                                                }}
-                                                aria-label={`Quitar ${servicio}`}
-                                            >
-                                                x
-                                            </button>
-                                        </span>
-                                    ))}
+                                                    {servicios.map((servicio) => (
+                                                        <span
+                                                            key={servicio}
+                                                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
+                                                        >
+                                                            {servicio.charAt(0).toUpperCase() + servicio.slice(1)}
+                                                            <button
+                                                                type="button"
+                                                                className="text-blue-800 hover:text-blue-900"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    removerServicio(servicio);
+                                                                }}
+                                                                aria-label={`Quitar ${servicio}`}
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </span>
+                                                    ))}
                                 </div>
 
                                 <button
@@ -567,21 +567,21 @@ export const Home = () => {
                                 </button>
                             </div>
 
-                            {abierto && (
-                                <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
-                                    {opcionesServicios.map((servicio) => (
-                                        <button
-                                            key={servicio}
-                                            type="button"
-                                            onClick={() => toggleServicio(servicio)}
-                                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between"
-                                        >
-                                            <span>{servicio.charAt(0).toUpperCase() + servicio.slice(1)}</span>
-                                            {servicios.includes(servicio) && <span className="text-blue-700 font-semibold">✓</span>}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
+                                {abierto && (
+                                    <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+                                        {opcionesServicios.map((servicio) => (
+                                            <button
+                                                key={servicio}
+                                                type="button"
+                                                onClick={() => toggleServicio(servicio)}
+                                                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between"
+                                            >
+                                                <span>{servicio.charAt(0).toUpperCase() + servicio.slice(1)}</span>
+                                                {servicios.includes(servicio) && <span className="text-blue-600 font-semibold">✓</span>}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
 
                         </div>
 
@@ -611,63 +611,63 @@ export const Home = () => {
                                             <p className="mb-2 text-sm font-medium text-gray-700">Alicuota</p>
                                             <div className="flex items-center gap-4 text-sm text-gray-700">
                                                 <label className="inline-flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="alicuota"
-                                                        checked={filtrosAdicionales.alicuota === 'si'}
-                                                        onChange={() => handleFiltroAdicionalChange('alicuota', 'si')}
-                                                    />
-                                                    Si
-                                                </label>
-                                                <label className="inline-flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="alicuota"
-                                                        checked={filtrosAdicionales.alicuota === 'no'}
-                                                        onChange={() => handleFiltroAdicionalChange('alicuota', 'no')}
-                                                    />
-                                                    No
-                                                </label>
-                                            </div>
-                                        </div>
+                                                    <article 
+                                                        key={propiedad.id} 
+                                                        className="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col"
+                                                    >
+                                                        <div className="relative overflow-hidden h-48 bg-gray-200">
+                                                            <img
+                                                                src={propiedad.imagenPrincipal}
+                                                                alt={`Residencia ${propiedad.titulo}`}
+                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                            />
+                                                        </div>
 
-                                        <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">Parqueadero</p>
-                                            <div className="flex items-center gap-4 text-sm text-gray-700">
-                                                <label className="inline-flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="parqueadero"
-                                                        checked={filtrosAdicionales.parqueadero === 'si'}
-                                                        onChange={() => handleFiltroAdicionalChange('parqueadero', 'si')}
-                                                    />
-                                                    Si
-                                                </label>
-                                                <label className="inline-flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="parqueadero"
-                                                        checked={filtrosAdicionales.parqueadero === 'no'}
-                                                        onChange={() => handleFiltroAdicionalChange('parqueadero', 'no')}
-                                                    />
-                                                    No
-                                                </label>
-                                            </div>
-                                        </div>
+                                                        <div className="p-6 flex flex-col flex-1">
+                                                            <div className="flex items-start justify-between gap-3 mb-3">
+                                                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                                                                    {propiedad.titulo}
+                                                                </h3>
+                                                                <span className="text-lg font-bold text-blue-600 whitespace-nowrap">
+                                                                    ${propiedad.precio}
+                                                                </span>
+                                                            </div>
 
-                                        <div>
-                                            <p className="mb-2 text-sm font-medium text-gray-700">¿Se permiten mascotas?</p>
-                                            <div className="flex items-center gap-4 text-sm text-gray-700">
-                                                <label className="inline-flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="mascotas"
-                                                        checked={filtrosAdicionales.mascotas === 'si'}
-                                                        onChange={() => handleFiltroAdicionalChange('mascotas', 'si')}
-                                                    />
-                                                    Si
-                                                </label>
-                                                <label className="inline-flex items-center gap-2">
+                                                            <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+                                                                {propiedad.descripcion}
+                                                            </p>
+
+                                                            <div className="flex items-center gap-1 text-xs text-gray-600 mb-4 pb-4 border-b border-gray-100">
+                                                                <span>{propiedad.direccion}</span>
+                                                            </div>
+
+                                                            <div className="flex flex-wrap gap-2 mb-6 mt-auto">
+                                                                {propiedad.numeroHabitaciones > 0 && (
+                                                                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
+                                                                        {propiedad.numeroHabitaciones} hab.
+                                                                    </span>
+                                                                )}
+                                                                {propiedad.numeroBanos > 0 && (
+                                                                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
+                                                                        {propiedad.numeroBanos} baño(s)
+                                                                    </span>
+                                                                )}
+                                                                {propiedad.parqueadero && (
+                                                                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
+                                                                        Parqueadero
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => manejarClickDetalles(propiedad)}
+                                                                className="w-full px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all transform hover:scale-105 active:scale-95 shadow-md"
+                                                            >
+                                                                Ver detalles
+                                                            </button>
+                                                        </div>
+                                                    </article>
                                                     <input
                                                         type="radio"
                                                         name="mascotas"
@@ -904,7 +904,7 @@ export const Home = () => {
 
             <section className="px-6 py-12 bg-slate-900 text-white">
                 <div className="max-w-6xl mx-auto rounded-2xl border border-white/20 bg-slate-800/80 p-6 md:p-8">
-                    <h2 className="text-xl md:text-2xl font-bold text-cyan-300">
+                    <h2 className="text-xl md:text-2xl font-bold text-blue-300">
                         ¿Quieres publicar tus propiedades en arriendo cerca de la Escuela Politécnica Nacional?
                     </h2>
                     <p className="mt-3 text-slate-200 leading-relaxed text-sm md:text-base">
@@ -915,7 +915,7 @@ export const Home = () => {
                         <button
                             type="button"
                             onClick={() => setMostrarFormularioArrendatario((prev) => !prev)}
-                            className="inline-flex items-center rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold px-5 py-2 transition-colors"
+                            className="inline-flex items-center rounded-full bg-blue-700 hover:bg-blue-600 text-white font-semibold px-5 py-2 transition-colors"
                         >
                             {mostrarFormularioArrendatario ? "Ocultar formulario" : "Clic aquí"}
                         </button>
@@ -936,7 +936,7 @@ export const Home = () => {
                                     value={datosSolicitud.nombre}
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Nombre"
-                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     required
                                 />
                                 <input
@@ -945,7 +945,7 @@ export const Home = () => {
                                     value={datosSolicitud.apellido}
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Apellido"
-                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     required
                                 />
                                 <input
@@ -954,7 +954,7 @@ export const Home = () => {
                                     value={datosSolicitud.direccion}
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Dirección"
-                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 md:col-span-2 text-sm"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2 text-sm"
                                     required
                                 />
                                 <input
@@ -966,7 +966,7 @@ export const Home = () => {
                                     inputMode="numeric"
                                     pattern="[0-9]{7,15}"
                                     title="Ingresa solo números (7 a 15 dígitos)"
-                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     required
                                 />
                                 <input
@@ -977,7 +977,7 @@ export const Home = () => {
                                     placeholder="Correo"
                                     pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
                                     title="Ingresa un correo válido"
-                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     required
                                 />
 
@@ -990,13 +990,13 @@ export const Home = () => {
                                         accept="image/*"
                                         multiple
                                         onChange={manejarCambioDocumentos}
-                                        className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
+                                        className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
                                     />
                                     <p className="mt-2 text-xs text-slate-300">
                                         Sube una o varias imágenes de tu cédula u otros documentos.
                                     </p>
                                     {documentosArrendatario.length > 0 && (
-                                        <p className="mt-1 text-xs text-cyan-300">
+                                        <p className="mt-1 text-xs text-blue-300">
                                             {documentosArrendatario.length} archivo(s) seleccionado(s)
                                         </p>
                                     )}
@@ -1029,15 +1029,12 @@ export const Home = () => {
 
             <footer id="contacto" className='bg-slate-800 text-white py-5 px-6'>
                 <div className='flex flex-col sm:flex-row justify-between items-center gap-3'>
-                    <p className='text-center text-white-400'>© 2025 PanaRoom - Todos los derechos reservados</p>
-                    <div className='flex items-center gap-4'>
-                        <p className='text-center text-white-400'>Correo: contacto@panaroom.com</p>
-                        <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube">
-                            <FaYoutube className='text-2xl hover:text-cyan-400' />
-                        </a>
-                        <a href='https://github.com/PeerJack22/panaroom' target="_blank" rel="noreferrer" aria-label="GitHub PanaRoom">
-                            <FaGithub className='text-2xl hover:text-cyan-400' />
-                        </a>
+                    <div className='flex items-center gap-3'>
+                        <img className="w-10 h-10" src={logo_proyecto} alt="PanaRoom" />
+                        <span className='font-bold text-white text-lg'>Pana<span className='text-blue-400'>Room</span></span>
+                    </div>
+                    <div>
+                        <a href="mailto:contacto@panaroom.com" className='text-sm text-white/90 hover:text-white'>contacto@panaroom.com</a>
                     </div>
                 </div>
             </footer>
