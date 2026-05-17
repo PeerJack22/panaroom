@@ -112,7 +112,8 @@ const loginUser = async (data) => {
     return (
         <div className="flex flex-col sm:flex-row h-screen">
             {/* Imagen LCP visible y detectable desde el HTML */}
-            <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
+            <div className="flex flex-col sm:flex-row h-screen" style={{fontFamily: '"Plus Jakarta Sans", sans-serif'}}>
+                <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
                 <img
                     src="/images/edificio2.webp"
                     alt="Edificio del proyecto PanaRoom"
@@ -138,7 +139,7 @@ const loginUser = async (data) => {
                             <select
                                 value={tipoAcceso}
                                 onChange={(e) => setTipoAcceso(e.target.value)}
-                                className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 text-gray-700 bg-white"
+                                className="w-full rounded-xl border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 outline-none py-2 px-3 text-gray-700 bg-white hover:border-blue-500 transition-colors shadow-sm"
                             >
                                 <option value="arrendatario">Arrendatario</option>
                                 <option value="estudiante">Estudiante</option>
@@ -152,7 +153,7 @@ const loginUser = async (data) => {
                             <input
                                 type="email"
                                 placeholder="Ingresa tu correo"
-                                className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 text-gray-700"
+                                className="w-full rounded-xl border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 outline-none py-2 px-3 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                                 {...register("email", { required: "El correo es obligatorio" })}
                             />
                             {errors.email && <p className="text-red-800">{errors.email.message}</p>}
@@ -165,7 +166,7 @@ const loginUser = async (data) => {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="********************"
-                                    className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 pr-10 text-gray-700"
+                                    className="w-full rounded-xl border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 outline-none py-2 px-3 pr-10 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                                     {...register("password", { required: "La contraseña es obligatoria" })}
                                 />
                                 {errors.password && <p className="text-red-800">{errors.password.message}</p>}
@@ -189,7 +190,7 @@ const loginUser = async (data) => {
 
                         {/* Botón de iniciar sesión */}
                         <div className="my-4">
-                            <button className="py-2 w-full block text-center bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition duration-300">Iniciar sesión</button>
+                            <button className="py-3 w-full block text-center bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all transform hover:scale-105 active:scale-95 shadow-md">Iniciar sesión</button>
                         </div>
                     </form>
 
@@ -201,7 +202,7 @@ const loginUser = async (data) => {
                     {/* Enlaces */}
                     <div className="mt-6 text-sm flex justify-between items-center">
                         <Link to="/" className="text-gray-500 underline hover:text-blue-700">Regresar</Link>
-                        <Link to="/register" className="py-2 px-5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition duration-300">
+                        <Link to="/register" className="py-2.5 px-6 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all transform hover:scale-105 active:scale-95 shadow-md">
                             Registrarse
                         </Link>
                     </div>
