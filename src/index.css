@@ -9,3 +9,54 @@ html {
 body {
     font-family: 'Roboto', sans-serif;
 }
+
+.panaroom-toast-container {
+    width: min(92vw, 380px);
+}
+
+.panaroom-toast {
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    color: #1f2937;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+    min-height: 58px;
+    padding: 12px 14px;
+}
+
+.panaroom-toast-body {
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.panaroom-toast-progress {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    height: 4px;
+}
+
+.Toastify__close-button {
+    color: #6b7280;
+    opacity: 0.9;
+}
+
+.Toastify__close-button:hover {
+    color: #2563eb;
+}
+
+.Toastify__toast--success {
+    border-left: 4px solid #22c55e;
+}
+
+.Toastify__toast--error {
+    border-left: 4px solid #ef4444;
+}
+
+.Toastify__toast--warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.Toastify__toast--info,
+.Toastify__toast--default {
+    border-left: 4px solid #2563eb;
+}

@@ -87,13 +87,17 @@ function App() {
     
     {/* ToastContainer único para toda la aplicación */}
     <ToastContainer 
-      position="bottom-right" 
-      theme="dark"
+      position="top-right"
+      theme="light"
       newestOnTop={true} 
       pauseOnFocusLoss={false}
       closeOnClick
       draggable
       autoClose={3000}
+      className="panaroom-toast-container"
+      toastClassName="panaroom-toast"
+      bodyClassName="panaroom-toast-body"
+      progressClassName="panaroom-toast-progress"
     />
     </>
   )
