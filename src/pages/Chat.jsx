@@ -13,6 +13,21 @@ const Chat = () => {
   const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
   const administradorDestinoId = location?.state?.administradorId || null;
   const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
+  const contactoDestinoId =
+    location?.state?.contactoId ||
+    location?.state?.propietarioId ||
+    location?.state?.arrendatarioId ||
+    null;
+  const contactoDestinoTipo = String(
+    location?.state?.contactoTipo ||
+    (location?.state?.arrendatarioId ? "arrendatario" : "") ||
+    (location?.state?.propietarioId ? "arrendatario" : "")
+  ).toLowerCase();
+  const contactoDestinoNombre =
+    location?.state?.contactoNombre ||
+    location?.state?.propietarioNombre ||
+    location?.state?.arrendatarioNombre ||
+    null;
   const arrendatarioNombre = location?.state?.arrendatarioNombre || null;
   const roleNormalized = String(rol || "").toLowerCase();
   const isEstudiante = roleNormalized === "estudiante";
@@ -124,6 +139,30 @@ const Chat = () => {
             }
           }
         }
+
+        if (contactoDestinoId && contactoDestinoTipo && !contactoActivo) {
+          const existing = mapped.find(
+            (c) => String(c.id) === String(contactoDestinoId) && String(c.tipo) === String(contactoDestinoTipo)
+          );
+
+          if (existing) {
+            setContactoActivo(existing);
+          } else {
+            const fallbackContacto = {
+              id: contactoDestinoId,
+              tipo: contactoDestinoTipo,
+              nombre: contactoDestinoNombre || "Contacto",
+              unread: 0,
+            };
+            setContactoActivo(fallbackContacto);
+            setContactos((prevContactos) => {
+              const exists = prevContactos.some(
+                (c) => String(c.id) === String(contactoDestinoId) && String(c.tipo) === String(contactoDestinoTipo)
+              );
+              return exists ? prevContactos : [fallbackContacto, ...prevContactos];
+            });
+          }
+        }
       } catch (err) {
         console.error('[Chat] cargar contactos', err);
       } finally {
@@ -131,7 +170,20 @@ const Chat = () => {
       }
     };
     cargar();
-  }, [token, userId, isArrendatario, isEstudiante, isAdministrador, abrirChatAdministrador, administradorDestinoId, administradorDestinoNombre, contactoActivo]);
+  }, [
+    token,
+    userId,
+    isArrendatario,
+    isEstudiante,
+    isAdministrador,
+    abrirChatAdministrador,
+    administradorDestinoId,
+    administradorDestinoNombre,
+    contactoDestinoId,
+    contactoDestinoTipo,
+    contactoDestinoNombre,
+    contactoActivo,
+  ]);
 
   // cargar historial cuando cambia contacto
   useEffect(() => {
@@ -157,7 +209,12 @@ const Chat = () => {
   useEffect(() => {
     const socketBase = String(import.meta.env.VITE_BACKEND_URL || "").replace(/\/api\/?$/, "");
     if (!socketBase) return;
-    const socket = io(socketBase, { transports: ['polling','websocket'], auth: { token }, withCredentials: true });
+    const socket = io(socketBase, {
+      transports: ['polling'],
+      upgrade: false,
+      auth: { token },
+      withCredentials: true,
+    });
 
     const onNuevo = (payload) => {
       const m = payload?.chat || payload;
