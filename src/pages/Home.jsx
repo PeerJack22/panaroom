@@ -405,7 +405,7 @@ export const Home = () => {
     return (
         <div className="font-sans">
             {/* NAVBAR MEJORADO */}
-            <nav className="fixed w-full z-50 bg-white/70 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
+            <nav className="fixed w-full z-[60] bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-md transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-3 group">
