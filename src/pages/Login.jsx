@@ -209,7 +209,6 @@ const loginUser = async (data) => {
                 </div>
             </div>
         </div>
-    );
     </div>
 )
 };
