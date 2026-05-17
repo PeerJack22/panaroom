@@ -45,6 +45,7 @@ const Table = () => {
         titulo: "",
         estado: "",
         categoria: "",
+        ocupacion: "",
     });
     const [paginaActual, setPaginaActual] = useState(1);
     const [animandoDepartamentos, setAnimandoDepartamentos] = useState(false);
@@ -267,7 +268,13 @@ const Table = () => {
             const categoriaDepartamento = String(dep?.categoria || "").trim().toLowerCase();
             const matchCategoriaAdmin = !categoriaFiltroAdmin || !categoriaDepartamento || categoriaDepartamento === categoriaFiltroAdmin;
 
-            return matchTitulo && matchEstado && matchCategoriaAdmin;
+            const ocupacionFiltro = adminFilters.ocupacion;
+            const estaOcupado = tieneEstudianteAsignado(dep);
+            const matchOcupacion =
+                !ocupacionFiltro ||
+                (ocupacionFiltro === "ocupadas" ? estaOcupado : !estaOcupado);
+
+            return matchTitulo && matchEstado && matchCategoriaAdmin && matchOcupacion;
         }
 
         // Estudiante: solo departamentos disponibles
@@ -324,7 +331,7 @@ const Table = () => {
     });
 
     const limpiarFiltrosAdmin = () => {
-        setAdminFilters({ titulo: "", estado: "" });
+        setAdminFilters({ titulo: "", estado: "", categoria: "", ocupacion: "" });
     };
 
     useEffect(() => {
@@ -372,28 +379,28 @@ const Table = () => {
                     <button
                         type="button"
                         onClick={() => navigate('/dashboard/crear')}
-                        className="inline-flex items-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600 transition-colors"
+                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                     >
                         + Crear residencia
                     </button>
                 </div>
             )}
 
-            <div className="w-full mt-5 mb-4 p-4 rounded-lg bg-white shadow-lg border border-gray-200">
+            <div className="w-full mt-5 mb-4 p-5 rounded-2xl bg-white shadow-sm border border-gray-200">
                 {isAdminOrArrendatario ? (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <input
                             type="text"
                             value={adminFilters.titulo}
                             onChange={(e) => setAdminFilters((prev) => ({ ...prev, titulo: e.target.value }))}
                             placeholder="Filtrar por título"
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         />
 
                         <select
                             value={adminFilters.estado}
                             onChange={(e) => setAdminFilters((prev) => ({ ...prev, estado: e.target.value }))}
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         >
                             <option value="">Todos los departamentos</option>
                             <option value="habilitado">Habilitados</option>
@@ -403,17 +410,27 @@ const Table = () => {
                         <select
                             value={adminFilters.categoria}
                             onChange={(e) => setAdminFilters((prev) => ({ ...prev, categoria: e.target.value }))}
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         >
                             <option value="">Todas las categorías</option>
                             <option value="departamento">Departamento</option>
                             <option value="suit">Suite</option>
                         </select>
 
+                        <select
+                            value={adminFilters.ocupacion}
+                            onChange={(e) => setAdminFilters((prev) => ({ ...prev, ocupacion: e.target.value }))}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
+                        >
+                            <option value="">Todas las residencias</option>
+                            <option value="ocupadas">Ocupadas</option>
+                            <option value="no-ocupadas">No ocupadas</option>
+                        </select>
+
                         <button
                             type="button"
                             onClick={limpiarFiltrosAdmin}
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors shadow-sm"
                         >
                             Limpiar filtros
                         </button>
@@ -424,14 +441,14 @@ const Table = () => {
                             <button
                                 type="button"
                                 onClick={() => setAbiertoPrecio(!abiertoPrecio)}
-                                className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-colors shadow-sm"
                             >
                                 <span>{textoPrecio()}</span>
                                 <span className="text-gray-500">{abiertoPrecio ? "▴" : "▾"}</span>
                             </button>
 
                             {abiertoPrecio && (
-                                <div className="absolute z-20 mt-1 w-[320px] rounded-md border border-gray-300 bg-white shadow-lg p-3 space-y-3">
+                                <div className="absolute z-20 mt-2 w-[320px] rounded-xl border border-gray-300 bg-white shadow-xl p-4 space-y-3">
                                     <div className="grid grid-cols-2 gap-2">
                                         <input
                                             type="number"
@@ -440,7 +457,7 @@ const Table = () => {
                                             value={filters.arriendoMin}
                                             onChange={handleFilterChange}
                                             placeholder="Mín"
-                                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
+                                            className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
                                         />
                                         <input
                                             type="number"
@@ -449,21 +466,21 @@ const Table = () => {
                                             value={filters.arriendoMax}
                                             onChange={handleFilterChange}
                                             placeholder="Máx"
-                                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
+                                            className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
                                         />
                                     </div>
                                     <div className="flex justify-end gap-2">
                                         <button
                                             type="button"
                                             onClick={() => setFilters((prev) => ({ ...prev, arriendoMin: "", arriendoMax: "" }))}
-                                            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                            className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
                                         >
                                             Limpiar
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setAbiertoPrecio(false)}
-                                            className="px-3 py-1.5 text-sm rounded-md bg-blue-700 text-white hover:bg-blue-600"
+                                            className="px-3 py-1.5 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                                         >
                                             Aplicar
                                         </button>
@@ -479,7 +496,7 @@ const Table = () => {
                             value={filters.habitaciones}
                             onChange={handleFilterChange}
                             placeholder="Número de habitaciones"
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         />
 
                         <input
@@ -489,14 +506,14 @@ const Table = () => {
                             value={filters.banos}
                             onChange={handleFilterChange}
                             placeholder="Número de baños"
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         />
 
                         <select
                             name="categoria"
                             value={filters.categoria}
                             onChange={handleFilterChange}
-                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         >
                             <option value="">Todas las categorías</option>
                             <option value="departamento">Departamento</option>
@@ -504,7 +521,7 @@ const Table = () => {
                         </select>
 
                         <div className="relative">
-                            <div className="w-full rounded-md border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1 min-h-[42px] flex items-center gap-2">
+                            <div className="w-full rounded-xl border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 min-h-[44px] flex items-center gap-2 hover:border-blue-500 transition-colors shadow-sm">
                                 <div
                                     className="flex-1 flex flex-wrap gap-2 cursor-pointer"
                                     onClick={() => setAbiertoServicios(!abiertoServicios)}
@@ -545,13 +562,13 @@ const Table = () => {
                             </div>
 
                             {abiertoServicios && (
-                                <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+                                <div className="absolute z-10 mt-2 w-full rounded-xl border border-gray-300 bg-white shadow-xl">
                                     {opcionesServicios.map((servicio) => (
                                         <button
                                             key={servicio}
                                             type="button"
                                             onClick={() => toggleServicio(servicio)}
-                                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between"
+                                            className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between first:rounded-t-xl last:rounded-b-xl transition-colors"
                                         >
                                             <span>{servicio.charAt(0).toUpperCase() + servicio.slice(1)}</span>
                                             {filters.servicios.includes(servicio) && <span className="text-blue-700 font-semibold">✓</span>}
@@ -565,7 +582,7 @@ const Table = () => {
                             <button
                                 type="button"
                                 onClick={() => setAbiertoMasFiltros((prev) => !prev)}
-                                className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-colors shadow-sm"
                             >
                                 <span>Más filtros</span>
                                 {contarFiltrosAdicionalesAplicados > 0 && (
@@ -577,7 +594,7 @@ const Table = () => {
                             </button>
 
                             {abiertoMasFiltros && (
-                                <div className="absolute right-0 z-30 mt-12 w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
+                                <div className="absolute right-0 z-30 mt-2 w-full max-w-md rounded-xl border border-gray-200 bg-white p-4 shadow-2xl">
                                     <div className="mb-3 border-b border-gray-200 pb-2">
                                         <h3 className="text-sm font-semibold text-gray-800">Más filtros</h3>
                                     </div>
@@ -660,14 +677,14 @@ const Table = () => {
                                         <button
                                             type="button"
                                             onClick={limpiarFiltrosAdicionales}
-                                            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100"
+                                            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                                         >
                                             Limpiar filtro
                                         </button>
                                         <button
                                             type="button"
                                             onClick={aplicarFiltrosAdicionales}
-                                            className="rounded-md bg-blue-700 px-3 py-1.5 text-sm text-white hover:bg-blue-600"
+                                            className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 transition-colors"
                                         >
                                             Aplicar
                                         </button>
@@ -691,84 +708,86 @@ const Table = () => {
                 <div className="mt-5">
                     <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ease-out ${animandoDepartamentos ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
                         {departamentosPaginados.map((dep) => (
-                            <article key={dep._id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
+                            <article key={dep._id} className="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col">
                                 <img
                                     src={dep?.imagenes?.[0]?.url || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"}
                                     alt={`Imagen principal de ${dep.titulo}`}
-                                    className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
 
-                                <div className="flex items-start justify-between gap-3">
-                                    <h3 className="text-lg font-bold text-gray-800 leading-tight">{dep.titulo}</h3>
-                                </div>
+                                <div className="p-6 flex flex-col flex-1 gap-3">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-tight">{dep.titulo}</h3>
+                                    </div>
 
-                                <p className="text-sm text-gray-600 line-clamp-3">{dep.descripcion}</p>
+                                    <p className="text-sm text-gray-600 line-clamp-3">{dep.descripcion}</p>
 
-                                <p className="text-sm text-gray-700">
-                                    <span className="font-semibold">Dirección:</span> {dep.direccion}
-                                </p>
+                                    <p className="text-sm text-gray-700">
+                                        <span className="font-semibold">Dirección:</span> {dep.direccion}
+                                    </p>
 
-                                <p className="text-sm text-blue-800 font-semibold">Precio: $ {dep.precioMensual}</p>
+                                    <p className="text-sm text-blue-700 font-semibold">Precio: $ {dep.precioMensual}</p>
 
-                                <div className="mt-auto flex items-center justify-end gap-3 pt-2">
-                                    <button
-                                        type="button"
-                                        title="Más información"
-                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
-                                        onClick={() => navigate(`/dashboard/visualizar/${dep._id}`, { state: { from: "/dashboard/listar" } })}
-                                    >
-                                        <MdInfo className="h-5 w-5" />
-                                        Ver más
-                                    </button>
-
-                                    {userRol === "administrador" && (
+                                    <div className="mt-auto flex items-center justify-end gap-3 pt-2">
                                         <button
                                             type="button"
-                                            title={dep?.disponible === false ? "Activar" : "Desactivar"}
-                                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors ${
-                                                dep?.disponible === false
-                                                    ? "border-green-300 text-green-700 hover:bg-green-50"
-                                                    : "border-red-300 text-red-700 hover:bg-red-50"
-                                            }`}
-                                            onClick={() => toggleDisponibilidad(dep)}
+                                            title="Más información"
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors"
+                                            onClick={() => navigate(`/dashboard/visualizar/${dep._id}`, { state: { from: "/dashboard/listar" } })}
                                         >
-                                            {dep?.disponible === false ? (
-                                                <>
-                                                    <MdToggleOff className="h-5 w-5" />
-                                                    Activar
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <MdToggleOn className="h-5 w-5" />
-                                                    Desactivar
-                                                </>
-                                            )}
+                                            <MdInfo className="h-5 w-5" />
+                                            Ver más
                                         </button>
-                                    )}
 
-                                    {(userRol === "arrendador" && (
-                                        typeof dep.arrendatario === "object" 
-                                            ? (dep.arrendatario?._id || dep.arrendatario?.id) === userId
-                                            : dep.arrendatario === userId
-                                    ) && dep?.disponible === false) && (
-                                        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-300 text-red-700 bg-red-50 text-sm font-medium">
-                                            <MdToggleOff className="h-5 w-5" />
-                                            Desactivado
-                                        </span>
-                                    )}
+                                        {userRol === "administrador" && (
+                                            <button
+                                                type="button"
+                                                title={dep?.disponible === false ? "Activar" : "Desactivar"}
+                                                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
+                                                    dep?.disponible === false
+                                                        ? "border-green-300 text-green-700 hover:bg-green-50"
+                                                        : "border-red-300 text-red-700 hover:bg-red-50"
+                                                }`}
+                                                onClick={() => toggleDisponibilidad(dep)}
+                                            >
+                                                {dep?.disponible === false ? (
+                                                    <>
+                                                        <MdToggleOff className="h-5 w-5" />
+                                                        Activar
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <MdToggleOn className="h-5 w-5" />
+                                                        Desactivar
+                                                    </>
+                                                )}
+                                            </button>
+                                        )}
+
+                                        {(userRol === "arrendador" && (
+                                            typeof dep.arrendatario === "object" 
+                                                ? (dep.arrendatario?._id || dep.arrendatario?.id) === userId
+                                                : dep.arrendatario === userId
+                                        ) && dep?.disponible === false) && (
+                                            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-red-300 text-red-700 bg-red-50 text-sm font-medium">
+                                                <MdToggleOff className="h-5 w-5" />
+                                                Desactivado
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </article>
                         ))}
                     </div>
 
                     {departamentosFiltrados.length > elementosPorPagina && (
-                        <div className="mt-6 flex justify-center">
-                            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                        <div className="flex justify-center mt-12">
+                            <div className="flex items-center gap-2 flex-wrap justify-center">
                                 <button
                                     type="button"
                                     onClick={() => cambiarPagina(1)}
                                     disabled={paginaActual === 1}
-                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
                                     aria-label="Primera página"
                                 >
                                     &laquo;
@@ -778,7 +797,7 @@ const Table = () => {
                                     type="button"
                                     onClick={() => cambiarPagina(paginaActual - 1)}
                                     disabled={paginaActual === 1}
-                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
                                     aria-label="Página anterior"
                                 >
                                     &lsaquo;
@@ -786,7 +805,7 @@ const Table = () => {
 
                                 {paginasVisibles.map((pagina, index) =>
                                     pagina === "..." ? (
-                                        <span key={`ellipsis-${index}`} className="px-1.5 text-gray-400 text-xs select-none">
+                                        <span key={`ellipsis-${index}`} className="px-2 text-gray-400 text-sm select-none">
                                             ...
                                         </span>
                                     ) : (
@@ -794,10 +813,10 @@ const Table = () => {
                                             key={pagina}
                                             type="button"
                                             onClick={() => cambiarPagina(pagina)}
-                                            className={`h-8 min-w-8 px-2 rounded-full text-xs font-semibold transition-colors border ${
+                                            className={`h-10 w-10 rounded-lg text-sm font-semibold transition-all ${
                                                 pagina === paginaActual
-                                                    ? "bg-blue-700 text-white border-blue-700 shadow-sm"
-                                                    : "bg-white text-gray-600 border-gray-300 hover:bg-blue-50"
+                                                    ? "bg-blue-600 text-white border border-blue-600 shadow-md"
+                                                    : "bg-white text-gray-600 border border-gray-300 hover:border-blue-600 hover:text-blue-600"
                                             }`}
                                         >
                                             {pagina}
@@ -809,7 +828,7 @@ const Table = () => {
                                     type="button"
                                     onClick={() => cambiarPagina(paginaActual + 1)}
                                     disabled={paginaActual === totalPaginas}
-                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
                                     aria-label="Página siguiente"
                                 >
                                     &rsaquo;
@@ -819,7 +838,7 @@ const Table = () => {
                                     type="button"
                                     onClick={() => cambiarPagina(totalPaginas)}
                                     disabled={paginaActual === totalPaginas}
-                                    className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
                                     aria-label="Última página"
                                 >
                                     &raquo;
