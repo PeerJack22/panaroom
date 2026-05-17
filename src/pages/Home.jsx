@@ -836,8 +836,8 @@ export const Home = () => {
                                                 </span>
                                             )}
                                             {propiedad.parqueadero && (
-                                                <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-semibold">
-                                                    🅿 Parq.
+                                                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
+                                                    Parqueadero
                                                 </span>
                                             )}
                                         </div>
@@ -976,22 +976,18 @@ export const Home = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 {
-                                    icon: "📋",
                                     titulo: "Gestión de Publicaciones",
                                     contenido: "Publica y administra residencias de forma fácil y eficiente."
                                 },
                                 {
-                                    icon: "👤",
                                     titulo: "Perfiles Personalizados",
                                     contenido: "Crea tu perfil y conecta con propietarios confiables."
                                 },
                                 {
-                                    icon: "📸",
                                     titulo: "Información Detallada",
                                     contenido: "Accede a fotos de alta calidad y descripciones completas."
                                 },
                                 {
-                                    icon: "💬",
                                     titulo: "Chat en Tiempo Real",
                                     contenido: "Comunícate directamente con propietarios y arrendatarios."
                                 }
@@ -1000,7 +996,7 @@ export const Home = () => {
                                     key={i}
                                     className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center"
                                 >
-                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{servicio.icon}</div>
+                                    <div className="w-14 h-14 bg-blue-100 rounded-xl mx-auto mb-4" />
                                     <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                                         {servicio.titulo}
                                     </h4>
@@ -1143,20 +1139,11 @@ export const Home = () => {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                         {/* Brand */}
                         <div>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                                    PR
-                                </div>
-                                <span className="text-2xl font-bold text-white">PanaRoom</span>
-                            </div>
                             <p className="text-sm leading-relaxed mb-6">
                                 Conectamos estudiantes con residencias de calidad en Quito. Transparencia y confianza en cada búsqueda.
                             </p>
                             <div className="flex gap-4">
-                                <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
-                                    <FaYoutube className="text-lg" />
-                                </a>
-                                <a href="https://github.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                                <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
                                     <FaGithub className="text-lg" />
                                 </a>
                             </div>
@@ -1173,42 +1160,12 @@ export const Home = () => {
                             </ul>
                         </div>
 
-                        {/* Links */}
-                        <div>
-                            <h4 className="text-white font-bold mb-4">Soporte</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Centro de Ayuda</a></li>
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Reportar Problema</a></li>
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Preguntas Frecuentes</a></li>
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Contacto</a></li>
-                            </ul>
-                        </div>
 
-                        {/* Newsletter */}
-                        <div>
-                            <h4 className="text-white font-bold mb-4">Suscribirse</h4>
-                            <p className="text-sm mb-4">Recibe noticias sobre nuevas residencias.</p>
-                            <div className="flex gap-2">
-                                <input 
-                                    type="email" 
-                                    placeholder="Tu email" 
-                                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-600"
-                                />
-                                <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white transition-colors font-semibold">
-                                    →
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Bottom */}
                     <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-                        <p>&copy; 2025 PanaRoom. Todos los derechos reservados.</p>
-                        <div className="flex gap-6">
-                            <a href="#" className="hover:text-blue-400 transition-colors">Privacidad</a>
-                            <a href="#" className="hover:text-blue-400 transition-colors">Términos de Servicio</a>
-                            <a href="#" className="hover:text-blue-400 transition-colors">Cookies</a>
-                        </div>
+                        <p>&copy; 2026 PanaRoom. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </footer>
