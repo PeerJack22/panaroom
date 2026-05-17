@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 
 
 
@@ -110,7 +111,7 @@ const loginUser = async (data) => {
 };
 
     return (
-        <div className="flex flex-col sm:flex-row h-screen">
+        <div className="flex flex-col sm:flex-row h-screen bg-white" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             {/* Imagen LCP visible y detectable desde el HTML */}
             <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
                 <img
@@ -138,7 +139,7 @@ const loginUser = async (data) => {
                             <select
                                 value={tipoAcceso}
                                 onChange={(e) => setTipoAcceso(e.target.value)}
-                                className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 text-gray-700 bg-white"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                             >
                                 <option value="arrendatario">Arrendatario</option>
                                 <option value="estudiante">Estudiante</option>
@@ -152,7 +153,7 @@ const loginUser = async (data) => {
                             <input
                                 type="email"
                                 placeholder="Ingresa tu correo"
-                                className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 text-gray-700"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                 {...register("email", { required: "El correo es obligatorio" })}
                             />
                             {errors.email && <p className="text-red-800">{errors.email.message}</p>}
@@ -164,32 +165,25 @@ const loginUser = async (data) => {
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="********************"
-                                    className="w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none py-2 px-3 pr-10 text-gray-700"
+                                    placeholder="Crea una contraseña segura"
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pr-10 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     {...register("password", { required: "La contraseña es obligatoria" })}
                                 />
                                 {errors.password && <p className="text-red-800">{errors.password.message}</p>}
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute top-2.5 right-3 text-gray-500 hover:text-gray-700"
+                                    className="absolute top-2.5 right-3 text-gray-500 hover:text-blue-600 transition-colors"
+                                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                                 >
-                                    {showPassword ? (
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A9.956 9.956 0 0112 19c-4.418 0-8.165-2.928-9.53-7a10.005 10.005 0 0119.06 0 9.956 9.956 0 01-1.845 3.35M9.9 14.32a3 3 0 114.2-4.2m.5 3.5l3.8 3.8m-3.8-3.8L5.5 5.5" />
-                                        </svg>
-                                    ) : (
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-9.95 0a9.96 9.96 0 0119.9 0m-19.9 0a9.96 9.96 0 0119.9 0M3 3l18 18" />
-                                        </svg>
-                                    )}
+                                    {showPassword ? <FaRegEyeSlash className="w-5 h-5" /> : <FaRegEye className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
 
                         {/* Botón de iniciar sesión */}
                         <div className="my-4">
-                            <button className="py-2 w-full block text-center bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition duration-300">Iniciar sesión</button>
+                            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-md mt-2">Iniciar sesión</button>
                         </div>
                     </form>
 
@@ -200,8 +194,8 @@ const loginUser = async (data) => {
 
                     {/* Enlaces */}
                     <div className="mt-6 text-sm flex justify-between items-center">
-                        <Link to="/" className="text-gray-500 underline hover:text-blue-700">Regresar</Link>
-                        <Link to="/register" className="py-2 px-5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition duration-300">
+                        <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Regresar</Link>
+                        <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-5 rounded-xl font-semibold transition-all shadow-sm">
                             Registrarse
                         </Link>
                     </div>
