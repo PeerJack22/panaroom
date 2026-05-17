@@ -970,7 +970,7 @@ export const Home = () => {
                         <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Nuestros Servicios</h2>
                         <p className="text-gray-600 text-center mb-12">Ofrecemos soluciones completas para tu búsqueda de residencia</p>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                             {[
                                 {
                                     icon: FaClipboardList,
