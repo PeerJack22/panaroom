@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaImage, FaComments } from "react-icons/fa6";
+import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaImage, FaComments, FaBullhorn } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
@@ -991,6 +991,11 @@ export const Home = () => {
                                     icon: FaComments,
                                     titulo: "Chat en Tiempo Real",
                                     contenido: "Comunícate directamente con propietarios y arrendatarios."
+                                },
+                                {
+                                    icon: FaBullhorn,
+                                    titulo: "Quejas y Sugerencias",
+                                    contenido: "Envía tus comentarios para mejorar la experiencia."
                                 }
                             ].map((servicio, i) => {
                                 const IconComponent = servicio.icon;
