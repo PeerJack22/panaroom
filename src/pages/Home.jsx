@@ -492,7 +492,7 @@ export const Home = () => {
             </nav>
 
             {/* MAIN CONTENT */}
-            <main className="pt-24">
+            <main>
                 {/* HERO + FILTROS */}
                 <section className="bg-gradient-to-b from-blue-50 to-white py-12 px-6">
                     <div className="max-w-7xl mx-auto">
