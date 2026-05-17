@@ -87,6 +87,7 @@ const Details = () => {
     const [calificacion, setCalificacion] = useState(0);
 
     const isEstudiante = rol === 'estudiante';
+    const isAdministrador = rol === 'administrador';
     const isArrendatario = rol === 'arrendatario';
 
     const abrirLightbox = (index) => setImagenActiva(index);
@@ -209,7 +210,7 @@ const Details = () => {
 
                     // Debugging logs removed
 
-                    const calificacionResponse = await axios.put(calificacionUrl, calificacionPayload, {
+                    await axios.put(calificacionUrl, calificacionPayload, {
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${storedUser?.state?.token}`,
@@ -548,13 +549,13 @@ const Details = () => {
                                 </div>
                             </div>
 
-                            {isEstudiante && !tieneEstudianteAsignado && (
+                            {(isAdministrador || (isEstudiante && !tieneEstudianteAsignado)) && (
                                 <button
                                     type="button"
                                     onClick={() => navigate("/dashboard/chat", { state: { propietarioId: propietario?._id, propietarioNombre: `${propietario?.nombre || ""} ${propietario?.apellido || ""}`.trim(), departamentoId: departamento?._id, departamentoNombre: departamento?.titulo } })}
                                     className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
                                 >
-                                    Chatear con propietario
+                                    {isAdministrador ? "Chatear con arrendatario" : "Chatear con propietario"}
                                 </button>
                             )}
                         </section>
