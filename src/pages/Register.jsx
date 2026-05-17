@@ -35,24 +35,62 @@ export const Register = () => {
                     </p>
 
                     <form onSubmit={handleSubmit(registro)} className="space-y-4">
-                        {[
-                            { label: "Nombre", name: "nombre", type: "text", placeholder: "Ingresa tu nombre" },
-                            { label: "Apellido", name: "apellido", type: "text", placeholder: "Ingresa tu apellido" },
-                            { label: "Dirección", name: "direccion", type: "text", placeholder: "Ingresa tu dirección de domicilio" },
-                            { label: "Celular", name: "celular", type: "number", placeholder: "Ingresa tu celular" },
-                            { label: "Correo electrónico", name: "email", type: "email", placeholder: "Ingresa tu correo electrónico" },
-                        ].map(({ label, name, type, placeholder }) => (
-                            <div key={name}>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
                                 <input
-                                    type={type}
-                                    placeholder={placeholder}
+                                    type="text"
+                                    placeholder="Ingresa tu nombre"
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    {...register(name, { required: `El ${label.toLowerCase()} es obligatorio` })}
+                                    {...register("nombre", { required: "El nombre es obligatorio" })}
                                 />
-                                {errors[name] && <p className="text-sm text-red-600 mt-1">{errors[name].message}</p>}
+                                {errors.nombre && <p className="text-sm text-red-600 mt-1">{errors.nombre.message}</p>}
                             </div>
-                        ))}
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Apellido</label>
+                                <input
+                                    type="text"
+                                    placeholder="Ingresa tu apellido"
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    {...register("apellido", { required: "El apellido es obligatorio" })}
+                                />
+                                {errors.apellido && <p className="text-sm text-red-600 mt-1">{errors.apellido.message}</p>}
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Dirección</label>
+                                <input
+                                    type="text"
+                                    placeholder="Ingresa tu dirección de domicilio"
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    {...register("direccion", { required: "La dirección es obligatoria" })}
+                                />
+                                {errors.direccion && <p className="text-sm text-red-600 mt-1">{errors.direccion.message}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Celular</label>
+                                <input
+                                    type="number"
+                                    placeholder="Ingresa tu celular"
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    {...register("celular", { required: "El celular es obligatorio" })}
+                                />
+                                {errors.celular && <p className="text-sm text-red-600 mt-1">{errors.celular.message}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
+                                <input
+                                    type="email"
+                                    placeholder="Ingresa tu correo electrónico"
+                                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    {...register("email", { required: "El correo electrónico es obligatorio" })}
+                                />
+                                {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>}
+                            </div>
+                        </div>
 
                         {/* Contraseña */}
                         <div>
@@ -76,7 +114,7 @@ export const Register = () => {
                             </div>
                         </div>
 
-                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-md mt-6">
+                        <button className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 mt-6">
                             Registrarse
                         </button>
                     </form>
@@ -85,7 +123,7 @@ export const Register = () => {
                         <p>¿Ya tienes una cuenta?</p>
                         <Link
                             to="/loginEstudiante"
-                            className="bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-5 rounded-xl font-semibold transition-all shadow-sm"
+                            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                         >
                             Iniciar sesión
                         </Link>

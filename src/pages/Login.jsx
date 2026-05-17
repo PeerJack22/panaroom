@@ -183,7 +183,7 @@ const loginUser = async (data) => {
 
                         {/* Botón de iniciar sesión */}
                         <div className="my-4">
-                            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-md mt-2">Iniciar sesión</button>
+                            <button className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5">Iniciar sesión</button>
                         </div>
                     </form>
 
@@ -195,7 +195,7 @@ const loginUser = async (data) => {
                     {/* Enlaces */}
                     <div className="mt-6 text-sm flex justify-between items-center">
                         <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Regresar</Link>
-                        <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-5 rounded-xl font-semibold transition-all shadow-sm">
+                        <Link to="/register" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5">
                             Registrarse
                         </Link>
                     </div>
