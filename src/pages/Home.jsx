@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaImage, FaComments, FaBullhorn } from "react-icons/fa6";
+import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaComments, FaBullhorn } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
@@ -970,7 +970,7 @@ export const Home = () => {
                         <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Nuestros Servicios</h2>
                         <p className="text-gray-600 text-center mb-12">Ofrecemos soluciones completas para tu búsqueda de residencia</p>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 {
                                     icon: FaClipboardList,
@@ -981,11 +981,6 @@ export const Home = () => {
                                     icon: FaUser,
                                     titulo: "Perfiles Personalizados",
                                     contenido: "Crea tu perfil y conecta con propietarios confiables."
-                                },
-                                {
-                                    icon: FaImage,
-                                    titulo: "Información Detallada",
-                                    contenido: "Accede a fotos de alta calidad y descripciones completas."
                                 },
                                 {
                                     icon: FaComments,
