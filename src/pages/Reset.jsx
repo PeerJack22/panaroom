@@ -140,6 +140,8 @@ const Reset = () => {
                     >
                         {isSubmitting ? 'Enviando...' : 'Enviar'}
                     </button>
+
+                    <div className="mt-4 border-t border-gray-200" />
                 </form>
             )}
         </div>

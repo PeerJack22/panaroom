@@ -188,8 +188,10 @@ const loginUser = async (data) => {
                     </form>
 
                     {/* Olvidaste tu contraseña */}
-                    <div className="mt-6 text-xs text-center">
-                        <Link to={`/forgot/${tipoAcceso}`} className="text-gray-500 underline hover:text-blue-700">¿Olvidaste tu contraseña?</Link>
+                    <div className="mt-4 border-t border-gray-200 pt-4 text-sm flex justify-center items-center">
+                        <Link to={`/forgot/${tipoAcceso}`} className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            ¿Olvidaste tu contraseña?
+                        </Link>
                     </div>
 
                     {/* Enlaces */}

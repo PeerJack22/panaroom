@@ -79,7 +79,7 @@ export const Forgot = () => {
                         </div>
                     </form>
 
-                    <div className="text-sm flex justify-center items-center pt-2">
+                    <div className="mt-4 border-t border-gray-200 pt-4 text-sm flex justify-center items-center">
                         <Link to="/login" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
                             ¿Ya tienes una cuenta? Iniciar sesión
                         </Link>
