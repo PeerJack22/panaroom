@@ -62,7 +62,6 @@ const esBooleanoTrue = (valor) => {
 export const Home = () => {
     const navigate = useNavigate();
     const { token } = storeAuth();
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [servicios, setServicios] = useState([]);
     const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
     const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
@@ -154,8 +153,10 @@ export const Home = () => {
     }, []);
 
     const propiedadesFiltradas = propiedades.filter((propiedad) => {
+        // Filtrar solo propiedades disponibles
         if (propiedad.disponible === false) return false;
         
+        // Excluir residencias con estudiante ya asignado
         if (propiedad?.estudianteId || (propiedad?.estudiante && String(propiedad.estudiante).trim() !== "")) {
             return false;
         }
@@ -339,6 +340,7 @@ export const Home = () => {
             return;
         }
 
+        // Validación: asegurar que el usuario haya adjuntado al menos un documento
         if (!documentosArrendatario || documentosArrendatario.length === 0) {
             setEstadoSolicitud({
                 tipo: "error",
@@ -363,6 +365,10 @@ export const Home = () => {
 
             const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/crear`;
 
+            // DEBUG: listar entradas de FormData para verificar archivos antes de enviar
+            // Debugging logs removed: previously listed FormData entries here
+
+            // No forzar "Content-Type" — el navegador añade el boundary automáticamente
             const response = await axios.post(url, formData);
 
             setEstadoSolicitud({
@@ -403,817 +409,638 @@ export const Home = () => {
     };
 
     return (
-        <div className="font-sans">
-            {/* NAVBAR MEJORADO */}
-            <nav className="fixed w-full z-50 bg-white/70 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-                    {/* Logo */}
-                    <Link to="/" className="flex items-center gap-3 group">
-                        <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                            <span className="text-xl font-bold">PR</span>
-                        </div>
-                        <div>
-                            <span className="text-2xl font-bold text-gray-900 block leading-none">PanaRoom</span>
-                            <span className="text-xs text-gray-500 font-semibold tracking-wider">RESIDENCIAS</span>
-                        </div>
-                    </Link>
-
-                    {/* Desktop Menu */}
-                    <div className="hidden lg:flex items-center gap-8">
-                        <a href="/" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                            Inicio
-                        </a>
-                        <a href="#acerca" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                            Acerca de
-                        </a>
-                        <a href="#servicios" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                            Servicios
-                        </a>
-                        <a href="#contacto" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                            Contacto
-                        </a>
-                    </div>
-
-                    {/* Right Actions */}
-                    <div className="hidden lg:flex items-center gap-4">
-                        {!token ? (
-                            <>
-                                <button
-                                    onClick={() => navigate("/login")}
-                                    className="px-6 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors"
-                                >
-                                    Iniciar Sesión
-                                </button>
-                                <button
-                                    onClick={() => navigate("/register")}
-                                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
-                                >
-                                    Registrarse
-                                </button>
-                            </>
-                        ) : (
-                            <button
-                                onClick={() => navigate("/dashboard")}
-                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg"
-                            >
-                                Dashboard
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Mobile Menu Button */}
-                    <button 
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="lg:hidden p-2 text-gray-700 hover:text-blue-600"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+        <div>
+            <header className="sticky top-0 z-50 w-full py-3 px-6 bg-slate-800/95 backdrop-blur-sm text-white flex flex-col md:flex-row justify-between items-center shadow-md">
+                {/* Logo + Título */}
+                <div className="flex items-center gap-3 mb-3 md:mb-0">
+                    <img className="w-14 h-14" src={logo_proyecto} alt="Logo PanaRoom" />
+                    <h1 className="font-bold text-2xl text-cyan-400 leading-none">
+                        Pana<span className="text-white">Room</span>
+                    </h1>
                 </div>
 
-                {/* Mobile Menu */}
-                {mobileMenuOpen && (
-                    <div className="lg:hidden bg-white border-t border-gray-200 shadow-xl">
-                        <div className="px-6 py-4 space-y-3">
-                            <a href="/" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Inicio</a>
-                            <a href="#acerca" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Acerca de</a>
-                            <a href="#servicios" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Servicios</a>
-                            <a href="#contacto" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Contacto</a>
-                            <hr className="my-2" />
-                            {!token ? (
-                                <div className="space-y-2">
-                                    <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50">Iniciar Sesión</button>
-                                    <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Registrarse</button>
+                {/* Navegación + Botón */}
+                <div className="flex flex-col md:flex-row items-center gap-3">
+                    <ul className="flex gap-4 justify-center flex-wrap text-sm md:text-base">
+                        <li><a href="#" className="hover:text-cyan-400 transition-colors">Inicio</a></li>
+                        <li><a href="#acerca" className="hover:text-cyan-400 transition-colors">Acerca de</a></li>
+                        <li><a href="#servicios" className="hover:text-cyan-400 transition-colors">Servicios</a></li>
+                        <li><a href="#contacto" className="hover:text-cyan-400 transition-colors">Contacto</a></li>
+                    </ul>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/login")}
+                        className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-1.5 px-5 rounded-full text-sm md:text-base transition-colors"
+                    >
+                        Ingresar
+                    </button>
+                </div>
+            </header>
+
+            <main className='bg-gray-100 py-10 px-6 w-full'>
+                {/* Texto e input */}
+                <div className='w-full'>
+                    
+                    {/* Contenedor del input y botón */}
+                    <div className='grid grid-cols-1 md:grid-cols-6 gap-4'>
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setAbiertoPrecio(!abiertoPrecio)}
+                                className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <span>{textoPrecio()}</span>
+                                <span className="text-gray-500">{abiertoPrecio ? '▴' : '▾'}</span>
+                            </button>
+
+                            {abiertoPrecio && (
+                                <div className="absolute z-20 mt-1 w-[320px] rounded-md border border-gray-300 bg-white shadow-lg p-3 space-y-3">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={precioMin}
+                                            onChange={(e) => setPrecioMin(e.target.value)}
+                                            placeholder="Mín"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
+                                        />
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={precioMax}
+                                            onChange={(e) => setPrecioMax(e.target.value)}
+                                            placeholder="Máx"
+                                            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
+                                        />
+                                    </div>
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPrecioMin("");
+                                                setPrecioMax("");
+                                            }}
+                                            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                        >
+                                            Limpiar
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setAbiertoPrecio(false)}
+                                            className="px-3 py-1.5 text-sm rounded-md bg-blue-700 text-white hover:bg-blue-600"
+                                        >
+                                            Aplicar
+                                        </button>
+                                    </div>
                                 </div>
-                            ) : (
-                                <button onClick={() => { navigate("/dashboard"); setMobileMenuOpen(false); }} className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Dashboard</button>
+                            )}
+                        </div>
+
+                        <input
+                            type="number"
+                            min="0"
+                            value={habitacionesFiltro}
+                            onChange={(e) => setHabitacionesFiltro(e.target.value)}
+                            placeholder="Número de habitaciones"
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        />
+
+                        <input
+                            type="number"
+                            min="0"
+                            value={banosFiltro}
+                            onChange={(e) => setBanosFiltro(e.target.value)}
+                            placeholder="Número de baños"
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        />
+
+                        <select
+                            value={categoriaFiltro}
+                            onChange={(e) => setCategoriaFiltro(e.target.value)}
+                            className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                        >
+                            {opcionesCategorias.map((opcion) => (
+                                <option key={opcion.value} value={opcion.value}>
+                                    {opcion.label}
+                                </option>
+                            ))}
+                        </select>
+
+                        <div className="relative">
+                            <div className="w-full rounded-md border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-2 py-1 min-h-[42px] flex items-center gap-2">
+                                <div
+                                    className="flex-1 flex flex-wrap gap-2 cursor-pointer"
+                                    onClick={() => setAbierto(!abierto)}
+                                >
+                                    {servicios.length === 0 && (
+                                        <span className="text-gray-500 px-2 py-1">Servicios incluidos</span>
+                                    )}
+
+                                    {servicios.map((servicio) => (
+                                        <span
+                                            key={servicio}
+                                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
+                                        >
+                                            {servicio.charAt(0).toUpperCase() + servicio.slice(1)}
+                                            <button
+                                                type="button"
+                                                className="text-blue-800 hover:text-blue-900"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    removerServicio(servicio);
+                                                }}
+                                                aria-label={`Quitar ${servicio}`}
+                                            >
+                                                x
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setAbierto(!abierto)}
+                                    className="px-2 text-gray-500 hover:text-gray-700"
+                                    aria-label="Abrir opciones de servicios"
+                                >
+                                    {abierto ? '▴' : '▾'}
+                                </button>
+                            </div>
+
+                            {abierto && (
+                                <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white shadow-lg">
+                                    {opcionesServicios.map((servicio) => (
+                                        <button
+                                            key={servicio}
+                                            type="button"
+                                            onClick={() => toggleServicio(servicio)}
+                                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between"
+                                        >
+                                            <span>{servicio.charAt(0).toUpperCase() + servicio.slice(1)}</span>
+                                            {servicios.includes(servicio) && <span className="text-blue-700 font-semibold">✓</span>}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                        </div>
+
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setAbiertoMasFiltros((prev) => !prev)}
+                                className="w-full px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <span>Más filtros</span>
+                                {contarFiltrosAdicionalesAplicados > 0 && (
+                                    <span className="inline-flex min-w-[22px] justify-center rounded-full bg-blue-700 px-2 py-0.5 text-xs font-semibold text-white">
+                                        {contarFiltrosAdicionalesAplicados}
+                                    </span>
+                                )}
+                                <span className="text-gray-500">{abiertoMasFiltros ? '▴' : '▾'}</span>
+                            </button>
+
+                            {abiertoMasFiltros && (
+                                <div className="absolute right-0 z-30 mt-12 w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
+                                    <div className="mb-3 border-b border-gray-200 pb-2">
+                                        <h3 className="text-sm font-semibold text-gray-800">Más filtros</h3>
+                                    </div>
+
+                                    <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
+                                        <div>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">Alicuota</p>
+                                            <div className="flex items-center gap-4 text-sm text-gray-700">
+                                                <label className="inline-flex items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="alicuota"
+                                                        checked={filtrosAdicionales.alicuota === 'si'}
+                                                        onChange={() => handleFiltroAdicionalChange('alicuota', 'si')}
+                                                    />
+                                                    Si
+                                                </label>
+                                                <label className="inline-flex items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="alicuota"
+                                                        checked={filtrosAdicionales.alicuota === 'no'}
+                                                        onChange={() => handleFiltroAdicionalChange('alicuota', 'no')}
+                                                    />
+                                                    No
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">Parqueadero</p>
+                                            <div className="flex items-center gap-4 text-sm text-gray-700">
+                                                <label className="inline-flex items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="parqueadero"
+                                                        checked={filtrosAdicionales.parqueadero === 'si'}
+                                                        onChange={() => handleFiltroAdicionalChange('parqueadero', 'si')}
+                                                    />
+                                                    Si
+                                                </label>
+                                                <label className="inline-flex items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="parqueadero"
+                                                        checked={filtrosAdicionales.parqueadero === 'no'}
+                                                        onChange={() => handleFiltroAdicionalChange('parqueadero', 'no')}
+                                                    />
+                                                    No
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <p className="mb-2 text-sm font-medium text-gray-700">¿Se permiten mascotas?</p>
+                                            <div className="flex items-center gap-4 text-sm text-gray-700">
+                                                <label className="inline-flex items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="mascotas"
+                                                        checked={filtrosAdicionales.mascotas === 'si'}
+                                                        onChange={() => handleFiltroAdicionalChange('mascotas', 'si')}
+                                                    />
+                                                    Si
+                                                </label>
+                                                <label className="inline-flex items-center gap-2">
+                                                    <input
+                                                        type="radio"
+                                                        name="mascotas"
+                                                        checked={filtrosAdicionales.mascotas === 'no'}
+                                                        onChange={() => handleFiltroAdicionalChange('mascotas', 'no')}
+                                                    />
+                                                    No
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center justify-end gap-2 border-t border-gray-200 pt-3">
+                                        <button
+                                            type="button"
+                                            onClick={limpiarFiltrosAdicionales}
+                                            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                            Limpiar filtro
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={aplicarFiltrosAdicionales}
+                                            className="rounded-md bg-blue-700 px-3 py-1.5 text-sm text-white hover:bg-blue-600"
+                                        >
+                                            Aplicar
+                                        </button>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
+                </div>
+            </main>
+
+            {/* Sección de propiedades */}
+            <section className="px-6 py-12 bg-white">
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">Propiedades en arriendo</h2>
+                {cargandoPropiedades && (
+                    <div className="max-w-6xl mx-auto p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50" role="alert">
+                        <span className="font-medium">Cargando departamentos...</span>
+                    </div>
                 )}
-            </nav>
 
-            {/* MAIN CONTENT */}
-            <main className="pt-24">
-                {/* HERO + FILTROS */}
-                <section className="bg-gradient-to-b from-blue-50 to-white py-12 px-6">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="mb-10">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-                                Encuentra tu <span className="text-blue-600">residencia ideal</span>
-                            </h1>
-                            <p className="text-lg text-gray-600">Búsqueda rápida y segura de departamentos en la zona EPN</p>
-                        </div>
+                {errorPropiedades && !cargandoPropiedades && (
+                    <div className="max-w-6xl mx-auto p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                        <span className="font-medium">{errorPropiedades}</span>
+                    </div>
+                )}
 
-                        {/* FILTROS GRID */}
-                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4'>
-                            <div className="relative">
-                                <button
-                                    type="button"
-                                    onClick={() => setAbiertoPrecio(!abiertoPrecio)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-colors shadow-sm"
-                                >
-                                    <span className="font-medium">{textoPrecio()}</span>
-                                    <span className="text-gray-500">{abiertoPrecio ? '▴' : '▾'}</span>
-                                </button>
-
-                                {abiertoPrecio && (
-                                    <div className="absolute z-20 mt-2 w-[320px] rounded-xl border border-gray-300 bg-white shadow-xl p-4 space-y-3">
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={precioMin}
-                                                onChange={(e) => setPrecioMin(e.target.value)}
-                                                placeholder="Mín"
-                                                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
-                                            />
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={precioMax}
-                                                onChange={(e) => setPrecioMax(e.target.value)}
-                                                placeholder="Máx"
-                                                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-sm"
-                                            />
-                                        </div>
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setPrecioMin("");
-                                                    setPrecioMax("");
-                                                }}
-                                                className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
-                                            >
-                                                Limpiar
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setAbiertoPrecio(false)}
-                                                className="px-3 py-1.5 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                                            >
-                                                Aplicar
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <input
-                                type="number"
-                                min="0"
-                                value={habitacionesFiltro}
-                                onChange={(e) => setHabitacionesFiltro(e.target.value)}
-                                placeholder="Habitaciones"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
-                            />
-
-                            <input
-                                type="number"
-                                min="0"
-                                value={banosFiltro}
-                                onChange={(e) => setBanosFiltro(e.target.value)}
-                                placeholder="Baños"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
-                            />
-
-                            <select
-                                value={categoriaFiltro}
-                                onChange={(e) => setCategoriaFiltro(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
-                            >
-                                {opcionesCategorias.map((opcion) => (
-                                    <option key={opcion.value} value={opcion.value}>
-                                        {opcion.label}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <div className="relative lg:col-span-1">
-                                <div className="w-full rounded-xl border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 min-h-[44px] flex items-center gap-2 hover:border-blue-500 transition-colors shadow-sm">
-                                    <div
-                                        className="flex-1 flex flex-wrap gap-2 cursor-pointer"
-                                        onClick={() => setAbierto(!abierto)}
-                                    >
-                                        {servicios.length === 0 && (
-                                            <span className="text-gray-500 px-2 py-1 text-sm">Servicios</span>
-                                        )}
-
-                                        {servicios.map((servicio) => (
-                                            <span
-                                                key={servicio}
-                                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
-                                            >
-                                                {servicio.charAt(0).toUpperCase() + servicio.slice(1)}
-                                                <button
-                                                    type="button"
-                                                    className="text-blue-800 hover:text-blue-900"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        removerServicio(servicio);
-                                                    }}
-                                                >
-                                                    ×
-                                                </button>
-                                            </span>
-                                        ))}
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setAbierto(!abierto)}
-                                        className="px-2 text-gray-500 hover:text-gray-700"
-                                    >
-                                        {abierto ? '▴' : '▾'}
-                                    </button>
+                {!cargandoPropiedades && !errorPropiedades && propiedadesFiltradas.length === 0 && (
+                    <div className="max-w-6xl mx-auto p-4 mb-4 text-sm text-amber-800 rounded-lg bg-amber-50" role="alert">
+                        <span className="font-medium">No hay resultados con esos filtros</span>
+                    </div>
+                )}
+                <div className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ease-out ${animandoResidencias ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
+                    {propiedadesPaginadas.map((propiedad) => (
+                        <article key={propiedad.id} className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 flex flex-col gap-3">
+                                <img
+                                    src={propiedad.imagenPrincipal}
+                                    alt={`Apartamento ${propiedad.id}`}
+                                    className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                                />
+                                <div className="flex items-start justify-between gap-3">
+                                    <h3 className="text-lg font-bold text-gray-800 leading-tight">{propiedad.titulo}</h3>
+                                    <span className="text-sm font-semibold text-blue-800">$ {propiedad.precio} / mes</span>
                                 </div>
 
-                                {abierto && (
-                                    <div className="absolute z-10 mt-2 w-full rounded-xl border border-gray-300 bg-white shadow-xl">
-                                        {opcionesServicios.map((servicio) => (
-                                            <button
-                                                key={servicio}
-                                                type="button"
-                                                onClick={() => toggleServicio(servicio)}
-                                                className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-100 flex items-center justify-between first:rounded-t-xl last:rounded-b-xl transition-colors"
-                                            >
-                                                <span className="text-sm">{servicio.charAt(0).toUpperCase() + servicio.slice(1)}</span>
-                                                {servicios.includes(servicio) && <span className="text-blue-600 font-semibold">✓</span>}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                                <p className="text-sm text-gray-600 line-clamp-3">
+                                    {propiedad.descripcion}
+                                </p>
 
-                            <div className="relative lg:col-span-1">
-                                <button
-                                    type="button"
-                                    onClick={() => setAbiertoMasFiltros((prev) => !prev)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition-colors shadow-sm font-medium"
-                                >
-                                    <span>Más filtros</span>
-                                    {contarFiltrosAdicionalesAplicados > 0 && (
-                                        <span className="inline-flex min-w-[22px] justify-center rounded-full bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white">
-                                            {contarFiltrosAdicionalesAplicados}
-                                        </span>
-                                    )}
-                                    <span className="text-gray-500">{abiertoMasFiltros ? '▴' : '▾'}</span>
-                                </button>
+                                <p className="text-sm text-gray-700">
+                                    <span className="font-semibold">Dirección:</span> {propiedad.direccion}
+                                </p>
 
-                                {abiertoMasFiltros && (
-                                    <div className="absolute right-0 z-30 mt-2 w-full max-w-md rounded-xl border border-gray-200 bg-white p-4 shadow-2xl">
-                                        <div className="mb-4 border-b border-gray-200 pb-2">
-                                            <h3 className="text-sm font-bold text-gray-900">Filtros adicionales</h3>
-                                        </div>
+                                <div className="mt-auto flex justify-end gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => manejarClickDetalles(propiedad)}
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                                    >
+                                        Detalles
+                                    </button>
+                                </div>
+                        </article>
+                    ))}
+                </div>
 
-                                        <div className="space-y-4">
-                                            <div>
-                                                <p className="mb-2 text-sm font-medium text-gray-700">Alicuota</p>
-                                                <div className="flex items-center gap-4 text-sm text-gray-700">
-                                                    <label className="inline-flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="alicuota"
-                                                            checked={filtrosAdicionales.alicuota === 'si'}
-                                                            onChange={() => handleFiltroAdicionalChange('alicuota', 'si')}
-                                                        />
-                                                        Sí
-                                                    </label>
-                                                    <label className="inline-flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="alicuota"
-                                                            checked={filtrosAdicionales.alicuota === 'no'}
-                                                            onChange={() => handleFiltroAdicionalChange('alicuota', 'no')}
-                                                        />
-                                                        No
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <p className="mb-2 text-sm font-medium text-gray-700">Parqueadero</p>
-                                                <div className="flex items-center gap-4 text-sm text-gray-700">
-                                                    <label className="inline-flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="parqueadero"
-                                                            checked={filtrosAdicionales.parqueadero === 'si'}
-                                                            onChange={() => handleFiltroAdicionalChange('parqueadero', 'si')}
-                                                        />
-                                                        Sí
-                                                    </label>
-                                                    <label className="inline-flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="parqueadero"
-                                                            checked={filtrosAdicionales.parqueadero === 'no'}
-                                                            onChange={() => handleFiltroAdicionalChange('parqueadero', 'no')}
-                                                        />
-                                                        No
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <p className="mb-2 text-sm font-medium text-gray-700">¿Mascotas?</p>
-                                                <div className="flex items-center gap-4 text-sm text-gray-700">
-                                                    <label className="inline-flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="mascotas"
-                                                            checked={filtrosAdicionales.mascotas === 'si'}
-                                                            onChange={() => handleFiltroAdicionalChange('mascotas', 'si')}
-                                                        />
-                                                        Sí
-                                                    </label>
-                                                    <label className="inline-flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name="mascotas"
-                                                            checked={filtrosAdicionales.mascotas === 'no'}
-                                                            onChange={() => handleFiltroAdicionalChange('mascotas', 'no')}
-                                                        />
-                                                        No
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 flex items-center justify-end gap-2 border-t border-gray-200 pt-3">
-                                            <button
-                                                type="button"
-                                                onClick={limpiarFiltrosAdicionales}
-                                                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                            >
-                                                Limpiar
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={aplicarFiltrosAdicionales}
-                                                className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 transition-colors"
-                                            >
-                                                Aplicar
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* PROPIEDADES */}
-                <section className="px-6 py-16 bg-white">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Residencias disponibles</h2>
-                        <p className="text-gray-600 mb-10">Encuentra la opción perfecta para tu estancia en Quito</p>
-
-                        {cargandoPropiedades && (
-                            <div className="p-4 mb-6 text-sm text-blue-800 rounded-lg bg-blue-50 border border-blue-200">
-                                <span className="font-semibold">Cargando residencias...</span>
-                            </div>
-                        )}
-
-                        {errorPropiedades && !cargandoPropiedades && (
-                            <div className="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200">
-                                <span className="font-semibold">{errorPropiedades}</span>
-                            </div>
-                        )}
-
-                        {!cargandoPropiedades && !errorPropiedades && propiedadesFiltradas.length === 0 && (
-                            <div className="p-4 mb-6 text-sm text-amber-800 rounded-lg bg-amber-50 border border-amber-200">
-                                <span className="font-semibold">No hay resultados con esos filtros</span>
-                            </div>
-                        )}
-
-                        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ease-out ${animandoResidencias ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
-                            {propiedadesPaginadas.map((propiedad) => (
-                                <article 
-                                    key={propiedad.id} 
-                                    className="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col"
-                                >
-                                    <div className="relative overflow-hidden h-48 bg-gray-200">
-                                        <img
-                                            src={propiedad.imagenPrincipal}
-                                            alt={`Residencia ${propiedad.titulo}`}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                        />
-                                    </div>
-
-                                    <div className="p-6 flex flex-col flex-1">
-                                        <div className="flex items-start justify-between gap-3 mb-3">
-                                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                                                {propiedad.titulo}
-                                            </h3>
-                                            <span className="text-lg font-bold text-blue-600 whitespace-nowrap">
-                                                ${propiedad.precio}
-                                            </span>
-                                        </div>
-
-                                        <p className="text-sm text-gray-600 line-clamp-2 mb-4">
-                                            {propiedad.descripcion}
-                                        </p>
-
-                                        <div className="flex items-center gap-1 text-xs text-gray-600 mb-4 pb-4 border-b border-gray-100">
-                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" />
-                                            </svg>
-                                            <span>{propiedad.direccion}</span>
-                                        </div>
-
-                                        <div className="flex flex-wrap gap-2 mb-6 mt-auto">
-                                            {propiedad.numeroHabitaciones > 0 && (
-                                                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
-                                                    {propiedad.numeroHabitaciones} hab.
-                                                </span>
-                                            )}
-                                            {propiedad.numeroBanos > 0 && (
-                                                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
-                                                    {propiedad.numeroBanos} baño(s)
-                                                </span>
-                                            )}
-                                            {propiedad.parqueadero && (
-                                                <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-semibold">
-                                                    🅿 Parq.
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => manejarClickDetalles(propiedad)}
-                                            className="w-full px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all transform hover:scale-105 active:scale-95 shadow-md"
-                                        >
-                                            Ver detalles
-                                        </button>
-                                    </div>
-                                </article>
-                            ))}
-                        </div>
-
-                        {/* PAGINACIÓN */}
-                        <div className="flex justify-center mt-12">
-                            <div className="flex items-center gap-2 flex-wrap justify-center">
-                                <button
-                                    type="button"
-                                    onClick={() => cambiarPagina(1)}
-                                    disabled={paginaActual === 1}
-                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    &laquo;
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => cambiarPagina(paginaActual - 1)}
-                                    disabled={paginaActual === 1}
-                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    &lsaquo;
-                                </button>
-
-                                {paginasVisibles.map((pagina, index) =>
-                                    pagina === "..." ? (
-                                        <span key={`ellipsis-${index}`} className="px-2 text-gray-400 text-sm select-none">
-                                            ...
-                                        </span>
-                                    ) : (
-                                        <button
-                                            key={pagina}
-                                            type="button"
-                                            onClick={() => cambiarPagina(pagina)}
-                                            className={`h-10 w-10 rounded-lg text-sm font-semibold transition-all ${
-                                                pagina === paginaActual
-                                                    ? "bg-blue-600 text-white border border-blue-600 shadow-md"
-                                                    : "bg-white text-gray-600 border border-gray-300 hover:border-blue-600 hover:text-blue-600"
-                                            }`}
-                                        >
-                                            {pagina}
-                                        </button>
-                                    )
-                                )}
-
-                                <button
-                                    type="button"
-                                    onClick={() => cambiarPagina(paginaActual + 1)}
-                                    disabled={paginaActual === totalPaginas}
-                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    &rsaquo;
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => cambiarPagina(totalPaginas)}
-                                    disabled={paginaActual === totalPaginas}
-                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    &raquo;
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* MODAL DETALLE */}
-                {mostrarMensajeDetalle && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-                        <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl border border-gray-200">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3">Información de la residencia</h3>
-                            <p className="text-gray-600 leading-relaxed mb-6">
-                                {detalleSeleccionado?.titulo
-                                    ? `Para ver más detalles de ${detalleSeleccionado.titulo}, inicia sesión o crea una cuenta.`
-                                    : "Para ver la información completa de la residencia, por favor inicia sesión o crea una cuenta."}
-                            </p>
-
-                            <div className="flex flex-col gap-3 justify-end">
-                                <button
-                                    type="button"
-                                    onClick={() => navigate("/login")}
-                                    className="px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all transform hover:scale-105 active:scale-95"
-                                >
-                                    Iniciar sesión
-                                </button>
-                                <Link
-                                    to="/register"
-                                    className="px-4 py-3 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold transition-all text-center"
-                                >
-                                    Crear cuenta
-                                </Link>
-                                <button
-                                    type="button"
-                                    onClick={cerrarModalDetalle}
-                                    className="px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold transition-colors"
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* ACERCA DE */}
-                <section id="acerca" className="px-6 py-16 bg-blue-50">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-4xl font-bold text-gray-900 mb-6">Acerca de PanaRoom</h2>
-                        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
-                            <p className="text-gray-700 text-lg leading-relaxed">
-                                PanaRoom es una plataforma web dedicada a facilitar la gestión de residencias estudiantiles, conectando propietarios con estudiantes que buscan alojamiento seguro y confiable en la zona de la Escuela Politécnica Nacional. Nuestro objetivo es hacer el proceso más transparente, accesible y eficiente para todos.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* SERVICIOS */}
-                <section id="servicios" className="px-6 py-16 bg-white">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Nuestros Servicios</h2>
-                        <p className="text-gray-600 text-center mb-12">Ofrecemos soluciones completas para tu búsqueda de residencia</p>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {[
-                                {
-                                    icon: "📋",
-                                    titulo: "Gestión de Publicaciones",
-                                    contenido: "Publica y administra residencias de forma fácil y eficiente."
-                                },
-                                {
-                                    icon: "👤",
-                                    titulo: "Perfiles Personalizados",
-                                    contenido: "Crea tu perfil y conecta con propietarios confiables."
-                                },
-                                {
-                                    icon: "📸",
-                                    titulo: "Información Detallada",
-                                    contenido: "Accede a fotos de alta calidad y descripciones completas."
-                                },
-                                {
-                                    icon: "💬",
-                                    titulo: "Chat en Tiempo Real",
-                                    contenido: "Comunícate directamente con propietarios y arrendatarios."
-                                }
-                            ].map((servicio, i) => (
-                                <article
-                                    key={i}
-                                    className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center"
-                                >
-                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{servicio.icon}</div>
-                                    <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                                        {servicio.titulo}
-                                    </h4>
-                                    <p className="text-gray-600 text-sm leading-relaxed">
-                                        {servicio.contenido}
-                                    </p>
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* FORMULARIO ARRENDATARIO */}
-                <section className="px-6 py-16 bg-gradient-to-br from-blue-900 to-blue-800 text-white">
-                    <div className="max-w-4xl mx-auto rounded-3xl border border-white/20 bg-blue-800/50 backdrop-blur-sm p-8 md:p-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                            ¿Quieres publicar tus residencias?
-                        </h2>
-                        <p className="text-blue-100 text-lg mb-8 leading-relaxed">
-                            Llena tu solicitud y únete a nuestra comunidad de propietarios confiables.
-                        </p>
+                <div className="flex justify-center mt-8">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                        <button
+                            type="button"
+                            onClick={() => cambiarPagina(1)}
+                            disabled={paginaActual === 1}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Primera página"
+                        >
+                            &laquo;
+                        </button>
 
                         <button
                             type="button"
-                            onClick={() => setMostrarFormularioArrendatario((prev) => !prev)}
-                            className="inline-flex items-center rounded-full bg-white hover:bg-gray-100 text-blue-900 font-bold px-8 py-3 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
+                            onClick={() => cambiarPagina(paginaActual - 1)}
+                            disabled={paginaActual === 1}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Página anterior"
                         >
-                            {mostrarFormularioArrendatario ? "Ocultar formulario" : "Solicitar ahora"}
+                            &lsaquo;
                         </button>
 
-                        <div
-                            className={`grid overflow-hidden transition-all duration-500 ease-in-out ${
-                                mostrarFormularioArrendatario
-                                    ? "grid-rows-[1fr] opacity-100 mt-8"
-                                    : "grid-rows-[0fr] opacity-0 mt-0"
-                            }`}
-                        >
-                            <div className="min-h-0">
-                                <form onSubmit={enviarSolicitudArrendatario} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input
-                                        type="text"
-                                        name="nombre"
-                                        value={datosSolicitud.nombre}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Nombre"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="apellido"
-                                        value={datosSolicitud.apellido}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Apellido"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="direccion"
-                                        value={datosSolicitud.direccion}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Dirección"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300 md:col-span-2"
-                                        required
-                                    />
-                                    <input
-                                        type="tel"
-                                        name="celular"
-                                        value={datosSolicitud.celular}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Celular"
-                                        inputMode="numeric"
-                                        pattern="[0-9]{7,15}"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={datosSolicitud.email}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Correo"
-                                        pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-
-                                    <div className="md:col-span-2">
-                                        <label className="mb-2 block text-sm font-semibold text-white">
-                                            Documentos de identidad
-                                        </label>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            multiple
-                                            onChange={manejarCambioDocumentos}
-                                            className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white file:mr-4 file:rounded-md file:border-0 file:bg-white file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-900"
-                                        />
-                                        <p className="mt-2 text-xs text-blue-200">
-                                            Sube imágenes de tu cédula u otros documentos de identidad.
-                                        </p>
-                                        {documentosArrendatario.length > 0 && (
-                                            <p className="mt-1 text-xs text-green-300 font-semibold">
-                                                ✓ {documentosArrendatario.length} archivo(s) seleccionado(s)
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <div className="md:col-span-2 flex justify-end">
-                                        <button
-                                            type="submit"
-                                            disabled={enviandoSolicitud}
-                                            className="inline-flex items-center justify-center rounded-lg bg-white hover:bg-gray-100 disabled:bg-gray-400 disabled:cursor-not-allowed text-blue-900 font-bold px-8 py-3 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
-                                        >
-                                            {enviandoSolicitud ? "Enviando..." : "Enviar solicitud"}
-                                        </button>
-                                    </div>
-
-                                    {estadoSolicitud.mensaje && (
-                                        <div className={`md:col-span-2 p-4 rounded-lg text-sm font-semibold ${
-                                            estadoSolicitud.tipo === "ok"
-                                                ? "bg-green-500/20 text-green-100 border border-green-400"
-                                                : "bg-red-500/20 text-red-100 border border-red-400"
-                                        }`}>
-                                            {estadoSolicitud.mensaje}
-                                        </div>
-                                    )}
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
-
-            {/* FOOTER MEJORADO */}
-            <footer id="contacto" className="bg-gray-900 text-gray-300 py-16 border-t border-gray-800">
-                <div className="max-w-7xl mx-auto px-6">
-                    {/* Grid de contenido */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                        {/* Brand */}
-                        <div>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                                    PR
-                                </div>
-                                <span className="text-2xl font-bold text-white">PanaRoom</span>
-                            </div>
-                            <p className="text-sm leading-relaxed mb-6">
-                                Conectamos estudiantes con residencias de calidad en Quito. Transparencia y confianza en cada búsqueda.
-                            </p>
-                            <div className="flex gap-4">
-                                <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
-                                    <FaYoutube className="text-lg" />
-                                </a>
-                                <a href="https://github.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
-                                    <FaGithub className="text-lg" />
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Links */}
-                        <div>
-                            <h4 className="text-white font-bold mb-4">Explora</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><a href="/" className="hover:text-blue-400 transition-colors">Inicio</a></li>
-                                <li><a href="#acerca" className="hover:text-blue-400 transition-colors">Acerca de</a></li>
-                                <li><a href="#servicios" className="hover:text-blue-400 transition-colors">Servicios</a></li>
-                                <li><a href="#contacto" className="hover:text-blue-400 transition-colors">Contacto</a></li>
-                            </ul>
-                        </div>
-
-                        {/* Links */}
-                        <div>
-                            <h4 className="text-white font-bold mb-4">Soporte</h4>
-                            <ul className="space-y-3 text-sm">
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Centro de Ayuda</a></li>
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Reportar Problema</a></li>
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Preguntas Frecuentes</a></li>
-                                <li><a href="#" className="hover:text-blue-400 transition-colors">Contacto</a></li>
-                            </ul>
-                        </div>
-
-                        {/* Newsletter */}
-                        <div>
-                            <h4 className="text-white font-bold mb-4">Suscribirse</h4>
-                            <p className="text-sm mb-4">Recibe noticias sobre nuevas residencias.</p>
-                            <div className="flex gap-2">
-                                <input 
-                                    type="email" 
-                                    placeholder="Tu email" 
-                                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-600"
-                                />
-                                <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white transition-colors font-semibold">
-                                    →
+                        {paginasVisibles.map((pagina, index) =>
+                            pagina === "..." ? (
+                                <span key={`ellipsis-${index}`} className="px-1.5 text-gray-400 text-xs select-none">
+                                    ...
+                                </span>
+                            ) : (
+                                <button
+                                    key={pagina}
+                                    type="button"
+                                    onClick={() => cambiarPagina(pagina)}
+                                    className={`h-8 min-w-8 px-2 rounded-full text-xs font-semibold transition-colors border ${
+                                        pagina === paginaActual
+                                            ? "bg-blue-700 text-white border-blue-700 shadow-sm"
+                                            : "bg-white text-gray-600 border-gray-300 hover:bg-blue-50"
+                                    }`}
+                                >
+                                    {pagina}
                                 </button>
-                            </div>
+                            )
+                        )}
+
+                        <button
+                            type="button"
+                            onClick={() => cambiarPagina(paginaActual + 1)}
+                            disabled={paginaActual === totalPaginas}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Página siguiente"
+                        >
+                            &rsaquo;
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => cambiarPagina(totalPaginas)}
+                            disabled={paginaActual === totalPaginas}
+                            className="h-8 min-w-8 px-2 rounded-full border border-gray-300 bg-white text-gray-600 text-xs font-semibold transition-colors hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Última página"
+                        >
+                            &raquo;
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {mostrarMensajeDetalle && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+                    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-3">Información de la propiedad</h3>
+                        <p className="text-gray-600 leading-relaxed mb-6">
+                            {detalleSeleccionado?.titulo
+                                ? `Para ver más detalles de ${detalleSeleccionado.titulo}, inicia sesión o crea una cuenta.`
+                                : "Si quieres saber la información de contacto y más detalles de la propiedad, por favor inicia sesión o crea una cuenta."}
+                        </p>
+
+                        <div className="flex flex-col gap-3 justify-end">
+                            <button
+                                type="button"
+                                onClick={() => navigate("/login")}
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-700 hover:bg-blue-600 text-white transition-colors"
+                            >
+                                Iniciar sesión
+                            </button>
+                            <Link
+                                to="/register"
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-blue-700 text-blue-700 hover:bg-blue-50 transition-colors"
+                            >
+                                Crear cuenta
+                            </Link>
+                            <button
+                                type="button"
+                                onClick={cerrarModalDetalle}
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                            >
+                                Cancelar
+                            </button>
                         </div>
                     </div>
+                </div>
+            )}
 
-                    {/* Bottom */}
-                    <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-                        <p>&copy; 2025 PanaRoom. Todos los derechos reservados.</p>
-                        <div className="flex gap-6">
-                            <a href="#" className="hover:text-blue-400 transition-colors">Privacidad</a>
-                            <a href="#" className="hover:text-blue-400 transition-colors">Términos de Servicio</a>
-                            <a href="#" className="hover:text-blue-400 transition-colors">Cookies</a>
+                        {/* Sección Acerca de */}
+            <section id="acerca" className="px-6 py-12 bg-white">
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">Acerca de</h2>
+                <p className="text-gray-700 text-md leading-relaxed">
+                    PanaRoom es un sistema web diseñado para facilitar la gestión de residencias estudiantiles, permitiendo a propietarios publicar sus habitaciones y a los estudiantes encontrar su mejor opción de alojamiento de manera rápida y segura. Nuestro objetivo es conectar personas y crear experiencias de vivienda confiables, modernas y accesibles para toda la comunidad.
+                </p>
+            </section>
+
+            <section id="servicios" className='container mx-auto px-6 py-10'>
+                <h2 className='text-center text-3xl font-bold text-blue-800 mb-10'>SERVICIOS</h2>
+                <div className='grid gap-6 sm:grid-cols-2 md:grid-cols-4'>
+                    {[
+                        {
+                            titulo: "Gestión de publicaciones de Residencias",
+                            contenido: "Publica y administra residencias de forma sencilla y eficiente."
+                        },
+                        {
+                            titulo: "Perfiles de Usuarios",
+                            contenido: "Crea y personaliza tu perfil para conectar con propietarios."
+                        },
+                        {
+                            titulo: "Información detallada de los lugares",
+                            contenido: "Accede a descripciones completas y fotos de las propiedades."
+                        },
+                        {
+                            titulo: "Sistema de Quejas y Sugerencias",
+                            contenido: "Envía tus comentarios para mejorar la experiencia del usuario."
+                        }
+                    ].map((servicio, i) => (
+                        <div
+                            key={i}
+                            style={{ backgroundColor: '#D9D9D9' }}
+                            className="shadow-md hover:shadow-xl p-6 rounded-md text-center transition-shadow duration-300"
+                        >
+                            <h4 className="text-lg font-semibold text-blue-700 mb-4">{servicio.titulo}</h4>
+                            <p className="text-gray-700 text-sm">
+                                {servicio.contenido}
+                            </p>
                         </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className="px-6 py-12 bg-slate-900 text-white">
+                <div className="max-w-6xl mx-auto rounded-2xl border border-white/20 bg-slate-800/80 p-6 md:p-8">
+                    <h2 className="text-xl md:text-2xl font-bold text-cyan-300">
+                        ¿Quieres publicar tus propiedades en arriendo cerca de la Escuela Politécnica Nacional?
+                    </h2>
+                    <p className="mt-3 text-slate-200 leading-relaxed text-sm md:text-base">
+                        Da clic aquí y llena tus datos para la solicitud de rol arrendatario.
+                    </p>
+
+                    <div className="mt-5">
+                        <button
+                            type="button"
+                            onClick={() => setMostrarFormularioArrendatario((prev) => !prev)}
+                            className="inline-flex items-center rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold px-5 py-2 transition-colors"
+                        >
+                            {mostrarFormularioArrendatario ? "Ocultar formulario" : "Clic aquí"}
+                        </button>
+                    </div>
+
+                    <div
+                        className={`grid overflow-hidden transition-all duration-500 ease-in-out ${
+                            mostrarFormularioArrendatario
+                                ? "grid-rows-[1fr] opacity-100 mt-6"
+                                : "grid-rows-[0fr] opacity-0 mt-0"
+                        }`}
+                    >
+                        <div className="min-h-0">
+                            <form onSubmit={enviarSolicitudArrendatario} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input
+                                    type="text"
+                                    name="nombre"
+                                    value={datosSolicitud.nombre}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Nombre"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    name="apellido"
+                                    value={datosSolicitud.apellido}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Apellido"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    name="direccion"
+                                    value={datosSolicitud.direccion}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Dirección"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 md:col-span-2 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="tel"
+                                    name="celular"
+                                    value={datosSolicitud.celular}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Celular"
+                                    inputMode="numeric"
+                                    pattern="[0-9]{7,15}"
+                                    title="Ingresa solo números (7 a 15 dígitos)"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={datosSolicitud.email}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Correo"
+                                    pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                                    title="Ingresa un correo válido"
+                                    className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+                                    required
+                                />
+
+                                <div className="md:col-span-2">
+                                    <label className="mb-2 block text-sm font-medium text-slate-200">
+                                        Documentos de identidad
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={manejarCambioDocumentos}
+                                        className="w-full rounded-md border border-slate-500 bg-slate-100 text-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
+                                    />
+                                    <p className="mt-2 text-xs text-slate-300">
+                                        Sube una o varias imágenes de tu cédula u otros documentos.
+                                    </p>
+                                    {documentosArrendatario.length > 0 && (
+                                        <p className="mt-1 text-xs text-cyan-300">
+                                            {documentosArrendatario.length} archivo(s) seleccionado(s)
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="md:col-span-2 flex justify-end mt-1">
+                                    <button
+                                        type="submit"
+                                        disabled={enviandoSolicitud}
+                                        className="inline-flex items-center justify-center rounded-md bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold px-5 py-2 transition-colors text-sm"
+                                    >
+                                        {enviandoSolicitud ? "Guardando..." : "Guardar solicitud"}
+                                    </button>
+                                </div>
+
+                                {estadoSolicitud.mensaje && (
+                                    <div className={`md:col-span-2 p-3 rounded-md text-sm ${
+                                        estadoSolicitud.tipo === "ok"
+                                            ? "bg-emerald-100 text-emerald-800"
+                                            : "bg-red-100 text-red-800"
+                                    }`}>
+                                        {estadoSolicitud.mensaje}
+                                    </div>
+                                )}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer id="contacto" className='bg-slate-800 text-white py-5 px-6'>
+                <div className='flex flex-col sm:flex-row justify-between items-center gap-3'>
+                    <p className='text-center text-white-400'>© 2025 PanaRoom - Todos los derechos reservados</p>
+                    <div className='flex items-center gap-4'>
+                        <p className='text-center text-white-400'>Correo: contacto@panaroom.com</p>
+                        <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube">
+                            <FaYoutube className='text-2xl hover:text-cyan-400' />
+                        </a>
+                        <a href='https://github.com/PeerJack22/panaroom' target="_blank" rel="noreferrer" aria-label="GitHub PanaRoom">
+                            <FaGithub className='text-2xl hover:text-cyan-400' />
+                        </a>
                     </div>
                 </div>
             </footer>
         </div>
     );
 };
-
-export default Home;
