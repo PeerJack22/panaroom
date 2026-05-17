@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaYoutube, FaGithub, FaClipboardList, FaUserCircle, FaImage, FaComments } from "react-icons/fa6";
+import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaImage, FaComments } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
@@ -978,7 +978,7 @@ export const Home = () => {
                                     contenido: "Publica y administra residencias de forma fácil y eficiente."
                                 },
                                 {
-                                    icon: FaUserCircle,
+                                    icon: FaUser,
                                     titulo: "Perfiles Personalizados",
                                     contenido: "Crea tu perfil y conecta con propietarios confiables."
                                 },
