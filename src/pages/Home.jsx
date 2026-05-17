@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaYoutube, FaGithub } from "react-icons/fa6";
+import { FaYoutube, FaGithub, FaClipboardList, FaUserCircle, FaImage, FaComments } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
@@ -973,35 +973,44 @@ export const Home = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 {
+                                    icon: FaClipboardList,
                                     titulo: "Gestión de Publicaciones",
                                     contenido: "Publica y administra residencias de forma fácil y eficiente."
                                 },
                                 {
+                                    icon: FaUserCircle,
                                     titulo: "Perfiles Personalizados",
                                     contenido: "Crea tu perfil y conecta con propietarios confiables."
                                 },
                                 {
+                                    icon: FaImage,
                                     titulo: "Información Detallada",
                                     contenido: "Accede a fotos de alta calidad y descripciones completas."
                                 },
                                 {
+                                    icon: FaComments,
                                     titulo: "Chat en Tiempo Real",
                                     contenido: "Comunícate directamente con propietarios y arrendatarios."
                                 }
-                            ].map((servicio, i) => (
-                                <article
-                                    key={i}
-                                    className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center"
-                                >
-                                    <div className="w-14 h-14 bg-blue-100 rounded-xl mx-auto mb-4" />
-                                    <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                                        {servicio.titulo}
-                                    </h4>
-                                    <p className="text-gray-600 text-sm leading-relaxed">
-                                        {servicio.contenido}
-                                    </p>
-                                </article>
-                            ))}
+                            ].map((servicio, i) => {
+                                const IconComponent = servicio.icon;
+                                return (
+                                    <article
+                                        key={i}
+                                        className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 text-center"
+                                    >
+                                        <div className="flex justify-center mb-4">
+                                            <IconComponent className="text-4xl text-blue-600 group-hover:scale-110 transition-transform" />
+                                        </div>
+                                        <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                                            {servicio.titulo}
+                                        </h4>
+                                        <p className="text-gray-600 text-sm leading-relaxed">
+                                            {servicio.contenido}
+                                        </p>
+                                    </article>
+                                );
+                            })}
                         </div>
                     </div>
                 </section>
