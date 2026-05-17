@@ -402,7 +402,7 @@ const Table = () => {
                             onChange={(e) => setAdminFilters((prev) => ({ ...prev, estado: e.target.value }))}
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         >
-                            <option value="">Todos los departamentos</option>
+                            <option value="">Todos los estados</option>
                             <option value="habilitado">Habilitados</option>
                             <option value="deshabilitado">Deshabilitados</option>
                         </select>

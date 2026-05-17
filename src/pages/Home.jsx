@@ -436,16 +436,16 @@ export const Home = () => {
                         {!token ? (
                             <>
                                 <button
-                                    onClick={() => navigate("/login")}
+                                    onClick={() => navigate("/register")}
                                     className="px-6 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors"
                                 >
-                                    Iniciar Sesión
+                                    Registrarse
                                 </button>
                                 <button
-                                    onClick={() => navigate("/register")}
+                                    onClick={() => navigate("/login")}
                                     className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                                 >
-                                    Registrarse
+                                    Iniciar Sesión
                                 </button>
                             </>
                         ) : (
@@ -480,8 +480,8 @@ export const Home = () => {
                             <hr className="my-2" />
                             {!token ? (
                                 <div className="space-y-2">
-                                    <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50">Iniciar Sesión</button>
-                                    <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Registrarse</button>
+                                    <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50">Registrarse</button>
+                                    <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Iniciar Sesión</button>
                                 </div>
                             ) : (
                                 <button onClick={() => { navigate("/dashboard"); setMobileMenuOpen(false); }} className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Dashboard</button>
