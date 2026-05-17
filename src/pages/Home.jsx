@@ -492,9 +492,9 @@ export const Home = () => {
             </nav>
 
             {/* MAIN CONTENT */}
-            <main>
+            <main className="pt-24 bg-white">
                 {/* HERO + FILTROS */}
-                <section className="-mt-24 bg-gradient-to-b from-blue-50 to-white pt-24 pb-12 px-6">
+                <section className="bg-gradient-to-b from-blue-50 to-white py-12 px-6">
                     <div className="max-w-7xl mx-auto">
                         <div className="mb-10">
                             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
