@@ -412,7 +412,6 @@ export const Home = () => {
                         <img className="w-12 h-12 rounded-lg shadow-lg group-hover:scale-110 transition-transform" src={logo_proyecto} alt="PanaRoom" />
                         <div>
                             <span className="text-2xl font-bold text-gray-900 block leading-none">PanaRoom</span>
-                            <span className="text-xs text-gray-500 font-semibold tracking-wider">RESIDENCIAS</span>
                         </div>
                     </Link>
 
