@@ -38,10 +38,10 @@ export const Forgot = () => {
     }
 
     return (
-        <div className="flex flex-col sm:flex-row h-screen bg-white" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+        <div className="min-h-screen bg-blue-50 flex items-center justify-center px-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             {/* Sección del formulario */}
-            <div className="w-full sm:w-1/2 flex justify-center items-center px-6">
-                <div className="w-full max-w-md rounded-2xl border border-gray-200 shadow-sm p-8 bg-white">
+            <div className="w-full max-w-md flex justify-center items-center">
+                <div className="w-full rounded-2xl border border-gray-200 shadow-sm p-8 bg-white">
                     <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center text-gray-900">¿Olvidaste tu contraseña?</h1>
                     <p className="text-gray-600 text-sm md:text-base text-center mb-6">Ingresa tu correo para restablecerla</p>
 
@@ -79,29 +79,12 @@ export const Forgot = () => {
                         </div>
                     </form>
 
-                    <div className="text-sm flex justify-between items-center border-t pt-4">
-                        <p className="text-gray-600">¿Ya tienes una cuenta?</p>
-                        <Link
-                            to="/login"
-                            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
-                        >
-                            Iniciar sesión
+                    <div className="text-sm flex justify-center items-center pt-2">
+                        <Link to="/login" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            ¿Ya tienes una cuenta? Iniciar sesión
                         </Link>
                     </div>
                 </div>
-            </div>
-
-            {/* Imagen lateral */}
-            <div className="hidden sm:block sm:w-1/2 h-1/3 sm:h-full">
-                <img
-                    src="/images/password.webp"
-                    alt="Recuperación de contraseña"
-                    className="w-full h-full object-cover object-center"
-                    loading="lazy"
-                    decoding="async"
-                    fetchPriority="low"
-                    sizes="50vw"
-                />
             </div>
         </div>
     );
