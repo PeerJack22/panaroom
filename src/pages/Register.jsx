@@ -21,21 +21,21 @@ export const Register = () => {
 
     return (
         <div
-            className="flex flex-col sm:flex-row min-h-screen bg-white"
+            className="min-h-screen sm:h-screen sm:overflow-hidden flex flex-col sm:flex-row bg-white"
             style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}
         >
             {/* Formulario */}
-            <div className="w-full sm:w-1/2 flex justify-center items-center px-6 md:px-10 py-10 md:py-12 bg-white">
+            <div className="w-full sm:w-1/2 sm:h-screen flex justify-center items-center px-6 md:px-8 py-6 md:py-8 bg-white">
                 <div className="w-full max-w-md">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 text-center sm:text-left">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center sm:text-left">
                         Registro estudiante
                     </h1>
-                    <p className="text-gray-600 text-sm md:text-base text-center sm:text-left mb-8">
+                    <p className="text-gray-600 text-sm text-center sm:text-left mb-5">
                         Crea tu cuenta de estudiante y confirma tu correo para iniciar sesión
                     </p>
 
-                    <form onSubmit={handleSubmit(registro)} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit(registro)} className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
                                 <input
@@ -114,12 +114,12 @@ export const Register = () => {
                             </div>
                         </div>
 
-                        <button className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 mt-6">
+                        <button className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 mt-4">
                             Registrarse
                         </button>
                     </form>
 
-                    <div className="mt-6 border-t border-gray-200 pt-4 text-center text-sm text-gray-600 flex justify-between items-center">
+                    <div className="mt-4 border-t border-gray-200 pt-3 text-center text-sm text-gray-600 flex justify-between items-center">
                         <p>¿Ya tienes una cuenta?</p>
                         <Link
                             to="/loginEstudiante"
@@ -132,7 +132,7 @@ export const Register = () => {
             </div>
 
             {/* Imagen lateral decorativa */}
-            <div className="hidden sm:block sm:w-1/2 relative">
+            <div className="hidden sm:block sm:w-1/2 sm:h-screen relative">
                 <img
                     src="/images/apartamento1.webp"
                     alt="Apartamento de referencia"
