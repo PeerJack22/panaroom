@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 export const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
