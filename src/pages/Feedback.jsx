@@ -179,14 +179,10 @@ const normalizeFeedbackItem = (item, index) => {
         ""
     ).trim().toLowerCase();
 
-    if (tipoRaw === "comentario") {
-        return null;
-    }
-
-    // Usar "queja" como fallback si no encuentra tipo conocido
+    // Para el endpoint del arrendatario los registros pueden llegar solo como comentarios del departamento.
     const tipoNormalizado = ["queja", "sugerencia", "comentario"].includes(tipoRaw)
         ? tipoRaw
-        : "queja"; // Cambiar de "sin-tipo" a "queja" como default
+        : (item?.comentarioUsuario || item?.comentarioAdmin || item?.respuesta ? "comentario" : "queja");
     const manejaEstado = tipoNormalizado !== "comentario";
 
     const comentariosRespuesta = extractRespuestaComentarios(item);
