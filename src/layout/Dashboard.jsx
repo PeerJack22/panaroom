@@ -36,11 +36,11 @@ const Dashboard = () => {
         'inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2';
 
     return (
-        <div className="h-screen overflow-hidden bg-white md:flex md:items-stretch">
+        <div className="h-screen overflow-hidden bg-slate-50 md:flex md:items-stretch">
 
             {/* Sidebar principal */}
             <aside
-                className={`hidden border-r border-slate-200 bg-slate-50 py-8 text-slate-900 shadow-[0_18px_40px_rgba(15,23,42,0.04)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
+                className={`hidden border-r border-slate-200 bg-slate-50/95 py-8 text-slate-900 shadow-[0_18px_40px_rgba(15,23,42,0.04)] backdrop-blur-md md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
                     sidebarVisible ? 'md:w-64 px-5 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
                 }`}
             >
@@ -93,7 +93,7 @@ const Dashboard = () => {
 
             {/* Sidebar móvil tipo drawer */}
             <aside
-                className={`fixed top-0 left-0 z-50 h-full w-80 border-r border-slate-200 bg-slate-50 px-6 py-8 text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)] transition-transform duration-300 ease-in-out md:hidden ${
+                className={`fixed top-0 left-0 z-50 h-full w-80 border-r border-slate-200 bg-slate-50/95 px-6 py-8 text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-md transition-transform duration-300 ease-in-out md:hidden ${
                     mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
@@ -144,9 +144,9 @@ const Dashboard = () => {
                 </div>
             </aside>
 
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-100">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-50">
 
-                <header className="sticky top-0 z-30 border-b border-slate-200 bg-white px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)] md:px-6 md:py-3">
+                <header className="sticky top-0 z-30 border-b border-slate-200 bg-slate-50/95 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)] backdrop-blur-md md:px-6 md:py-3">
                     <div className="flex items-center justify-between gap-3 md:gap-4">
                         <div className="flex min-w-0 items-center gap-3 md:gap-4">
                             <button
@@ -198,7 +198,7 @@ const Dashboard = () => {
                     <Outlet />
                 </main>
 
-                <footer className="shrink-0 border-t border-slate-200 bg-slate-50 py-4 text-center text-sm text-slate-500">
+                <footer className="shrink-0 border-t border-slate-200 bg-slate-50/95 py-4 text-center text-sm text-slate-500 backdrop-blur-md">
                     © {new Date().getFullYear()} PanaRoom - Todos los derechos reservados
                 </footer>
             </div>
