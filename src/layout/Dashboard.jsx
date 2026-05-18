@@ -41,11 +41,11 @@ const Dashboard = () => {
             : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700';
 
     return (
-        <div className="h-screen overflow-hidden bg-[linear-gradient(180deg,_#eff6ff_0%,_#f8fbff_40%,_#eef4ff_100%)] md:flex md:items-stretch">
+        <div className="h-screen overflow-hidden bg-[#f8fbff] md:flex md:items-stretch">
 
             {/* Sidebar principal */}
             <aside
-                className={`hidden border-r border-blue-900/30 bg-gradient-to-b from-blue-950 via-blue-900 to-blue-800 py-8 text-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-xl md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
+                className={`hidden border-r border-blue-900/30 bg-blue-700 py-8 text-white shadow-[0_20px_60px_rgba(15,23,42,0.14)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
                     sidebarVisible ? 'md:w-64 px-5 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
                 }`}
             >
@@ -141,9 +141,9 @@ const Dashboard = () => {
                 </div>
             </aside>
 
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[linear-gradient(180deg,_rgba(239,246,255,0.3)_0%,_rgba(255,255,255,0.9)_40%,_rgba(239,246,255,0.35)_100%)]">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#f8fbff]">
 
-                <header className="sticky top-0 z-30 border-b border-blue-100 bg-white/90 px-4 py-3 shadow-[0_10px_30px_rgba(59,130,246,0.08)] backdrop-blur-xl md:px-6 md:py-3">
+                <header className="sticky top-0 z-30 border-b border-blue-100 bg-white px-4 py-3 shadow-[0_10px_30px_rgba(59,130,246,0.06)] md:px-6 md:py-3">
                     <div className="flex items-center justify-between gap-3 md:gap-4">
                         <div className="flex min-w-0 items-center gap-3 md:gap-4">
                             <button
@@ -169,7 +169,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="ml-auto flex items-center gap-3 shrink-0">
-                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-blue-100 bg-blue-50 px-3 py-2 shadow-sm">
+                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-blue-100 bg-white px-3 py-2 shadow-sm">
                                 <img
                                     src={avatarUrl}
                                     alt="Usuario"
@@ -195,7 +195,7 @@ const Dashboard = () => {
                     <Outlet />
                 </main>
 
-                <footer className="shrink-0 border-t border-white/60 bg-white/70 py-4 text-center text-sm text-slate-500 backdrop-blur-xl">
+                <footer className="shrink-0 border-t border-blue-100 bg-white py-4 text-center text-sm text-slate-500">
                     © {new Date().getFullYear()} PanaRoom - Todos los derechos reservados
                 </footer>
             </div>
