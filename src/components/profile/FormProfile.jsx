@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import storeProfile from "../../context/storeProfile";
 import storeAuth from "../../context/storeAuth";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,10 +18,7 @@ const FormularioPerfil = () => {
         formState: { errors },
     } = useForm();
 
-    // Estado para controlar el envío del formulario
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    // Estado para la previsualización de la imagen subida
     const [uploadedImagePreview, setUploadedImagePreview] = useState(null);
 
     // Manejar cambio de archivo para mostrar previsualización
@@ -41,74 +39,49 @@ const FormularioPerfil = () => {
         setIsSubmitting(true);
         const fieldName = isAdmin ? "telefono" : "celular";
         try {
-            const formData = new FormData();
+            const payload = {
+                nombre: data.nombre,
+                apellido: data.apellido,
+                direccion: data.direccion || "",
+                [fieldName]: data.celular || "",
+                email: data.email,
+            };
 
-            // Añadir campos de texto
-            formData.append("nombre", data.nombre);
-            formData.append("apellido", data.apellido);
-            formData.append("direccion", data.direccion || "");
-            // Admin usa "telefono", arrendatario y estudiante usan "celular"
-            const fieldName = isAdmin ? "telefono" : "celular";
-            formData.append(fieldName, data.celular || "");
-            formData.append("email", data.email);
-            
-            if (!isAdmin) {
-                // Solo indicar opción upload si hay archivo
-                if (data.imagenPerfil && data.imagenPerfil[0]) {
-                    formData.append("profileImageOption", "upload");
-                    formData.append("avatarArren", data.imagenPerfil[0]);
-                }
-            }
+            const respuesta = await updateProfile(payload, user._id);
 
-            // Intento principal con FormData
-            const respuesta = await updateProfile(formData, user._id);
-            // Forzar recarga del perfil desde el backend para sincronizar el store
-            try { await profile(); } catch { /* ignore */ }
-            const usuarioActualizado = storeProfile.getState().user;
-            const nuevaUrl = usuarioActualizado?.avatarUrl || respuesta?.data?.avatarUrl || respuesta?.data?.user?.avatarUrl || respuesta?.data?.perfil?.avatarUrl;
-            if (nuevaUrl) setUploadedImagePreview(nuevaUrl);
-            toast.success("Perfil actualizado correctamente", { toastId: "profile-update-success" });
-        } catch (error) {
-            console.error("Error al actualizar el perfil (FormData):", error);
-            // Si hay una imagen y el intento con FormData falla, reintentar enviando la imagen como base64
-            try {
-                if (!isAdmin && data.imagenPerfil && data.imagenPerfil[0]) {
-                    const file = data.imagenPerfil[0];
-                    const toBase64 = (file) => new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = (err) => reject(err);
-                        reader.readAsDataURL(file);
+            const file = data.imagenPerfil?.[0];
+            if (file && (rol === "estudiante" || rol === "arrendatario")) {
+                const uploadUrl = rol === "estudiante"
+                    ? `${import.meta.env.VITE_BACKEND_URL}/estudiante/subirimagen`
+                    : `${import.meta.env.VITE_BACKEND_URL}/arrendatario/subirimagen`;
+
+                if (uploadUrl) {
+                    const imageFormData = new FormData();
+                    imageFormData.append("imagen", file);
+
+                    const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+                    const token = storedUser?.state?.token;
+
+                    const uploadResponse = await axios.post(uploadUrl, imageFormData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
                     });
 
-                    toast.info("Reintentando subida de imagen como base64...", { toastId: "profile-retry-base64" });
-                    const base64 = await toBase64(file);
-
-                    // Construir payload JSON que el backend acepta en la rama 'ia' (profileImageOption: 'ia')
-                    const payload = {
-                        nombre: data.nombre,
-                        apellido: data.apellido,
-                        direccion: data.direccion || "",
-                        [fieldName]: data.celular || "",
-                        email: data.email,
-                        profileImageOption: 'ia',
-                        avatarArrenIA: base64,
-                    };
-
-                    // Reintento con JSON (backend en controlador soporta avatarArrenIA)
-                    const respuesta2 = await updateProfile(payload, user._id);
-                    try { await profile(); } catch { /* ignore */ }
-                    const usuarioActualizado2 = storeProfile.getState().user;
-                    const nuevaUrl2 = usuarioActualizado2?.avatarUrl || respuesta2?.data?.avatarUrl || respuesta2?.data?.user?.avatarUrl || respuesta2?.data?.perfil?.avatarUrl;
-                    if (nuevaUrl2) setUploadedImagePreview(nuevaUrl2);
-                    toast.success("Perfil actualizado (subida base64) correctamente", { toastId: "profile-update-success-2" });
-                } else {
-                    throw error;
+                    const updatedUser = uploadResponse?.data?.estudiante || uploadResponse?.data?.arrendatario;
+                    const nuevaUrl = updatedUser?.avatarUrl || respuesta?.data?.avatarUrl || respuesta?.data?.user?.avatarUrl;
+                    if (nuevaUrl) setUploadedImagePreview(nuevaUrl);
                 }
-            } catch (err2) {
-                console.error("Error reintentando subida base64:", err2);
-                toast.error(err2.response?.data?.msg || 'Error al actualizar el perfil. Inténtalo de nuevo más tarde.', { toastId: "profile-update-error" });
             }
+
+            try { await profile(); } catch { /* ignore */ }
+            const usuarioActualizado = storeProfile.getState().user;
+            const nuevaUrlFinal = usuarioActualizado?.avatarUrl || respuesta?.data?.avatarUrl || respuesta?.data?.user?.avatarUrl || respuesta?.data?.perfil?.avatarUrl;
+            if (nuevaUrlFinal) setUploadedImagePreview(nuevaUrlFinal);
+            toast.success("Perfil actualizado correctamente", { toastId: "profile-update-success" });
+        } catch (error) {
+            console.error("Error al actualizar el perfil:", error);
+            toast.error(error.response?.data?.msg || 'Error al actualizar el perfil. Inténtalo de nuevo más tarde.', { toastId: "profile-update-error" });
         } finally {
             setIsSubmitting(false);
         }
