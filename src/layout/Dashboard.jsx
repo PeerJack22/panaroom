@@ -40,15 +40,15 @@ const Dashboard = () => {
 
             {/* Sidebar principal */}
             <aside
-                className={`hidden border-r border-slate-800/10 bg-white py-8 text-slate-900 shadow-[0_18px_40px_rgba(15,23,42,0.05)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
+                className={`hidden border-r border-slate-800/10 bg-slate-900 py-8 text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
                     sidebarVisible ? 'md:w-64 px-5 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
                 }`}
             >
                 <div className="w-full">
                     <div className="mb-7 flex items-center gap-3">
                         <div>
-                            <h2 className="text-2xl font-extrabold text-slate-900">PanaRoom</h2>
-                            <p className="text-sm text-slate-500">Panel de control</p>
+                            <h2 className="text-2xl font-extrabold text-white">PanaRoom</h2>
+                            <p className="text-sm text-slate-300">Panel de control</p>
                         </div>
                     </div>
 
@@ -69,11 +69,11 @@ const Dashboard = () => {
                                         title={item.label}
                                         className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                                             activo
-                                                ? 'border-slate-800 bg-slate-900 text-white shadow-sm'
-                                                : 'border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+                                                ? 'border-white/10 bg-white/10 text-white shadow-sm'
+                                                : 'border-transparent text-slate-300 hover:border-white/10 hover:bg-white/10 hover:text-white'
                                         }`}
                                     >
-                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-slate-500'}`} />
+                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-slate-300'}`} />
                                         {item.label}
                                     </Link>
                                 </li>
@@ -93,20 +93,20 @@ const Dashboard = () => {
 
             {/* Sidebar móvil tipo drawer */}
             <aside
-                className={`fixed top-0 left-0 z-50 h-full w-80 border-r border-slate-800/10 bg-white px-6 py-8 text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.10)] transition-transform duration-300 ease-in-out md:hidden ${
+                className={`fixed top-0 left-0 z-50 h-full w-80 border-r border-slate-800/10 bg-slate-900 px-6 py-8 text-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] transition-transform duration-300 ease-in-out md:hidden ${
                     mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
                 <div>
                     <div className="mb-6 flex items-center justify-between">
                         <div>
-                            <h2 className="text-2xl font-bold text-slate-900">PanaRoom</h2>
-                            <p className="text-sm text-slate-500">Panel de control</p>
+                            <h2 className="text-2xl font-bold text-white">PanaRoom</h2>
+                            <p className="text-sm text-slate-300">Panel de control</p>
                         </div>
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(false)}
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-2xl text-slate-500 transition hover:bg-blue-50 hover:text-blue-700"
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-slate-200 transition hover:bg-white/15 hover:text-white"
                             aria-label="Cerrar menú"
                         >
                             ×
@@ -130,11 +130,11 @@ const Dashboard = () => {
                                         onClick={() => setMobileMenuOpen(false)}
                                         className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                                             activo
-                                                ? 'border-slate-800 bg-slate-900 text-white shadow-sm'
-                                                : 'border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+                                                ? 'border-white/10 bg-white/10 text-white shadow-sm'
+                                                : 'border-transparent text-slate-300 hover:border-white/10 hover:bg-white/10 hover:text-white'
                                         }`}
                                     >
-                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-slate-500'}`} />
+                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-slate-300'}`} />
                                         {item.label}
                                     </Link>
                                 </li>
