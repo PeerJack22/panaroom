@@ -405,7 +405,7 @@ export const Home = () => {
     return (
         <div className="font-sans">
             {/* NAVBAR MEJORADO */}
-            <nav className="fixed w-full z-[60] bg-slate-900 border-b border-slate-800 shadow-md transition-all duration-300">
+            <nav className="fixed w-full z-[60] bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-md transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-3 group">
@@ -471,7 +471,7 @@ export const Home = () => {
 
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
-                    <div className="lg:hidden bg-slate-900 border-t border-slate-800 shadow-xl">
+                    <div className="lg:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-800 shadow-xl">
                         <div className="px-6 py-4 space-y-3">
                             <a href="/" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Inicio</a>
                             <a href="#acerca" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Acerca de</a>
