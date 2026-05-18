@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import storeAuth from '../context/storeAuth';
@@ -10,7 +10,6 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 
 const Login = () => {
     const navigate = useNavigate()
-    const location = useLocation();
     const [tipoAcceso, setTipoAcceso] = useState('arrendatario');
     const [showPassword, setShowPassword] = useState(false);
     
@@ -165,7 +164,7 @@ const loginUser = async (data) => {
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="Crea una contraseña segura"
+                                    placeholder="Ingresa tu contraseña"
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pr-10 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     {...register("password", { required: "La contraseña es obligatoria" })}
                                 />
