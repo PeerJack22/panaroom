@@ -41,11 +41,11 @@ const Dashboard = () => {
             : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700';
 
     return (
-        <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_30%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#f8fafc_100%)] md:flex">
+        <div className="h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_30%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#f8fafc_100%)] md:flex md:items-stretch">
 
             {/* Sidebar principal */}
             <aside
-                className={`hidden border-r border-white/60 bg-white/90 py-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl md:flex md:flex-col md:justify-between transition-all duration-300 ease-in-out ${
+                className={`hidden border-r border-white/60 bg-white/90 py-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
                     sidebarVisible ? 'md:w-72 px-6 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
                 }`}
             >
@@ -141,49 +141,53 @@ const Dashboard = () => {
                 </div>
             </aside>
 
-            <div className="flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
 
                 <header className="sticky top-0 z-30 border-b border-white/60 bg-white/80 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl md:px-6">
-                    <div className="flex items-center justify-start gap-3 overflow-x-auto whitespace-nowrap md:gap-4">
-                        <button
-                            type="button"
-                            onClick={() => setMobileMenuOpen(true)}
-                            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 md:hidden"
-                            aria-label="Abrir menú"
-                            title="Abrir menú"
-                        >
-                            ☰
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setSidebarVisible((prev) => !prev)}
-                            className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-blue-100 bg-white text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 md:inline-flex"
-                            aria-label={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
-                            title={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
-                        >
-                            ☰
-                        </button>
-                        <div className="min-w-0 shrink-0">
-                            <h1 className="text-lg font-bold text-slate-900 md:text-xl">Dashboard</h1>
-                        </div>
-                        <div className="flex min-w-0 shrink-0 items-center gap-3 rounded-full border border-blue-100 bg-white px-3 py-2 shadow-sm">
-                            <img
-                                src={avatarUrl}
-                                alt="Usuario"
-                                className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-md shadow-blue-600/15"
-                            />
-                            <div className="min-w-0">
-                                <p className="truncate text-sm font-semibold text-slate-900">{user?.nombre || 'Usuario'}</p>
-                                <p className="truncate text-xs text-slate-500">{rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : 'Rol no definido'}</p>
+                    <div className="flex items-center justify-between gap-3 md:gap-4">
+                        <div className="flex min-w-0 items-center gap-3 md:gap-4">
+                            <button
+                                type="button"
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 md:hidden"
+                                aria-label="Abrir menú"
+                                title="Abrir menú"
+                            >
+                                ☰
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setSidebarVisible((prev) => !prev)}
+                                className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-blue-100 bg-white text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 md:inline-flex"
+                                aria-label={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
+                                title={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
+                            >
+                                ☰
+                            </button>
+                            <div className="min-w-0 shrink-0">
+                                <h1 className="text-lg font-bold text-slate-900 md:text-xl">Dashboard</h1>
                             </div>
                         </div>
-                        <Link
-                            to="/"
-                            className={`${buttonBase} shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:-translate-y-0.5 hover:bg-blue-700`}
-                            onClick={handleLogout}
-                        >
-                            Salir
-                        </Link>
+                        <div className="flex items-center gap-3 shrink-0 ml-auto">
+                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-blue-100 bg-white px-3 py-2 shadow-sm">
+                                <img
+                                    src={avatarUrl}
+                                    alt="Usuario"
+                                    className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-md shadow-blue-600/15"
+                                />
+                                <div className="min-w-0">
+                                    <p className="truncate text-sm font-semibold text-slate-900">{user?.nombre || 'Usuario'}</p>
+                                    <p className="truncate text-xs text-slate-500">{rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : 'Rol no definido'}</p>
+                                </div>
+                            </div>
+                            <Link
+                                to="/"
+                                className={`${buttonBase} shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:-translate-y-0.5 hover:bg-blue-700`}
+                                onClick={handleLogout}
+                            >
+                                Salir
+                            </Link>
+                        </div>
                     </div>
                 </header>
 
@@ -191,7 +195,7 @@ const Dashboard = () => {
                     <Outlet />
                 </main>
 
-                <footer className="border-t border-white/60 bg-white/70 py-4 text-center text-sm text-slate-500 backdrop-blur-xl">
+                <footer className="shrink-0 border-t border-white/60 bg-white/70 py-4 text-center text-sm text-slate-500 backdrop-blur-xl">
                     © {new Date().getFullYear()} PanaRoom - Todos los derechos reservados
                 </footer>
             </div>
