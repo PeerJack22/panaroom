@@ -9,7 +9,6 @@ const Users = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [deletingStudentId, setDeletingStudentId] = useState(null);
     const [confirmingArrendatarioId, setConfirmingArrendatarioId] = useState(null);
     const [userDepartamentos, setUserDepartamentos] = useState({});
     const [filtroNombre, setFiltroNombre] = useState("");
@@ -79,7 +78,6 @@ const Users = () => {
     const fetchUsers = useCallback(async () => {
         setLoading(true);
         try {
-            // Obtener el token del localStorage
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const token = storedUser?.state?.token;
 
@@ -93,7 +91,6 @@ const Users = () => {
                 Authorization: `Bearer ${token}`,
             };
 
-            // Endpoint principal para listar arrendatarios
             const usersResponse = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/administrador/listarArrendatarios`,
                 { headers }
@@ -142,8 +139,9 @@ const Users = () => {
 
             const departamentosMap = {};
 
-            usersData.forEach((user) => {
-                if (user?._id) departamentosMap[user._id] = [];
+            [...usersData, ...estudiantesData].forEach((user) => {
+                const userId = user?._id || user?.id;
+                if (userId) departamentosMap[userId] = [];
             });
 
             departamentosData.forEach((dep, index) => {
@@ -157,16 +155,30 @@ const Users = () => {
                     _id: dep?._id || `${ownerId}-${index}`,
                     titulo,
                 });
+
+                const estudianteId = typeof dep?.estudiante === "object"
+                    ? (dep?.estudiante?._id || dep?.estudiante?.id)
+                    : (dep?.estudianteId || dep?.estudiante);
+
+                if (estudianteId) {
+                    if (!departamentosMap[estudianteId]) departamentosMap[estudianteId] = [];
+                    departamentosMap[estudianteId].push({
+                        _id: dep?._id || `${estudianteId}-${index}`,
+                        titulo,
+                    });
+                }
             });
 
             const usuariosUnificados = [
                 ...usersData.map((u) => ({
                     ...u,
                     rol: u?.rol || "arrendatario",
+                    confirmEmail: u?.confirmEmail !== false,
                 })),
                 ...estudiantesData.map((u) => ({
                     ...u,
                     rol: u?.rol || "estudiante",
+                    confirmEmail: u?.confirmEmail !== false,
                 })),
             ];
 
@@ -189,91 +201,60 @@ const Users = () => {
         fetchUsers();
     }, [fetchUsers]);
 
-    const handleDeleteStudent = async (student) => {
-        const studentId = student?._id || student?.id;
-        if (!studentId) {
-            toast.error("No se pudo identificar el estudiante");
+    const handleToggleEstadoUsuario = async (usuario) => {
+        const usuarioId = usuario?._id || usuario?.id;
+        const tipo = normalizarRol(usuario?.rol);
+        if (!usuarioId || !["estudiante", "arrendatario"].includes(tipo)) return;
+
+        const estaActivo = usuario?.confirmEmail !== false;
+        const tieneResidencias = (userDepartamentos[usuarioId] || []).length > 0;
+
+        if (estaActivo && tieneResidencias) {
+            toast.error("No puedes desactivar esta cuenta porque tiene residencias asignadas.");
             return;
         }
 
-        const confirmar = confirm(`¿Seguro que deseas eliminar al estudiante ${student?.nombre || ""} ${student?.apellido || ""}?`);
+        const confirmar = window.confirm(
+            `¿${estaActivo ? "Desactivar" : "Activar"} la cuenta de ${usuario?.nombre || ""} ${usuario?.apellido || ""}?`
+        );
         if (!confirmar) return;
 
-        setDeletingStudentId(studentId);
+        setConfirmingArrendatarioId(usuarioId);
         try {
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const token = storedUser?.state?.token;
-
             if (!token) {
                 toast.error("No se encontró la sesión, por favor inicia sesión nuevamente");
                 return;
             }
-
-            const headers = {
-                Authorization: `Bearer ${token}`,
-            };
-
-            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/estudiante/${studentId}`, { headers });
-
-            setUsers((prev) => prev.filter((u) => (u?._id || u?.id) !== studentId));
-            toast.success("Estudiante eliminado correctamente");
-        } catch (error) {
-            const errorMsg = error?.response?.data?.msg || error?.response?.data?.message;
-            toast.error(errorMsg || "No se pudo eliminar el estudiante");
-        } finally {
-            setDeletingStudentId(null);
-        }
-    };
-
-    const handleConfirmArrendatario = async (arrendatario) => {
-        const arrendatarioId = arrendatario?._id || arrendatario?.id;
-        if (!arrendatarioId) {
-            toast.error("No se pudo identificar al arrendatario");
-            return;
-        }
-
-        const confirmar = confirm(`¿Confirmar al arrendatario ${arrendatario?.nombre || ""} ${arrendatario?.apellido || ""}?`);
-        if (!confirmar) return;
-
-        setConfirmingArrendatarioId(arrendatarioId);
-        try {
-            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
-            const token = storedUser?.state?.token;
-
-            if (!token) {
-                toast.error("No se encontró la sesión, por favor inicia sesión nuevamente");
-                return;
-            }
-
-            const headers = {
-                Authorization: `Bearer ${token}`,
-            };
 
             await axios.put(
-                `${import.meta.env.VITE_BACKEND_URL}/arrendatarios/confirmar/${arrendatarioId}`,
-                {},
-                { headers }
+                `${import.meta.env.VITE_BACKEND_URL}/administrador/estadoUsuario`,
+                { id: usuarioId, tipo, confirmEmail: !estaActivo },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
 
-            setArrendatariosNoConfirmadosIds((prev) =>
-                prev.filter((id) => id !== arrendatarioId)
-            );
+            const nuevoEstado = !estaActivo;
+            setUsers((prev) => prev.map((u) => {
+                const userId = u?._id || u?.id;
+                return String(userId) === String(usuarioId) ? { ...u, confirmEmail: nuevoEstado } : u;
+            }));
 
-            setUsers((prev) =>
-                prev.map((u) => {
-                    const userId = u?._id || u?.id;
-                    if (userId !== arrendatarioId) return u;
-                    return {
-                        ...u,
-                        confirmEmail: true,
-                    };
-                })
-            );
+            if (tipo === "arrendatario") {
+                setArrendatariosNoConfirmadosIds((prev) => (
+                    nuevoEstado ? prev.filter((id) => String(id) !== String(usuarioId)) : (prev.includes(usuarioId) ? prev : [...prev, usuarioId])
+                ));
+            }
 
-            toast.success("Arrendatario confirmado correctamente");
+            toast.success(nuevoEstado ? "Cuenta activada correctamente" : "Cuenta desactivada correctamente");
         } catch (error) {
             const errorMsg = error?.response?.data?.msg || error?.response?.data?.message;
-            toast.error(errorMsg || "No se pudo confirmar al arrendatario");
+            toast.error(errorMsg || "No se pudo cambiar el estado de la cuenta");
         } finally {
             setConfirmingArrendatarioId(null);
         }
@@ -508,23 +489,27 @@ const Users = () => {
                                         </p>
                                     )}
 
-                                    {arrendatariosNoConfirmadosIds.includes(user?._id || user?.id) && (
-                                        <div className="mt-3 flex justify-end">
-                                            <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleConfirmArrendatario(user);
-                                                }}
-                                                disabled={confirmingArrendatarioId === (user?._id || user?.id)}
-                                                className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-60"
-                                            >
-                                                {confirmingArrendatarioId === (user?._id || user?.id)
-                                                    ? "Confirmando..."
-                                                    : "Confirmar arrendatario"}
-                                            </button>
-                                        </div>
-                                    )}
+                                    <div className="mt-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleToggleEstadoUsuario(user);
+                                            }}
+                                            disabled={confirmingArrendatarioId === (user?._id || user?.id)}
+                                            className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors disabled:opacity-60 ${
+                                                user?.confirmEmail === false
+                                                    ? "border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                                                    : "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
+                                            }`}
+                                        >
+                                            {confirmingArrendatarioId === (user?._id || user?.id)
+                                                ? "Guardando..."
+                                                : user?.confirmEmail === false
+                                                    ? "Activar cuenta"
+                                                    : "Desactivar cuenta"}
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 
@@ -532,11 +517,22 @@ const Users = () => {
                                 <div className="mt-4 flex justify-end">
                                     <button
                                         type="button"
-                                        onClick={() => handleDeleteStudent(user)}
-                                        disabled={deletingStudentId === (user?._id || user?.id)}
-                                        className="rounded-md border border-red-300 bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-100 transition-colors disabled:opacity-60"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleToggleEstadoUsuario(user);
+                                        }}
+                                        disabled={confirmingArrendatarioId === (user?._id || user?.id)}
+                                        className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors disabled:opacity-60 ${
+                                            user?.confirmEmail === false
+                                                ? "border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                                                : "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
+                                        }`}
                                     >
-                                        {deletingStudentId === (user?._id || user?.id) ? "Eliminando..." : "Eliminar estudiante"}
+                                        {confirmingArrendatarioId === (user?._id || user?.id)
+                                            ? "Guardando..."
+                                            : user?.confirmEmail === false
+                                                ? "Activar cuenta"
+                                                : "Desactivar cuenta"}
                                     </button>
                                 </div>
                             )}
@@ -689,14 +685,14 @@ const Users = () => {
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleConfirmArrendatario(arrendatarioSeleccionado);
+                                                handleToggleEstadoUsuario(arrendatarioSeleccionado);
                                             }}
                                             disabled={confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)}
                                             className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors disabled:opacity-60"
                                         >
                                             {confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)
-                                                ? "Confirmando..."
-                                                : "Confirmar arrendatario"}
+                                                ? "Guardando..."
+                                                : "Activar cuenta"}
                                         </button>
                                     </div>
                                 )}
