@@ -341,7 +341,12 @@ const Details = () => {
         const fetchComentarios = async () => {
             try {
                 const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/comentarios/${id}`;
-                const response = await fetchDataBackend(url, null, "GET", { "Content-Type": "application/json" });
+                const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+                const headers = {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${storedUser?.state?.token}`,
+                };
+                const response = await fetchDataBackend(url, null, "GET", headers);
                 const lista = Array.isArray(response)
                     ? response
                     : Array.isArray(response?.comentarios)
