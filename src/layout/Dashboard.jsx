@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FaCommentDots, FaHouse, FaUser, FaUsers } from 'react-icons/fa6';
 import storeAuth from '../context/storeAuth'
 import storeProfile from '../context/storeProfile'
 
@@ -23,12 +24,12 @@ const Dashboard = () => {
     };
 
     const navItems = [
-        { to: '/dashboard', label: 'Perfil' },
-        { to: '/dashboard/listar', label: 'Residencias' },
-        ...(rol === 'estudiante' ? [{ to: '/dashboard/mis-residencias', label: 'Mis residencias' }] : []),
-        { to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias' },
-        { to: '/dashboard/chat', label: 'Chat' },
-        ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios' }] : []),
+        { to: '/dashboard', label: 'Perfil', icon: FaUser },
+        { to: '/dashboard/listar', label: 'Residencias', icon: FaHouse },
+        ...(rol === 'estudiante' ? [{ to: '/dashboard/mis-residencias', label: 'Mis residencias', icon: FaHouse }] : []),
+        { to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias', icon: FaCommentDots },
+        { to: '/dashboard/chat', label: 'Chat', icon: FaCommentDots },
+        ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios', icon: FaUsers }] : []),
     ];
 
     const buttonBase =
@@ -65,19 +66,10 @@ const Dashboard = () => {
                         className="mx-auto mb-4 h-24 w-24 rounded-full border-4 border-white object-cover shadow-[0_12px_30px_rgba(37,99,235,0.18)]"
                     />
 
-                    <div className="rounded-3xl border border-blue-100 bg-blue-50/80 px-4 py-4 text-center text-sm text-slate-700">
-                        <span className="inline-flex items-center gap-1">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            {`Bienvenido - ${user?.nombre || ''}`}
-                        </span>
-                        <p className="mt-1 text-xs text-slate-500">
-                            Rol: {rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : "No definido"}
-                        </p>
-                    </div>
-
                     <ul className="mt-6 space-y-2">
                         {navItems.map((item) => {
                             const activo = urlActual === item.to;
+                            const Icono = item.icon;
                             return (
                                 <li key={item.to}>
                                     <Link
@@ -85,18 +77,13 @@ const Dashboard = () => {
                                         title={item.label}
                                         className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${navButtonClass(activo)}`}
                                     >
-                                        <span className={`h-2.5 w-2.5 rounded-full ${activo ? 'bg-white' : 'bg-blue-500'}`} />
+                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-blue-600'}`} />
                                         {item.label}
                                     </Link>
                                 </li>
                             );
                         })}
                     </ul>
-                </div>
-
-                <div className="mt-6 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-600 to-blue-700 p-4 text-white shadow-[0_18px_40px_rgba(37,99,235,0.2)]">
-                    <p className="text-sm font-semibold">Navegación rápida</p>
-                    <p className="mt-1 text-sm text-blue-100">Accede a tu perfil, residencias y chats desde un solo lugar.</p>
                 </div>
             </aside>
 
@@ -136,19 +123,10 @@ const Dashboard = () => {
                         className="mx-auto mb-4 h-20 w-20 rounded-full border-4 border-white object-cover shadow-[0_12px_30px_rgba(37,99,235,0.18)]"
                     />
 
-                    <div className="rounded-3xl border border-blue-100 bg-blue-50/80 px-4 py-4 text-center text-sm text-slate-700">
-                        <span className="inline-flex items-center gap-1">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            {`Bienvenido - ${user?.nombre || ''}`}
-                        </span>
-                        <p className="mt-1 text-xs text-slate-500">
-                            Rol: {rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : "No definido"}
-                        </p>
-                    </div>
-
                     <ul className="mt-6 space-y-2">
                         {navItems.map((item) => {
                             const activo = urlActual === item.to;
+                            const Icono = item.icon;
                             return (
                                 <li key={item.to}>
                                     <Link
@@ -156,7 +134,7 @@ const Dashboard = () => {
                                         onClick={() => setMobileMenuOpen(false)}
                                         className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${navButtonClass(activo)}`}
                                     >
-                                        <span className={`h-2.5 w-2.5 rounded-full ${activo ? 'bg-white' : 'bg-blue-500'}`} />
+                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-blue-600'}`} />
                                         {item.label}
                                     </Link>
                                 </li>
@@ -164,17 +142,13 @@ const Dashboard = () => {
                         })}
                     </ul>
                 </div>
-
-                <div className="mt-6 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-600 to-blue-700 p-4 text-white shadow-[0_18px_40px_rgba(37,99,235,0.2)]">
-                    <p className="text-sm font-semibold">Navegación rápida</p>
-                    <p className="mt-1 text-sm text-blue-100">Todo tu panel en versión móvil, con acceso directo y limpio.</p>
-                </div>
             </aside>
 
             <div className="flex min-h-screen flex-1 flex-col">
 
                 <header className="sticky top-0 z-30 border-b border-white/60 bg-white/80 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl md:px-6">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-1 min-w-0 items-center gap-3 md:gap-4">
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(true)}
@@ -193,20 +167,19 @@ const Dashboard = () => {
                         >
                             ☰
                         </button>
-                        <div>
+                        <div className="min-w-0">
                             <h1 className="text-lg font-bold text-slate-900 md:text-xl">Dashboard</h1>
-                            <p className="text-sm text-slate-500">Gestiona tu perfil y operaciones</p>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-3 md:gap-4">
-                        <img
-                            src={avatarUrl}
-                            alt="Usuario"
-                            className="h-11 w-11 rounded-full border-2 border-white object-cover shadow-md shadow-blue-600/15"
-                        />
-                        <div className="hidden text-right sm:block">
-                            <p className="text-sm font-semibold text-slate-900">{user?.nombre || 'Usuario'}</p>
-                            <p className="text-xs text-slate-500">{rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : 'Rol no definido'}</p>
+                        <div className="flex min-w-0 items-center gap-3 rounded-full border border-blue-100 bg-white px-3 py-2 shadow-sm">
+                            <img
+                                src={avatarUrl}
+                                alt="Usuario"
+                                className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-md shadow-blue-600/15"
+                            />
+                            <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-slate-900">{user?.nombre || 'Usuario'}</p>
+                                <p className="truncate text-xs text-slate-500">{rol ? rol.charAt(0).toUpperCase() + rol.slice(1) : 'Rol no definido'}</p>
+                            </div>
                         </div>
                         <Link
                             to="/"
@@ -215,6 +188,7 @@ const Dashboard = () => {
                         >
                             Salir
                         </Link>
+                    </div>
                     </div>
                 </header>
 
