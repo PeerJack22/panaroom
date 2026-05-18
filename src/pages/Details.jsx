@@ -23,30 +23,6 @@ const EPN_MAX_BOUNDS = [
 const MAP_MIN_ZOOM = 14;
 const MAP_MAX_ZOOM = 18;
 
-const COMENTARIOS_MOCK = [
-    {
-        id: 1,
-        nombre: "Camila R.",
-        fecha: "02/05/2026",
-        calificacion: 5,
-        comentario: "El lugar es tranquilo y muy cerca de la universidad. El propietario responde rapido.",
-    },
-    {
-        id: 2,
-        nombre: "Mateo P.",
-        fecha: "24/04/2026",
-        calificacion: 4,
-        comentario: "Buen departamento, limpio y comodo. Solo mejoraria el tema del internet en horas pico.",
-    },
-    {
-        id: 3,
-        nombre: "Valeria S.",
-        fecha: "11/04/2026",
-        calificacion: 5,
-        comentario: "Excelente opcion para estudiantes. Me senti segura y con buenas areas comunes.",
-    },
-];
-
 const extractMarkerCoordinates = (url) => {
     if (!url || typeof url !== "string") return null;
     const markerMatch = url.match(/marker=([-\d.]+)%2C([-\d.]+)/i) || url.match(/marker=([-\d.]+),([-\d.]+)/i);
@@ -85,6 +61,7 @@ const Details = () => {
     const [modoComentario, setModoComentario] = useState(null);
     const [tipoComentario, setTipoComentario] = useState("queja");
     const [calificacion, setCalificacion] = useState(0);
+    const [comentarios, setComentarios] = useState([]);
 
     const isEstudiante = rol === 'estudiante';
     const isAdministrador = rol === 'administrador';
@@ -352,6 +329,39 @@ const Details = () => {
     }, [id, fetchDataBackend]);
 
     useEffect(() => {
+        const fetchComentarios = async () => {
+            try {
+                const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/comentarios/${id}`;
+                const response = await fetchDataBackend(url, null, "GET", { "Content-Type": "application/json" });
+                const lista = Array.isArray(response)
+                    ? response
+                    : Array.isArray(response?.comentarios)
+                        ? response.comentarios
+                        : Array.isArray(response?.data)
+                            ? response.data
+                            : [];
+
+                setComentarios(
+                    lista
+                        .filter((item) => String(item?.tipoComentario || "").toLowerCase() === "comentario")
+                        .map((item, index) => ({
+                            id: item?._id || item?.id || index,
+                            nombre: item?.nombreRemitente || item?.nombre || item?.usuario?.nombre || "Usuario",
+                            fecha: item?.createdAt || item?.fecha || item?.fechaCreacion || "",
+                            calificacion: Number(item?.calificacion) || 0,
+                            comentario: item?.descripcion || item?.comentario || "",
+                        }))
+                );
+            } catch (error) {
+                console.error("Error al cargar comentarios:", error);
+                setComentarios([]);
+            }
+        };
+
+        if (id) fetchComentarios();
+    }, [id, fetchDataBackend]);
+
+    useEffect(() => {
         const totalImagenes = departamento?.imagenes?.length || 0;
 
         const onKeyDown = (e) => {
@@ -396,8 +406,8 @@ const Details = () => {
     const mapCenter = markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1])
         ? markerCoords
         : DEFAULT_CENTER;
-    const promedioCalificacion = COMENTARIOS_MOCK.length
-        ? (COMENTARIOS_MOCK.reduce((acc, item) => acc + item.calificacion, 0) / COMENTARIOS_MOCK.length).toFixed(1)
+    const promedioCalificacion = comentarios.length
+        ? (comentarios.reduce((acc, item) => acc + item.calificacion, 0) / comentarios.length).toFixed(1)
         : "0.0";
     const rutaRegreso = location?.state?.from || "/dashboard/listar";
 
@@ -627,11 +637,13 @@ const Details = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {COMENTARIOS_MOCK.map((item) => (
+                            {comentarios.length > 0 ? comentarios.map((item) => (
                                 <article key={item.id} className="rounded-lg border border-gray-200 bg-white p-4">
                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                                         <p className="font-semibold text-gray-800">{item.nombre}</p>
-                                        <p className="text-xs text-gray-500">{item.fecha}</p>
+                                        <p className="text-xs text-gray-500">
+                                            {item.fecha ? new Date(item.fecha).toLocaleDateString("es-EC") : ""}
+                                        </p>
                                     </div>
 
                                     <div className="mb-2 flex items-center gap-2">
@@ -647,7 +659,9 @@ const Details = () => {
 
                                     <p className="text-sm text-gray-700 leading-relaxed">{item.comentario}</p>
                                 </article>
-                            ))}
+                            )) : (
+                                <p className="text-sm text-gray-500">Todavía no hay comentarios en esta residencia.</p>
+                            )}
                         </div>
                     </section>
                 }
