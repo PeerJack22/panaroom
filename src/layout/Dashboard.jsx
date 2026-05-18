@@ -41,7 +41,7 @@ const Dashboard = () => {
             : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700';
 
     return (
-        <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_30%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#f8fafc_100%)] md:flex">
+        <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_30%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#f8fafc_100%)] md:flex">
 
             {/* Sidebar principal */}
             <aside
@@ -51,9 +51,6 @@ const Dashboard = () => {
             >
                 <div className="w-full">
                     <div className="mb-7 flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-600/25">
-                            PR
-                        </div>
                         <div>
                             <h2 className="text-2xl font-extrabold text-slate-900">PanaRoom</h2>
                             <p className="text-sm text-slate-500">Panel de control</p>
@@ -144,15 +141,14 @@ const Dashboard = () => {
                 </div>
             </aside>
 
-            <div className="flex min-h-screen flex-1 flex-col">
+            <div className="flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden">
 
                 <header className="sticky top-0 z-30 border-b border-white/60 bg-white/80 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl md:px-6">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex flex-1 min-w-0 items-center gap-3 md:gap-4">
+                    <div className="flex items-center justify-start gap-3 overflow-x-auto whitespace-nowrap md:gap-4">
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(true)}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 md:hidden"
+                            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 md:hidden"
                             aria-label="Abrir menú"
                             title="Abrir menú"
                         >
@@ -161,16 +157,16 @@ const Dashboard = () => {
                         <button
                             type="button"
                             onClick={() => setSidebarVisible((prev) => !prev)}
-                            className="hidden md:inline-flex h-11 w-11 items-center justify-center rounded-full border border-blue-100 bg-white text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50"
+                            className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-blue-100 bg-white text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 md:inline-flex"
                             aria-label={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
                             title={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
                         >
                             ☰
                         </button>
-                        <div className="min-w-0">
+                        <div className="min-w-0 shrink-0">
                             <h1 className="text-lg font-bold text-slate-900 md:text-xl">Dashboard</h1>
                         </div>
-                        <div className="flex min-w-0 items-center gap-3 rounded-full border border-blue-100 bg-white px-3 py-2 shadow-sm">
+                        <div className="flex min-w-0 shrink-0 items-center gap-3 rounded-full border border-blue-100 bg-white px-3 py-2 shadow-sm">
                             <img
                                 src={avatarUrl}
                                 alt="Usuario"
@@ -183,16 +179,15 @@ const Dashboard = () => {
                         </div>
                         <Link
                             to="/"
-                            className={`${buttonBase} bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:-translate-y-0.5 hover:bg-blue-700`}
+                            className={`${buttonBase} shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:-translate-y-0.5 hover:bg-blue-700`}
                             onClick={handleLogout}
                         >
                             Salir
                         </Link>
                     </div>
-                    </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto px-4 py-6 md:px-6">
+                <main className="min-h-0 flex-1 overflow-y-auto px-4 py-6 md:px-6">
                     <Outlet />
                 </main>
 
