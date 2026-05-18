@@ -40,7 +40,7 @@ const Dashboard = () => {
 
             {/* Sidebar principal */}
             <aside
-                className={`hidden border-r border-slate-800/10 bg-slate-900/90 py-8 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] backdrop-blur-md md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
+                className={`hidden border-r border-slate-800/10 bg-slate-900/95 py-8 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] backdrop-blur-md md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
                     sidebarVisible ? 'md:w-64 px-5 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
                 }`}
             >
@@ -146,7 +146,7 @@ const Dashboard = () => {
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-100">
 
-                <header className="sticky top-0 z-30 border-b border-slate-800/10 bg-slate-900/90 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.10)] backdrop-blur-md md:px-6 md:py-3">
+                <header className="sticky top-0 z-30 border-b border-slate-800/10 bg-slate-900/95 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.10)] backdrop-blur-md md:px-6 md:py-3">
                     <div className="flex items-center justify-between gap-3 md:gap-4">
                         <div className="flex min-w-0 items-center gap-3 md:gap-4">
                             <button
