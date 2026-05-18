@@ -41,26 +41,26 @@ const Dashboard = () => {
             : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700';
 
     return (
-        <div className="h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_30%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#f8fafc_100%)] md:flex md:items-stretch">
+        <div className="h-screen overflow-hidden bg-[linear-gradient(180deg,_#eff6ff_0%,_#f8fbff_40%,_#eef4ff_100%)] md:flex md:items-stretch">
 
             {/* Sidebar principal */}
             <aside
-                className={`hidden border-r border-white/60 bg-white/90 py-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
-                    sidebarVisible ? 'md:w-72 px-6 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
+                className={`hidden border-r border-blue-900/30 bg-gradient-to-b from-blue-950 via-blue-900 to-blue-800 py-8 text-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-xl md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
+                    sidebarVisible ? 'md:w-64 px-5 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
                 }`}
             >
                 <div className="w-full">
                     <div className="mb-7 flex items-center gap-3">
                         <div>
-                            <h2 className="text-2xl font-extrabold text-slate-900">PanaRoom</h2>
-                            <p className="text-sm text-slate-500">Panel de control</p>
+                            <h2 className="text-2xl font-extrabold text-white">PanaRoom</h2>
+                            <p className="text-sm text-blue-100/80">Panel de control</p>
                         </div>
                     </div>
 
                     <img
                         src={avatarUrl}
                         alt="Usuario"
-                        className="mx-auto mb-4 h-24 w-24 rounded-full border-4 border-white object-cover shadow-[0_12px_30px_rgba(37,99,235,0.18)]"
+                        className="mx-auto mb-4 h-24 w-24 rounded-full border-4 border-white object-cover shadow-[0_12px_30px_rgba(37,99,235,0.28)]"
                     />
 
                     <ul className="mt-6 space-y-2">
@@ -74,7 +74,7 @@ const Dashboard = () => {
                                         title={item.label}
                                         className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${navButtonClass(activo)}`}
                                     >
-                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-blue-600'}`} />
+                                        <Icono className={`text-base ${activo ? 'text-white' : 'text-blue-100'}`} />
                                         {item.label}
                                     </Link>
                                 </li>
@@ -141,15 +141,15 @@ const Dashboard = () => {
                 </div>
             </aside>
 
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[linear-gradient(180deg,_rgba(239,246,255,0.3)_0%,_rgba(255,255,255,0.9)_40%,_rgba(239,246,255,0.35)_100%)]">
 
-                <header className="sticky top-0 z-30 border-b border-white/60 bg-white/80 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl md:px-6">
+                <header className="sticky top-0 z-30 border-b border-blue-100 bg-white/90 px-4 py-3 shadow-[0_10px_30px_rgba(59,130,246,0.08)] backdrop-blur-xl md:px-6 md:py-3">
                     <div className="flex items-center justify-between gap-3 md:gap-4">
                         <div className="flex min-w-0 items-center gap-3 md:gap-4">
                             <button
                                 type="button"
                                 onClick={() => setMobileMenuOpen(true)}
-                                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 md:hidden"
+                                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 md:hidden"
                                 aria-label="Abrir menú"
                                 title="Abrir menú"
                             >
@@ -158,18 +158,18 @@ const Dashboard = () => {
                             <button
                                 type="button"
                                 onClick={() => setSidebarVisible((prev) => !prev)}
-                                className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-blue-100 bg-white text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 md:inline-flex"
+                                className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-blue-100 bg-white text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 md:inline-flex"
                                 aria-label={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
                                 title={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
                             >
                                 ☰
                             </button>
                             <div className="min-w-0 shrink-0">
-                                <h1 className="text-lg font-bold text-slate-900 md:text-xl">Dashboard</h1>
+                                <h1 className="text-lg font-bold text-slate-900 md:text-[1.1rem]">Dashboard</h1>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0 ml-auto">
-                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-blue-100 bg-white px-3 py-2 shadow-sm">
+                        <div className="ml-auto flex items-center gap-3 shrink-0">
+                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-blue-100 bg-blue-50 px-3 py-2 shadow-sm">
                                 <img
                                     src={avatarUrl}
                                     alt="Usuario"
