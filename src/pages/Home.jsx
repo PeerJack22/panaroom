@@ -405,28 +405,28 @@ export const Home = () => {
     return (
         <div className="font-sans">
             {/* NAVBAR MEJORADO */}
-            <nav className="fixed w-full z-[60] bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-md transition-all duration-300">
+            <nav className="fixed w-full z-[60] bg-slate-900/80 backdrop-blur-md border-b border-slate-800 shadow-md transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-3 group">
                         <img className="w-12 h-12 rounded-lg shadow-lg group-hover:scale-110 transition-transform" src={logo_proyecto} alt="PanaRoom" />
                         <div>
-                            <span className="text-2xl font-bold text-gray-900 block leading-none">PanaRoom</span>
+                            <span className="text-2xl font-bold text-white block leading-none">PanaRoom</span>
                         </div>
                     </Link>
 
                     {/* Desktop Menu */}
                     <div className="hidden lg:flex items-center gap-8">
-                        <a href="/" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                        <a href="/" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Inicio
                         </a>
-                        <a href="#acerca" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                        <a href="#acerca" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Acerca de
                         </a>
-                        <a href="#servicios" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                        <a href="#servicios" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Servicios
                         </a>
-                        <a href="#contacto" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                        <a href="#contacto" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Contacto
                         </a>
                     </div>
@@ -437,13 +437,13 @@ export const Home = () => {
                             <>
                                 <button
                                     onClick={() => navigate("/register")}
-                                    className="px-6 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors"
+                                    className="px-6 py-2.5 text-sm font-semibold text-slate-200 hover:text-white transition-colors"
                                 >
                                     Registrarse
                                 </button>
                                 <button
                                     onClick={() => navigate("/login")}
-                                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
+                                    className="px-6 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm font-semibold rounded-full transition-all shadow-lg transform hover:-translate-y-0.5"
                                 >
                                     Iniciar Sesión
                                 </button>
@@ -451,7 +451,7 @@ export const Home = () => {
                         ) : (
                             <button
                                 onClick={() => navigate("/dashboard")}
-                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg"
+                                className="px-6 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm font-semibold rounded-full transition-all shadow-lg"
                             >
                                 Dashboard
                             </button>
@@ -461,7 +461,7 @@ export const Home = () => {
                     {/* Mobile Menu Button */}
                     <button 
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="lg:hidden p-2 text-gray-700 hover:text-blue-600"
+                        className="lg:hidden p-2 text-slate-200 hover:text-white"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -471,20 +471,20 @@ export const Home = () => {
 
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
-                    <div className="lg:hidden bg-white border-t border-gray-200 shadow-xl">
+                    <div className="lg:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-800 shadow-xl">
                         <div className="px-6 py-4 space-y-3">
-                            <a href="/" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Inicio</a>
-                            <a href="#acerca" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Acerca de</a>
-                            <a href="#servicios" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Servicios</a>
-                            <a href="#contacto" className="block text-lg font-semibold text-gray-800 hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Contacto</a>
-                            <hr className="my-2" />
+                            <a href="/" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Inicio</a>
+                            <a href="#acerca" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Acerca de</a>
+                            <a href="#servicios" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Servicios</a>
+                            <a href="#contacto" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Contacto</a>
+                            <hr className="my-2 border-slate-800" />
                             {!token ? (
                                 <div className="space-y-2">
-                                    <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50">Registrarse</button>
-                                    <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Iniciar Sesión</button>
+                                    <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg border border-white/10 text-slate-200 font-semibold hover:bg-white/10">Registrarse</button>
+                                    <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100">Iniciar Sesión</button>
                                 </div>
                             ) : (
-                                <button onClick={() => { navigate("/dashboard"); setMobileMenuOpen(false); }} className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Dashboard</button>
+                                <button onClick={() => { navigate("/dashboard"); setMobileMenuOpen(false); }} className="w-full py-2 rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100">Dashboard</button>
                             )}
                         </div>
                     </div>

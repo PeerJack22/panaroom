@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaCommentDots, FaHouse, FaUser, FaUsers } from 'react-icons/fa6';
+import { FaClipboardList, FaComments, FaHouseChimney, FaUser, FaBed, FaUsers } from 'react-icons/fa6';
 import storeAuth from '../context/storeAuth'
 import storeProfile from '../context/storeProfile'
 
@@ -25,10 +25,10 @@ const Dashboard = () => {
 
     const navItems = [
         { to: '/dashboard', label: 'Perfil', icon: FaUser },
-        { to: '/dashboard/listar', label: 'Residencias', icon: FaHouse },
-        ...(rol === 'estudiante' ? [{ to: '/dashboard/mis-residencias', label: 'Mis residencias', icon: FaHouse }] : []),
-        { to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias', icon: FaCommentDots },
-        { to: '/dashboard/chat', label: 'Chat', icon: FaCommentDots },
+        { to: '/dashboard/listar', label: 'Residencias', icon: FaHouseChimney },
+        ...(rol === 'estudiante' ? [{ to: '/dashboard/mis-residencias', label: 'Mis residencias', icon: FaBed }] : []),
+        { to: '/dashboard/quejas-sugerencias', label: 'Quejas y sugerencias', icon: FaClipboardList },
+        { to: '/dashboard/chat', label: 'Chat', icon: FaComments },
         ...(rol === 'administrador' ? [{ to: '/dashboard/usuarios', label: 'Administrar usuarios', icon: FaUsers }] : []),
     ];
 
