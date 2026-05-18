@@ -1139,15 +1139,15 @@ export const Home = () => {
             </main>
 
             {/* FOOTER MEJORADO */}
-            <footer id="contacto" className="bg-gray-900 text-gray-300 py-8 border-t border-gray-800">
+            <footer id="contacto" className="bg-slate-900/95 text-slate-300 py-8 border-t border-slate-800 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
                         <p>&copy; 2026 PanaRoom. Todos los derechos reservados.</p>
                         <div className="flex gap-4">
-                            <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
                                 <FaYoutube className="text-lg" />
                             </a>
-                            <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
                                 <FaGithub className="text-lg" />
                             </a>
                         </div>

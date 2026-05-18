@@ -40,7 +40,7 @@ const Dashboard = () => {
 
             {/* Sidebar principal */}
             <aside
-                className={`hidden border-r border-slate-800/10 bg-slate-900 py-8 text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
+                className={`hidden border-r border-slate-700/20 bg-slate-800 py-8 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:overflow-y-auto transition-all duration-300 ease-in-out ${
                     sidebarVisible ? 'md:w-64 px-5 opacity-100' : 'md:w-0 md:px-0 opacity-0 overflow-hidden'
                 }`}
             >
@@ -69,8 +69,8 @@ const Dashboard = () => {
                                         title={item.label}
                                         className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                                             activo
-                                                ? 'border-white/10 bg-white/10 text-white shadow-sm'
-                                                : 'border-transparent text-slate-300 hover:border-white/10 hover:bg-white/10 hover:text-white'
+                                                ? 'border-slate-500/30 bg-slate-700 text-white shadow-sm'
+                                                    : 'border-transparent text-slate-300 hover:border-slate-500/20 hover:bg-slate-700/70 hover:text-white'
                                         }`}
                                     >
                                         <Icono className={`text-base ${activo ? 'text-white' : 'text-slate-300'}`} />
@@ -93,7 +93,7 @@ const Dashboard = () => {
 
             {/* Sidebar móvil tipo drawer */}
             <aside
-                className={`fixed top-0 left-0 z-50 h-full w-80 border-r border-slate-800/10 bg-slate-900 px-6 py-8 text-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] transition-transform duration-300 ease-in-out md:hidden ${
+                className={`fixed top-0 left-0 z-50 h-full w-80 border-r border-slate-700/20 bg-slate-800 px-6 py-8 text-white shadow-[0_20px_60px_rgba(15,23,42,0.14)] transition-transform duration-300 ease-in-out md:hidden ${
                     mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
@@ -130,8 +130,8 @@ const Dashboard = () => {
                                         onClick={() => setMobileMenuOpen(false)}
                                         className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                                             activo
-                                                ? 'border-white/10 bg-white/10 text-white shadow-sm'
-                                                : 'border-transparent text-slate-300 hover:border-white/10 hover:bg-white/10 hover:text-white'
+                                                ? 'border-slate-500/30 bg-slate-700 text-white shadow-sm'
+                                                    : 'border-transparent text-slate-300 hover:border-slate-500/20 hover:bg-slate-700/70 hover:text-white'
                                         }`}
                                     >
                                         <Icono className={`text-base ${activo ? 'text-white' : 'text-slate-300'}`} />
@@ -146,13 +146,13 @@ const Dashboard = () => {
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-50">
 
-                <header className="sticky top-0 z-30 border-b border-slate-800/10 bg-slate-900 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)] md:px-6 md:py-3">
+                <header className="sticky top-0 z-30 border-b border-slate-700/20 bg-slate-800 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)] md:px-6 md:py-3">
                     <div className="flex items-center justify-between gap-3 md:gap-4">
                         <div className="flex min-w-0 items-center gap-3 md:gap-4">
                             <button
                                 type="button"
                                 onClick={() => setMobileMenuOpen(true)}
-                                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-slate-900 shadow-sm transition hover:bg-slate-100 md:hidden"
+                                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white shadow-sm transition hover:bg-white/15 md:hidden"
                                 aria-label="Abrir menú"
                                 title="Abrir menú"
                             >
@@ -161,7 +161,7 @@ const Dashboard = () => {
                             <button
                                 type="button"
                                 onClick={() => setSidebarVisible((prev) => !prev)}
-                                className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-slate-800 text-white shadow-sm transition hover:bg-slate-700 md:inline-flex"
+                                className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white shadow-sm transition hover:bg-white/15 md:inline-flex"
                                 aria-label={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
                                 title={sidebarVisible ? 'Ocultar menú' : 'Mostrar menú'}
                             >
@@ -172,7 +172,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="ml-auto flex items-center gap-3 shrink-0">
-                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-white/10 bg-slate-800 px-3 py-2 shadow-sm">
+                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-white/10 bg-slate-700 px-3 py-2 shadow-sm">
                                 <img
                                     src={avatarUrl}
                                     alt="Usuario"
@@ -198,7 +198,7 @@ const Dashboard = () => {
                     <Outlet />
                 </main>
 
-                <footer className="shrink-0 border-t border-slate-800/10 bg-slate-900 py-4 text-center text-sm text-slate-300">
+                <footer className="shrink-0 border-t border-slate-700/20 bg-slate-800 py-4 text-center text-sm text-slate-300">
                     © {new Date().getFullYear()} PanaRoom - Todos los derechos reservados
                 </footer>
             </div>
