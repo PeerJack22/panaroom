@@ -80,6 +80,15 @@ const Details = () => {
         setImagenActiva((prev) => (prev - 1 + departamento.imagenes.length) % departamento.imagenes.length);
     };
 
+    const renderEstrellas = (valor) => {
+        const cantidad = Math.max(0, Math.min(5, Number(valor) || 0));
+        return Array.from({ length: 5 }).map((_, index) => (
+            <span key={index} aria-hidden="true">
+                {index < cantidad ? "★" : "☆"}
+            </span>
+        ));
+    };
+
     const formatearServicio = (valor) => {
         if (!valor) return null;
         const texto = String(valor).trim();
@@ -406,8 +415,9 @@ const Details = () => {
     const mapCenter = markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1])
         ? markerCoords
         : DEFAULT_CENTER;
-    const promedioCalificacion = comentarios.length
-        ? (comentarios.reduce((acc, item) => acc + item.calificacion, 0) / comentarios.length).toFixed(1)
+    const comentariosConCalificacion = comentarios.filter((item) => Number(item.calificacion) > 0);
+    const promedioCalificacion = comentariosConCalificacion.length
+        ? (comentariosConCalificacion.reduce((acc, item) => acc + Number(item.calificacion), 0) / comentariosConCalificacion.length).toFixed(1)
         : "0.0";
     const rutaRegreso = location?.state?.from || "/dashboard/listar";
 
@@ -633,6 +643,7 @@ const Details = () => {
                             <h2 className="text-xl font-semibold text-gray-800">Comentarios de usuarios</h2>
                             <p className="text-sm text-gray-600">
                                 Calificación promedio: <span className="font-semibold text-gray-800">{promedioCalificacion}/5</span>
+                                <span className="ml-2 text-amber-500">{renderEstrellas(Math.round(Number(promedioCalificacion)))}</span>
                             </p>
                         </div>
 
@@ -648,11 +659,7 @@ const Details = () => {
 
                                     <div className="mb-2 flex items-center gap-2">
                                         <div className="text-amber-500 leading-none">
-                                            {Array.from({ length: 5 }).map((_, index) => (
-                                                <span key={`${item.id}-star-${index}`} aria-hidden="true">
-                                                    {index < item.calificacion ? "★" : "☆"}
-                                                </span>
-                                            ))}
+                                            {renderEstrellas(item.calificacion)}
                                         </div>
                                         <span className="text-xs text-gray-600">{item.calificacion}.0/5</span>
                                     </div>
