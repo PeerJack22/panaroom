@@ -1,4 +1,4 @@
-import { MdToggleOn, MdToggleOff, MdInfo, MdDelete } from "react-icons/md";
+import { MdToggleOn, MdToggleOff, MdInfo, MdDelete, MdEdit } from "react-icons/md";
 import axios from "axios";
 import useFetch from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
@@ -174,6 +174,14 @@ const Table = () => {
                 "No se pudo eliminar el departamento";
             toast.error(errorMessage);
         }
+    };
+
+    const esPropietarioDelDepartamento = (dep) => {
+        const arrendatarioId = typeof dep?.arrendatario === "object"
+            ? (dep?.arrendatario?._id || dep?.arrendatario?.id)
+            : dep?.arrendatario;
+
+        return userRol === "arrendatario" && String(arrendatarioId || "") === String(userId || "");
     };
 
     const handleFilterChange = (e) => {
@@ -827,11 +835,18 @@ const Table = () => {
                                             </span>
                                         )}
 
-                                        {userRol === "arrendatario" && (
-                                            typeof dep.arrendatario === "object"
-                                                ? (dep.arrendatario?._id || dep.arrendatario?.id) === userId
-                                                : dep.arrendatario === userId
-                                        ) && (
+                                        {esPropietarioDelDepartamento(dep) && (
+                                            <button
+                                                type="button"
+                                                title="Actualizar departamento"
+                                                className="inline-flex items-center justify-center rounded-lg border border-blue-300 px-3 py-1.5 text-blue-700 transition-colors hover:bg-blue-50"
+                                                onClick={() => navigate(`/dashboard/actualizar/${dep._id}`, { state: { departamento: dep, from: "/dashboard/listar" } })}
+                                            >
+                                                <MdEdit className="h-5 w-5" />
+                                            </button>
+                                        )}
+
+                                        {esPropietarioDelDepartamento(dep) && (
                                             <button
                                                 type="button"
                                                 title="Eliminar departamento"
