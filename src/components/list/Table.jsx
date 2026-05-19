@@ -434,11 +434,18 @@ const Table = () => {
         if (siguiente === paginaActual) return;
 
         setAnimandoDepartamentos(true);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Intentar desplazar al contenedor principal si existe (igual que Home), si no usar window
+        const contenedor = document.querySelector('.container') || document.querySelector('main');
+        if (contenedor && typeof contenedor.scrollIntoView === 'function') {
+            contenedor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         setTimeout(() => {
             setPaginaActual(siguiente);
             setAnimandoDepartamentos(false);
-        }, 180);
+        }, 220);
     };
 
     return (
