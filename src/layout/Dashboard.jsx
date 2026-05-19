@@ -48,8 +48,8 @@ const Dashboard = () => {
             >
                 <div className="w-full">
                     <div className={`mb-7 flex items-center ${sidebarCompact ? 'justify-center' : 'gap-3'}`}>
-                        <div className="h-11 w-11 rounded-2xl bg-blue-600/20 ring-1 ring-white/10 flex items-center justify-center font-black text-blue-200">
-                            P
+                        <div className="h-11 w-11 rounded-2xl bg-blue-600/20 ring-1 ring-white/10 flex items-center justify-center text-blue-200">
+                            <span className="h-2.5 w-2.5 rounded-full bg-blue-200" />
                         </div>
                         {!sidebarCompact && (
                             <div>

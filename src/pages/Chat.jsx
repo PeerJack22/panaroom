@@ -56,6 +56,8 @@ const Chat = () => {
     administradorId: m?.administradorId || null,
     arrendatarioId: m?.arrendatarioId || null,
     estudianteId: m?.estudianteId || null,
+    departamentoId: m?.departamentoId || m?.departamento?._id || null,
+    departamentoNombre: m?.departamentoNombre || m?.departamento?.titulo || m?.departamento?.nombre || null,
     createdAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
   }), []);
 
@@ -130,6 +132,8 @@ const Chat = () => {
                   tipo: 'administrador',
                   nombre: adminNombre,
                   unread: 0,
+                  departamentoId: null,
+                  departamentoNombre: null,
                 };
                 setContactoActivo(adminContact);
                 setContactos(prevContactos => {
@@ -146,6 +150,8 @@ const Chat = () => {
                   tipo: 'administrador',
                   nombre: administradorDestinoNombre,
                   unread: 0,
+                  departamentoId: null,
+                  departamentoNombre: null,
                 });
               }
             }
@@ -165,8 +171,8 @@ const Chat = () => {
               tipo: contactoDestinoTipo,
               nombre: contactoDestinoNombre || "Contacto",
               unread: 0,
-                departamentoId,
-                departamentoNombre,
+              departamentoId: departamentoId || null,
+              departamentoNombre: departamentoNombre || null,
             };
             setContactoActivo(fallbackContacto);
             setContactos((prevContactos) => {
@@ -211,7 +217,32 @@ const Chat = () => {
         const params = obtenerParamsContacto(contactoActivo);
         const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, params });
         const raw = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.chats) ? res.data.chats : []);
-        setMensajes(raw.map(m => normalizarMensaje(m)));
+        const normalizados = raw.map((m) => normalizarMensaje(m));
+        setMensajes(normalizados);
+
+        if ((!contactoActivo?.departamentoId || !contactoActivo?.departamentoNombre) && normalizados.length > 0) {
+          const ultimoConDepartamento = [...normalizados].reverse().find((m) => m?.departamentoId || m?.departamentoNombre);
+          if (ultimoConDepartamento) {
+            const departamentoIdDerivado = ultimoConDepartamento.departamentoId || null;
+            const departamentoNombreDerivado = ultimoConDepartamento.departamentoNombre || null;
+
+            setContactos((prevContactos) => prevContactos.map((contacto) => (
+              String(contacto.id) === String(contactoActivo.id)
+                ? {
+                    ...contacto,
+                    departamentoId: contacto.departamentoId || departamentoIdDerivado,
+                    departamentoNombre: contacto.departamentoNombre || departamentoNombreDerivado,
+                  }
+                : contacto
+            )));
+
+            setContactoActivo((prevContacto) => prevContacto ? {
+              ...prevContacto,
+              departamentoId: prevContacto.departamentoId || departamentoIdDerivado,
+              departamentoNombre: prevContacto.departamentoNombre || departamentoNombreDerivado,
+            } : prevContacto);
+          }
+        }
       } catch (err) {
         console.error('[Chat] cargar historial', err);
       } finally {
@@ -267,6 +298,22 @@ const Chat = () => {
           if (exists) return prev;
           return [...prev, nuevo];
         });
+        if (nuevo.departamentoId || nuevo.departamentoNombre) {
+          setContactos((prevContactos) => prevContactos.map((contacto) => (
+            String(contacto.id) === String(contactoActivo?.id)
+              ? {
+                  ...contacto,
+                  departamentoId: contacto.departamentoId || nuevo.departamentoId || null,
+                  departamentoNombre: contacto.departamentoNombre || nuevo.departamentoNombre || null,
+                }
+              : contacto
+          )));
+          setContactoActivo((prevContacto) => prevContacto ? {
+            ...prevContacto,
+            departamentoId: prevContacto.departamentoId || nuevo.departamentoId || null,
+            departamentoNombre: prevContacto.departamentoNombre || nuevo.departamentoNombre || null,
+          } : prevContacto);
+        }
       } else {
         // increment unread for contact
         const otherId = m.arrendatarioId && String(m.arrendatarioId) !== String(userId) ? m.arrendatarioId
