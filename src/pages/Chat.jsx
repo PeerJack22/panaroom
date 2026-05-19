@@ -464,19 +464,22 @@ const Chat = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
-      <h1 className="font-black text-4xl text-gray-500">Chat</h1>
-      <hr className="my-4 border-t-2 border-gray-300" />
-      <p className="mb-6">Este módulo te permite gestionar tus chats</p>
+    <div className="min-h-screen bg-slate-50 py-8" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="mb-8">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Chat</h1>
+          <p className="mt-2 text-sm text-slate-500">Este módulo te permite gestionar tus chats</p>
+          <hr className="mt-6 border-slate-200" />
+        </header>
 
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 md:p-8">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px] min-h-0">
-          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 flex flex-col min-h-0">
+          <div className="rounded-2xl border border-gray-200 shadow-sm bg-gray-50 p-4 flex flex-col min-h-0">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Contactos</h2>
             <div className="flex-1">
               {contactoActivo && (
-                <div className="p-3 rounded-lg bg-white border-2 border-blue-600 mb-3">
+                <div className="p-3 rounded-2xl bg-white border-2 border-blue-600 mb-3">
                   <p className="font-semibold">{contactoActivo.nombre}</p>
                   {contactoActivo.tipo && <p className="text-xs text-gray-500">{contactoActivo.tipo}</p>}
                 </div>
@@ -489,7 +492,7 @@ const Chat = () => {
                   <p className="text-xs text-gray-500">No hay contactos.</p>
                 ) : contactos.filter(c => String(c.id) !== String(contactoActivo?.id)).map(c => (
                   <button key={`${c.tipo}-${c.id}`} type="button" onClick={() => { setContactoActivo(c); setContactos(prev => prev.map(p => p.id===c.id?{...p,unread:0}:p)); }}
-                    className={`w-full text-left p-3 rounded-lg border flex items-center gap-3 ${String(contactoActivo?.id||'')===String(c.id)?'border-blue-600 bg-blue-50':'border-gray-200 bg-white hover:bg-gray-50'}`}>
+                    className={`w-full text-left p-3 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-all ${String(contactoActivo?.id||'')===String(c.id)?'border-blue-600 bg-blue-50':' '}`}>
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700">{(c.nombre||'?').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
@@ -504,8 +507,8 @@ const Chat = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-2 border border-gray-200 rounded-lg flex flex-col bg-white min-h-0 overflow-hidden">
-            <div className="border-b border-gray-200 p-4 bg-gray-50 rounded-t-lg flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="lg:col-span-2 border border-gray-200 rounded-2xl flex flex-col bg-white min-h-0 overflow-hidden">
+            <div className="border-b border-slate-200 p-4 bg-gray-50 rounded-t-2xl flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-lg font-semibold">{contactoActivo?.nombre || 'Selecciona un contacto'}</h3>
                 {departamentoActivoNombre && (
@@ -528,7 +531,7 @@ const Chat = () => {
                     type="button"
                     onClick={asignarDepartamentoAlEstudiante}
                     disabled={asignandoDepartamento}
-                    className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
+                    className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400 shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                   >
                     {asignandoDepartamento ? 'Asignando...' : 'Asignar departamento'}
                   </button>
@@ -543,7 +546,7 @@ const Chat = () => {
                 <div className="flex items-center justify-center h-full text-gray-500">No hay mensajes aún.</div>
               ) : mensajes.map((msg,i)=>(
                 <div key={msg.id||i} className={`flex ${msg.remitente===roleNormalized? 'justify-end':'justify-start'}`}>
-                  <div className={`max-w-xs px-4 py-2 rounded-lg ${msg.remitente===roleNormalized? 'bg-blue-600 text-white':'bg-gray-200 text-gray-800'}`}>
+                  <div className={`max-w-xs px-4 py-2 rounded-2xl ${msg.remitente===roleNormalized? 'bg-blue-600 text-white':'bg-gray-200 text-gray-800'}`}>
                     <p className="text-sm">{msg.mensaje}</p>
                     <p className="text-xs mt-1 text-gray-500">{new Date(msg.createdAt).toLocaleTimeString()}</p>
                   </div>
@@ -555,15 +558,15 @@ const Chat = () => {
               <form onSubmit={handleSubmit(enviarMensaje)} className="flex gap-2">
                 <textarea {...register('mensaje',{ required: 'El mensaje es obligatorio' })} onKeyDown={onKeyDownTextarea}
                   placeholder="Escribe tu mensaje..." rows={2}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
-                <button type="submit" disabled={enviando} className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-blue-400">{enviando? 'Enviando...':'Enviar'}</button>
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                <button type="submit" disabled={enviando} className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 disabled:bg-blue-400">{enviando? 'Enviando...':'Enviar'}</button>
               </form>
               {errors.mensaje && <p className="text-sm text-red-600 mt-2">{errors.mensaje.message}</p>}
             </div>
           </div>
         </div>
       </div>
-      
+      </div>
     </div>
   );
 };
