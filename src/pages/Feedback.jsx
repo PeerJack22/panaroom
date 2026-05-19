@@ -450,27 +450,26 @@ const Feedback = () => {
 
     // Filtrar items por estado y tipoComentario
     const itemsFiltrados = useMemo(() => {
-        // Separar comentarios (sin revisión) de quejas/sugerencias (con revisión)
-        const itemsQuejas = items.filter((item) => item.manejaEstado);
-        const itemsComentarios = items.filter((item) => !item.manejaEstado);
+        // separar por tipos
+        const itemsQuejasYSugerencias = items.filter((it) => it.tipo !== "comentario" && it.manejaEstado);
+        const itemsComentarios = items.filter((it) => it.tipo === "comentario");
 
-        // Aplicar filtro de estado solo a quejas/sugerencias
         const quejasPorEstado =
             filtro === "pendientes"
-                ? itemsQuejas.filter((item) => !item.estado)
+                ? itemsQuejasYSugerencias.filter((item) => !item.estado)
                 : filtro === "revisados"
-                    ? itemsQuejas.filter((item) => item.estado)
-                    : itemsQuejas;
+                    ? itemsQuejasYSugerencias.filter((item) => item.estado)
+                    : itemsQuejasYSugerencias;
 
-        // Combinar: si filtroTipo es "queja" o "sugerencia", mostrar solo ese tipo
-        // Si es "todos", mostrar quejas + sugerencias
         let resultado = [];
 
         if (filtroTipo === "queja" || filtroTipo === "sugerencia") {
-        resultado = quejasPorEstado.filter((item) => item.tipo === filtroTipo);
+            resultado = quejasPorEstado.filter((item) => item.tipo === filtroTipo);
+        } else if (filtroTipo === "comentario") {
+            resultado = itemsComentarios;
         } else {
-        // Cualquier otro valor (incluido "todos" o "comentario") muestra todo
-        resultado = [...quejasPorEstado, ...itemsComentarios];
+            // 'todos' -> mostrar solo quejas + sugerencias (excluye comentarios)
+            resultado = quejasPorEstado;
         }
 
         return resultado;
