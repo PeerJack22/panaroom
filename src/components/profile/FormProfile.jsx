@@ -174,18 +174,18 @@ const FormularioPerfil = () => {
             {!isAdmin && <div className="mb-6">
                 <label className="mb-2 block text-sm font-semibold text-slate-600">Imagen de perfil</label>
                 <div className="mt-4">
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 outline-none transition focus:ring-2 focus:ring-blue-100"
-                        {...register("imagenPerfil", {
-                            validate: {
-                                lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
-                                acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
-                            },
-                            onChange: handleFileChange
-                        })}
-                    />
+            <input
+                type="file"
+                accept="image/*"
+                className="block w-full text-sm text-slate-600 file:mr-4 file:px-6 file:py-2.5 file:bg-blue-600 file:hover:bg-blue-700 file:text-white file:text-sm file:font-semibold file:rounded-full file:transition-all file:shadow-lg file:hover:shadow-blue-600/30 file:transform file:hover:-translate-y-0.5 outline-none focus:ring-2 focus:ring-blue-100"
+                {...register("imagenPerfil", {
+                    validate: {
+                    lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
+                    acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
+                    },
+                    onChange: handleFileChange
+                })}
+            />
                     {errors.imagenPerfil && <p className="mt-1 text-xs text-red-600">{errors.imagenPerfil.message}</p>}
 
                     {uploadedImagePreview && (
