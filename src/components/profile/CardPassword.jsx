@@ -50,7 +50,7 @@ const CardPassword = () => {
                     <input
                         type="submit"
                         value="Cambiar"
-                        className="w-full py-2 px-4 rounded-xl bg-blue-700 hover:bg-blue-600 transition-colors font-semibold text-white uppercase cursor-pointer"
+                        className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                     />
                 </form>
             </div>
