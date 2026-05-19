@@ -13,7 +13,7 @@ export const CardProfile = () => {
                 <img
                     src={imagenPerfil}
                     alt="img-client"
-                    className="w-28 h-28 rounded-full object-cover border-4 border-slate-100 shadow-sm"
+                    className="w-28 h-28 rounded-full object-cover border-4 border-slate-300 shadow-sm"
                     width={120}
                     height={120}
                 />
@@ -21,16 +21,6 @@ export const CardProfile = () => {
             </div>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
-                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
-                    <span className="text-xs font-semibold text-slate-600">Nombre</span>
-                    <span className="text-sm font-medium text-slate-900 mt-1">{user?.nombre || "-"}</span>
-                </div>
-
-                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
-                    <span className="text-xs font-semibold text-slate-600">Apellido</span>
-                    <span className="text-sm font-medium text-slate-900 mt-1">{user?.apellido || "-"}</span>
-                </div>
-
                 <div className="sm:col-span-2 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
                     <span className="text-xs font-semibold text-slate-600">Dirección</span>
                     <span className="text-sm font-medium text-slate-900 mt-1">{user?.direccion || "-"}</span>
