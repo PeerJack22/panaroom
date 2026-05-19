@@ -511,6 +511,20 @@ const Details = () => {
                                     <p className="text-gray-900">{departamento.mascotas ? "Sí" : "No"}</p>
                                 </div>
                             </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Alícuota</span>
+                                    <p className="text-gray-900">{departamento.alicoutaMonto != null ? `$ ${departamento.alicoutaMonto}` : "No aplica"}</p>
+                                </div>
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Guardianía</span>
+                                    <p className="text-gray-900">{departamento.guardiania ? "Sí" : "No"}</p>
+                                </div>
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Nº parqueaderos</span>
+                                    <p className="text-gray-900">{departamento.numParqueaderos != null ? departamento.numParqueaderos : (departamento.parqueadero ? "1" : "0")}</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-gray-200">

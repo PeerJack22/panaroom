@@ -437,7 +437,7 @@ export const Home = () => {
                             <>
                                 <button
                                     onClick={() => navigate("/register")}
-                                    className="px-6 py-2.5 text-sm font-semibold text-slate-200 hover:text-white transition-colors"
+                                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-md transform hover:-translate-y-0.5"
                                 >
                                     Registrarse
                                 </button>
@@ -480,7 +480,7 @@ export const Home = () => {
                             <hr className="my-2 border-slate-800" />
                             {!token ? (
                                 <div className="space-y-2">
-                                    <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg border border-slate-700 text-slate-200 font-semibold hover:bg-slate-800">Registrarse</button>
+                                    <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all shadow-md">Registrarse</button>
                                     <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100">Iniciar Sesión</button>
                                 </div>
                             ) : (
