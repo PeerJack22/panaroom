@@ -13,6 +13,7 @@ const Chat = () => {
   const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
   const administradorDestinoId = location?.state?.administradorId || null;
   const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
+  const departamentoNombre = location?.state?.departamentoNombre || null;
   const departamentoId = location?.state?.departamentoId || null;
   const contactoDestinoId =
     location?.state?.contactoId ||
@@ -43,6 +44,7 @@ const Chat = () => {
   const [cargandoContactos, setCargandoContactos] = useState(false);
   const [cargandoHistorial, setCargandoHistorial] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [asignandoDepartamento, setAsignandoDepartamento] = useState(false);
   const mensajesRef = useRef(null);
 
   const normalizarMensaje = useCallback((m) => ({
@@ -380,6 +382,43 @@ const Chat = () => {
     } finally { setEnviando(false); }
   };
 
+  const asignarDepartamentoAlEstudiante = async () => {
+    if (!isArrendatario || contactoActivo?.tipo !== 'estudiante' || !departamentoId) {
+      toast.error('No se puede asignar el departamento en esta conversación.');
+      return;
+    }
+
+    const confirmar = window.confirm(
+      `¿Deseas asignar el departamento a ${contactoActivo?.nombre || 'este estudiante'}?`
+    );
+    if (!confirmar) return;
+
+    setAsignandoDepartamento(true);
+    const loadingToast = toast.loading('Asignando departamento...');
+
+    try {
+      const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/asignarEstudiante`;
+      await axios.put(url, {
+        departamentoId,
+        estudianteId: contactoActivo.id,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      toast.dismiss(loadingToast);
+      toast.success('Departamento asignado correctamente al estudiante');
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      const errorMessage = error?.response?.data?.msg || error?.response?.data?.message || 'No se pudo asignar el departamento';
+      toast.error(errorMessage);
+    } finally {
+      setAsignandoDepartamento(false);
+    }
+  };
+
   // enter to send
   const onKeyDownTextarea = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -430,9 +469,29 @@ const Chat = () => {
           </div>
 
           <div className="lg:col-span-2 border border-gray-200 rounded-lg flex flex-col bg-white min-h-0 overflow-hidden">
-            <div className="border-b border-gray-200 p-4 bg-gray-50 rounded-t-lg">
-              <h3 className="text-lg font-semibold">{contactoActivo?.nombre || 'Selecciona un contacto'}</h3>
-              {contactoActivo?.departamento && <p className="text-sm text-gray-600">{contactoActivo.departamento}</p>}
+            <div className="border-b border-gray-200 p-4 bg-gray-50 rounded-t-lg flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">{contactoActivo?.nombre || 'Selecciona un contacto'}</h3>
+                {departamentoNombre && (
+                  <p className="text-sm text-gray-600">
+                    Departamento: <span className="font-semibold text-gray-800">{departamentoNombre}</span>
+                  </p>
+                )}
+                {contactoActivo?.tipo === 'estudiante' && departamentoNombre && (
+                  <p className="text-xs text-gray-500 mt-1">Esta conversación está asociada al departamento indicado arriba.</p>
+                )}
+              </div>
+
+              {isArrendatario && contactoActivo?.tipo === 'estudiante' && departamentoId && (
+                <button
+                  type="button"
+                  onClick={asignarDepartamentoAlEstudiante}
+                  disabled={asignandoDepartamento}
+                  className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
+                >
+                  {asignandoDepartamento ? 'Asignando...' : 'Asignar departamento'}
+                </button>
+              )}
             </div>
 
             <div ref={mensajesRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
