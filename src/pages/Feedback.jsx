@@ -495,181 +495,185 @@ const Feedback = () => {
     }
 
     return (
-        <div>
-            <h1 className="font-black text-4xl text-gray-500">Quejas y sugerencias</h1>
-            <hr className="my-4 border-t-2 border-gray-300" />
-            <p className="mb-6">Este módulo te permite gestionar quejas y sugerencias</p>
+        <div className="min-h-screen bg-slate-50" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            <div className="max-w-6xl mx-auto py-8 px-4">
+                <header className="mb-6">
+                    <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Quejas y sugerencias</h1>
+                    <p className="mt-2 text-sm text-slate-500">Este módulo te permite gestionar quejas y sugerencias</p>
+                    <hr className="mt-4 border-slate-200" />
+                </header>
 
-            <section className="bg-white border border-gray-200 rounded-xl shadow p-5">
-                <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
-                    <h2 className="text-xl font-bold text-gray-800">
-                        {isAdmin ? "Todas las quejas y sugerencias" : isArrendatario ? "Quejas y sugerencias de mis departamentos" : "Mis quejas y sugerencias"}
-                    </h2>
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setFiltro("pendientes")}
-                                className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
-                                    filtro === "pendientes"
-                                        ? "border-blue-600 bg-blue-600 text-white"
-                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
-                                }`}
-                            >
-                                Pendientes ({conteoPendientes})
-                            </button>
-                            <button
-                                onClick={() => setFiltro("revisados")}
-                                className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
-                                    filtro === "revisados"
-                                        ? "border-blue-600 bg-blue-600 text-white"
-                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
-                                }`}
-                            >
-                                Revisados ({conteoRevisados})
-                            </button>
-                        </div>
+                <section className="bg-white border border-slate-200 rounded-2xl shadow p-6">
+                    <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
+                        <h2 className="text-xl font-bold text-slate-800">
+                            {isAdmin ? "Todas las quejas y sugerencias" : isArrendatario ? "Quejas y sugerencias de mis departamentos" : "Mis quejas y sugerencias"}
+                        </h2>
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setFiltro("pendientes")}
+                                    className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                                        filtro === "pendientes"
+                                            ? "bg-slate-900 text-white"
+                                            : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                                    }`}
+                                >
+                                    Pendientes ({conteoPendientes})
+                                </button>
+                                <button
+                                    onClick={() => setFiltro("revisados")}
+                                    className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                                        filtro === "revisados"
+                                            ? "bg-slate-900 text-white"
+                                            : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                                    }`}
+                                >
+                                    Revisados ({conteoRevisados})
+                                </button>
+                            </div>
 
-                        <div className="flex items-center gap-2">
-                            <label htmlFor="filtroTipo" className="text-sm font-medium text-gray-700">
-                                Tipo:
-                            </label>
-                            <select
-                                id="filtroTipo"
-                                value={filtroTipo}
-                                onChange={(e) => setFiltroTipo(e.target.value)}
-                                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="todos">Todos los tipos</option>
-                                <option value="queja">Queja</option>
-                                <option value="sugerencia">Sugerencia</option>
-                            </select>
+                            <div className="flex items-center gap-2">
+                                <label htmlFor="filtroTipo" className="text-sm font-medium text-slate-700">
+                                    Tipo:
+                                </label>
+                                <select
+                                    id="filtroTipo"
+                                    value={filtroTipo}
+                                    onChange={(e) => setFiltroTipo(e.target.value)}
+                                    className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="todos">Todos los tipos</option>
+                                    <option value="queja">Queja</option>
+                                    <option value="sugerencia">Sugerencia</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {loading ? (
-                    <p className="text-gray-500">Cargando registros...</p>
-                ) : !itemsFiltrados.length ? (
-                    <p className="text-gray-500">No existen registros para mostrar.</p>
-                ) : (
-                    <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
-                        {itemsFiltrados.map((item) => (
-                            <article key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                        <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{item.mensaje}</p>
+                    {loading ? (
+                        <p className="text-slate-600">Cargando registros...</p>
+                    ) : !itemsFiltrados.length ? (
+                        <p className="text-slate-600">No existen registros para mostrar.</p>
+                    ) : (
+                        <div className="space-y-3 max-h-[56rem] overflow-y-auto pr-2">
+                            {itemsFiltrados.map((item) => (
+                                <article key={item.id} className="border border-slate-100 rounded-xl p-4 bg-slate-50">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <p className="text-sm text-slate-700 mt-1 whitespace-pre-wrap">{item.mensaje}</p>
+                                        </div>
+
+                                        <div className="ml-3 flex-shrink-0 flex flex-col items-end gap-2">
+                                            {item.manejaEstado && (
+                                                <span
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                                        item.estado
+                                                            ? "bg-green-100 text-green-800"
+                                                            : "bg-yellow-100 text-yellow-800"
+                                                    }`}
+                                                >
+                                                    {item.estado ? "Revisado" : "Pendiente"}
+                                                </span>
+                                            )}
+                                            {isAdmin && item.manejaEstado && !item.tieneRespuesta && (
+                                                <button
+                                                    onClick={() => abrirModalComentario(item)}
+                                                    className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                                                >
+                                                    Responder
+                                                </button>
+                                            )}
+                                            {item.tieneRespuesta && (
+                                                <span className="text-xs text-green-700 font-semibold">
+                                                    ✓ Respondido
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
 
-                                    <div className="ml-3 flex-shrink-0 flex flex-col items-end gap-2">
-                                        {item.manejaEstado && (
-                                            <span
-                                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                                    item.estado
-                                                        ? "bg-green-100 text-green-800"
-                                                        : "bg-yellow-100 text-yellow-800"
-                                                }`}
+                                    <p className="text-xs text-slate-500 mt-2">
+                                        {isAdmin && (
+                                            <>
+                                                Estudiante: {item.estudiante} • {" "}
+                                            </>
+                                        )}
+                                        Departamento: {" "}
+                                        {item.departamentoId ? (
+                                            <Link
+                                                to={`/dashboard/visualizar/${item.departamentoId}`}
+                                                state={{ from: FEEDBACK_ROUTE }}
+                                                className="text-blue-600 hover:text-blue-700 underline"
                                             >
-                                                {item.estado ? "Revisado" : "Pendiente"}
-                                            </span>
+                                                {item.departamento}
+                                            </Link>
+                                        ) : (
+                                            item.departamento
                                         )}
-                                        {isAdmin && item.manejaEstado && !item.tieneRespuesta && (
-                                            <button
-                                                onClick={() => abrirModalComentario(item)}
-                                                className="px-2 py-1 rounded text-xs font-semibold transition-colors bg-green-500 text-white hover:bg-green-600"
-                                            >
-                                                Responder
-                                            </button>
-                                        )}
-                                        {item.tieneRespuesta && (
-                                            <span className="text-xs text-green-600 font-semibold">
-                                                ✓ Respondido
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
+                                        {" "}• Fecha: {formatDate(item.fecha)}
+                                    </p>
 
-                                <p className="text-xs text-gray-500 mt-2">
-                                    {isAdmin && (
-                                        <>
-                                            Estudiante: {item.estudiante} • {" "}
-                                        </>
+                                    {item.comentariosRespuesta && item.comentariosRespuesta.length > 0 && (
+                                        <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+                                            <p className="text-xs font-semibold text-slate-700">Respuestas:</p>
+                                            {item.comentariosRespuesta.map((comentario, idx) => (
+                                                <div key={idx} className="bg-white rounded-md p-3 ml-2 border-l-2 border-green-500">
+                                                    <p className="text-sm text-slate-800">{comentario?.texto || comentario?.descripcion || comentario?.comentario || "Sin contenido"}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">{comentario?.autor || "Admin"}</p>
+                                                </div>
+                                            ))}
+                                        </div>
                                     )}
-                                    Departamento: {" "}
-                                    {item.departamentoId ? (
-                                        <Link
-                                            to={`/dashboard/visualizar/${item.departamentoId}`}
-                                            state={{ from: FEEDBACK_ROUTE }}
-                                            className="text-blue-600 hover:text-blue-700 underline"
-                                        >
-                                            {item.departamento}
-                                        </Link>
-                                    ) : (
-                                        item.departamento
-                                    )}
-                                    {" "}• Fecha: {formatDate(item.fecha)}
-                                </p>
+                                </article>
+                            ))}
+                        </div>
+                    )}
+                </section>
 
-                                {item.comentariosRespuesta && item.comentariosRespuesta.length > 0 && (
-                                    <div className="mt-3 pt-3 border-t border-gray-300 space-y-2">
-                                        <p className="text-xs font-semibold text-gray-700">Respuestas:</p>
-                                        {item.comentariosRespuesta.map((comentario, idx) => (
-                                            <div key={idx} className="bg-white rounded p-2 ml-2 border-l-2 border-green-500">
-                                                <p className="text-xs text-gray-800">{comentario?.texto || comentario?.descripcion || comentario?.comentario || "Sin contenido"}</p>
-                                                <p className="text-xs text-gray-500 mt-1">{comentario?.autor || "Admin"}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </article>
-                        ))}
+                {/* Modal de comentario */}
+                {modalAbierto && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6">
+                        <div className="relative z-10 bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-6 border border-slate-200">
+                            <h3 className="text-lg font-bold text-slate-900 mb-4">
+                                Responder a {quejaSeleccionada?.tipo === "queja" ? "Queja" : "Sugerencia"}
+                            </h3>
+
+                            <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-100 max-h-[150px] overflow-y-auto">
+                                <p className="text-sm text-slate-700 font-semibold mb-2">Mensaje original:</p>
+                                <p className="text-sm text-slate-600 whitespace-pre-wrap">{quejaSeleccionada?.mensaje}</p>
+                            </div>
+
+                            <label htmlFor="comentario" className="block text-sm font-semibold text-slate-700 mb-2">
+                                Tu respuesta:
+                            </label>
+                            <textarea
+                                id="comentario"
+                                value={comentarioAdmin}
+                                onChange={(e) => setComentarioAdmin(e.target.value)}
+                                placeholder="Escribe tu comentario de respuesta..."
+                                className="w-full border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 resize-none"
+                                rows="4"
+                            />
+
+                            <div className="flex gap-3 mt-6 justify-end">
+                                <button
+                                    onClick={cerrarModalComentario}
+                                    disabled={enviandoComentario}
+                                    className="px-4 py-2 rounded-full text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold transition-colors disabled:opacity-50"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={enviarComentarioRespuesta}
+                                    disabled={enviandoComentario || !comentarioAdmin.trim()}
+                                    className="px-4 py-2 rounded-full text-white bg-green-600 hover:bg-green-700 font-semibold transition-colors disabled:opacity-50"
+                                >
+                                    {enviandoComentario ? "Enviando..." : "Enviar respuesta"}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
-            </section>
-
-            {/* Modal de comentario */}
-            {modalAbierto && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6">
-                    <div className="relative z-10 bg-white/95 rounded-lg shadow-lg max-w-lg w-full mx-4 p-6 border border-gray-200">
-                        <h3 className="text-lg font-bold text-gray-800 mb-4">
-                            Responder a {quejaSeleccionada?.tipo === "queja" ? "Queja" : "Sugerencia"}
-                        </h3>
-
-                        <div className="mb-4 p-3 bg-gray-100 rounded border border-gray-300 max-h-[150px] overflow-y-auto">
-                            <p className="text-sm text-gray-700 font-semibold mb-2">Mensaje original:</p>
-                            <p className="text-sm text-gray-600 whitespace-pre-wrap">{quejaSeleccionada?.mensaje}</p>
-                        </div>
-
-                        <label htmlFor="comentario" className="block text-sm font-semibold text-gray-700 mb-2">
-                            Tu respuesta:
-                        </label>
-                        <textarea
-                            id="comentario"
-                            value={comentarioAdmin}
-                            onChange={(e) => setComentarioAdmin(e.target.value)}
-                            placeholder="Escribe tu comentario de respuesta..."
-                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                            rows="4"
-                        />
-
-                        <div className="flex gap-3 mt-6 justify-end">
-                            <button
-                                onClick={cerrarModalComentario}
-                                disabled={enviandoComentario}
-                                className="px-4 py-2 rounded-lg text-gray-700 bg-gray-300 hover:bg-gray-400 font-semibold transition-colors disabled:opacity-50"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={enviarComentarioRespuesta}
-                                disabled={enviandoComentario || !comentarioAdmin.trim()}
-                                className="px-4 py-2 rounded-lg text-white bg-green-500 hover:bg-green-600 font-semibold transition-colors disabled:opacity-50"
-                            >
-                                {enviandoComentario ? "Enviando..." : "Enviar respuesta"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            </div>
         </div>
     );
 };
