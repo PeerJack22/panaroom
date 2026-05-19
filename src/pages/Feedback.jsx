@@ -320,14 +320,23 @@ const Feedback = () => {
                 try {
                     // clonar para evitar referencias circulares
                     console.debug("[Feedback] rawList sample:", JSON.parse(JSON.stringify(rawList)).slice(0, 5));
-                } catch (e) {
+                } catch {
                     console.debug("[Feedback] rawList (no serializable)", rawList);
                 }
-                
-                const normalizedList = rawList.map((item, index) => {
-                    const normalized = normalizeFeedbackItem(item, index);
-                    return normalized;
-                }).filter(Boolean);
+
+                // Filtro temporal: eliminar objetos que contienen arrays (ej. objetos 'padre' con `comentarios`)
+                const cleanedRawList = Array.isArray(rawList)
+                    ? rawList.filter((r) => {
+                          if (!r || typeof r !== "object") return true;
+                          return !Object.values(r).some((v) => Array.isArray(v));
+                      })
+                    : [];
+
+                // Normalizar
+                const normalizedList = cleanedRawList
+                    .map((item, index) => normalizeFeedbackItem(item, index))
+                    .filter(Boolean);
+
                 setItems(normalizedList);
             } catch (error) {
                 console.error("[Feedback] Error al cargar:", error);
