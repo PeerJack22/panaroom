@@ -466,12 +466,11 @@ const Feedback = () => {
         // Si es "todos", mostrar quejas + sugerencias
         let resultado = [];
 
-        if (filtroTipo === "comentario") {
-            resultado = itemsComentarios;
-        } else if (filtroTipo === "todos") {
-            resultado = [...quejasPorEstado, ...itemsComentarios];
+        if (filtroTipo === "queja" || filtroTipo === "sugerencia") {
+        resultado = quejasPorEstado.filter((item) => item.tipo === filtroTipo);
         } else {
-            resultado = quejasPorEstado.filter((item) => item.tipo === filtroTipo);
+        // Cualquier otro valor (incluido "todos" o "comentario") muestra todo
+        resultado = [...quejasPorEstado, ...itemsComentarios];
         }
 
         return resultado;
