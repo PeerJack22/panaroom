@@ -379,9 +379,9 @@ const Users = () => {
 
     return (
         <div className="min-h-screen bg-slate-50" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-            <h1 className='text-4xl sm:text-5xl font-extrabold text-slate-900'>Usuarios</h1>
-            <hr className='my-4 border-t-2 border-slate-200' />
-            <p className='mb-8 text-slate-600'>Este módulo te permite gestionar los usuarios</p>
+            <h1 className='text-3xl sm:text-4xl font-extrabold text-slate-900'>Usuarios</h1>
+            <p className='mt-2 text-sm text-slate-500'>Este módulo te permite gestionar los usuarios</p>
+            <hr className="mt-6 border-slate-200" />
 
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
