@@ -32,7 +32,6 @@ export const Confirm = () => {
                     backendMessage = msg;
                 }
 
-                // Si no es 404, no seguimos probando rutas porque ya tenemos respuesta válida del backend
                 if (status && status !== 404) {
                     break;
                 }
@@ -50,28 +49,28 @@ export const Confirm = () => {
     }, [verifyToken]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 px-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             <img
-                className="h-64 w-64 object-cover border-4 border-slate-600 shadow-md mb-8"
+                className="h-64 w-64 object-cover rounded-full border-4 border-slate-200 shadow-md mb-8"
                 src={edificioPulgar}
                 alt="Confirmación"
             />
 
-            <div className="text-center">
+            <div className="text-center max-w-xl">
                 {confirmStatus === 'loading' && (
                     <>
-                        <p className="text-3xl md:text-4xl font-bold text-blue-900 mb-4 uppercase">Verificando cuenta</p>
-                        <p className="text-lg md:text-xl text-gray-600 mb-6">{confirmMessage}</p>
+                        <p className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 uppercase">Verificando cuenta</p>
+                        <p className="text-lg md:text-xl text-slate-600 mb-6">{confirmMessage}</p>
                     </>
                 )}
 
                 {confirmStatus === 'success' && (
                     <>
-                        <p className="text-3xl md:text-4xl font-bold text-blue-900 mb-4 uppercase">¡Todo listo!</p>
-                        <p className="text-lg md:text-xl text-gray-600 mb-6">{confirmMessage}</p>
+                        <p className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 uppercase">¡Todo listo!</p>
+                        <p className="text-lg md:text-xl text-slate-600 mb-6">{confirmMessage}</p>
                         <Link
                             to="/loginEstudiante"
-                            className="inline-block bg-blue-700 hover:bg-blue-600 text-white py-2 px-6 rounded-md transition-colors cursor-pointer"
+                            className="inline-block px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                         >
                             Iniciar sesión
                         </Link>
@@ -80,11 +79,11 @@ export const Confirm = () => {
 
                 {confirmStatus === 'error' && (
                     <>
-                        <p className="text-3xl md:text-4xl font-bold text-red-700 mb-4 uppercase">No se pudo confirmar</p>
-                        <p className="text-lg md:text-xl text-gray-600 mb-6">{confirmMessage}</p>
+                        <p className="text-3xl md:text-4xl font-extrabold text-red-700 mb-4 uppercase">No se pudo confirmar</p>
+                        <p className="text-lg md:text-xl text-slate-600 mb-6">{confirmMessage}</p>
                         <Link
                             to="/register"
-                            className="inline-block bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-6 rounded-md transition-colors cursor-pointer"
+                            className="inline-block px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-cyan-600/30 transform hover:-translate-y-0.5"
                         >
                             Volver a registrarme
                         </Link>
@@ -94,3 +93,5 @@ export const Confirm = () => {
         </div>
     );
 };
+
+export default Confirm;
