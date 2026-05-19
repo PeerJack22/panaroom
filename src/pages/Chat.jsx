@@ -15,8 +15,6 @@ const Chat = () => {
   const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
   const departamentoNombre = location?.state?.departamentoNombre || null;
   const departamentoId = location?.state?.departamentoId || null;
-  const departamentoActivoId = contactoActivo?.departamentoId || departamentoId || null;
-  const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
   const contactoDestinoId =
     location?.state?.contactoId ||
     location?.state?.propietarioId ||
@@ -48,6 +46,8 @@ const Chat = () => {
   const [enviando, setEnviando] = useState(false);
   const [asignandoDepartamento, setAsignandoDepartamento] = useState(false);
   const mensajesRef = useRef(null);
+  const departamentoActivoId = contactoActivo?.departamentoId || departamentoId || null;
+  const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
 
   const normalizarMensaje = useCallback((m) => ({
     id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
