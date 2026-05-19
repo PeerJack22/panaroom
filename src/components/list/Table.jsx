@@ -1,4 +1,4 @@
-import { MdToggleOn, MdToggleOff, MdInfo} from "react-icons/md";
+import { MdToggleOn, MdToggleOff, MdInfo, MdDelete } from "react-icons/md";
 import axios from "axios";
 import useFetch from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
@@ -127,6 +127,52 @@ const Table = () => {
             } else {
                 toast.error("Error al cambiar el estado del departamento.");
             }
+        }
+    };
+
+    const eliminarDepartamento = async (dep) => {
+        const departamentoId = dep?._id || dep?.id || dep?.departamento?._id || dep?._doc?._id || null;
+        if (!dep || !departamentoId) {
+            toast.error("No se pudo identificar el departamento.");
+            return;
+        }
+
+        const arrendatarioId = typeof dep?.arrendatario === "object"
+            ? (dep?.arrendatario?._id || dep?.arrendatario?.id)
+            : dep?.arrendatario;
+
+        if (userRol !== "arrendatario" || String(arrendatarioId || "") !== String(userId || "")) {
+            toast.error("Solo el arrendatario propietario puede eliminar este departamento.");
+            return;
+        }
+
+        const confirmar = window.confirm(
+            `¿Estás seguro de eliminar "${dep.titulo}"? Esta acción no se puede deshacer.`
+        );
+        if (!confirmar) return;
+
+        const loadingToast = toast.loading("Eliminando departamento...");
+
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/eliminar/${departamentoId}`;
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userToken}`,
+            };
+
+            const response = await axios.delete(url, { headers });
+
+            setDepartamentos((prev) => prev.filter((item) => String(item?._id || item?.id) !== String(departamentoId)));
+
+            toast.dismiss(loadingToast);
+            toast.success(response?.data?.msg || "Departamento eliminado correctamente");
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            const errorMessage =
+                error?.response?.data?.msg ||
+                error?.response?.data?.message ||
+                "No se pudo eliminar el departamento";
+            toast.error(errorMessage);
         }
     };
 
@@ -779,6 +825,21 @@ const Table = () => {
                                                 <MdToggleOff className="h-5 w-5" />
                                                 Desactivado
                                             </span>
+                                        )}
+
+                                        {userRol === "arrendatario" && (
+                                            typeof dep.arrendatario === "object"
+                                                ? (dep.arrendatario?._id || dep.arrendatario?.id) === userId
+                                                : dep.arrendatario === userId
+                                        ) && (
+                                            <button
+                                                type="button"
+                                                title="Eliminar departamento"
+                                                className="inline-flex items-center justify-center rounded-lg border border-red-300 px-3 py-1.5 text-red-700 transition-colors hover:bg-red-50"
+                                                onClick={() => eliminarDepartamento(dep)}
+                                            >
+                                                <MdDelete className="h-5 w-5" />
+                                            </button>
                                         )}
                                     </div>
                                 </div>
