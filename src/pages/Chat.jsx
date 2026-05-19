@@ -330,6 +330,13 @@ const Chat = () => {
       // Determinar si es chat con administrador basado en el tipo de contacto activo
       const esChatConAdministrador = contactoActivo?.tipo === 'administrador';
 
+      // Preparar texto del mensaje (posible prefijo con info de departamento)
+      let messageText = data.mensaje.trim();
+      if (isEstudiante && contactoActivo?.tipo === 'arrendatario' && mensajes.length === 0) {
+        const deptInfo = departamentoActivoNombre ? `Departamento: ${departamentoActivoNombre}` : (departamentoActivoId ? `Departamento ID: ${departamentoActivoId}` : '');
+        if (deptInfo) messageText = `${deptInfo}\n\n${messageText}`;
+      }
+
       // Obtener nombre del remitente
       let nombreRemitente = `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
       if (isArrendatario && arrendatarioNombre) {
@@ -337,7 +344,7 @@ const Chat = () => {
       }
 
       const payload = {
-        mensaje: data.mensaje,
+        mensaje: messageText,
         remitente: roleNormalized,
         nombreRemitente: nombreRemitente || "Usuario",
       };
@@ -372,7 +379,9 @@ const Chat = () => {
           payload.administradorId = contactoActivo.id;
         } else {
           payload.arrendatarioId = contactoActivo.id;
-          if (departamentoId) payload.departamentoId = departamentoId;
+          // Añadir departamento actual si está disponible (provisto por la ruta o por el historial)
+          if (departamentoActivoId) payload.departamentoId = departamentoActivoId;
+          else if (departamentoId) payload.departamentoId = departamentoId;
         }
       } else if (isAdministrador) {
         payload.administradorId = userId;
