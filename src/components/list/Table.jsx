@@ -137,6 +137,11 @@ const Table = () => {
             return;
         }
 
+        if (tieneEstudianteAsignado(dep)) {
+            toast.error("No puedes eliminar este departamento porque tiene un estudiante asignado.");
+            return;
+        }
+
         const arrendatarioId = typeof dep?.arrendatario === "object"
             ? (dep?.arrendatario?._id || dep?.arrendatario?.id)
             : dep?.arrendatario;
@@ -182,6 +187,10 @@ const Table = () => {
             : dep?.arrendatario;
 
         return userRol === "arrendatario" && String(arrendatarioId || "") === String(userId || "");
+    };
+
+    const puedeEliminarDepartamento = (dep) => {
+        return esPropietarioDelDepartamento(dep) && !tieneEstudianteAsignado(dep);
     };
 
     const handleFilterChange = (e) => {
@@ -792,11 +801,11 @@ const Table = () => {
                                         <button
                                             type="button"
                                             title="Más información"
-                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors"
+                                            aria-label="Más información"
+                                            className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 transition-colors hover:bg-slate-50"
                                             onClick={() => navigate(`/dashboard/visualizar/${dep._id}`, { state: { from: "/dashboard/listar" } })}
                                         >
                                             <MdInfo className="h-5 w-5" />
-                                            Ver más
                                         </button>
 
                                         {userRol === "administrador" && (
@@ -846,7 +855,7 @@ const Table = () => {
                                             </button>
                                         )}
 
-                                        {esPropietarioDelDepartamento(dep) && (
+                                        {puedeEliminarDepartamento(dep) ? (
                                             <button
                                                 type="button"
                                                 title="Eliminar departamento"
@@ -855,7 +864,14 @@ const Table = () => {
                                             >
                                                 <MdDelete className="h-5 w-5" />
                                             </button>
-                                        )}
+                                        ) : esPropietarioDelDepartamento(dep) && tieneEstudianteAsignado(dep) ? (
+                                            <span
+                                                title="No se puede eliminar porque tiene estudiante asignado"
+                                                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-3 py-1.5 text-slate-400 cursor-not-allowed"
+                                            >
+                                                <MdDelete className="h-5 w-5" />
+                                            </span>
+                                        ) : null}
                                     </div>
                                 </div>
                             </article>

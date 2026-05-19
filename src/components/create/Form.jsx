@@ -58,6 +58,7 @@ export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedImages, setSelectedImages] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
     const totalSteps = 4;
     const {
         register,
@@ -82,6 +83,15 @@ export const Form = () => {
             setValue("numParqueaderos", "0", { shouldDirty: true, shouldValidate: true });
         }
     }, [setValue, tieneParqueadero]);
+
+    useEffect(() => {
+        const previews = selectedImages.map((file) => URL.createObjectURL(file));
+        setImagePreviews(previews);
+
+        return () => {
+            previews.forEach((preview) => URL.revokeObjectURL(preview));
+        };
+    }, [selectedImages]);
 
     useEffect(() => {
         const coords = extractMarkerCoordinates(currentMapUrl);
@@ -245,7 +255,11 @@ export const Form = () => {
             onSubmit={handleSubmit(registerResidencia)}
             className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"
         >
-            <div className="mb-4 flex justify-start">
+            <div className="mb-6 flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-black text-slate-900">Registrar residencia</h1>
+                    <p className="mt-2 text-sm text-slate-600">Completa cada bloque y revisa el resumen antes de guardar.</p>
+                </div>
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
@@ -259,21 +273,11 @@ export const Form = () => {
                 <div className="flex items-center justify-between gap-2">
                     {[1, 2, 3, 4].map((n) => (
                         <div key={n} className="flex items-center flex-1">
-                            <div
-                                className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${
-                                    n <= step
-                                        ? "bg-blue-700 border-blue-700 text-white"
-                                        : "bg-white border-slate-300 text-slate-500"
-                                }`}
-                            >
+                            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${n <= step ? "bg-blue-700 border-blue-700 text-white" : "bg-white border-slate-300 text-slate-500"}`}>
                                 {n}
                             </div>
                             {n < 4 && (
-                                <div
-                                    className={`h-1 flex-1 mx-2 rounded ${
-                                        n < step ? "bg-blue-700" : "bg-gray-200"
-                                    }`}
-                                />
+                                <div className={`h-1 flex-1 mx-2 rounded ${n < step ? "bg-blue-700" : "bg-slate-200"}`} />
                             )}
                         </div>
                     ))}
@@ -647,32 +651,94 @@ export const Form = () => {
                 )}
 
                 {step === 4 && (
-                    <div className="space-y-3 text-sm text-gray-700">
-                        <p><span className="font-semibold">Título:</span> {values.titulo || "-"}</p>
-                        <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
-                        <p><span className="font-semibold">Referencia:</span> {values.referencia || "-"}</p>
-                        <p><span className="font-semibold">Categoría:</span> {values.categoria || "-"}</p>
-                        <p><span className="font-semibold">Precio mensual:</span> {values.precioMensual || "-"}</p>
-                        <p><span className="font-semibold">Alícuota:</span> {values.alicuota === "true" ? "Sí" : values.alicuota === "false" ? "No" : "-"}</p>
-                        {values.alicuota === "true" && <p><span className="font-semibold">Monto alícuota:</span> {values.alicoutaMonto || "-"}</p>}
-                        <p><span className="font-semibold">Mascotas:</span> {values.mascotas === "true" ? "Sí" : values.mascotas === "false" ? "No" : "-"}</p>
-                        <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
-                        <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>
-                        <p><span className="font-semibold">Parqueadero:</span> {
-                            values.parqueadero === "true"
-                                ? "Sí"
-                                : values.parqueadero === "false"
-                                    ? "No"
-                                    : "-"
-                        }</p>
-                        {values.parqueadero === "true" && <p><span className="font-semibold"># Parqueaderos:</span> {values.numParqueaderos || "-"}</p>}
-                        <p><span className="font-semibold">Bodega:</span> {values.bodega === "true" ? "Sí" : values.bodega === "false" ? "No" : "-"}</p>
-                        <p><span className="font-semibold">Servicios:</span> {
-                            Array.isArray(values.servicios)
-                                ? values.servicios.join(", ")
-                                : values.servicios || "-"
-                        }</p>
-                                <p className="text-slate-500">Si todo es correcto, presiona &quot;Guardar registro&quot;.</p>
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resumen final</p>
+                            <h3 className="mt-1 text-2xl font-black text-slate-900">{values.titulo || "Residencia sin título"}</h3>
+                            <p className="mt-2 text-sm leading-6 text-slate-600 line-clamp-3">{values.descripcion || "Sin descripción registrada."}</p>
+                        </div>
+
+                        <div className="rounded-2xl bg-slate-900 p-4 text-white shadow-sm">
+                            <p className="text-xs uppercase tracking-wide text-slate-300">Precio mensual</p>
+                            <p className="mt-2 text-2xl font-black">$ {values.precioMensual || "0"}</p>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Habitaciones</p>
+                            <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroHabitaciones || "-"}</p>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Baños</p>
+                            <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroBanos || "-"}</p>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Parqueadero</p>
+                            <p className="mt-2 text-lg font-semibold text-slate-900">{values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"}</p>
+                            {values.parqueadero === "true" && <p className="mt-1 text-sm text-slate-600">Número: {values.numParqueaderos || "-"}</p>}
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Mapa</p>
+                            {values.urlMapa ? (
+                                <div className="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                                    <iframe
+                                        title="Mapa de la residencia"
+                                        src={values.urlMapa}
+                                        className="h-40 w-full"
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer-when-downgrade"
+                                    />
+                                </div>
+                            ) : (
+                                <p className="mt-2 text-sm text-slate-700">Sin ubicación seleccionada</p>
+                            )}
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Imágenes</p>
+                            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                                {imagePreviews.length ? (
+                                    imagePreviews.map((preview, index) => (
+                                        <div key={`${preview}-${index}`} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                                            <img src={preview} alt={`Vista previa ${index + 1}`} className="h-24 w-full object-cover" />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <span className="text-sm text-slate-500">Sin imágenes seleccionadas</span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Servicios</p>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                {Array.isArray(values.servicios) && values.servicios.length ? (
+                                    values.servicios.map((servicio) => (
+                                        <span key={servicio} className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
+                                            {servicio}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="text-sm text-slate-500">Sin servicios seleccionados</span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Detalles</p>
+                            <div className="mt-3 grid gap-2 text-sm text-slate-700 sm:grid-cols-2 lg:grid-cols-3">
+                                <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
+                                <p><span className="font-semibold">Referencia:</span> {values.referencia || "-"}</p>
+                                <p><span className="font-semibold">Categoría:</span> {values.categoria || "-"}</p>
+                                <p><span className="font-semibold">Alícuota:</span> {values.alicuota === "true" ? "Sí" : values.alicuota === "false" ? "No" : "-"}</p>
+                                {values.alicuota === "true" && <p><span className="font-semibold">Monto alícuota:</span> {values.alicoutaMonto || "-"}</p>}
+                                <p><span className="font-semibold">Mascotas:</span> {values.mascotas === "true" ? "Sí" : values.mascotas === "false" ? "No" : "-"}</p>
+                                <p><span className="font-semibold">Bodega:</span> {values.bodega === "true" ? "Sí" : values.bodega === "false" ? "No" : "-"}</p>
+                                <p className="sm:col-span-2 lg:col-span-3 text-slate-500">Si todo está correcto, presiona &quot;Guardar registro&quot;.</p>
+                            </div>
+                        </div>
                     </div>
                 )}
             </fieldset>

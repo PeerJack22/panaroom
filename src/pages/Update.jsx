@@ -620,7 +620,19 @@ const Update = () => {
 
                             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
                                 <p className="text-xs uppercase tracking-wide text-slate-500">Mapa</p>
-                                <p className="mt-2 text-sm text-slate-700">{values.urlMapa ? "Ubicación guardada correctamente" : "Sin ubicación seleccionada"}</p>
+                                {values.urlMapa ? (
+                                    <div className="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                                        <iframe
+                                            title="Mapa del departamento"
+                                            src={values.urlMapa}
+                                            className="h-40 w-full"
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        />
+                                    </div>
+                                ) : (
+                                    <p className="mt-2 text-sm text-slate-700">Sin ubicación seleccionada</p>
+                                )}
                             </div>
 
                             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
