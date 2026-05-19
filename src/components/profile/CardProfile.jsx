@@ -3,45 +3,48 @@ import storeProfile from "../../context/storeProfile"
 export const CardProfile = () => {
     const { user } = storeProfile()
 
-    // Selección de imagen de perfil: subida o imagen por defecto.
     const imagenPerfil =
         user?.avatarUrl ||
         "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
 
     return (
-        <div className="bg-gray-900 border border-gray-700 h-auto p-6 
-                        flex flex-col items-center justify-between shadow-lg rounded-lg text-white">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm text-slate-900 max-w-xl mx-auto">
+            <div className="relative mb-6 flex justify-center">
+                <img
+                    src={imagenPerfil}
+                    alt="img-client"
+                    className="w-28 h-28 rounded-lg object-cover border-4 border-slate-100"
+                    width={120}
+                    height={120}
+                />
+            </div>
 
-        <div className="relative mb-6">
-            <img
-                src={imagenPerfil}
-                alt="img-client"
-                className="m-auto border-4 border-gray-600 object-cover rounded-lg"
-                width={120}
-                height={120}
-            />
-        </div>
+            <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-600">Nombre</span>
+                    <span className="text-sm font-medium text-slate-900">{user?.nombre || "-"}</span>
+                </div>
 
-        <div className="self-start mb-2">
-            <b className="text-gray-300">Nombre:</b>
-            <p className="inline-block ml-3 text-white">{user?.nombre}</p>
-        </div>
-        <div className="self-start mb-2">
-            <b className="text-gray-300">Apellido:</b>
-            <p className="inline-block ml-3 text-white">{user?.apellido}</p>
-        </div>
-        <div className="self-start mb-2">
-            <b className="text-gray-300">Dirección:</b>
-            <p className="inline-block ml-3 text-white">{user?.direccion}</p>
-        </div>
-        <div className="self-start mb-2">
-            <b className="text-gray-300">Teléfono:</b>
-            <p className="inline-block ml-3 text-white">{user?.telefono || user?.celular || "-"}</p>
-        </div>
-        <div className="self-start">
-            <b className="text-gray-300">Correo:</b>
-            <p className="inline-block ml-3 text-white">{user?.email}</p>
-        </div>
+                <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-600">Apellido</span>
+                    <span className="text-sm font-medium text-slate-900">{user?.apellido || "-"}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-600">Dirección</span>
+                    <span className="text-sm font-medium text-slate-900">{user?.direccion || "-"}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-600">Teléfono</span>
+                    <span className="text-sm font-medium text-slate-900">{user?.telefono || user?.celular || "-"}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-600">Correo</span>
+                    <span className="text-sm font-medium text-slate-900">{user?.email || "-"}</span>
+                </div>
+            </div>
         </div>
     )
 }
