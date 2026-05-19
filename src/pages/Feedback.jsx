@@ -195,6 +195,17 @@ const getListFromResponse = (responseData) => {
     return [];
 };
 
+const normalizeEstado = (value) => {
+    if (typeof value === "boolean") return value;
+    if (typeof value === "string") {
+        const v = value.toLowerCase().trim();
+        if (["true", "1", "revisado", "revisada", "reviewed"].includes(v)) return true;
+        if (["false", "0", "pendiente", "no revisado", "pending"].includes(v)) return false;
+    }
+    if (typeof value === "number") return value !== 0;
+    return false;
+};
+
 const normalizeFeedbackItem = (item, index) => {
     let estudianteRaw = item?.estudiante ?? item?.usuario ?? item?.userName ?? item?.autor ?? item?.creadoPor;
     let estudianteNormalizado = "No disponible";
@@ -248,7 +259,7 @@ const normalizeFeedbackItem = (item, index) => {
             item?.residencia?.id ||
             null,
         fecha: item?.createdAt || item?.fecha || item?.updatedAt || null,
-        estado: manejaEstado ? (item?.estado !== undefined ? item.estado : false) : null,
+        estado: manejaEstado ? normalizeEstado(item?.estado) : null,
         comentariosRespuesta: comentariosRespuesta,
         tieneRespuesta: comentariosRespuesta.length > 0,
     };
@@ -305,6 +316,13 @@ const Feedback = () => {
                 });
 
                 const rawList = getListFromResponse(response?.data);
+                // Debug: inspeccionar lo que llega del backend (muestra hasta 5 items)
+                try {
+                    // clonar para evitar referencias circulares
+                    console.debug("[Feedback] rawList sample:", JSON.parse(JSON.stringify(rawList)).slice(0, 5));
+                } catch (e) {
+                    console.debug("[Feedback] rawList (no serializable)", rawList);
+                }
                 
                 const normalizedList = rawList.map((item, index) => {
                     const normalized = normalizeFeedbackItem(item, index);
