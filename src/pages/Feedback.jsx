@@ -531,17 +531,7 @@ const Feedback = () => {
                                 >
                                 Revisados ({conteoRevisados})
                                 </button>
-                                <button
-                                    onClick={() => setFiltro("revisados")}
-                                    className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                                        filtro === "revisados"
-                                            ? "bg-slate-900 text-white"
-                                            : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-                                    }`}
-                                >
-                                    Revisados ({conteoRevisados})
-                                </button>
-                            </div>
+                            
 
                             <div className="flex items-center gap-2">
                                 <label htmlFor="filtroTipo" className="text-sm font-medium text-slate-700">
