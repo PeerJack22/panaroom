@@ -73,8 +73,15 @@ export const Form = () => {
     const { user, token } = storeAuth();
 
     const values = watch();
+    const tieneParqueadero = watch("parqueadero") === "true";
     const currentMapUrl = watch("urlMapa");
     const [selectedPoint, setSelectedPoint] = useState(null);
+
+    useEffect(() => {
+        if (!tieneParqueadero) {
+            setValue("numParqueaderos", "0", { shouldDirty: true, shouldValidate: true });
+        }
+    }, [setValue, tieneParqueadero]);
 
     useEffect(() => {
         const coords = extractMarkerCoordinates(currentMapUrl);
@@ -88,7 +95,7 @@ export const Form = () => {
 
     const stepFields = {
         1: ["titulo", "descripcion", "direccion", "referencia", "urlMapa", "categoria"],
-        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "alicuota", "alicoutaMonto", "mascotas", "numParqueaderos"],
+        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "alicuota", "alicoutaMonto", "mascotas", ...(tieneParqueadero ? ["numParqueaderos"] : [])],
         3: ["imagen"],
     };
 
@@ -236,27 +243,27 @@ export const Form = () => {
     return (
         <form
             onSubmit={handleSubmit(registerResidencia)}
-            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+            className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"
         >
             <div className="mb-4 flex justify-start">
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
                 >
                     ← Regresar
                 </button>
             </div>
 
             <div className="mb-8">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                     {[1, 2, 3, 4].map((n) => (
                         <div key={n} className="flex items-center flex-1">
                             <div
                                 className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${
                                     n <= step
                                         ? "bg-blue-700 border-blue-700 text-white"
-                                        : "bg-white border-gray-300 text-gray-500"
+                                        : "bg-white border-slate-300 text-slate-500"
                                 }`}
                             >
                                 {n}
@@ -271,11 +278,11 @@ export const Form = () => {
                         </div>
                     ))}
                 </div>
-                <p className="mt-3 text-sm text-gray-500">Paso {step} de {totalSteps}</p>
+                <p className="mt-3 text-sm text-slate-500">Paso {step} de {totalSteps}</p>
             </div>
 
-            <fieldset className="border-2 border-gray-500 p-6 rounded-lg shadow-lg">
-                <legend className="text-xl font-bold text-gray-700 bg-gray-200 px-4 py-1 rounded-md">
+            <fieldset className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                <legend className="rounded-full bg-white px-4 py-1 text-xl font-bold text-slate-800 shadow-sm">
                     {step === 1 && "Información básica"}
                     {step === 2 && "Datos del inmueble"}
                     {step === 3 && "Imágenes y servicios"}
@@ -292,7 +299,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("titulo", { required: "El título es obligatorio." })}
                             />
-                            {errors.titulo && <p className="text-red-500 text-xs italic">{errors.titulo.message}</p>}
+                            {errors.titulo && <p className="text-red-600 text-xs italic">{errors.titulo.message}</p>}
                         </div>
 
                         <div>
@@ -302,7 +309,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("descripcion", { required: "La descripción es obligatoria." })}
                             />
-                            {errors.descripcion && <p className="text-red-500 text-xs italic">{errors.descripcion.message}</p>}
+                            {errors.descripcion && <p className="text-red-600 text-xs italic">{errors.descripcion.message}</p>}
                         </div>
 
                         <div>
@@ -313,7 +320,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("direccion", { required: "La dirección es obligatoria." })}
                             />
-                            {errors.direccion && <p className="text-red-500 text-xs italic">{errors.direccion.message}</p>}
+                            {errors.direccion && <p className="text-red-600 text-xs italic">{errors.direccion.message}</p>}
                         </div>
 
                         <div>
@@ -324,7 +331,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("referencia", { required: "La referencia es obligatoria." })}
                             />
-                            {errors.referencia && <p className="text-red-500 text-xs italic">{errors.referencia.message}</p>}
+                            {errors.referencia && <p className="text-red-600 text-xs italic">{errors.referencia.message}</p>}
                         </div>
 
                         <input type="hidden" {...register("ciudad")} />
@@ -343,7 +350,7 @@ export const Form = () => {
                                 <option value="departamento">Departamento</option>
                                 <option value="suit">Suite</option>
                             </select>
-                            {errors.categoria && <p className="text-red-500 text-xs italic">{errors.categoria.message}</p>}
+                            {errors.categoria && <p className="text-red-600 text-xs italic">{errors.categoria.message}</p>}
                         </div>
 
                         <input
@@ -391,7 +398,7 @@ export const Form = () => {
                             <p className="text-xs text-gray-500 mt-2">
                                 Haz clic en el mapa para guardar la ubicacion del lugar (zona aledaña a la EPN).
                             </p>
-                            {errors.urlMapa && <p className="text-red-500 text-xs italic mt-2">{errors.urlMapa.message}</p>}
+                            {errors.urlMapa && <p className="text-red-600 text-xs italic mt-2">{errors.urlMapa.message}</p>}
                         </div>
                     </>
                 )}
@@ -409,7 +416,7 @@ export const Form = () => {
                                     min: { value: 0, message: "El precio no puede ser negativo." },
                                 })}
                             />
-                            {errors.precioMensual && <p className="text-red-500 text-xs italic">{errors.precioMensual.message}</p>}
+                            {errors.precioMensual && <p className="text-red-600 text-xs italic">{errors.precioMensual.message}</p>}
                         </div>
 
                         <div className="mt-4">
@@ -424,7 +431,7 @@ export const Form = () => {
                                     No
                                 </label>
                             </div>
-                            {errors.alicuota && <p className="text-red-500 text-xs italic">{errors.alicuota.message}</p>}
+                            {errors.alicuota && <p className="text-red-600 text-xs italic">{errors.alicuota.message}</p>}
                         </div>
 
                         {values.alicuota === "true" && (
@@ -439,7 +446,7 @@ export const Form = () => {
                                         min: { value: 0, message: "El monto no puede ser negativo." },
                                     })}
                                 />
-                                {errors.alicoutaMonto && <p className="text-red-500 text-xs italic">{errors.alicoutaMonto.message}</p>}
+                                {errors.alicoutaMonto && <p className="text-red-600 text-xs italic">{errors.alicoutaMonto.message}</p>}
                             </div>
                         )}
 
@@ -455,7 +462,7 @@ export const Form = () => {
                                     No
                                 </label>
                             </div>
-                            {errors.mascotas && <p className="text-red-500 text-xs italic">{errors.mascotas.message}</p>}
+                            {errors.mascotas && <p className="text-red-600 text-xs italic">{errors.mascotas.message}</p>}
                         </div>
 
                         <div className="mt-4">
@@ -478,7 +485,7 @@ export const Form = () => {
                                     No
                                 </label>
                             </div>
-                            {errors.guardiania && <p className="text-red-500 text-xs italic">{errors.guardiania.message}</p>}
+                            {errors.guardiania && <p className="text-red-600 text-xs italic">{errors.guardiania.message}</p>}
                         </div>
 
                         <div>
@@ -492,7 +499,7 @@ export const Form = () => {
                                     min: { value: 1, message: "Debe haber al menos 1 habitación." },
                                 })}
                             />
-                            {errors.numeroHabitaciones && <p className="text-red-500 text-xs italic">{errors.numeroHabitaciones.message}</p>}
+                                    {errors.numeroHabitaciones && <p className="text-red-600 text-xs italic">{errors.numeroHabitaciones.message}</p>}
                         </div>
 
                         <div>
@@ -506,7 +513,7 @@ export const Form = () => {
                                     min: { value: 1, message: "Debe haber al menos 1 baño." },
                                 })}
                             />
-                            {errors.numeroBanos && <p className="text-red-500 text-xs italic">{errors.numeroBanos.message}</p>}
+                            {errors.numeroBanos && <p className="text-red-600 text-xs italic">{errors.numeroBanos.message}</p>}
                         </div>
 
                         <div className="mt-5">
@@ -531,8 +538,8 @@ export const Form = () => {
                                     No
                                 </label>
                             </div>
-                            {errors.parqueadero && <p className="text-red-500 text-xs italic">{errors.parqueadero.message}</p>}
-                            {values.parqueadero === "true" && (
+                            {errors.parqueadero && <p className="text-red-600 text-xs italic">{errors.parqueadero.message}</p>}
+                            {tieneParqueadero && (
                                 <div className="mt-3">
                                     <label className="mb-2 block text-sm font-semibold">Número de parqueaderos</label>
                                     <input
@@ -544,7 +551,7 @@ export const Form = () => {
                                             min: { value: 1, message: "Debe ser al menos 1." },
                                         })}
                                     />
-                                    {errors.numParqueaderos && <p className="text-red-500 text-xs italic">{errors.numParqueaderos.message}</p>}
+                                    {errors.numParqueaderos && <p className="text-red-600 text-xs italic">{errors.numParqueaderos.message}</p>}
                                 </div>
                             )}
                         </div>
@@ -579,7 +586,7 @@ export const Form = () => {
                                     No
                                 </label>
                             </div>
-                            {errors.bodega && <p className="text-red-500 text-xs italic">{errors.bodega.message}</p>}
+                            {errors.bodega && <p className="text-red-600 text-xs italic">{errors.bodega.message}</p>}
                         </div>
                     </>
                 )}
@@ -611,9 +618,9 @@ export const Form = () => {
                                     },
                                 })}
                             />
-                            {errors.imagen && <p className="text-red-500 text-xs italic">{errors.imagen.message}</p>}
+                            {errors.imagen && <p className="text-red-600 text-xs italic">{errors.imagen.message}</p>}
                             {selectedImages.length > 0 && (
-                                <p className="text-xs text-gray-500 mt-2">
+                                <p className="text-xs text-slate-500 mt-2">
                                     {selectedImages.length} imagen(es) seleccionada(s)
                                 </p>
                             )}
@@ -665,7 +672,7 @@ export const Form = () => {
                                 ? values.servicios.join(", ")
                                 : values.servicios || "-"
                         }</p>
-                        <p className="text-gray-500">Si todo es correcto, presiona &quot;Guardar registro&quot;.</p>
+                                <p className="text-slate-500">Si todo es correcto, presiona &quot;Guardar registro&quot;.</p>
                     </div>
                 )}
             </fieldset>
@@ -675,7 +682,7 @@ export const Form = () => {
                     type="button"
                     onClick={handlePreviousStep}
                     disabled={step === 1}
-                    className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded-xl border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     Anterior
                 </button>
@@ -684,7 +691,7 @@ export const Form = () => {
                     <button
                         type="button"
                         onClick={handleNextStep}
-                        className="bg-gray-800 px-5 py-2 text-slate-300 uppercase font-bold rounded-lg hover:bg-gray-600 transition-all"
+                        className="rounded-xl bg-slate-900 px-5 py-2.5 text-slate-100 uppercase font-bold hover:bg-slate-700 transition-all"
                     >
                         Siguiente
                     </button>
@@ -693,7 +700,7 @@ export const Form = () => {
                         type="submit"
                         value={isSubmitting ? "Guardando..." : "Guardar registro"}
                         disabled={isSubmitting}
-                        className="bg-blue-700 px-5 py-2 text-white uppercase font-bold rounded-lg hover:bg-blue-600 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-700"
+                        className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-white uppercase font-bold transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700"
                     />
                 )}
             </div>

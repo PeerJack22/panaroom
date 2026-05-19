@@ -68,6 +68,7 @@ const Update = () => {
     const { user, rol, token } = storeAuth();
     const [departamento, setDepartamento] = useState(location.state?.departamento || null);
     const [cargando, setCargando] = useState(!location.state?.departamento);
+    const [step, setStep] = useState(1);
 
     const {
         register,
@@ -98,8 +99,23 @@ const Update = () => {
     });
 
     const alicuotaActiva = watch("alicuota") === "true";
+    const tieneParqueadero = watch("parqueadero") === "true";
     const currentMapUrl = watch("urlMapa");
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const totalSteps = 4;
+    const camposPaso1 = ["titulo", "descripcion", "referencia"];
+    const camposPaso2 = ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "alicuota", "mascotas"];
+    const camposPaso3 = ["urlMapa", "serviciosIncluidos"];
+
+    if (tieneParqueadero) {
+        camposPaso2.push("numParqueaderos");
+    }
+
+    const stepFields = {
+        1: camposPaso1,
+        2: camposPaso2,
+        3: camposPaso3,
+    };
 
     const esPropietario = useMemo(() => {
         const arrendatarioId = typeof departamento?.arrendatario === "object"
@@ -196,6 +212,32 @@ const Update = () => {
         setSelectedPoint(null);
     }, [currentMapUrl]);
 
+    useEffect(() => {
+        if (!tieneParqueadero) {
+            setValue("numParqueaderos", "0", {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+        }
+    }, [setValue, tieneParqueadero]);
+
+    const handleNextStep = async () => {
+        const fields = stepFields[step];
+        if (fields?.length) {
+            const canContinue = await trigger(fields);
+            if (!canContinue) {
+                toast.error("Completa los campos obligatorios antes de continuar.");
+                return;
+            }
+        }
+
+        setStep((prev) => Math.min(prev + 1, totalSteps));
+    };
+
+    const handlePreviousStep = () => {
+        setStep((prev) => Math.max(prev - 1, 1));
+    };
+
     const handleMapSelect = ([lat, lng]) => {
         if (!isWithinEpnBounds(lat, lng)) {
             toast.error("Selecciona un punto dentro de la zona aledaña a la EPN.");
@@ -251,7 +293,7 @@ const Update = () => {
             referencia: String(data.referencia || "").trim(),
             bodega: String(data.bodega) === "true",
             parqueadero: String(data.parqueadero) === "true",
-            numParqueaderos: Number(data.numParqueaderos) || 0,
+            numParqueaderos: String(data.parqueadero) === "true" ? Number(data.numParqueaderos) || 0 : 0,
             guardiania: String(data.guardiania) === "true",
         };
 
@@ -320,12 +362,12 @@ const Update = () => {
     }
 
     return (
-        <div className="mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900">Actualizar departamento</h1>
                     <p className="mt-2 text-sm text-slate-600">
-                        Modifica la información principal y guarda los cambios en el sistema.
+                        Ajusta la información y revisa cada bloque antes de guardar.
                     </p>
                 </div>
                 <button
@@ -337,257 +379,198 @@ const Update = () => {
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit(guardarCambios)} className="space-y-8">
-                <section className="grid gap-5 md:grid-cols-2">
-                    <div className="md:col-span-2">
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Título</label>
-                        <input
-                            type="text"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("titulo", { required: "El título es obligatorio." })}
-                        />
-                        {errors.titulo && <p className="mt-1 text-xs text-red-600">{errors.titulo.message}</p>}
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Descripción</label>
-                        <textarea
-                            rows="4"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("descripcion", { required: "La descripción es obligatoria." })}
-                        />
-                        {errors.descripcion && <p className="mt-1 text-xs text-red-600">{errors.descripcion.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
-                        <input
-                            type="number"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("precioMensual", {
-                                required: "El precio mensual es obligatorio.",
-                                min: { value: 0, message: "El precio no puede ser negativo." },
-                            })}
-                        />
-                        {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Número de habitaciones</label>
-                        <input
-                            type="number"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("numeroHabitaciones", {
-                                required: "Este campo es obligatorio.",
-                                min: { value: 1, message: "Debe haber al menos 1 habitación." },
-                            })}
-                        />
-                        {errors.numeroHabitaciones && <p className="mt-1 text-xs text-red-600">{errors.numeroHabitaciones.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Número de baños</label>
-                        <input
-                            type="number"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("numeroBanos", {
-                                required: "Este campo es obligatorio.",
-                                min: { value: 1, message: "Debe haber al menos 1 baño." },
-                            })}
-                        />
-                        {errors.numeroBanos && <p className="mt-1 text-xs text-red-600">{errors.numeroBanos.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Número de parqueaderos</label>
-                        <input
-                            type="number"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("numParqueaderos")}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Referencia</label>
-                        <input
-                            type="text"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("referencia")}
-                        />
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Seleccionar punto en el mapa</label>
-                        <div className="overflow-hidden rounded-xl border border-slate-300">
-                            <MapContainer
-                                key={selectedPoint ? `${selectedPoint[0]}-${selectedPoint[1]}` : "default-center"}
-                                center={selectedPoint || DEFAULT_CENTER}
-                                zoom={15}
-                                minZoom={MAP_MIN_ZOOM}
-                                maxZoom={MAP_MAX_ZOOM}
-                                maxBounds={EPN_MAX_BOUNDS}
-                                maxBoundsViscosity={1.0}
-                                style={{ height: "280px", width: "100%" }}
-                            >
-                                <TileLayer
-                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                />
-                                <MapClickSelector />
-                                {selectedPoint && (
-                                    <CircleMarker center={selectedPoint} radius={8} pathOptions={{ color: "#1d4ed8" }} />
-                                )}
-                            </MapContainer>
+            <div className="mb-8">
+                <div className="flex items-center justify-between gap-2">
+                    {[1, 2, 3, 4].map((n) => (
+                        <div key={n} className="flex items-center flex-1">
+                            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${n <= step ? "bg-blue-700 border-blue-700 text-white" : "bg-white border-slate-300 text-slate-500"}`}>
+                                {n}
+                            </div>
+                            {n < 4 && (
+                                <div className={`h-1 flex-1 mx-2 rounded ${n < step ? "bg-blue-700" : "bg-slate-200"}`} />
+                            )}
                         </div>
-                        <p className="mt-2 text-xs text-slate-500">
-                            Haz clic en el mapa para guardar la ubicación del lugar (zona aledaña a la EPN).
-                        </p>
-                        <input
-                            type="hidden"
-                            {...register("urlMapa", {
-                                required: "Debes seleccionar la ubicación en el mapa.",
-                                validate: (value) => {
-                                    if (!String(value || "").includes("openstreetmap.org")) {
-                                        return "No se pudo guardar la ubicación del mapa.";
-                                    }
+                    ))}
+                </div>
+                <p className="mt-3 text-sm text-slate-500">Paso {step} de {totalSteps}</p>
+            </div>
 
-                                    const coords = extractMarkerCoordinates(value);
-                                    if (!coords || !isWithinEpnBounds(coords[0], coords[1])) {
-                                        return "La ubicación debe estar dentro de la zona aledaña a la EPN.";
-                                    }
+            <form onSubmit={handleSubmit(guardarCambios)}>
+                <fieldset className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <legend className="rounded-full bg-white px-4 py-1 text-lg font-bold text-slate-800 shadow-sm">
+                        {step === 1 && "Información básica"}
+                        {step === 2 && "Datos del inmueble"}
+                        {step === 3 && "Ubicación y servicios"}
+                        {step === 4 && "Confirmación"}
+                    </legend>
 
-                                    return true;
-                                },
-                            })}
-                        />
-                        {errors.urlMapa && <p className="mt-2 text-xs text-red-600">{errors.urlMapa.message}</p>}
-                    </div>
-                </section>
+                    {step === 1 && (
+                        <div className="grid gap-5 md:grid-cols-2">
+                            <div className="md:col-span-2">
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Título</label>
+                                <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("titulo", { required: "El título es obligatorio." })} />
+                                {errors.titulo && <p className="mt-1 text-xs text-red-600">{errors.titulo.message}</p>}
+                            </div>
 
-                <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                    <h2 className="text-lg font-bold text-slate-900">Servicios incluidos</h2>
-                    <div className="mt-4 flex flex-wrap gap-4">
-                        {servicioOptions.map((servicio) => (
-                            <label key={servicio.value} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700">
-                                <input
-                                    type="checkbox"
-                                    value={servicio.label}
-                                    {...register("serviciosIncluidos", {
-                                        validate: (value) => {
-                                            const seleccionados = Array.isArray(value) ? value : value ? [value] : [];
-                                            return seleccionados.length > 0 || "Selecciona al menos un servicio.";
-                                        },
-                                    })}
-                                />
-                                {servicio.label}
-                            </label>
-                        ))}
-                    </div>
-                    {errors.serviciosIncluidos && <p className="mt-2 text-xs text-red-600">{errors.serviciosIncluidos.message}</p>}
-                </section>
+                            <div className="md:col-span-2">
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Descripción</label>
+                                <textarea rows="4" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("descripcion", { required: "La descripción es obligatoria." })} />
+                                {errors.descripcion && <p className="mt-1 text-xs text-red-600">{errors.descripcion.message}</p>}
+                            </div>
 
-                <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Alicuota</label>
-                        <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="true" {...register("alicuota", { required: true })} />
-                                Sí
-                            </label>
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="false" {...register("alicuota", { required: true })} />
-                                No
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Mascotas</label>
-                        <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="true" {...register("mascotas", { required: true })} />
-                                Sí
-                            </label>
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="false" {...register("mascotas", { required: true })} />
-                                No
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Bodega</label>
-                        <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="true" {...register("bodega", { required: true })} />
-                                Sí
-                            </label>
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="false" {...register("bodega", { required: true })} />
-                                No
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Parqueadero</label>
-                        <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="true" {...register("parqueadero", { required: true })} />
-                                Sí
-                            </label>
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="false" {...register("parqueadero", { required: true })} />
-                                No
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">Guardianía</label>
-                        <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="true" {...register("guardiania", { required: true })} />
-                                Sí
-                            </label>
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
-                                <input type="radio" value="false" {...register("guardiania", { required: true })} />
-                                No
-                            </label>
-                        </div>
-                    </div>
-
-                    {alicuotaActiva && (
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold text-slate-700">Monto de alícuota</label>
-                            <input
-                                type="number"
-                                className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                                {...register("alicoutaMonto", {
-                                    required: "Debes indicar el monto de alícuota.",
-                                    min: { value: 0, message: "El monto no puede ser negativo." },
-                                })}
-                            />
-                            {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
+                            <div className="md:col-span-2">
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Referencia</label>
+                                <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("referencia")} />
+                            </div>
                         </div>
                     )}
-                </section>
 
-                <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-4">
-                    <button
-                        type="button"
-                        onClick={() => navigate(-1)}
-                        className="inline-flex items-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="inline-flex items-center rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                        {isSubmitting ? "Guardando..." : "Guardar cambios"}
-                    </button>
+                    {step === 2 && (
+                        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { required: "El precio mensual es obligatorio.", min: { value: 0, message: "El precio no puede ser negativo." } })} />
+                                {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Número de habitaciones</label>
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 habitación." } })} />
+                                {errors.numeroHabitaciones && <p className="mt-1 text-xs text-red-600">{errors.numeroHabitaciones.message}</p>}
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Número de baños</label>
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroBanos", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 baño." } })} />
+                                {errors.numeroBanos && <p className="mt-1 text-xs text-red-600">{errors.numeroBanos.message}</p>}
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Parqueadero</label>
+                                <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("parqueadero", { required: "Debes indicar si tiene parqueadero.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />Sí</label>
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("parqueadero", { required: "Debes indicar si tiene parqueadero.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />No</label>
+                                </div>
+                                {errors.parqueadero && <p className="mt-1 text-xs text-red-600">{errors.parqueadero.message}</p>}
+                            </div>
+
+                            {tieneParqueadero && (
+                                <div>
+                                    <label className="mb-2 block text-sm font-semibold text-slate-700">Número de parqueaderos</label>
+                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numParqueaderos", { required: tieneParqueadero ? "Indica cuántos parqueaderos tiene." : false, min: { value: 1, message: "Debe ser al menos 1." } })} />
+                                    {errors.numParqueaderos && <p className="mt-1 text-xs text-red-600">{errors.numParqueaderos.message}</p>}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Bodega</label>
+                                <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("bodega", { required: "Debes indicar si tiene bodega.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />Sí</label>
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("bodega", { required: "Debes indicar si tiene bodega.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />No</label>
+                                </div>
+                                {errors.bodega && <p className="mt-1 text-xs text-red-600">{errors.bodega.message}</p>}
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Guardianía</label>
+                                <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("guardiania", { required: "Indica si cuenta con guardianía." })} />Sí</label>
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("guardiania", { required: "Indica si cuenta con guardianía." })} />No</label>
+                                </div>
+                                {errors.guardiania && <p className="mt-1 text-xs text-red-600">{errors.guardiania.message}</p>}
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Alicuota</label>
+                                <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("alicuota", { required: "Indica si aplica alícuota." })} />Sí</label>
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("alicuota", { required: "Indica si aplica alícuota." })} />No</label>
+                                </div>
+                                {errors.alicuota && <p className="mt-1 text-xs text-red-600">{errors.alicuota.message}</p>}
+                            </div>
+
+                            {alicuotaActiva && (
+                                <div>
+                                    <label className="mb-2 block text-sm font-semibold text-slate-700">Monto alícuota</label>
+                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, min: { value: 0, message: "El monto no puede ser negativo." } })} />
+                                    {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Mascotas</label>
+                                <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />Sí</label>
+                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />No</label>
+                                </div>
+                                {errors.mascotas && <p className="mt-1 text-xs text-red-600">{errors.mascotas.message}</p>}
+                            </div>
+                        </div>
+                    )}
+
+                    {step === 3 && (
+                        <div className="grid gap-5 md:grid-cols-2">
+                            <div className="md:col-span-2">
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Seleccionar punto en el mapa</label>
+                                <div className="overflow-hidden rounded-xl border border-slate-300">
+                                    <MapContainer key={selectedPoint ? `${selectedPoint[0]}-${selectedPoint[1]}` : "default-center"} center={selectedPoint || DEFAULT_CENTER} zoom={15} minZoom={MAP_MIN_ZOOM} maxZoom={MAP_MAX_ZOOM} maxBounds={EPN_MAX_BOUNDS} maxBoundsViscosity={1.0} style={{ height: "280px", width: "100%" }}>
+                                        <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                        <MapClickSelector />
+                                        {selectedPoint && <CircleMarker center={selectedPoint} radius={8} pathOptions={{ color: "#1d4ed8" }} />}
+                                    </MapContainer>
+                                </div>
+                                <p className="mt-2 text-xs text-slate-500">Haz clic en el mapa para guardar la ubicación del lugar (zona aledaña a la EPN).</p>
+                                <input type="hidden" {...register("urlMapa", { required: "Debes seleccionar la ubicación en el mapa.", validate: (value) => {
+                                    if (!String(value || "").includes("openstreetmap.org")) return "No se pudo guardar la ubicación del mapa.";
+                                    const coords = extractMarkerCoordinates(value);
+                                    if (!coords || !isWithinEpnBounds(coords[0], coords[1])) return "La ubicación debe estar dentro de la zona aledaña a la EPN.";
+                                    return true;
+                                } })} />
+                                {errors.urlMapa && <p className="mt-2 text-xs text-red-600">{errors.urlMapa.message}</p>}
+                            </div>
+
+                            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-5">
+                                <h2 className="text-lg font-bold text-slate-900">Servicios incluidos</h2>
+                                <div className="mt-4 flex flex-wrap gap-4">
+                                    {servicioOptions.map((servicio) => (
+                                        <label key={servicio.value} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                                            <input type="checkbox" value={servicio.label} {...register("serviciosIncluidos", { validate: (value) => {
+                                                const seleccionados = Array.isArray(value) ? value : value ? [value] : [];
+                                                return seleccionados.length > 0 || "Selecciona al menos un servicio.";
+                                            } })} />
+                                            {servicio.label}
+                                        </label>
+                                    ))}
+                                </div>
+                                {errors.serviciosIncluidos && <p className="mt-2 text-xs text-red-600">{errors.serviciosIncluidos.message}</p>}
+                            </div>
+                        </div>
+                    )}
+
+                    {step === 4 && (
+                        <div className="space-y-3 text-sm text-slate-700">
+                            <p><span className="font-semibold">Título:</span> {watch("titulo") || "-"}</p>
+                            <p><span className="font-semibold">Referencia:</span> {watch("referencia") || "-"}</p>
+                            <p><span className="font-semibold">Precio mensual:</span> {watch("precioMensual") || "-"}</p>
+                            <p><span className="font-semibold">Habitaciones:</span> {watch("numeroHabitaciones") || "-"}</p>
+                            <p><span className="font-semibold">Baños:</span> {watch("numeroBanos") || "-"}</p>
+                            <p><span className="font-semibold">Parqueadero:</span> {watch("parqueadero") === "true" ? "Sí" : watch("parqueadero") === "false" ? "No" : "-"}</p>
+                            {tieneParqueadero && <p><span className="font-semibold"># Parqueaderos:</span> {watch("numParqueaderos") || "-"}</p>}
+                            <p><span className="font-semibold">Bodega:</span> {watch("bodega") === "true" ? "Sí" : watch("bodega") === "false" ? "No" : "-"}</p>
+                            <p><span className="font-semibold">Guardianía:</span> {watch("guardiania") === "true" ? "Sí" : watch("guardiania") === "false" ? "No" : "-"}</p>
+                            <p><span className="font-semibold">Servicios:</span> {Array.isArray(watch("serviciosIncluidos")) ? watch("serviciosIncluidos").join(", ") : watch("serviciosIncluidos") || "-"}</p>
+                            <p className="text-slate-500">Si todo está correcto, presiona "Guardar cambios".</p>
+                        </div>
+                    )}
+                </fieldset>
+
+                <div className="mt-6 flex items-center justify-between gap-4">
+                    <button type="button" onClick={handlePreviousStep} disabled={step === 1} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Anterior</button>
+                    {step < totalSteps ? (
+                        <button type="button" onClick={handleNextStep} className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-slate-100 transition-colors hover:bg-slate-700">Siguiente</button>
+                    ) : (
+                        <input type="submit" value={isSubmitting ? "Guardando..." : "Guardar cambios"} disabled={isSubmitting} className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50" />
+                    )}
                 </div>
             </form>
         </div>
