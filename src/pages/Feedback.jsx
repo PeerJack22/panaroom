@@ -511,14 +511,25 @@ const Feedback = () => {
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => setFiltro("pendientes")}
-                                    className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                                        filtro === "pendientes"
-                                            ? "bg-slate-900 text-white"
-                                            : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-                                    }`}
+                                onClick={() => setFiltro("pendientes")}
+                                className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                                    filtro === "pendientes"
+                                    ? "bg-blue-600 text-white"
+                                    : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                                }`}
                                 >
-                                    Pendientes ({conteoPendientes})
+                                Pendientes ({conteoPendientes})
+                                </button>
+
+                                <button
+                                onClick={() => setFiltro("revisados")}
+                                className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                                    filtro === "revisados"
+                                    ? "bg-blue-600 text-white"
+                                    : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                                }`}
+                                >
+                                Revisados ({conteoRevisados})
                                 </button>
                                 <button
                                     onClick={() => setFiltro("revisados")}
