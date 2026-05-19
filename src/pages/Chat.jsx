@@ -47,6 +47,7 @@ const Chat = () => {
   const departamentoActivoId = contactoActivo?.departamentoId || departamentoId || null;
   const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
   const contactoInicializadoRef = useRef(false);
+  const ultimoContactoIdCargadoRef = useRef(null);
 
   const normalizarMensaje = useCallback((m) => ({
     id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
@@ -160,6 +161,8 @@ const Chat = () => {
   useEffect(() => {
     const cargar = async () => {
       if (!token || !contactoActivo?.id) return;
+      if (ultimoContactoIdCargadoRef.current === contactoActivo.id) return;
+      ultimoContactoIdCargadoRef.current = contactoActivo.id;
       setCargandoHistorial(true);
       try {
         const url = `${import.meta.env.VITE_BACKEND_URL}/listar-chats`;
@@ -184,12 +187,6 @@ const Chat = () => {
                   }
                 : contacto
             )));
-
-            setContactoActivo((prevContacto) => prevContacto ? {
-              ...prevContacto,
-              departamentoId: prevContacto.departamentoId || departamentoIdDerivado,
-              departamentoNombre: prevContacto.departamentoNombre || departamentoNombreDerivado,
-            } : prevContacto);
           }
         }
       } catch (err) {
@@ -199,7 +196,7 @@ const Chat = () => {
       }
     };
     cargar();
-  }, [contactoActivo, normalizarMensaje, obtenerParamsContacto, token]);
+  }, [contactoActivo, token, obtenerParamsContacto, normalizarMensaje]);
 
   // socket
   useEffect(() => {
