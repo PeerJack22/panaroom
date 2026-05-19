@@ -41,11 +41,32 @@ const findFirstArrayInObject = (value, depth = 0) => {
 const attachParentContextToItems = (items, parentData = {}) => {
     if (!Array.isArray(items)) return [];
 
+    const contexto = {
+        departamento:
+            parentData?.departamento?.titulo ||
+            parentData?.departamento?.nombre ||
+            parentData?.departamento ||
+            parentData?.inmueble ||
+            parentData?.residencia ||
+            null,
+        departamentoId:
+            parentData?.departamento?._id ||
+            parentData?.departamento?.id ||
+            parentData?.inmueble?._id ||
+            parentData?.inmueble?.id ||
+            parentData?.residencia?._id ||
+            parentData?.residencia?.id ||
+            parentData?.departamentoId ||
+            null,
+        arrendatarioId: parentData?.arrendatarioId ?? null,
+    };
+
     return items.map((item) => ({
-        ...parentData,
         ...item,
-        departamento: item?.departamento ?? parentData?.departamento,
-        arrendatarioId: item?.arrendatarioId ?? parentData?.arrendatarioId,
+        departamento: item?.departamento ?? contexto.departamento,
+        departamentoId:
+            item?.departamento?._id ?? item?.departamento?.id ?? contexto.departamentoId,
+        arrendatarioId: item?.arrendatarioId ?? contexto.arrendatarioId,
     }));
 };
 
