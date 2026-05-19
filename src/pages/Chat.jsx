@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
@@ -187,6 +187,15 @@ const Chat = () => {
                   }
                 : contacto
             )));
+            // También actualizar el contacto activo para que la UI muestre el departamento inmediatamente
+            setContactoActivo((prev) => prev && String(prev.id) === String(contactoActivo.id)
+              ? {
+                  ...prev,
+                  departamentoId: prev.departamentoId || departamentoIdDerivado,
+                  departamentoNombre: prev.departamentoNombre || departamentoNombreDerivado,
+                }
+              : prev
+            );
           }
         }
       } catch (err) {
@@ -416,6 +425,9 @@ const Chat = () => {
 
       toast.dismiss(loadingToast);
       toast.success('Departamento asignado correctamente al estudiante');
+        // Actualizar estado local para reflejar la asignación y ocultar el botón
+        setContactos((prev) => prev.map((c) => String(c.id) === String(contactoActivo.id) ? { ...c, departamentoId: departamentoActivoId, departamentoNombre: departamentoActivoNombre } : c));
+        setContactoActivo((prev) => prev ? { ...prev, departamentoId: departamentoActivoId, departamentoNombre: departamentoActivoNombre } : prev);
     } catch (error) {
       toast.dismiss(loadingToast);
       const errorMessage = error?.response?.data?.msg || error?.response?.data?.message || 'No se pudo asignar el departamento';
@@ -480,7 +492,11 @@ const Chat = () => {
                 <h3 className="text-lg font-semibold">{contactoActivo?.nombre || 'Selecciona un contacto'}</h3>
                 {departamentoActivoNombre && (
                   <p className="text-sm text-gray-600">
-                    Departamento: <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
+                    Departamento: {departamentoActivoId ? (
+                      <Link to={`/dashboard/visualizar/${departamentoActivoId}`} className="font-semibold text-blue-600 underline">{departamentoActivoNombre}</Link>
+                    ) : (
+                      <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
+                    )}
                   </p>
                 )}
                 {contactoActivo?.tipo === 'estudiante' && departamentoActivoNombre && (
@@ -488,7 +504,7 @@ const Chat = () => {
                 )}
               </div>
 
-              {isArrendatario && contactoActivo?.tipo === 'estudiante' && departamentoActivoId && (
+              {isArrendatario && contactoActivo?.tipo === 'estudiante' && !contactoActivo?.departamentoId && (
                 <button
                   type="button"
                   onClick={asignarDepartamentoAlEstudiante}
