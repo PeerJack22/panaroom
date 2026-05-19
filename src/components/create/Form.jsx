@@ -75,6 +75,7 @@ export const Form = () => {
 
     const values = watch();
     const tieneParqueadero = watch("parqueadero") === "true";
+    const alicuotaActiva = values.alicuota === "true";
     const currentMapUrl = watch("urlMapa");
     const [selectedPoint, setSelectedPoint] = useState(null);
 
@@ -408,191 +409,86 @@ export const Form = () => {
                 )}
 
                 {step === 2 && (
-                    <>
+                    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         <div>
-                            <label className="mb-2 block text-sm font-semibold">Precio mensual</label>
-                            <input
-                                type="number"
-                                placeholder="Ingresar precio mensual"
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("precioMensual", {
-                                    required: "El precio mensual es obligatorio.",
-                                    min: { value: 0, message: "El precio no puede ser negativo." },
-                                })}
-                            />
-                            {errors.precioMensual && <p className="text-red-600 text-xs italic">{errors.precioMensual.message}</p>}
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
+                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { required: "El precio mensual es obligatorio.", min: { value: 0, message: "El precio no puede ser negativo." } })} />
+                            {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
                         </div>
 
-                        <div className="mt-4">
-                            <label className="mb-2 block text-sm font-semibold">Alicuota</label>
-                            <div className="flex items-center gap-4">
-                                <label className="flex items-center gap-2">
-                                    <input type="radio" value="true" {...register("alicuota", { required: "Indica si aplica alícuota." })} />
-                                    Sí
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input type="radio" value="false" {...register("alicuota", { required: "Indica si aplica alícuota." })} />
-                                    No
-                                </label>
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Número de habitaciones</label>
+                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 habitación." } })} />
+                            {errors.numeroHabitaciones && <p className="mt-1 text-xs text-red-600">{errors.numeroHabitaciones.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Número de baños</label>
+                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroBanos", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 baño." } })} />
+                            {errors.numeroBanos && <p className="mt-1 text-xs text-red-600">{errors.numeroBanos.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Parqueadero</label>
+                            <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("parqueadero", { required: "Debes indicar si tiene parqueadero.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />Sí</label>
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("parqueadero", { required: "Debes indicar si tiene parqueadero.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />No</label>
                             </div>
-                            {errors.alicuota && <p className="text-red-600 text-xs italic">{errors.alicuota.message}</p>}
+                            {errors.parqueadero && <p className="mt-1 text-xs text-red-600">{errors.parqueadero.message}</p>}
                         </div>
 
-                        {values.alicuota === "true" && (
-                            <div className="mt-3">
-                                <label className="mb-2 block text-sm font-semibold">Monto alícuota</label>
-                                <input
-                                    type="number"
-                                    placeholder="Ingresar monto de alícuota"
-                                    className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                    {...register("alicoutaMonto", {
-                                        required: values.alicuota === "true" ? "Debes indicar el monto de alícuota." : false,
-                                        min: { value: 0, message: "El monto no puede ser negativo." },
-                                    })}
-                                />
-                                {errors.alicoutaMonto && <p className="text-red-600 text-xs italic">{errors.alicoutaMonto.message}</p>}
+                        {tieneParqueadero && (
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Número de parqueaderos</label>
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numParqueaderos", { required: tieneParqueadero ? "Indica cuántos parqueaderos tiene." : false, min: { value: 1, message: "Debe ser al menos 1." } })} />
+                                {errors.numParqueaderos && <p className="mt-1 text-xs text-red-600">{errors.numParqueaderos.message}</p>}
                             </div>
                         )}
 
-                        <div className="mt-4">
-                            <label className="mb-2 block text-sm font-semibold">¿Se permiten mascotas?</label>
-                            <div className="flex items-center gap-4">
-                                <label className="flex items-center gap-2">
-                                    <input type="radio" value="true" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />
-                                    Sí
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input type="radio" value="false" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />
-                                    No
-                                </label>
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Bodega</label>
+                            <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("bodega", { required: "Debes indicar si tiene bodega.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />Sí</label>
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("bodega", { required: "Debes indicar si tiene bodega.", validate: (value) => ["true", "false"].includes(String(value)) || "Selecciona una opción válida." })} />No</label>
                             </div>
-                            {errors.mascotas && <p className="text-red-600 text-xs italic">{errors.mascotas.message}</p>}
-                        </div>
-
-                        <div className="mt-4">
-                            <label className="mb-2 block text-sm font-semibold">¿Cuenta con guardianía?</label>
-                            <div className="flex items-center gap-4">
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="true"
-                                        {...register("guardiania", { required: "Indica si cuenta con guardianía." })}
-                                    />
-                                    Sí
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="false"
-                                        {...register("guardiania", { required: "Indica si cuenta con guardianía." })}
-                                    />
-                                    No
-                                </label>
-                            </div>
-                            {errors.guardiania && <p className="text-red-600 text-xs italic">{errors.guardiania.message}</p>}
+                            {errors.bodega && <p className="mt-1 text-xs text-red-600">{errors.bodega.message}</p>}
                         </div>
 
                         <div>
-                            <label className="mb-2 block text-sm font-semibold">Número de habitaciones</label>
-                            <input
-                                type="number"
-                                placeholder="Ingrese el número de habitaciones"
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("numeroHabitaciones", {
-                                    required: "El número de habitaciones es obligatorio.",
-                                    min: { value: 1, message: "Debe haber al menos 1 habitación." },
-                                })}
-                            />
-                                    {errors.numeroHabitaciones && <p className="text-red-600 text-xs italic">{errors.numeroHabitaciones.message}</p>}
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Guardianía</label>
+                            <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("guardiania", { required: "Indica si cuenta con guardianía." })} />Sí</label>
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("guardiania", { required: "Indica si cuenta con guardianía." })} />No</label>
+                            </div>
+                            {errors.guardiania && <p className="mt-1 text-xs text-red-600">{errors.guardiania.message}</p>}
                         </div>
 
                         <div>
-                            <label className="mb-2 block text-sm font-semibold">Número de baños</label>
-                            <input
-                                type="number"
-                                placeholder="Ingrese el número de baños"
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                                {...register("numeroBanos", {
-                                    required: "El número de baños es obligatorio.",
-                                    min: { value: 1, message: "Debe haber al menos 1 baño." },
-                                })}
-                            />
-                            {errors.numeroBanos && <p className="text-red-600 text-xs italic">{errors.numeroBanos.message}</p>}
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Alicuota</label>
+                            <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("alicuota", { required: "Indica si aplica alícuota." })} />Sí</label>
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("alicuota", { required: "Indica si aplica alícuota." })} />No</label>
+                            </div>
+                            {errors.alicuota && <p className="mt-1 text-xs text-red-600">{errors.alicuota.message}</p>}
                         </div>
 
-                        <div className="mt-5">
-                            <label className="mb-2 block text-sm font-semibold">Parqueadero</label>
-                            <div className="flex items-center gap-4">
-                                <label className="flex items-center gap-2">
-                                    <input type="radio" value="true" {...register("parqueadero", {
-                                        required: "Debes indicar si tiene parqueadero.",
-                                        validate: (value) =>
-                                            ["true", "false"].includes(String(value)) ||
-                                            "Selecciona una opción válida.",
-                                    })} />
-                                    Sí
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input type="radio" value="false" {...register("parqueadero", {
-                                        required: "Debes indicar si tiene parqueadero.",
-                                        validate: (value) =>
-                                            ["true", "false"].includes(String(value)) ||
-                                            "Selecciona una opción válida.",
-                                    })} />
-                                    No
-                                </label>
+                        {alicuotaActiva && (
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Monto alícuota</label>
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, min: { value: 0, message: "El monto no puede ser negativo." } })} />
+                                {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
                             </div>
-                            {errors.parqueadero && <p className="text-red-600 text-xs italic">{errors.parqueadero.message}</p>}
-                            {tieneParqueadero && (
-                                <div className="mt-3">
-                                    <label className="mb-2 block text-sm font-semibold">Número de parqueaderos</label>
-                                    <input
-                                        type="number"
-                                        placeholder="Ingrese número de parqueaderos"
-                                        className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500"
-                                        {...register("numParqueaderos", {
-                                            required: values.parqueadero === "true" ? "Indica cuántos parqueaderos tiene." : false,
-                                            min: { value: 1, message: "Debe ser al menos 1." },
-                                        })}
-                                    />
-                                    {errors.numParqueaderos && <p className="text-red-600 text-xs italic">{errors.numParqueaderos.message}</p>}
-                                </div>
-                            )}
-                        </div>
+                        )}
 
-                        <div className="mt-4">
-                            <label className="mb-2 block text-sm font-semibold">Bodega</label>
-                            <div className="flex items-center gap-4">
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="true"
-                                        {...register("bodega", {
-                                            required: "Debes indicar si tiene bodega.",
-                                            validate: (value) =>
-                                                ["true", "false"].includes(String(value)) ||
-                                                "Selecciona una opción válida.",
-                                        })}
-                                    />
-                                    Sí
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        value="false"
-                                        {...register("bodega", {
-                                            required: "Debes indicar si tiene bodega.",
-                                            validate: (value) =>
-                                                ["true", "false"].includes(String(value)) ||
-                                                "Selecciona una opción válida.",
-                                        })}
-                                    />
-                                    No
-                                </label>
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-slate-700">Mascotas</label>
+                            <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />Sí</label>
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />No</label>
                             </div>
-                            {errors.bodega && <p className="text-red-600 text-xs italic">{errors.bodega.message}</p>}
+                            {errors.mascotas && <p className="mt-1 text-xs text-red-600">{errors.mascotas.message}</p>}
                         </div>
-                    </>
+                    </div>
                 )}
 
                 {step === 3 && (
