@@ -511,19 +511,25 @@ const Details = () => {
                                     <p className="text-gray-900">{departamento.mascotas ? "Sí" : "No"}</p>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <span className="text-xs text-gray-500 uppercase">Alícuota</span>
-                                    <p className="text-gray-900">{departamento.alicoutaMonto != null ? `$ ${departamento.alicoutaMonto}` : "No aplica"}</p>
-                                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {((departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '') || departamento.alicuota) && (
+                                    <div>
+                                        <span className="text-xs text-gray-500 uppercase">Alícuota</span>
+                                        <p className="text-gray-900">{departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' ? `$ ${departamento.alicoutaMonto}` : (departamento.alicuota ? 'Sí' : 'No aplica')}</p>
+                                    </div>
+                                )}
+
                                 <div>
                                     <span className="text-xs text-gray-500 uppercase">Guardianía</span>
                                     <p className="text-gray-900">{departamento.guardiania ? "Sí" : "No"}</p>
                                 </div>
-                                <div>
-                                    <span className="text-xs text-gray-500 uppercase">Nº parqueaderos</span>
-                                    <p className="text-gray-900">{departamento.numParqueaderos != null ? departamento.numParqueaderos : (departamento.parqueadero ? "1" : "0")}</p>
-                                </div>
+
+                                {departamento.parqueadero && (
+                                    <div>
+                                        <span className="text-xs text-gray-500 uppercase">Nº parqueaderos</span>
+                                        <p className="text-gray-900">{departamento.numParqueaderos != null ? departamento.numParqueaderos : '1'}</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
