@@ -15,6 +15,8 @@ const Chat = () => {
   const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
   const departamentoNombre = location?.state?.departamentoNombre || null;
   const departamentoId = location?.state?.departamentoId || null;
+  const departamentoActivoId = contactoActivo?.departamentoId || departamentoId || null;
+  const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
   const contactoDestinoId =
     location?.state?.contactoId ||
     location?.state?.propietarioId ||
@@ -98,7 +100,14 @@ const Chat = () => {
             else if (item?.arrendatarioId && String(item.arrendatarioId) === String(id)) tipo = "arrendatario";
           }
           const nombre = item?.nombreCompleto || `${item?.nombre || ""} ${item?.apellido || ""}`.trim() || (tipo === "administrador" ? "Administrador" : "Contacto");
-          return { id, tipo, nombre, unread: 0 };
+          return {
+            id,
+            tipo,
+            nombre,
+            unread: 0,
+            departamentoId: item?.departamentoId || item?.departamento?._id || null,
+            departamentoNombre: item?.departamentoNombre || item?.departamento?.titulo || item?.departamento?.nombre || null,
+          };
         }).filter(Boolean);
         setContactos(mapped);
 
@@ -156,6 +165,8 @@ const Chat = () => {
               tipo: contactoDestinoTipo,
               nombre: contactoDestinoNombre || "Contacto",
               unread: 0,
+                departamentoId,
+                departamentoNombre,
             };
             setContactoActivo(fallbackContacto);
             setContactos((prevContactos) => {
@@ -182,6 +193,8 @@ const Chat = () => {
     abrirChatAdministrador,
     administradorDestinoId,
     administradorDestinoNombre,
+    departamentoId,
+    departamentoNombre,
     contactoDestinoId,
     contactoDestinoTipo,
     contactoDestinoNombre,
@@ -383,7 +396,7 @@ const Chat = () => {
   };
 
   const asignarDepartamentoAlEstudiante = async () => {
-    if (!isArrendatario || contactoActivo?.tipo !== 'estudiante' || !departamentoId) {
+    if (!isArrendatario || contactoActivo?.tipo !== 'estudiante' || !departamentoActivoId) {
       toast.error('No se puede asignar el departamento en esta conversación.');
       return;
     }
@@ -399,7 +412,7 @@ const Chat = () => {
     try {
       const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/asignarEstudiante`;
       await axios.put(url, {
-        departamentoId,
+        departamentoId: departamentoActivoId,
         estudianteId: contactoActivo.id,
       }, {
         headers: {
@@ -472,17 +485,17 @@ const Chat = () => {
             <div className="border-b border-gray-200 p-4 bg-gray-50 rounded-t-lg flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h3 className="text-lg font-semibold">{contactoActivo?.nombre || 'Selecciona un contacto'}</h3>
-                {departamentoNombre && (
+                {departamentoActivoNombre && (
                   <p className="text-sm text-gray-600">
-                    Departamento: <span className="font-semibold text-gray-800">{departamentoNombre}</span>
+                    Departamento: <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
                   </p>
                 )}
-                {contactoActivo?.tipo === 'estudiante' && departamentoNombre && (
+                {contactoActivo?.tipo === 'estudiante' && departamentoActivoNombre && (
                   <p className="text-xs text-gray-500 mt-1">Esta conversación está asociada al departamento indicado arriba.</p>
                 )}
               </div>
 
-              {isArrendatario && contactoActivo?.tipo === 'estudiante' && departamentoId && (
+              {isArrendatario && contactoActivo?.tipo === 'estudiante' && departamentoActivoId && (
                 <button
                   type="button"
                   onClick={asignarDepartamentoAlEstudiante}
