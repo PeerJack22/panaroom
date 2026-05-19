@@ -11,8 +11,6 @@ const Chat = () => {
   const { rol, token, user } = storeAuth();
   const userId = user?._id || user?.id || null;
   const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
-  const administradorDestinoId = location?.state?.administradorId || null;
-  const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
   const departamentoNombre = location?.state?.departamentoNombre || null;
   const departamentoId = location?.state?.departamentoId || null;
   const contactoDestinoId =
@@ -48,6 +46,7 @@ const Chat = () => {
   const mensajesRef = useRef(null);
   const departamentoActivoId = contactoActivo?.departamentoId || departamentoId || null;
   const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
+  const contactoInicializadoRef = useRef(false);
 
   const normalizarMensaje = useCallback((m) => ({
     id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
@@ -79,8 +78,7 @@ const Chat = () => {
     return params;
   }, [isAdministrador, isArrendatario, isEstudiante, userId]);
 
-  // cargar contactos
-    useEffect(() => {
+  useEffect(() => {
     const cargar = async () => {
       if (!token || !userId) return;
       setCargandoContactos(true);
@@ -112,77 +110,6 @@ const Chat = () => {
           };
         }).filter(Boolean);
         setContactos(mapped);
-
-        if (abrirChatAdministrador && !contactoActivo) {
-          const admin = mapped.find(c => c.tipo === 'administrador');
-          if (admin) {
-            setContactoActivo(admin);
-          } else {
-            // Si no hay admin en contactos, obtener de /listarAdministradores
-            try {
-              const adminUrl = `${import.meta.env.VITE_BACKEND_URL}/listarAdministradores`;
-              const adminRes = await axios.get(adminUrl, { headers: { Authorization: `Bearer ${token}` } });
-              const admins = Array.isArray(adminRes?.data) ? adminRes.data : (adminRes?.data?.administradores || []);
-              if (admins.length > 0) {
-                const firstAdmin = admins[0];
-                const adminId = firstAdmin?._id || firstAdmin?.id;
-                const adminNombre = `${firstAdmin?.nombre || ""} ${firstAdmin?.apellido || ""}`.trim() || "Administrador";
-                const adminContact = {
-                  id: adminId,
-                  tipo: 'administrador',
-                  nombre: adminNombre,
-                  unread: 0,
-                  departamentoId: null,
-                  departamentoNombre: null,
-                };
-                setContactoActivo(adminContact);
-                setContactos(prevContactos => {
-                  const exists = prevContactos.some(c => c.id === adminId && c.tipo === 'administrador');
-                  return exists ? prevContactos : [...prevContactos, adminContact];
-                });
-              }
-            } catch (adminErr) {
-              console.error('[Chat] obtener administrador', adminErr);
-              // Fallback si existe administradorDestinoId
-              if (administradorDestinoId) {
-                setContactoActivo({
-                  id: administradorDestinoId,
-                  tipo: 'administrador',
-                  nombre: administradorDestinoNombre,
-                  unread: 0,
-                  departamentoId: null,
-                  departamentoNombre: null,
-                });
-              }
-            }
-          }
-        }
-
-        if (contactoDestinoId && contactoDestinoTipo && !contactoActivo) {
-          const existing = mapped.find(
-            (c) => String(c.id) === String(contactoDestinoId) && String(c.tipo) === String(contactoDestinoTipo)
-          );
-
-          if (existing) {
-            setContactoActivo(existing);
-          } else {
-            const fallbackContacto = {
-              id: contactoDestinoId,
-              tipo: contactoDestinoTipo,
-              nombre: contactoDestinoNombre || "Contacto",
-              unread: 0,
-              departamentoId: departamentoId || null,
-              departamentoNombre: departamentoNombre || null,
-            };
-            setContactoActivo(fallbackContacto);
-            setContactos((prevContactos) => {
-              const exists = prevContactos.some(
-                (c) => String(c.id) === String(contactoDestinoId) && String(c.tipo) === String(contactoDestinoTipo)
-              );
-              return exists ? prevContactos : [fallbackContacto, ...prevContactos];
-            });
-          }
-        }
       } catch (err) {
         console.error('[Chat] cargar contactos', err);
       } finally {
@@ -190,22 +117,44 @@ const Chat = () => {
       }
     };
     cargar();
-  }, [
-    token,
-    userId,
-    isArrendatario,
-    isEstudiante,
-    isAdministrador,
-    abrirChatAdministrador,
-    administradorDestinoId,
-    administradorDestinoNombre,
-    departamentoId,
-    departamentoNombre,
-    contactoDestinoId,
-    contactoDestinoTipo,
-    contactoDestinoNombre,
-    contactoActivo,
-  ]);
+  }, [token, userId, isArrendatario, isEstudiante, isAdministrador]);
+
+  useEffect(() => {
+    if (!contactos.length || contactoInicializadoRef.current) return;
+
+    if (contactoActivo) {
+      contactoInicializadoRef.current = true;
+      return;
+    }
+
+    let siguienteContacto = null;
+
+    if (abrirChatAdministrador) {
+      siguienteContacto = contactos.find((c) => c.tipo === 'administrador') || null;
+    }
+
+    if (!siguienteContacto && contactoDestinoId && contactoDestinoTipo) {
+      siguienteContacto = contactos.find(
+        (c) => String(c.id) === String(contactoDestinoId) && String(c.tipo) === String(contactoDestinoTipo)
+      ) || {
+        id: contactoDestinoId,
+        tipo: contactoDestinoTipo,
+        nombre: contactoDestinoNombre || 'Contacto',
+        unread: 0,
+        departamentoId: departamentoId || null,
+        departamentoNombre: departamentoNombre || null,
+      };
+    }
+
+    if (!siguienteContacto && isArrendatario) {
+      siguienteContacto = contactos.find((c) => c.tipo === 'estudiante') || contactos[0] || null;
+    }
+
+    if (siguienteContacto) {
+      setContactoActivo(siguienteContacto);
+      contactoInicializadoRef.current = true;
+    }
+  }, [abrirChatAdministrador, contactoActivo, contactoDestinoId, contactoDestinoNombre, contactoDestinoTipo, contactos, departamentoId, departamentoNombre, isArrendatario]);
 
   // cargar historial cuando cambia contacto
   useEffect(() => {
