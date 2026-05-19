@@ -13,6 +13,7 @@ const Chat = () => {
   const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
   const administradorDestinoId = location?.state?.administradorId || null;
   const administradorDestinoNombre = location?.state?.administradorNombre || "Administrador";
+  const departamentoId = location?.state?.departamentoId || null;
   const contactoDestinoId =
     location?.state?.contactoId ||
     location?.state?.propietarioId ||
@@ -345,6 +346,7 @@ const Chat = () => {
           payload.administradorId = contactoActivo.id;
         } else {
           payload.estudianteId = contactoActivo.id;
+          if (departamentoId) payload.departamentoId = departamentoId;
         }
       } else if (isEstudiante) {
         payload.estudianteId = userId;
@@ -352,11 +354,13 @@ const Chat = () => {
           payload.administradorId = contactoActivo.id;
         } else {
           payload.arrendatarioId = contactoActivo.id;
+          if (departamentoId) payload.departamentoId = departamentoId;
         }
       } else if (isAdministrador) {
         payload.administradorId = userId;
         if (contactoActivo?.tipo === 'arrendatario') {
           payload.arrendatarioId = contactoActivo.id;
+          if (departamentoId) payload.departamentoId = departamentoId;
         } else if (contactoActivo?.tipo === 'estudiante') {
           payload.estudianteId = contactoActivo.id;
         }
