@@ -85,10 +85,28 @@ const normalizeResponseComment = (comment, fallbackAutor = "Administrador") => {
 };
 
 const extractRespuestaComentarios = (item) => {
+    const seen = new Set();
     const respuestas = [];
 
+    const originalText = String(
+        toText(item?.mensaje ?? item?.descripcion ?? item?.comentario, "")
+    ).trim();
+
+    const pushIfUnique = (raw) => {
+        const normalized = normalizeResponseComment(raw);
+        if (!normalized || !normalized.texto) return;
+        const texto = String(normalized.texto).trim();
+        const autor = String(normalized.autor || "Administrador").trim();
+        if (!texto) return;
+        if (originalText && texto === originalText) return;
+        const key = `${texto}|${autor}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        respuestas.push({ texto, autor, fecha: normalized.fecha || null });
+    };
+
     if (Array.isArray(item?.comentarios)) {
-        respuestas.push(...item.comentarios.map((comentario) => normalizeResponseComment(comentario)).filter(Boolean));
+        item.comentarios.forEach((c) => pushIfUnique(c));
     }
 
     const responseFields = [
@@ -103,10 +121,7 @@ const extractRespuestaComentarios = (item) => {
         item?.comentarioRevision,
     ];
 
-    responseFields
-        .map((comentario) => normalizeResponseComment(comentario))
-        .filter(Boolean)
-        .forEach((comentario) => respuestas.push(comentario));
+    responseFields.forEach((field) => pushIfUnique(field));
 
     return respuestas;
 };
