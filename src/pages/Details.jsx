@@ -431,19 +431,19 @@ const Details = () => {
     const rutaRegreso = location?.state?.from || "/dashboard/listar";
 
     return (
-        <div className="max-w-6xl mx-auto mt-8 mb-10 px-4">
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 md:p-8">
-                <button
-                    type="button"
-                    onClick={() => navigate(rutaRegreso)}
-                    className="mb-4 inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                    ← Atrás
-                </button>
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">Detalles de la residencia</h1>
+        <div className="max-w-6xl mx-auto mt-8 mb-10 px-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 md:p-6">
+                    <button
+                        type="button"
+                        onClick={() => navigate(rutaRegreso)}
+                        className="mb-4 inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                        ← Atrás
+                    </button>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-4">Detalles de la residencia</h1>
 
                 {isArrendatario && departamento?.disponible === false && (
-                    <section className="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <section className="mb-6 rounded-2xl border border-yellow-300 bg-gradient-to-r from-yellow-50 to-yellow-25 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                             <p className="text-sm font-semibold text-yellow-800">Departamento desactivado</p>
                             <p className="text-sm text-yellow-700">Si necesitas conocer el motivo, puedes escribir al administrador.</p>
@@ -451,7 +451,7 @@ const Details = () => {
                         <button
                             type="button"
                             onClick={() => navigate("/dashboard/chat", { state: { abrirChatAdministrador: true, departamentoNombre: departamento?.titulo, arrendatarioNombre: `${user?.nombre || ""} ${user?.apellido || ""}`.trim() } })}
-                            className="shrink-0 rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-yellow-700"
+                            className="shrink-0 rounded-full bg-yellow-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-yellow-700 shadow-md hover:shadow-yellow-600/30 transform hover:-translate-y-0.5"
                         >
                             Contactar con el administrador
                         </button>
@@ -459,121 +459,93 @@ const Details = () => {
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-stretch">
-                    <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                        <h2 className="mb-4 text-xl font-semibold text-gray-800">Información general</h2>
-                        
-                        <div className="space-y-4">
-                            <div className="pb-4 border-b border-gray-200">
-                                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Título</p>
-                                <p className="text-gray-900 font-medium">{departamento.titulo}</p>
-                            </div>
+                    <section className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
+                        <h2 className="mb-3 text-lg font-semibold text-gray-800">Información general</h2>
 
-                            <div className="pb-4 border-b border-gray-200">
-                                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Descripción</p>
-                                <p className="text-gray-700 text-sm">{departamento.descripcion}</p>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Dirección</p>
-                                    <p className="text-gray-900">{departamento.direccion}</p>
+                        <div className="grid grid-cols-1 gap-3 text-sm text-gray-700">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 uppercase">Título</span>
+                                    <span className="font-medium text-gray-900 truncate">{departamento.titulo}</span>
                                 </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Referencia</p>
-                                    <p className="text-gray-900">{departamento.referencia || "-"}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Categoría</p>
-                                    <p className="text-gray-900">{departamento.categoria ? formatearServicio(departamento.categoria) : "No definida"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Bodega</p>
-                                    <p className="text-gray-900">{departamento.bodega ? "Sí" : "No"}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Guardianía</p>
-                                    <p className="text-gray-900">{departamento.guardiania ? "Sí" : "No"}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Precio mensual</p>
-                                    <p className="text-gray-900 font-semibold">$ {departamento.precioMensual}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Monto de alícuota</p>
-                                    <p className="text-gray-900">{departamento.alicoutaMonto != null ? `$ ${departamento.alicoutaMonto}` : "No aplica"}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Habitaciones</p>
-                                    <p className="text-gray-900">{departamento.numeroHabitaciones}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Baños</p>
-                                    <p className="text-gray-900">{departamento.numeroBanos}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Parqueadero</p>
-                                    <p className="text-gray-900">{departamento.parqueadero ? "Sí" : "No"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Número de parqueaderos</p>
-                                    <p className="text-gray-900">{departamento.numParqueaderos != null ? departamento.numParqueaderos : (departamento.parqueadero ? "1" : "0")}</p>
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 uppercase">Precio</span>
+                                    <span className="font-semibold text-gray-900">$ {departamento.precioMensual}</span>
                                 </div>
                             </div>
 
                             <div>
-                                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Permite mascotas</p>
-                                <p className="text-gray-900">{departamento.mascotas ? "Sí" : "No"}</p>
+                                <span className="text-xs text-gray-500 uppercase">Descripción</span>
+                                <p className="text-sm text-gray-700 line-clamp-3 mt-1">{departamento.descripcion}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Dirección</span>
+                                    <p className="text-gray-900 truncate">{departamento.direccion}</p>
+                                </div>
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Referencia</span>
+                                    <p className="text-gray-900">{departamento.referencia || "-"}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Habitaciones</span>
+                                    <p className="text-gray-900">{departamento.numeroHabitaciones}</p>
+                                </div>
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Baños</span>
+                                    <p className="text-gray-900">{departamento.numeroBanos}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Parqueadero</span>
+                                    <p className="text-gray-900">{departamento.parqueadero ? "Sí" : "No"}</p>
+                                </div>
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Mascotas</span>
+                                    <p className="text-gray-900">{departamento.mascotas ? "Sí" : "No"}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="mt-5 pt-4 border-t border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Servicios incluidos</h3>
+                        <div className="mt-4 pt-3 border-t border-gray-200">
+                            <h3 className="text-sm font-semibold text-gray-800 mb-2">Servicios incluidos</h3>
                             {servicios.length > 0 ? (
                                 <div className="flex flex-wrap gap-2">
                                     {servicios.map((servicio, index) => (
                                         <span
                                             key={`${servicio}-${index}`}
-                                            className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium"
+                                            className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
                                         >
                                             {servicio}
                                         </span>
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-sm text-gray-500">Este apartamento no tiene servicios registrados.</p>
+                                <p className="text-sm text-gray-500">Sin servicios registrados.</p>
                             )}
                         </div>
                     </section>
 
                     {propietario && (
-                        <section className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">Información del propietario</h3>
-                            <div className="space-y-4">
-                                <div className="pb-4 border-b border-gray-200">
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Nombre completo</p>
+                        <section className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Información del propietario</h3>
+                            <div className="grid grid-cols-1 gap-2 text-sm text-gray-700">
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Nombre</span>
                                     <p className="text-gray-900 font-medium">{propietario.nombre} {propietario.apellido}</p>
                                 </div>
-                                <div className="pb-4 border-b border-gray-200">
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Correo electrónico</p>
+                                <div>
+                                    <span className="text-xs text-gray-500 uppercase">Correo</span>
                                     <p className="text-gray-900">{propietario.email}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Teléfono de contacto</p>
+                                    <span className="text-xs text-gray-500 uppercase">Teléfono</span>
                                     <p className="text-gray-900">{propietario.celular || "No disponible"}</p>
                                 </div>
                             </div>
@@ -592,7 +564,7 @@ const Details = () => {
                                             departamentoNombre: departamento?.titulo,
                                         },
                                     })}
-                                    className="mt-6 w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
+                                    className="mt-4 w-full px-4 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                                 >
                                     {isAdministrador ? "Chatear con arrendatario" : "Chatear con propietario"}
                                 </button>
@@ -631,15 +603,15 @@ const Details = () => {
 
                 {departamento.imagenes?.length > 0 && (
                     <section className="mt-8 mb-8">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Imágenes de la residencia</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Imágenes de la residencia</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                             {departamento.imagenes.map((img, index) => (
                                 <img
                                     key={index}
                                     src={img.url}
                                     alt={`Imagen ${index + 1}`}
-                                    className="w-full h-44 object-cover rounded-lg border border-gray-200 shadow-sm cursor-zoom-in hover:scale-[1.02] transition-transform"
                                     onClick={() => abrirLightbox(index)}
+                                    className={`w-full object-cover rounded-xl border border-gray-200 shadow-sm cursor-zoom-in hover:scale-[1.03] transition-transform ${index === 0 ? 'md:col-span-2 md:h-72 h-56' : 'h-36'}`}
                                 />
                             ))}
                         </div>
@@ -658,22 +630,16 @@ const Details = () => {
 
                         <div className="space-y-4">
                             {comentarios.length > 0 ? comentarios.map((item) => (
-                                <article key={item.id} className="rounded-lg border border-gray-200 bg-white p-4">
-                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                                        <p className="font-semibold text-gray-800">{item.nombre}</p>
-                                        <p className="text-xs text-gray-500">
-                                            {item.fecha ? new Date(item.fecha).toLocaleDateString("es-EC") : ""}
-                                        </p>
-                                    </div>
-
-                                    <div className="mb-2 flex items-center gap-2">
-                                        <div className="text-amber-500 leading-none">
-                                            {renderEstrellas(item.calificacion)}
+                                <article key={item.id} className="rounded-lg border border-gray-200 bg-white p-3">
+                                    <div className="flex items-center justify-between gap-2 mb-2">
+                                        <div className="flex items-center gap-3">
+                                            <p className="font-semibold text-gray-800 text-sm">{item.nombre}</p>
+                                            <div className="text-amber-500 text-sm">{renderEstrellas(item.calificacion)}</div>
                                         </div>
-                                        <span className="text-xs text-gray-600">{item.calificacion}.0/5</span>
+                                        <p className="text-xs text-gray-500">{item.fecha ? new Date(item.fecha).toLocaleDateString("es-EC") : ""}</p>
                                     </div>
 
-                                    <p className="text-sm text-gray-700 leading-relaxed">{item.comentario}</p>
+                                    <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">{item.comentario}</p>
                                 </article>
                             )) : (
                                 <p className="text-sm text-gray-500">Todavía no hay comentarios en esta residencia.</p>
@@ -690,7 +656,7 @@ const Details = () => {
                                 type="button"
                                 onClick={abrirModalComentario}
                                 disabled={enviandoQueja || terminandoContrato}
-                                className="w-full sm:w-1/2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+                                className="w-full sm:w-1/2 px-4 py-2 rounded-full border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 disabled:bg-gray-200 disabled:text-gray-400 transition-all shadow-sm"
                             >
                                 Queja o sugerencia
                             </button>
@@ -698,7 +664,7 @@ const Details = () => {
                                 type="button"
                                 onClick={abrirModalTerminarContrato}
                                 disabled={terminandoContrato || enviandoQueja}
-                                className="w-full sm:w-1/2 px-4 py-2 rounded-lg bg-red-700 text-white font-semibold hover:bg-red-600 disabled:bg-red-400 transition-colors"
+                                className="w-full sm:w-1/2 px-4 py-2 rounded-full bg-red-700 text-white font-semibold hover:bg-red-600 disabled:bg-red-400 transition-all shadow-lg hover:shadow-red-600/30 transform hover:-translate-y-0.5"
                             >
                                 {terminandoContrato ? "Terminando contrato..." : "Terminar contrato"}
                             </button>
@@ -720,35 +686,33 @@ const Details = () => {
 
                             <form onSubmit={handleSubmit(enviarComentario)} className="space-y-4">
                                 {modoComentario !== "terminar" && (
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Tipo de comentario
-                                        </label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => setTipoComentario("queja")}
-                                                className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
-                                                    tipoComentario === "queja"
-                                                        ? "border-blue-600 bg-blue-600 text-white"
-                                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
-                                                }`}
-                                            >
-                                                Queja
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setTipoComentario("sugerencia")}
-                                                className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
-                                                    tipoComentario === "sugerencia"
-                                                        ? "border-blue-600 bg-blue-600 text-white"
-                                                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
-                                                }`}
-                                            >
-                                                Sugerencia
-                                            </button>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de comentario</label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setTipoComentario("queja")}
+                                                    className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${
+                                                        tipoComentario === "queja"
+                                                            ? "border-blue-600 bg-blue-600 text-white shadow-md"
+                                                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                                    }`}
+                                                >
+                                                    Queja
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setTipoComentario("sugerencia")}
+                                                    className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${
+                                                        tipoComentario === "sugerencia"
+                                                            ? "border-blue-600 bg-blue-600 text-white shadow-md"
+                                                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+                                                    }`}
+                                                >
+                                                    Sugerencia
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
                                 )}
 
                                 {modoComentario === "terminar" && (
@@ -802,14 +766,14 @@ const Details = () => {
                                     <button
                                         type="submit"
                                         disabled={enviandoQueja || (modoComentario === "terminar" && calificacion === 0)}
-                                        className="w-full bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-full font-medium transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                                     >
                                         {enviandoQueja ? 'Enviando...' : (modoComentario === "terminar" ? 'Enviar evaluación y terminar contrato' : 'Enviar queja/sugerencia')}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={cerrarModalComentario}
-                                        className="w-full border border-gray-300 text-gray-700 hover:bg-gray-100 py-2 px-4 rounded-lg font-medium transition-colors"
+                                        className="w-full border border-gray-300 text-gray-700 hover:bg-gray-100 py-2 px-4 rounded-full font-medium transition-colors"
                                     >
                                         Cancelar
                                     </button>

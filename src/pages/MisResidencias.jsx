@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { MdInfo } from 'react-icons/md';
 import useFetch from "../hooks/useFetch";
 import storeAuth from "../context/storeAuth";
 
@@ -140,10 +141,12 @@ const MisResidencias = () => {
                                     <div className="mt-auto flex items-center justify-end gap-3 pt-2">
                                         <button
                                             type="button"
+                                            title="Más información"
+                                            aria-label="Más información"
                                             className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 transition-colors hover:bg-slate-50"
                                             onClick={() => navigate(`/dashboard/visualizar/${dep._id}`)}
                                         >
-                                            Ver detalles
+                                            <MdInfo className="h-5 w-5" />
                                         </button>
                                     </div>
                                 </div>

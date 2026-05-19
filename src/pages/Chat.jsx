@@ -493,8 +493,7 @@ const Chat = () => {
                   <p className="text-xs text-gray-500">No hay contactos.</p>
                 ) : contactos.filter(c => String(c.id) !== String(contactoActivo?.id)).map(c => (
                   <button key={`${c.tipo}-${c.id}`} type="button" onClick={() => { setContactoActivo(c); setContactos(prev => prev.map(p => p.id===c.id?{...p,unread:0}:p)); }}
-                    className={`w-full text-left p-3 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-all ${String(contactoActivo?.id||'')===String(c.id)?'border-blue-600 bg-blue-50':' '}`}>
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700">{(c.nombre||'?').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
+                    className={`w-full text-left p-3 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-all flex items-center gap-3 ${String(contactoActivo?.id||'')===String(c.id)?'border-blue-600 bg-blue-50':' '}`}>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold">{c.nombre}</p>
