@@ -5,6 +5,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import storeAuth from "../context/storeAuth";
+import { MdSend } from 'react-icons/md';
 
 const Chat = () => {
   const location = useLocation();
@@ -559,7 +560,13 @@ const Chat = () => {
                 <textarea {...register('mensaje',{ required: 'El mensaje es obligatorio' })} onKeyDown={onKeyDownTextarea}
                   placeholder="Escribe tu mensaje..." rows={2}
                   className="flex-1 px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
-                <button type="submit" disabled={enviando} className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 disabled:bg-blue-400">{enviando? 'Enviando...':'Enviar'}</button>
+                <button type="submit" disabled={enviando} className="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 disabled:bg-blue-400">
+                  {enviando ? (
+                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                  ) : (
+                    <MdSend className="h-5 w-5" />
+                  )}
+                </button>
               </form>
               {errors.mensaje && <p className="text-sm text-red-600 mt-2">{errors.mensaje.message}</p>}
             </div>
