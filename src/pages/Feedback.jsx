@@ -531,7 +531,8 @@ const Feedback = () => {
                                 >
                                 Revisados ({conteoRevisados})
                                 </button>
-                            
+                                </div>
+
 
                             <div className="flex items-center gap-2">
                                 <label htmlFor="filtroTipo" className="text-sm font-medium text-slate-700">
