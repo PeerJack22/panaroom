@@ -20,30 +20,30 @@ export const CardProfile = () => {
                 <h2 className="mt-4 text-lg font-semibold text-slate-900">{`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}</h2>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-3">
-                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-center">
-                    <span className="text-xs font-semibold text-slate-600 block">Nombre</span>
-                    <span className="text-sm font-medium text-slate-900 block mt-1">{user?.nombre || "-"}</span>
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
+                    <span className="text-xs font-semibold text-slate-600">Nombre</span>
+                    <span className="text-sm font-medium text-slate-900 mt-1">{user?.nombre || "-"}</span>
                 </div>
 
-                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-center">
-                    <span className="text-xs font-semibold text-slate-600 block">Apellido</span>
-                    <span className="text-sm font-medium text-slate-900 block mt-1">{user?.apellido || "-"}</span>
+                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
+                    <span className="text-xs font-semibold text-slate-600">Apellido</span>
+                    <span className="text-sm font-medium text-slate-900 mt-1">{user?.apellido || "-"}</span>
                 </div>
 
-                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-center">
-                    <span className="text-xs font-semibold text-slate-600 block">Dirección</span>
-                    <span className="text-sm font-medium text-slate-900 block mt-1">{user?.direccion || "-"}</span>
+                <div className="sm:col-span-2 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
+                    <span className="text-xs font-semibold text-slate-600">Dirección</span>
+                    <span className="text-sm font-medium text-slate-900 mt-1">{user?.direccion || "-"}</span>
                 </div>
 
-                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-center">
-                    <span className="text-xs font-semibold text-slate-600 block">Teléfono</span>
-                    <span className="text-sm font-medium text-slate-900 block mt-1">{user?.telefono || user?.celular || "-"}</span>
+                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
+                    <span className="text-xs font-semibold text-slate-600">Teléfono</span>
+                    <span className="text-sm font-medium text-slate-900 mt-1">{user?.telefono || user?.celular || "-"}</span>
                 </div>
 
-                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-center">
-                    <span className="text-xs font-semibold text-slate-600 block">Correo</span>
-                    <span className="text-sm font-medium text-slate-900 block mt-1">{user?.email || "-"}</span>
+                <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 flex flex-col justify-center text-center">
+                    <span className="text-xs font-semibold text-slate-600">Correo</span>
+                    <span className="text-sm font-medium text-slate-900 mt-1">{user?.email || "-"}</span>
                 </div>
             </div>
         </div>
