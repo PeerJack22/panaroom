@@ -533,7 +533,7 @@ const Chat = () => {
                 )}
               </div>
 
-              {isArrendatario && contactoActivo?.tipo === 'estudiante' && !contactoActivo?.departamentoId && (
+              {isArrendatario && contactoActivo?.tipo === 'estudiante' && (
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -541,7 +541,7 @@ const Chat = () => {
                     disabled={cargandoDepartamentos}
                     className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
                   >
-                    {cargandoDepartamentos ? 'Cargando...' : 'Asignar departamento'}
+                    {cargandoDepartamentos ? 'Cargando...' : (contactoActivo?.departamentoId ? 'Reasignar departamento' : 'Asignar departamento')}
                   </button>
                   <button
                     type="button"
@@ -549,7 +549,7 @@ const Chat = () => {
                     disabled={asignandoDepartamento || !departamentoActivoId}
                     className="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-green-300"
                   >
-                    {asignandoDepartamento ? 'Asignando...' : 'Asignar (usar dept. actual)'}
+                    {asignandoDepartamento ? 'Asignando...' : (departamentoActivoId ? 'Asignar (usar dept. actual)' : 'Asignar')}
                   </button>
                 </div>
               )}
