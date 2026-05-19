@@ -372,16 +372,16 @@ const Users = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
             </div>
         );
     }
 
     return (
-        <div>
-            <h1 className='font-black text-4xl text-gray-500'>Usuarios</h1>
-            <hr className='my-4 border-t-2 border-gray-300' />
-            <p className='mb-8'>Este módulo te permite gestionar los usuarios</p>
+        <div className="min-h-screen bg-slate-50" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            <h1 className='text-4xl sm:text-5xl font-extrabold text-slate-900'>Usuarios</h1>
+            <hr className='my-4 border-t-2 border-slate-200' />
+            <p className='mb-8 text-slate-600'>Este módulo te permite gestionar los usuarios</p>
 
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
@@ -389,12 +389,12 @@ const Users = () => {
                     value={filtroNombre}
                     onChange={(e) => setFiltroNombre(e.target.value)}
                     placeholder="Filtrar por nombre"
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <select
                     value={filtroRol}
                     onChange={(e) => setFiltroRol(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="todos">Todos los roles</option>
                     <option value="arrendatario">Arrendatario</option>
@@ -433,7 +433,7 @@ const Users = () => {
                     {usuariosFiltrados.map(user => (
                         <div
                             key={user._id}
-                            className={`bg-white rounded-lg shadow p-6 ${normalizarRol(user.rol) === "arrendatario" ? "cursor-pointer transition-transform hover:-translate-y-0.5 hover:shadow-lg" : ""}`}
+                            className={`bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl ${normalizarRol(user.rol) === "arrendatario" ? "cursor-pointer" : ""}`}
                             onClick={() => abrirDetalleArrendatario(user)}
                             role={normalizarRol(user.rol) === "arrendatario" ? "button" : undefined}
                             tabIndex={normalizarRol(user.rol) === "arrendatario" ? 0 : undefined}
@@ -445,10 +445,10 @@ const Users = () => {
                                 }
                             }}
                         >
-                            <h2 className="text-xl font-bold text-blue-800 mb-2">
+                            <h2 className="text-xl font-bold text-slate-900 mb-2">
                                 {user.nombre} {user.apellido}
                             </h2>
-                            <div className="text-gray-600 mb-4">
+                            <div className="text-slate-700 mb-4">
                                 <p><span className="font-semibold">Email:</span> {user.email}</p>
                                 <p><span className="font-semibold">Teléfono:</span> {user.celular || "No disponible"}</p>
                                 <p><span className="font-semibold">Dirección:</span> {user.direccion || "No disponible"}</p>
@@ -465,18 +465,18 @@ const Users = () => {
 
                             {/* Sección de departamentos */}
                             {normalizarRol(user.rol) === "arrendatario" && (
-                                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                                    <h3 className="text-md font-semibold text-gray-700 mb-2">Departamentos:</h3>
+                                <div className="mt-4 p-3 bg-slate-50 rounded-lg">
+                                    <h3 className="text-md font-semibold text-slate-800 mb-2">Departamentos:</h3>
                                     {userDepartamentos[user._id] && userDepartamentos[user._id].length > 0 ? (
                                         <ul className="list-disc list-inside">
                                             {userDepartamentos[user._id].map(depa => (
-                                                <li key={depa._id} className="text-gray-600">
+                                                <li key={depa._id} className="text-slate-700">
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/dashboard/visualizar/${depa._id}`, { state: { from: "/dashboard/usuarios" } });
                                                         }}
-                                                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium transition-colors duration-200"
+                                                        className="text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200"
                                                     >
                                                         {depa.titulo}
                                                     </button>
@@ -484,7 +484,7 @@ const Users = () => {
                                             ))}
                                         </ul>
                                     ) : (
-                                        <p className="text-gray-500">
+                                        <p className="text-slate-500">
                                             No tiene departamentos asociados.
                                         </p>
                                     )}
@@ -497,10 +497,10 @@ const Users = () => {
                                                 handleToggleEstadoUsuario(user);
                                             }}
                                             disabled={confirmingArrendatarioId === (user?._id || user?.id)}
-                                            className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors disabled:opacity-60 ${
+                                            className={`rounded-full px-4 py-2 text-sm font-semibold transition-all disabled:opacity-60 ${
                                                 user?.confirmEmail === false
-                                                    ? "border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                                                    : "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
+                                                    ? "bg-emerald-600 text-white hover:shadow-md"
+                                                    : "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
                                             }`}
                                         >
                                             {confirmingArrendatarioId === (user?._id || user?.id)
@@ -522,10 +522,10 @@ const Users = () => {
                                             handleToggleEstadoUsuario(user);
                                         }}
                                         disabled={confirmingArrendatarioId === (user?._id || user?.id)}
-                                        className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors disabled:opacity-60 ${
+                                        className={`rounded-full px-4 py-2 text-sm font-semibold transition-all disabled:opacity-60 ${
                                             user?.confirmEmail === false
-                                                ? "border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                                                : "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
+                                                ? "bg-emerald-600 text-white hover:shadow-md"
+                                                : "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
                                         }`}
                                     >
                                         {confirmingArrendatarioId === (user?._id || user?.id)
@@ -543,22 +543,22 @@ const Users = () => {
 
             {arrendatarioSeleccionado && createPortal(
                 <div
-                    className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/70 px-4 py-6"
+                    className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4 py-6"
                     onClick={cerrarDetalleArrendatario}
                 >
                     <div
-                        className="relative isolate w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-gray-200"
+                        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-slate-200"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+                        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
                             <div>
-                                <h3 className="text-2xl font-bold text-gray-800">Detalle del arrendatario</h3>
-                                <p className="text-sm text-gray-500">Revisa la información y los documentos antes de confirmar.</p>
+                                <h3 className="text-2xl font-extrabold text-slate-900">Detalle del arrendatario</h3>
+                                <p className="text-sm text-slate-600">Revisa la información y los documentos antes de confirmar.</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={cerrarDetalleArrendatario}
-                                className="rounded-full border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                                className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:shadow-md"
                             >
                                 Cerrar
                             </button>
@@ -566,7 +566,7 @@ const Users = () => {
 
                         <div className="grid gap-6 p-6 lg:grid-cols-[1.1fr_0.9fr]">
                             <section className="space-y-3">
-                                <h4 className="text-xl font-bold text-blue-800">
+                                <h4 className="text-xl font-bold text-slate-900">
                                     {arrendatarioSeleccionado.nombre} {arrendatarioSeleccionado.apellido}
                                 </h4>
                                 <p><span className="font-semibold">Email:</span> {arrendatarioSeleccionado.email || "No disponible"}</p>
@@ -580,14 +580,14 @@ const Users = () => {
                                         : "Confirmado"}
                                 </p>
 
-                                <div className="rounded-xl bg-gray-50 p-4">
-                                    <h5 className="mb-2 text-lg font-semibold text-gray-800">Documentos subidos</h5>
+                                <div className="rounded-2xl bg-slate-50 p-4">
+                                    <h5 className="mb-2 text-lg font-semibold text-slate-900">Documentos subidos</h5>
                                     {documentosArrendatarioSeleccionado.length > 0 ? (
                                         <div className="space-y-4">
                                             <button
                                                 type="button"
                                                 onClick={() => abrirLightboxDocumento(documentoVisualizadoIndex)}
-                                                className="group relative block w-full overflow-hidden rounded-2xl border border-gray-200 bg-black shadow-lg"
+                                                className="group relative block w-full overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg"
                                                 title="Abrir imagen en visor"
                                             >
                                                 <img
@@ -605,19 +605,19 @@ const Users = () => {
                                                     <button
                                                         type="button"
                                                         onClick={() => abrirDocumentoEnIndice(documentoVisualizadoIndex - 1)}
-                                                        className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                                                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
                                                     >
                                                         Anterior
                                                     </button>
 
-                                                    <p className="text-sm text-gray-500">
+                                                    <p className="text-sm text-slate-500">
                                                         {documentoVisualizadoIndex + 1} de {documentosArrendatarioSeleccionado.length}
                                                     </p>
 
                                                     <button
                                                         type="button"
                                                         onClick={() => abrirDocumentoEnIndice(documentoVisualizadoIndex + 1)}
-                                                        className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                                                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
                                                     >
                                                         Siguiente
                                                     </button>
@@ -633,7 +633,7 @@ const Users = () => {
                                                         className={`overflow-hidden rounded-lg border-2 transition-all ${
                                                             index === documentoVisualizadoIndex
                                                                 ? "border-blue-600 ring-2 ring-blue-200"
-                                                                : "border-gray-200 hover:border-gray-300"
+                                                                : "border-slate-200 hover:border-slate-300"
                                                         }`}
                                                     >
                                                         <img
@@ -646,25 +646,25 @@ const Users = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-gray-500">No hay documentos cargados.</p>
+                                        <p className="text-sm text-slate-500">No hay documentos cargados.</p>
                                     )}
                                 </div>
                             </section>
 
                             <section className="space-y-4">
-                                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                                    <h5 className="mb-3 text-lg font-semibold text-gray-800">Departamentos asociados</h5>
+                                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <h5 className="mb-3 text-lg font-semibold text-slate-900">Departamentos asociados</h5>
                                     {userDepartamentos[arrendatarioSeleccionado._id] && userDepartamentos[arrendatarioSeleccionado._id].length > 0 ? (
                                         <ul className="space-y-2">
                                             {userDepartamentos[arrendatarioSeleccionado._id].map((depa) => (
-                                                <li key={depa._id} className="text-gray-700">
+                                                <li key={depa._id} className="text-slate-700">
                                                     <button
                                                         type="button"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             navigate(`/dashboard/visualizar/${depa._id}`);
                                                         }}
-                                                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                                                        className="text-blue-600 hover:text-blue-700 font-semibold"
                                                     >
                                                         {depa.titulo}
                                                     </button>
@@ -672,12 +672,12 @@ const Users = () => {
                                             ))}
                                         </ul>
                                     ) : (
-                                        <p className="text-sm text-gray-500">No tiene departamentos asociados.</p>
+                                        <p className="text-sm text-slate-500">No tiene departamentos asociados.</p>
                                     )}
                                 </div>
 
                                 {arrendatariosNoConfirmadosIds.includes(arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id) && (
-                                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                                         <p className="mb-3 text-sm text-emerald-900">
                                             Este arrendatario todavía no ha sido confirmado.
                                         </p>
@@ -688,7 +688,7 @@ const Users = () => {
                                                 handleToggleEstadoUsuario(arrendatarioSeleccionado);
                                             }}
                                             disabled={confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)}
-                                            className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors disabled:opacity-60"
+                                            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:shadow-md transition-colors disabled:opacity-60"
                                         >
                                             {confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)
                                                 ? "Guardando..."
