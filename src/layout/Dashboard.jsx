@@ -48,7 +48,6 @@ const Dashboard = () => {
             >
                 <div className="w-full">
                     <div className={`mb-7 flex items-center ${sidebarCompact ? 'justify-center' : 'gap-3'}`}>
-                        <span className="h-3 w-3 rounded-full bg-blue-300 shadow-[0_0_0_6px_rgba(96,165,250,0.16)]" />
                         {!sidebarCompact && (
                             <div>
                                 <h2 className="text-2xl font-extrabold text-white">PanaRoom</h2>
