@@ -43,6 +43,10 @@ const Chat = () => {
   const [cargandoHistorial, setCargandoHistorial] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [asignandoDepartamento, setAsignandoDepartamento] = useState(false);
+  const [mostrandoSelectorDept, setMostrandoSelectorDept] = useState(false);
+  const [departamentosArr, setDepartamentosArr] = useState([]);
+  const [cargandoDepartamentos, setCargandoDepartamentos] = useState(false);
+  const [departamentoSeleccionadoId, setDepartamentoSeleccionadoId] = useState(null);
   const mensajesRef = useRef(null);
   const departamentoActivoId = contactoActivo?.departamentoId || departamentoId || null;
   const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
@@ -398,7 +402,9 @@ const Chat = () => {
   };
 
   const asignarDepartamentoAlEstudiante = async () => {
-    if (!isArrendatario || contactoActivo?.tipo !== 'estudiante' || !departamentoActivoId) {
+    // Si ya se pasó un departamento seleccionado vía modal, usarlo
+    const idParaAsignar = departamentoSeleccionadoId || departamentoActivoId;
+    if (!isArrendatario || contactoActivo?.tipo !== 'estudiante' || !idParaAsignar) {
       toast.error('No se puede asignar el departamento en esta conversación.');
       return;
     }
@@ -414,7 +420,7 @@ const Chat = () => {
     try {
       const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/asignarEstudiante`;
       await axios.put(url, {
-        departamentoId: departamentoActivoId,
+        departamentoId: idParaAsignar,
         estudianteId: contactoActivo.id,
       }, {
         headers: {
@@ -425,15 +431,38 @@ const Chat = () => {
 
       toast.dismiss(loadingToast);
       toast.success('Departamento asignado correctamente al estudiante');
-        // Actualizar estado local para reflejar la asignación y ocultar el botón
-        setContactos((prev) => prev.map((c) => String(c.id) === String(contactoActivo.id) ? { ...c, departamentoId: departamentoActivoId, departamentoNombre: departamentoActivoNombre } : c));
-        setContactoActivo((prev) => prev ? { ...prev, departamentoId: departamentoActivoId, departamentoNombre: departamentoActivoNombre } : prev);
+      // Actualizar estado local para reflejar la asignación y ocultar el botón
+      const nombreAsignado = departamentosArr.find(d => String(d.id) === String(idParaAsignar))?.titulo || departamentoActivoNombre || contactoActivo?.departamentoNombre || '';
+      setContactos((prev) => prev.map((c) => String(c.id) === String(contactoActivo.id) ? { ...c, departamentoId: idParaAsignar, departamentoNombre: nombreAsignado } : c));
+      setContactoActivo((prev) => prev ? { ...prev, departamentoId: idParaAsignar, departamentoNombre: nombreAsignado } : prev);
+      setMostrandoSelectorDept(false);
+      setDepartamentoSeleccionadoId(null);
     } catch (error) {
       toast.dismiss(loadingToast);
       const errorMessage = error?.response?.data?.msg || error?.response?.data?.message || 'No se pudo asignar el departamento';
       toast.error(errorMessage);
     } finally {
       setAsignandoDepartamento(false);
+    }
+  };
+
+  const abrirSelectorDepartamentos = async () => {
+    if (!isArrendatario) return;
+    setCargandoDepartamentos(true);
+    try {
+      // Intentar obtener los departamentos del arrendatario
+      const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/listar`;
+      const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, params: { arrendatarioId: userId } });
+      const raw = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.departamentos) ? res.data.departamentos : []);
+      // Normalizar estructura mínima: { id, titulo }
+      const mapped = raw.map(d => ({ id: d?._id || d?.id, titulo: d?.titulo || d?.nombre || d?.direccion || 'Departamento' })).filter(Boolean);
+      setDepartamentosArr(mapped);
+      setMostrandoSelectorDept(true);
+    } catch (err) {
+      console.error('[Chat] listar departamentos', err);
+      toast.error('No se pudieron obtener los departamentos');
+    } finally {
+      setCargandoDepartamentos(false);
     }
   };
 
@@ -505,14 +534,24 @@ const Chat = () => {
               </div>
 
               {isArrendatario && contactoActivo?.tipo === 'estudiante' && !contactoActivo?.departamentoId && (
-                <button
-                  type="button"
-                  onClick={asignarDepartamentoAlEstudiante}
-                  disabled={asignandoDepartamento}
-                  className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
-                >
-                  {asignandoDepartamento ? 'Asignando...' : 'Asignar departamento'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={abrirSelectorDepartamentos}
+                    disabled={cargandoDepartamentos}
+                    className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
+                  >
+                    {cargandoDepartamentos ? 'Cargando...' : 'Asignar departamento'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={asignarDepartamentoAlEstudiante}
+                    disabled={asignandoDepartamento || !departamentoActivoId}
+                    className="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-green-300"
+                  >
+                    {asignandoDepartamento ? 'Asignando...' : 'Asignar (usar dept. actual)'}
+                  </button>
+                </div>
               )}
             </div>
 
@@ -543,6 +582,33 @@ const Chat = () => {
           </div>
         </div>
       </div>
+      {/* Modal selector de departamentos */}
+      {mostrandoSelectorDept && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 border border-slate-200">
+            <h3 className="text-lg font-bold mb-4">Selecciona un departamento para asignar</h3>
+            {cargandoDepartamentos ? (
+              <p className="text-sm text-gray-500">Cargando departamentos...</p>
+            ) : departamentosArr.length === 0 ? (
+              <p className="text-sm text-gray-500">No se encontraron departamentos asociados.</p>
+            ) : (
+              <div className="space-y-2 max-h-56 overflow-y-auto mb-4">
+                {departamentosArr.map((d) => (
+                  <label key={d.id} className="flex items-center gap-3 p-2 border rounded-lg cursor-pointer">
+                    <input type="radio" name="departamento" value={d.id} checked={String(departamentoSeleccionadoId)===String(d.id)} onChange={() => setDepartamentoSeleccionadoId(d.id)} />
+                    <span className="text-sm">{d.titulo}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button type="button" onClick={() => { setMostrandoSelectorDept(false); setDepartamentoSeleccionadoId(null); }} className="px-4 py-2 rounded-lg bg-slate-100 text-slate-700">Cancelar</button>
+              <button type="button" disabled={!departamentoSeleccionadoId || asignandoDepartamento} onClick={asignarDepartamentoAlEstudiante} className="px-4 py-2 rounded-lg bg-blue-600 text-white">{asignandoDepartamento ? 'Asignando...' : 'Asignar seleccionado'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
