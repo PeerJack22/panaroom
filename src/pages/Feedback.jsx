@@ -335,7 +335,7 @@ const Feedback = () => {
                 // Normalizar
                 const normalizedList = cleanedRawList
                     .map((item, index) => normalizeFeedbackItem(item, index))
-                    .filter(Boolean);
+                    .filter((item) => item && item.tipo !== "comentario");
 
                 setItems(normalizedList);
             } catch (error) {
