@@ -74,6 +74,7 @@ const Update = () => {
         register,
         handleSubmit,
         reset,
+        trigger,
         setValue,
         clearErrors,
         watch,
@@ -98,23 +99,37 @@ const Update = () => {
         },
     });
 
-    const alicuotaActiva = watch("alicuota") === "true";
-    const tieneParqueadero = watch("parqueadero") === "true";
-    const currentMapUrl = watch("urlMapa");
+    const values = watch();
+    const alicuotaActiva = values.alicuota === "true";
+    const tieneParqueadero = values.parqueadero === "true";
+    const currentMapUrl = values.urlMapa;
     const [selectedPoint, setSelectedPoint] = useState(null);
     const totalSteps = 4;
-    const camposPaso1 = ["titulo", "descripcion", "referencia"];
-    const camposPaso2 = ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "alicuota", "mascotas"];
-    const camposPaso3 = ["urlMapa", "serviciosIncluidos"];
+    const getFieldsForStep = (currentStep) => {
+        if (currentStep === 1) {
+            return ["titulo", "descripcion", "referencia", "urlMapa"];
+        }
 
-    if (tieneParqueadero) {
-        camposPaso2.push("numParqueaderos");
-    }
+        if (currentStep === 2) {
+            return [
+                "precioMensual",
+                "numeroHabitaciones",
+                "numeroBanos",
+                "parqueadero",
+                ...(tieneParqueadero ? ["numParqueaderos"] : []),
+                "bodega",
+                "guardiania",
+                "alicuota",
+                ...(alicuotaActiva ? ["alicoutaMonto"] : []),
+                "mascotas",
+            ];
+        }
 
-    const stepFields = {
-        1: camposPaso1,
-        2: camposPaso2,
-        3: camposPaso3,
+        if (currentStep === 3) {
+            return ["serviciosIncluidos"];
+        }
+
+        return [];
     };
 
     const esPropietario = useMemo(() => {
@@ -222,7 +237,7 @@ const Update = () => {
     }, [setValue, tieneParqueadero]);
 
     const handleNextStep = async () => {
-        const fields = stepFields[step];
+        const fields = getFieldsForStep(step);
         if (fields?.length) {
             const canContinue = await trigger(fields);
             if (!canContinue) {
@@ -422,6 +437,51 @@ const Update = () => {
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Referencia</label>
                                 <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("referencia")} />
                             </div>
+
+                            <div className="md:col-span-2">
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Seleccionar punto en el mapa</label>
+                                <div className="overflow-hidden rounded-xl border border-slate-300">
+                                    <MapContainer
+                                        key={selectedPoint ? `${selectedPoint[0]}-${selectedPoint[1]}` : "default-center"}
+                                        center={selectedPoint || DEFAULT_CENTER}
+                                        zoom={15}
+                                        minZoom={MAP_MIN_ZOOM}
+                                        maxZoom={MAP_MAX_ZOOM}
+                                        maxBounds={EPN_MAX_BOUNDS}
+                                        maxBoundsViscosity={1.0}
+                                        style={{ height: "280px", width: "100%" }}
+                                    >
+                                        <TileLayer
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        />
+                                        <MapClickSelector />
+                                        {selectedPoint && (
+                                            <CircleMarker center={selectedPoint} radius={8} pathOptions={{ color: "#1d4ed8" }} />
+                                        )}
+                                    </MapContainer>
+                                </div>
+                                <p className="mt-2 text-xs text-slate-500">Haz clic en el mapa para guardar la ubicación del lugar.</p>
+                                <input
+                                    type="hidden"
+                                    {...register("urlMapa", {
+                                        required: "Debes seleccionar la ubicación en el mapa.",
+                                        validate: (value) => {
+                                            if (!String(value || "").includes("openstreetmap.org")) {
+                                                return "No se pudo guardar la ubicación del mapa.";
+                                            }
+
+                                            const coords = extractMarkerCoordinates(value);
+                                            if (!coords || !isWithinEpnBounds(coords[0], coords[1])) {
+                                                return "La ubicación debe estar dentro de la zona aledaña a la EPN.";
+                                            }
+
+                                            return true;
+                                        },
+                                    })}
+                                />
+                                {errors.urlMapa && <p className="mt-2 text-xs text-red-600">{errors.urlMapa.message}</p>}
+                            </div>
                         </div>
                     )}
 
@@ -510,27 +570,9 @@ const Update = () => {
 
                     {step === 3 && (
                         <div className="grid gap-5 md:grid-cols-2">
-                            <div className="md:col-span-2">
-                                <label className="mb-2 block text-sm font-semibold text-slate-700">Seleccionar punto en el mapa</label>
-                                <div className="overflow-hidden rounded-xl border border-slate-300">
-                                    <MapContainer key={selectedPoint ? `${selectedPoint[0]}-${selectedPoint[1]}` : "default-center"} center={selectedPoint || DEFAULT_CENTER} zoom={15} minZoom={MAP_MIN_ZOOM} maxZoom={MAP_MAX_ZOOM} maxBounds={EPN_MAX_BOUNDS} maxBoundsViscosity={1.0} style={{ height: "280px", width: "100%" }}>
-                                        <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                        <MapClickSelector />
-                                        {selectedPoint && <CircleMarker center={selectedPoint} radius={8} pathOptions={{ color: "#1d4ed8" }} />}
-                                    </MapContainer>
-                                </div>
-                                <p className="mt-2 text-xs text-slate-500">Haz clic en el mapa para guardar la ubicación del lugar (zona aledaña a la EPN).</p>
-                                <input type="hidden" {...register("urlMapa", { required: "Debes seleccionar la ubicación en el mapa.", validate: (value) => {
-                                    if (!String(value || "").includes("openstreetmap.org")) return "No se pudo guardar la ubicación del mapa.";
-                                    const coords = extractMarkerCoordinates(value);
-                                    if (!coords || !isWithinEpnBounds(coords[0], coords[1])) return "La ubicación debe estar dentro de la zona aledaña a la EPN.";
-                                    return true;
-                                } })} />
-                                {errors.urlMapa && <p className="mt-2 text-xs text-red-600">{errors.urlMapa.message}</p>}
-                            </div>
-
-                            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-5">
+                            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                                 <h2 className="text-lg font-bold text-slate-900">Servicios incluidos</h2>
+                                <p className="mt-1 text-sm text-slate-500">Selecciona al menos uno antes de continuar.</p>
                                 <div className="mt-4 flex flex-wrap gap-4">
                                     {servicioOptions.map((servicio) => (
                                         <label key={servicio.value} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
@@ -548,18 +590,55 @@ const Update = () => {
                     )}
 
                     {step === 4 && (
-                        <div className="space-y-3 text-sm text-slate-700">
-                            <p><span className="font-semibold">Título:</span> {watch("titulo") || "-"}</p>
-                            <p><span className="font-semibold">Referencia:</span> {watch("referencia") || "-"}</p>
-                            <p><span className="font-semibold">Precio mensual:</span> {watch("precioMensual") || "-"}</p>
-                            <p><span className="font-semibold">Habitaciones:</span> {watch("numeroHabitaciones") || "-"}</p>
-                            <p><span className="font-semibold">Baños:</span> {watch("numeroBanos") || "-"}</p>
-                            <p><span className="font-semibold">Parqueadero:</span> {watch("parqueadero") === "true" ? "Sí" : watch("parqueadero") === "false" ? "No" : "-"}</p>
-                            {tieneParqueadero && <p><span className="font-semibold"># Parqueaderos:</span> {watch("numParqueaderos") || "-"}</p>}
-                            <p><span className="font-semibold">Bodega:</span> {watch("bodega") === "true" ? "Sí" : watch("bodega") === "false" ? "No" : "-"}</p>
-                            <p><span className="font-semibold">Guardianía:</span> {watch("guardiania") === "true" ? "Sí" : watch("guardiania") === "false" ? "No" : "-"}</p>
-                            <p><span className="font-semibold">Servicios:</span> {Array.isArray(watch("serviciosIncluidos")) ? watch("serviciosIncluidos").join(", ") : watch("serviciosIncluidos") || "-"}</p>
-                            <p className="text-slate-500">Si todo está correcto, presiona "Guardar cambios".</p>
+                        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resumen final</p>
+                                <h3 className="mt-1 text-2xl font-black text-slate-900">{values.titulo || "Departamento sin título"}</h3>
+                                <p className="mt-2 text-sm leading-6 text-slate-600 line-clamp-3">{values.descripcion || "Sin descripción registrada."}</p>
+                            </div>
+
+                            <div className="rounded-2xl bg-slate-900 p-4 text-white shadow-sm">
+                                <p className="text-xs uppercase tracking-wide text-slate-300">Precio mensual</p>
+                                <p className="mt-2 text-2xl font-black">$ {values.precioMensual || "0"}</p>
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <p className="text-xs uppercase tracking-wide text-slate-500">Habitaciones</p>
+                                <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroHabitaciones || "-"}</p>
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <p className="text-xs uppercase tracking-wide text-slate-500">Baños</p>
+                                <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroBanos || "-"}</p>
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
+                                <p className="text-xs uppercase tracking-wide text-slate-500">Parqueadero</p>
+                                <p className="mt-2 text-lg font-semibold text-slate-900">{values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"}</p>
+                                {values.parqueadero === "true" && <p className="mt-1 text-sm text-slate-600">Número: {values.numParqueaderos || "-"}</p>}
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
+                                <p className="text-xs uppercase tracking-wide text-slate-500">Mapa</p>
+                                <p className="mt-2 text-sm text-slate-700">{values.urlMapa ? "Ubicación guardada correctamente" : "Sin ubicación seleccionada"}</p>
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
+                                <p className="text-xs uppercase tracking-wide text-slate-500">Servicios</p>
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    {Array.isArray(values.serviciosIncluidos) && values.serviciosIncluidos.length ? (
+                                        values.serviciosIncluidos.map((servicio) => (
+                                            <span key={servicio} className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
+                                                {servicio}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-sm text-slate-500">Sin servicios seleccionados</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <p className="md:col-span-2 xl:col-span-3 text-sm text-slate-500">Si todo está correcto, presiona &quot;Guardar cambios&quot;.</p>
                         </div>
                     )}
                 </fieldset>
