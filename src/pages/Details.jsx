@@ -183,7 +183,11 @@ const Details = () => {
             
             // Debugging logs removed
 
-            const comentarioId = response?.data?._id || response?.data?.id;
+            const comentarioId =
+                response?.data?.data?._id ||
+                response?.data?.data?.id ||
+                response?.data?._id ||
+                response?.data?.id;
 
             // Si es terminación, enviar también la calificación
             if (esTerminacion && comentarioId && calificacion > 0) {
