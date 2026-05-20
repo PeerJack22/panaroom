@@ -512,10 +512,10 @@ const Details = () => {
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                {((departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '') || departamento.alicuota) && (
+                                {(((departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' && Number(departamento.alicoutaMonto) > 0) || departamento.alicuota)) && (
                                     <div>
                                         <span className="text-xs text-gray-500 uppercase">Alícuota</span>
-                                        <p className="text-gray-900">{departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' ? `$ ${departamento.alicoutaMonto}` : (departamento.alicuota ? 'Sí' : 'No aplica')}</p>
+                                        <p className="text-gray-900">{(departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' && Number(departamento.alicoutaMonto) > 0) ? `$ ${departamento.alicoutaMonto}` : (departamento.alicuota ? 'Sí' : 'No aplica')}</p>
                                     </div>
                                 )}
 
