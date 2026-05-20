@@ -577,7 +577,7 @@ const Feedback = () => {
                                                     {item.estado ? "Revisado" : "Pendiente"}
                                                 </span>
                                             )}
-                                            {isAdmin && item.manejaEstado && !item.tieneRespuesta && (
+                                            {(isAdmin || (isArrendatario && item.tipo === 'sugerencia')) && item.manejaEstado && !item.tieneRespuesta && (
                                                 <button
                                                     onClick={() => abrirModalComentario(item)}
                                                     className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors"
