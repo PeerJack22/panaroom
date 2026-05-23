@@ -502,9 +502,9 @@ export const Home = () => {
             {/* MAIN CONTENT */}
             <main className="pt-24 bg-white">
                 {/* HERO + FILTROS */}
-                <section className="bg-gradient-to-b from-blue-50 to-white py-12 px-6">
+                <section className="bg-gradient-to-b from-blue-50 to-white pt-0 pb-12 px-6">
                     <div className="max-w-7xl mx-auto">
-                        <div className="home-benefits-banner -mx-6 mb-8 overflow-hidden border-y border-blue-100 bg-white/80 shadow-sm backdrop-blur-md">
+                        <div className="home-benefits-banner -mx-6 -mt-12 mb-8 overflow-hidden border-y border-blue-100 bg-white/80 shadow-sm backdrop-blur-md">
                             <div className="home-benefits-marquee">
                                 <div className="home-benefits-marquee__track">
                                     {[...beneficiosSistema, ...beneficiosSistema].map((beneficio, index) => (
