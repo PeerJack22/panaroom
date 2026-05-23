@@ -648,11 +648,10 @@ const Details = () => {
                                     <span className="ml-2 text-amber-500">{renderEstrellas(Math.round(Number(promedioCalificacion)))}</span>
                                 </p>
                             </div>
-                            <p className="text-xs text-gray-500 sm:text-right">Desliza horizontalmente para ver más comentarios</p>
                         </div>
 
                         <div
-                            className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 pr-1 snap-x snap-mandatory scrollbar-none scroll-smooth touch-pan-x"
+                            className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 pr-1 snap-x snap-mandatory scroll-smooth touch-pan-x"
                         >
                             {comentarios.length > 0 ? comentarios.map((item) => (
                                 <article
