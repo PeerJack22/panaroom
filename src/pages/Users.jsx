@@ -536,13 +536,6 @@ const Users = () => {
                             </section>
 
                             <section className="space-y-4">
-                                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                    <h5 className="mb-3 text-lg font-semibold text-slate-900">Información general</h5>
-                                    <p className="text-sm text-slate-600 leading-relaxed">
-                                        Este estudiante no tiene documentos ni residencias asociadas en este módulo.
-                                    </p>
-                                </div>
-
                                 {estudianteSeleccionado?.confirmEmail === false && (
                                     <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                                         <p className="mb-3 text-sm text-emerald-900">
@@ -691,7 +684,9 @@ const Users = () => {
                                                         type="button"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            navigate(`/dashboard/visualizar/${depa._id}`);
+                                                            navigate(`/dashboard/visualizar/${depa._id}`, {
+                                                                state: { from: "/dashboard/usuarios" },
+                                                            });
                                                         }}
                                                         className="text-blue-600 hover:text-blue-700 font-semibold"
                                                     >
