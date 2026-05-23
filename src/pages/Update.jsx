@@ -104,25 +104,24 @@ const Update = () => {
     const tieneParqueadero = values.parqueadero === "true";
     const currentMapUrl = values.urlMapa;
     const [selectedPoint, setSelectedPoint] = useState(null);
-    const fieldLabels = {
-        titulo: 'Título',
-        descripcion: 'Descripción',
-        precioMensual: 'Precio mensual',
-        numeroHabitaciones: 'Número de habitaciones',
-        numeroBanos: 'Número de baños',
-        serviciosIncluidos: 'Servicios incluidos',
-        alicuota: 'Alícuota',
-        alicoutaMonto: 'Monto alícuota',
-        mascotas: 'Mascotas',
-        urlMapa: 'Ubicación (mapa)',
-        referencia: 'Referencia',
-        bodega: 'Bodega',
-        parqueadero: 'Parqueadero',
-        numParqueaderos: 'Número de parqueaderos',
-        guardiania: 'Guardianía',
-    };
-
     const cambios = useMemo(() => {
+        const fieldLabels = {
+            titulo: 'Título',
+            descripcion: 'Descripción',
+            precioMensual: 'Precio mensual',
+            numeroHabitaciones: 'Número de habitaciones',
+            numeroBanos: 'Número de baños',
+            serviciosIncluidos: 'Servicios incluidos',
+            alicuota: 'Alícuota',
+            alicoutaMonto: 'Monto alícuota',
+            mascotas: 'Mascotas',
+            urlMapa: 'Ubicación (mapa)',
+            referencia: 'Referencia',
+            bodega: 'Bodega',
+            parqueadero: 'Parqueadero',
+            numParqueaderos: 'Número de parqueaderos',
+            guardiania: 'Guardianía',
+        };
         if (!departamento) return {};
         const fields = [
             'titulo','descripcion','precioMensual','numeroHabitaciones','numeroBanos','serviciosIncluidos',
@@ -363,6 +362,21 @@ const Update = () => {
                 ? [data.serviciosIncluidos]
                 : [];
 
+        // Construir payload y asegurar que numParqueaderos respete el valor existente si el campo está vacío
+        const calcularNumParqueaderos = () => {
+            if (String(data.parqueadero) === "true") {
+                // Si el campo del formulario tiene un valor válido (no vacío), úsalo
+                const raw = data.numParqueaderos;
+                if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
+                    const n = Number(raw);
+                    return Number.isFinite(n) ? n : (Number(departamento?.numParqueaderos) || 0);
+                }
+                // Si el formulario dejó el campo vacío, mantener el valor actual del departamento si existe
+                return Number.isFinite(Number(departamento?.numParqueaderos)) ? Number(departamento.numParqueaderos) : 0;
+            }
+            return 0;
+        };
+
         const payload = {
             titulo: String(data.titulo || "").trim(),
             descripcion: String(data.descripcion || "").trim(),
@@ -377,7 +391,7 @@ const Update = () => {
             referencia: String(data.referencia || "").trim(),
             bodega: String(data.bodega) === "true",
             parqueadero: String(data.parqueadero) === "true",
-            numParqueaderos: String(data.parqueadero) === "true" ? Number(data.numParqueaderos) || 0 : 0,
+            numParqueaderos: calcularNumParqueaderos(),
             guardiania: String(data.guardiania) === "true",
         };
 
