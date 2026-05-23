@@ -119,12 +119,20 @@ export const PublicarResidencias = () => {
                         </div>
                     </Link>
 
-                    <Link
-                        to="/"
-                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
-                    >
-                        Volver al inicio
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link
+                            to="/"
+                            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                        >
+                            Volver al inicio
+                        </Link>
+                        <Link
+                            to="/"
+                            className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                        >
+                            Regresar
+                        </Link>
+                    </div>
                 </div>
             </header>
 

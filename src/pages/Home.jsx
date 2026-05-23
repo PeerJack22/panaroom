@@ -331,12 +331,12 @@ export const Home = () => {
                         <a href="#servicios" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Servicios
                         </a>
-                        <Link to="/publicar-residencias" className="text-sm font-medium text-blue-300 hover:text-white transition-colors">
-                            ¿Quieres publicar tus residencias?
-                        </Link>
                         <a href="#contacto" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Contacto
                         </a>
+                        <Link to="/publicar-residencias" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
+                            Publicar residencias
+                        </Link>
                     </div>
 
                     {/* Right Actions */}
@@ -384,8 +384,8 @@ export const Home = () => {
                             <a href="/" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Inicio</a>
                             <a href="#acerca" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Acerca de</a>
                             <a href="#servicios" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Servicios</a>
-                            <Link to="/publicar-residencias" className="block text-lg font-semibold text-blue-300 hover:text-white" onClick={() => setMobileMenuOpen(false)}>¿Quieres publicar tus residencias?</Link>
                             <a href="#contacto" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Contacto</a>
+                            <Link to="/publicar-residencias" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Publicar residencias</Link>
                             <hr className="my-2 border-slate-800" />
                             {!token ? (
                                 <div className="space-y-2">
