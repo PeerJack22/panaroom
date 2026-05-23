@@ -297,14 +297,7 @@ const Update = () => {
         setSelectedPoint(null);
     }, [currentMapUrl]);
 
-    useEffect(() => {
-        if (!tieneParqueadero) {
-            setValue("numParqueaderos", "0", {
-                shouldDirty: true,
-                shouldValidate: true,
-            });
-        }
-    }, [setValue, tieneParqueadero]);
+    // Nota: no forzamos numParqueaderos a 0 aquí para evitar sobrescribir el valor cargado desde el departamento.
 
     const handleNextStep = async () => {
         const fields = getFieldsForStep(step);
