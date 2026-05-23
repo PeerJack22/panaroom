@@ -216,10 +216,6 @@ const Dashboard = () => {
                 <main className="min-h-0 flex-1 overflow-y-auto px-4 py-6 md:px-6">
                     <Outlet />
                 </main>
-
-                <footer className="shrink-0 border-t border-slate-800/10 bg-slate-900/95 py-4 text-center text-sm text-slate-300 backdrop-blur-md">
-                    © {new Date().getFullYear()} PanaRoom - Todos los derechos reservados
-                </footer>
             </div>
         </div>
     );
