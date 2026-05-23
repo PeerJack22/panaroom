@@ -38,6 +38,13 @@ const obtenerServicios = (item) => {
     return servicios;
 };
 
+const renderStars = (valor) => {
+    const cantidad = Math.max(0, Math.min(5, Number(valor) || 0));
+    return Array.from({ length: 5 }).map((_, index) => (
+        <span key={index} className="text-yellow-500">{index < cantidad ? '★' : '☆'}</span>
+    ));
+};
+
 const tieneParqueadero = (valor) => {
     if (valor === true || valor === 1) return true;
     if (typeof valor === "string") {
@@ -103,6 +110,7 @@ export const Home = () => {
     ];
 
     const [propiedades, setPropiedades] = useState([]);
+    const [ratings, setRatings] = useState({}); // { [propId]: { avg: number, count: number } }
 
     useEffect(() => {
         const cargarDepartamentosPublicos = async () => {
@@ -135,6 +143,8 @@ export const Home = () => {
                 }));
 
                 setPropiedades(normalizados);
+                // limpiar ratings previos cuando la lista cambia
+                setRatings({});
             } catch (error) {
                 console.error('Error al cargar departamentos públicos:', error);
                 setErrorPropiedades('No se pudo cargar la información de departamentos.');
@@ -146,6 +156,53 @@ export const Home = () => {
 
         cargarDepartamentosPublicos();
     }, []);
+
+    // Cargar calificaciones (promedio) para las propiedades visibles en la página
+    useEffect(() => {
+        const cargarCalificaciones = async () => {
+            const visibles = propiedadesPaginadas || [];
+            if (!visibles.length) return;
+
+            const nuevos = {};
+
+            await Promise.all(visibles.map(async (prop) => {
+                try {
+                    const storedUser = JSON.parse(localStorage.getItem("auth-token")) || {};
+                    const headers = storedUser?.state?.token ? { Authorization: `Bearer ${storedUser.state.token}` } : {};
+                    const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/comentarios/${prop.id}`;
+                    const resp = await axios.get(url, { headers });
+                    const lista = Array.isArray(resp?.data)
+                        ? resp.data
+                        : Array.isArray(resp?.data?.comentarios)
+                            ? resp.data.comentarios
+                            : Array.isArray(resp?.data?.data)
+                                ? resp.data.data
+                                : [];
+
+                    const comentarios = lista
+                        .filter((item) => String(item?.tipoComentario || "").toLowerCase() === "comentario")
+                        .map((item) => ({
+                            calificacion: Number(item?.calificacion) || 0,
+                        }));
+
+                    const count = comentarios.length;
+                    const sum = comentarios.reduce((s, c) => s + (Number(c.calificacion) || 0), 0);
+                    const avg = count > 0 ? sum / count : 0;
+
+                    nuevos[prop.id] = { avg: Number(avg.toFixed(1)), count };
+                } catch (err) {
+                    // si falla, no bloquear la UI
+                    console.debug('No se pudo cargar calificaciones para', prop.id, err?.message || err);
+                }
+            }));
+
+            // merge con las existentes
+            setRatings((prev) => ({ ...prev, ...nuevos }));
+        };
+
+        cargarCalificaciones();
+        
+    }, [propiedadesPaginadas]);
 
     const propiedadesFiltradas = propiedades.filter((propiedad) => {
         if (propiedad.disponible === false) return false;
@@ -711,7 +768,9 @@ export const Home = () => {
                         )}
 
                         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ease-out ${animandoResidencias ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
-                            {propiedadesPaginadas.map((propiedad) => (
+                            {propiedadesPaginadas.map((propiedad) => {
+                                const rating = ratings[propiedad.id] || null;
+                                return (
                                 <article 
                                     key={propiedad.id} 
                                     className="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col"
@@ -732,6 +791,16 @@ export const Home = () => {
                                             <span className="text-lg font-bold text-blue-600 whitespace-nowrap">
                                                 ${propiedad.precio}
                                             </span>
+                                        </div>
+
+                                        {/* Rating */}
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="flex items-center text-sm">
+                                                {renderStars(Math.round(rating?.avg || 0))}
+                                            </div>
+                                            <div className="text-sm text-gray-700">
+                                                {rating && rating.count > 0 ? `${rating.avg} (${rating.count})` : 'Sin calificaciones'}
+                                            </div>
                                         </div>
 
                                         <p className="text-sm text-gray-600 line-clamp-2 mb-4">
@@ -772,7 +841,8 @@ export const Home = () => {
                                         </button>
                                     </div>
                                 </article>
-                            ))}
+                                )
+                            })}
                         </div>
 
                         {/* PAGINACIÓN */}
