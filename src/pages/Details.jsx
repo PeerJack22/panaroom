@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -62,6 +62,7 @@ const Details = () => {
     const [tipoComentario, setTipoComentario] = useState("queja");
     const [calificacion, setCalificacion] = useState(0);
     const [comentarios, setComentarios] = useState([]);
+    const comentariosScrollRef = useRef(null);
 
     const isEstudiante = rol === 'estudiante';
     const isAdministrador = rol === 'administrador';
@@ -87,6 +88,17 @@ const Details = () => {
                 {index < cantidad ? "★" : "☆"}
             </span>
         ));
+    };
+
+    const moverComentarios = (direccion) => {
+        const contenedor = comentariosScrollRef.current;
+        if (!contenedor) return;
+
+        const desplazamiento = Math.max(280, contenedor.clientWidth * 0.78);
+        contenedor.scrollBy({
+            left: direccion === "left" ? -desplazamiento : desplazamiento,
+            behavior: "smooth",
+        });
     };
 
     const formatearServicio = (valor) => {
@@ -639,27 +651,62 @@ const Details = () => {
                 )}
 
                 {
-                    <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                            <h2 className="text-xl font-semibold text-gray-800">Comentarios de usuarios</h2>
-                            <p className="text-sm text-gray-600">
-                                Calificación promedio: <span className="font-semibold text-gray-800">{promedioCalificacion}/5</span>
-                                <span className="ml-2 text-amber-500">{renderEstrellas(Math.round(Number(promedioCalificacion)))}</span>
-                            </p>
+                    <section className="bg-white/70 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm mb-6">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800">Comentarios de usuarios</h2>
+                                <p className="text-sm text-gray-600">
+                                    Calificación promedio: <span className="font-semibold text-gray-800">{promedioCalificacion}/5</span>
+                                    <span className="ml-2 text-amber-500">{renderEstrellas(Math.round(Number(promedioCalificacion)))}</span>
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-2 self-start sm:self-auto">
+                                <button
+                                    type="button"
+                                    onClick={() => moverComentarios("left")}
+                                    disabled={comentarios.length <= 1}
+                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/70 text-gray-700 backdrop-blur-sm transition-all hover:bg-white hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                                    aria-label="Ver comentario anterior"
+                                >
+                                    <span className="text-xl leading-none">‹</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => moverComentarios("right")}
+                                    disabled={comentarios.length <= 1}
+                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/70 text-gray-700 backdrop-blur-sm transition-all hover:bg-white hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                                    aria-label="Ver comentario siguiente"
+                                >
+                                    <span className="text-xl leading-none">›</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div
+                            ref={comentariosScrollRef}
+                            className="flex gap-4 overflow-x-auto scroll-smooth pb-2 pr-1 snap-x snap-mandatory"
+                        >
                             {comentarios.length > 0 ? comentarios.map((item) => (
-                                <article key={item.id} className="rounded-lg border border-gray-200 bg-white p-3">
-                                    <div className="flex items-center justify-between gap-2 mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <p className="font-semibold text-gray-800 text-sm">{item.nombre}</p>
-                                            <div className="text-amber-500 text-sm">{renderEstrellas(item.calificacion)}</div>
+                                <article
+                                    key={item.id}
+                                    className="min-w-[280px] max-w-[320px] shrink-0 snap-start rounded-2xl border border-white/70 bg-white/75 backdrop-blur-md p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                                >
+                                    <div className="flex items-start justify-between gap-2 mb-3">
+                                        <div className="min-w-0">
+                                            <p className="font-semibold text-gray-800 text-sm truncate">{item.nombre}</p>
+                                            <p className="text-xs text-gray-500 mt-0.5">
+                                                {item.fecha ? new Date(item.fecha).toLocaleDateString("es-EC") : ""}
+                                            </p>
                                         </div>
-                                        <p className="text-xs text-gray-500">{item.fecha ? new Date(item.fecha).toLocaleDateString("es-EC") : ""}</p>
+                                        <div className="shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-amber-500 text-sm">
+                                            {renderEstrellas(item.calificacion)}
+                                        </div>
                                     </div>
 
-                                    <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">{item.comentario}</p>
+                                    <p className="text-sm text-gray-700 leading-relaxed line-clamp-4">
+                                        {item.comentario}
+                                    </p>
                                 </article>
                             )) : (
                                 <p className="text-sm text-gray-500">Todavía no hay comentarios en esta residencia.</p>
