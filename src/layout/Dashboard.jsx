@@ -165,7 +165,7 @@ const Dashboard = () => {
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-100">
 
-                <header className="sticky top-0 z-30 border-b border-slate-800/10 bg-slate-900/95 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.10)] backdrop-blur-md md:px-6 md:py-3">
+                <header className="sticky top-0 z-30 border-b border-slate-800/10 bg-slate-900/95 px-4 py-2 shadow-[0_6px_18px_rgba(15,23,42,0.08)] backdrop-blur-md md:px-6 md:py-2">
                     <div className="flex items-center justify-between gap-3 md:gap-4">
                         <div className="flex min-w-0 items-center gap-3 md:gap-4">
                             <button
@@ -191,11 +191,11 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="ml-auto flex items-center gap-3 shrink-0">
-                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-white/10 bg-white/10 px-3 py-2 shadow-sm">
+                            <div className="flex min-w-0 items-center gap-3 rounded-full border border-white/10 bg-white/10 px-2 py-1">
                                 <img
                                     src={avatarUrl}
                                     alt="Usuario"
-                                    className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-md shadow-blue-600/15"
+                                    className="h-8 w-8 rounded-full border-2 border-white object-cover"
                                 />
                                 <div className="min-w-0">
                                     <p className="truncate text-sm font-semibold text-white">{user?.nombre || 'Usuario'}</p>
@@ -204,7 +204,7 @@ const Dashboard = () => {
                             </div>
                             <Link
                                 to="/"
-                                className={`${buttonBase} shrink-0 bg-white text-slate-900 shadow-sm hover:-translate-y-0.5 hover:bg-slate-100`}
+                                className={`${buttonBase} shrink-0 bg-red-600 text-white hover:bg-red-700 focus:ring-red-300`}
                                 onClick={handleLogout}
                             >
                                 Salir
