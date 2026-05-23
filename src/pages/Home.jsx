@@ -38,12 +38,7 @@ const obtenerServicios = (item) => {
     return servicios;
 };
 
-const renderStars = (valor) => {
-    const cantidad = Math.max(0, Math.min(5, Number(valor) || 0));
-    return Array.from({ length: 5 }).map((_, index) => (
-        <span key={index} className="text-yellow-500">{index < cantidad ? '★' : '☆'}</span>
-    ));
-};
+
 
 const tieneParqueadero = (valor) => {
     if (valor === true || valor === 1) return true;
@@ -111,6 +106,13 @@ export const Home = () => {
 
     const [propiedades, setPropiedades] = useState([]);
     const [ratings, setRatings] = useState({}); // { [propId]: { avg: number, count: number } }
+
+    const renderStars = (valor) => {
+        const cantidad = Math.max(0, Math.min(5, Number(valor) || 0));
+        return Array.from({ length: 5 }).map((_, index) => (
+            <span key={index} className="text-yellow-500">{index < cantidad ? '★' : '☆'}</span>
+        ));
+    };
 
     useEffect(() => {
         const cargarDepartamentosPublicos = async () => {
