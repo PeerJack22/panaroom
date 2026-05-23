@@ -68,6 +68,37 @@ const Chat = () => {
     createdAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
   }), []);
 
+  const formatearHoraMensaje = useCallback((valor) => {
+    if (!valor) return "";
+    const fecha = valor instanceof Date ? valor : new Date(valor);
+    if (Number.isNaN(fecha.getTime())) return "";
+    return fecha.toLocaleTimeString("es-EC", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }, []);
+
+  const cargarUltimoMensajeContacto = useCallback(async (contacto, headers) => {
+    try {
+      const url = `${import.meta.env.VITE_BACKEND_URL}/listar-chats`;
+      const params = obtenerParamsContacto(contacto);
+      const res = await axios.get(url, { headers, params });
+      const raw = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.chats) ? res.data.chats : []);
+      if (!raw.length) return {};
+
+      const ultimo = raw[raw.length - 1];
+      const mensajeNormalizado = normalizarMensaje(ultimo);
+
+      return {
+        ultimoMensaje: mensajeNormalizado.mensaje || "",
+        ultimoMensajeAt: mensajeNormalizado.createdAt,
+      };
+    } catch (error) {
+      console.error("[Chat] cargar último mensaje", error);
+      return {};
+    }
+  }, [normalizarMensaje, obtenerParamsContacto]);
+
   const obtenerParamsContacto = useCallback((contacto) => {
     const params = {};
     if (isArrendatario) {
@@ -117,7 +148,15 @@ const Chat = () => {
             departamentoNombre: item?.departamentoNombre || item?.departamento?.titulo || item?.departamento?.nombre || null,
           };
         }).filter(Boolean);
-        setContactos(mapped);
+
+        const contactosConUltimoMensaje = await Promise.all(
+          mapped.map(async (contacto) => ({
+            ...contacto,
+            ...(await cargarUltimoMensajeContacto(contacto, { Authorization: `Bearer ${token}` })),
+          }))
+        );
+
+        setContactos(contactosConUltimoMensaje);
       } catch (err) {
         console.error('[Chat] cargar contactos', err);
       } finally {
@@ -125,7 +164,7 @@ const Chat = () => {
       }
     };
     cargar();
-  }, [token, userId, isArrendatario, isEstudiante, isAdministrador]);
+  }, [token, userId, isArrendatario, isEstudiante, isAdministrador, cargarUltimoMensajeContacto]);
 
   useEffect(() => {
     if (!contactos.length || contactoInicializadoRef.current) return;
@@ -260,22 +299,22 @@ const Chat = () => {
           if (exists) return prev;
           return [...prev, nuevo];
         });
-        if (nuevo.departamentoId || nuevo.departamentoNombre) {
-          setContactos((prevContactos) => prevContactos.map((contacto) => (
-            String(contacto.id) === String(contactoActivo?.id)
-              ? {
-                  ...contacto,
-                  departamentoId: contacto.departamentoId || nuevo.departamentoId || null,
-                  departamentoNombre: contacto.departamentoNombre || nuevo.departamentoNombre || null,
-                }
-              : contacto
-          )));
-          setContactoActivo((prevContacto) => prevContacto ? {
-            ...prevContacto,
-            departamentoId: prevContacto.departamentoId || nuevo.departamentoId || null,
-            departamentoNombre: prevContacto.departamentoNombre || nuevo.departamentoNombre || null,
-          } : prevContacto);
-        }
+        setContactos((prevContactos) => prevContactos.map((contacto) => (
+          String(contacto.id) === String(contactoActivo?.id)
+            ? {
+                ...contacto,
+                departamentoId: contacto.departamentoId || nuevo.departamentoId || null,
+                departamentoNombre: contacto.departamentoNombre || nuevo.departamentoNombre || null,
+                ultimoMensaje: nuevo.mensaje || contacto.ultimoMensaje || "",
+                ultimoMensajeAt: nuevo.createdAt || contacto.ultimoMensajeAt || null,
+              }
+            : contacto
+        )));
+        setContactoActivo((prevContacto) => prevContacto ? {
+          ...prevContacto,
+          departamentoId: prevContacto.departamentoId || nuevo.departamentoId || null,
+          departamentoNombre: prevContacto.departamentoNombre || nuevo.departamentoNombre || null,
+        } : prevContacto);
       } else {
         // increment unread for contact
         const otherId = m.arrendatarioId && String(m.arrendatarioId) !== String(userId) ? m.arrendatarioId
@@ -287,7 +326,12 @@ const Chat = () => {
         if (otherId) {
           setContactos(prev => {
             const found = prev.find(c => String(c.id) === String(otherId));
-            if (found) return prev.map(c => c.id === found.id ? { ...c, unread: (c.unread||0)+1 } : c);
+            if (found) return prev.map(c => c.id === found.id ? {
+              ...c,
+              unread: (c.unread || 0) + 1,
+              ultimoMensaje: m?.mensaje || c.ultimoMensaje || "",
+              ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
+            } : c);
             // Obtener nombre del payload si está disponible
             let nombre = m?.nombreRemitente || m?.nombre || m?.nombreCompleto || `${m?.nombreRemitente || ''} ${m?.apellidoRemitente || ''}`.trim();
             
@@ -301,7 +345,14 @@ const Chat = () => {
             if (!nombre || nombre.trim() === '') {
               nombre = tipo === 'administrador' ? 'Administrador' : (tipo === 'arrendatario' ? 'Arrendatario' : 'Estudiante');
             }
-            return [{ id: otherId, tipo, nombre, unread: 1 }, ...prev];
+            return [{
+              id: otherId,
+              tipo,
+              nombre,
+              unread: 1,
+              ultimoMensaje: m?.mensaje || "",
+              ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
+            }, ...prev];
           });
         }
       }
@@ -407,6 +458,15 @@ const Chat = () => {
         const exists = prev.some(p => p.id && nuevo.id && String(p.id) === String(nuevo.id));
         if (exists) return prev; return [...prev, nuevo];
       });
+      setContactos((prevContactos) => prevContactos.map((contacto) => (
+        String(contacto.id) === String(contactoActivo.id)
+          ? {
+              ...contacto,
+              ultimoMensaje: messageText,
+              ultimoMensajeAt: new Date(),
+            }
+          : contacto
+      )));
       reset({ mensaje: '' });
     } catch (err) {
       console.error('[Chat] enviar', err); toast.error('Error al enviar el mensaje');
@@ -505,6 +565,16 @@ const Chat = () => {
                         {c.unread>0 && <span className="inline-flex items-center justify-center bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6">{c.unread}</span>}
                       </div>
                       <p className="text-xs text-gray-500 capitalize">{c.tipo}</p>
+                      {(c.ultimoMensaje || c.ultimoMensajeAt) && (
+                        <div className="mt-2 flex items-start justify-between gap-3">
+                          <p className="min-w-0 flex-1 text-xs text-gray-600 truncate">
+                            {c.ultimoMensaje || "Sin mensajes aún"}
+                          </p>
+                          <span className="shrink-0 text-[11px] text-gray-400">
+                            {formatearHoraMensaje(c.ultimoMensajeAt)}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </button>
                 ))}
