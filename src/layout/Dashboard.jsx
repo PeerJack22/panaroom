@@ -39,7 +39,7 @@ const Dashboard = () => {
         'inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2';
 
     return (
-        <div className="h-screen overflow-hidden bg-slate-100 md:flex md:items-stretch">
+        <div className="min-h-screen overflow-x-hidden bg-slate-100 md:flex md:h-screen md:items-stretch md:overflow-hidden">
 
             {/* Sidebar principal */}
             <aside
@@ -163,7 +163,7 @@ const Dashboard = () => {
                 </div>
             </aside>
 
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-100">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-slate-100 md:overflow-hidden">
 
                 <header className="sticky top-0 z-30 border-b border-slate-800/10 bg-slate-900/95 px-4 py-2 shadow-[0_6px_18px_rgba(15,23,42,0.08)] backdrop-blur-md md:px-6 md:py-2">
                     <div className="flex items-center justify-between gap-3 md:gap-4">
