@@ -125,13 +125,29 @@ export const Form = () => {
                 const titulo = String(watch("titulo") || "").trim();
                 if (titulo) {
                     const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
+                    // intentar obtener token de store o localStorage (igual que en otros componentes)
+                    const storedUser = JSON.parse(localStorage.getItem("auth-token") || "null");
+                    const authToken = token || storedUser?.state?.token || null;
                     const headers = { "Content-Type": "application/json" };
-                    const resp = await fetchDataBackend(url, null, "GET", headers);
-                    const lista = Array.isArray(resp) ? resp : (Array.isArray(resp?.data) ? resp.data : []);
-                    const existe = lista.some((d) => String(d?.titulo || "").trim().toLowerCase() === titulo.toLowerCase());
-                    if (existe) {
-                        setError("titulo", { type: "validate", message: "Ya existe una residencia con ese título" });
-                        return;
+                    if (authToken) headers.Authorization = `Bearer ${authToken}`;
+
+                    try {
+                        const resp = await fetchDataBackend(url, null, "GET", headers);
+                        const lista = Array.isArray(resp) ? resp : (Array.isArray(resp?.data) ? resp.data : []);
+                        const existe = lista.some((d) => String(d?.titulo || "").trim().toLowerCase() === titulo.toLowerCase());
+                        if (existe) {
+                            setError("titulo", { type: "validate", message: "Ya existe una residencia con ese título" });
+                            return;
+                        }
+                    } catch (err) {
+                        // manejo de errores: si es 401/403 indicar re-login, si no, permitir continuar
+                        const status = err?.response?.status || err?.status || null;
+                        if (status === 401 || status === 403) {
+                            setError("titulo", { type: "validate", message: "Acceso denegado. Por favor inicia sesión nuevamente." });
+                            toast.error("Acceso denegado. Por favor inicia sesión nuevamente.");
+                            return;
+                        }
+                        console.warn("Error verificando títulos (se ignorará la verificación):", err);
                     }
                 }
             } catch (err) {
