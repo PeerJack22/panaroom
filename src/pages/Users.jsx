@@ -16,6 +16,7 @@ const Users = () => {
     const [soloNoConfirmados, setSoloNoConfirmados] = useState(false);
     const [arrendatariosNoConfirmadosIds, setArrendatariosNoConfirmadosIds] = useState([]);
     const [arrendatarioSeleccionado, setArrendatarioSeleccionado] = useState(null);
+    const [estudianteSeleccionado, setEstudianteSeleccionado] = useState(null);
     const [documentoVisualizadoIndex, setDocumentoVisualizadoIndex] = useState(0);
     const [documentoLightboxIndex, setDocumentoLightboxIndex] = useState(null);
 
@@ -283,10 +284,19 @@ const Users = () => {
         setDocumentoLightboxIndex(null);
     };
 
+    const abrirDetalleEstudiante = (user) => {
+        if (normalizarRol(user?.rol) !== "estudiante") return;
+        setEstudianteSeleccionado(user);
+    };
+
     const cerrarDetalleArrendatario = () => {
         setArrendatarioSeleccionado(null);
         setDocumentoVisualizadoIndex(0);
         setDocumentoLightboxIndex(null);
+    };
+
+    const cerrarDetalleEstudiante = () => {
+        setEstudianteSeleccionado(null);
     };
 
     const documentosArrendatarioSeleccionado = arrendatarioSeleccionado
@@ -433,112 +443,131 @@ const Users = () => {
                     {usuariosFiltrados.map(user => (
                         <div
                             key={user._id}
-                            className={`bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl ${normalizarRol(user.rol) === "arrendatario" ? "cursor-pointer" : ""}`}
-                            onClick={() => abrirDetalleArrendatario(user)}
-                            role={normalizarRol(user.rol) === "arrendatario" ? "button" : undefined}
-                            tabIndex={normalizarRol(user.rol) === "arrendatario" ? 0 : undefined}
+                            className={`bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl ${["arrendatario", "estudiante"].includes(normalizarRol(user.rol)) ? "cursor-pointer" : ""}`}
+                            onClick={() => {
+                                if (normalizarRol(user.rol) === "arrendatario") {
+                                    abrirDetalleArrendatario(user);
+                                }
+                                if (normalizarRol(user.rol) === "estudiante") {
+                                    abrirDetalleEstudiante(user);
+                                }
+                            }}
+                            role={["arrendatario", "estudiante"].includes(normalizarRol(user.rol)) ? "button" : undefined}
+                            tabIndex={["arrendatario", "estudiante"].includes(normalizarRol(user.rol)) ? 0 : undefined}
                             onKeyDown={(e) => {
-                                if (normalizarRol(user.rol) !== "arrendatario") return;
+                                if (!["arrendatario", "estudiante"].includes(normalizarRol(user.rol))) return;
                                 if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
-                                    abrirDetalleArrendatario(user);
+                                    if (normalizarRol(user.rol) === "arrendatario") abrirDetalleArrendatario(user);
+                                    if (normalizarRol(user.rol) === "estudiante") abrirDetalleEstudiante(user);
                                 }
                             }}
                         >
                             <h2 className="text-xl font-bold text-slate-900 mb-2">
                                 {user.nombre} {user.apellido}
                             </h2>
-                            <div className="text-slate-700 mb-4">
-                                <p><span className="font-semibold">Email:</span> {user.email}</p>
+                            <div className="space-y-1 text-slate-700 mb-4">
+                                <p><span className="font-semibold">Correo:</span> {user.email || "No disponible"}</p>
                                 <p><span className="font-semibold">Teléfono:</span> {user.celular || "No disponible"}</p>
-                                <p><span className="font-semibold">Dirección:</span> {user.direccion || "No disponible"}</p>
-                                <p><span className="font-semibold">Rol:</span> {normalizarRol(user.rol)}</p>
-                                {normalizarRol(user.rol) === "arrendatario" && (
-                                    <p>
-                                        <span className="font-semibold">Confirmación:</span>{" "}
-                                        {arrendatariosNoConfirmadosIds.includes(user?._id || user?.id)
-                                            ? "Pendiente"
-                                            : "Confirmado"}
-                                    </p>
-                                )}
                             </div>
 
-                            {/* Sección de departamentos */}
-                            {normalizarRol(user.rol) === "arrendatario" && (
-                                <div className="mt-4 p-3 bg-slate-50 rounded-lg">
-                                    <h3 className="text-md font-semibold text-slate-800 mb-2">Departamentos:</h3>
-                                    {userDepartamentos[user._id] && userDepartamentos[user._id].length > 0 ? (
-                                        <ul className="list-disc list-inside">
-                                            {userDepartamentos[user._id].map(depa => (
-                                                <li key={depa._id} className="text-slate-700">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            navigate(`/dashboard/visualizar/${depa._id}`, { state: { from: "/dashboard/usuarios" } });
-                                                        }}
-                                                        className="text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200"
-                                                    >
-                                                        {depa.titulo}
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-slate-500">
-                                            No tiene departamentos asociados.
-                                        </p>
-                                    )}
+                            <div className="mt-auto flex justify-end pt-3">
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleEstadoUsuario(user);
+                                    }}
+                                    disabled={confirmingArrendatarioId === (user?._id || user?.id)}
+                                    className={`rounded-full px-3.5 py-2 text-xs font-semibold transition-all disabled:opacity-60 ${
+                                        user?.confirmEmail === false
+                                            ? "bg-emerald-600 text-white hover:shadow-md"
+                                            : "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+                                    }`}
+                                >
+                                    {confirmingArrendatarioId === (user?._id || user?.id)
+                                        ? "Guardando..."
+                                        : user?.confirmEmail === false
+                                            ? "Activar cuenta"
+                                            : "Desactivar cuenta"}
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-                                    <div className="mt-3 flex justify-end">
+            {estudianteSeleccionado && createPortal(
+                <div
+                    className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4 py-6"
+                    onClick={cerrarDetalleEstudiante}
+                >
+                    <div
+                        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-slate-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
+                            <div>
+                                <h3 className="text-2xl font-extrabold text-slate-900">Detalle del estudiante</h3>
+                                <p className="text-sm text-slate-600">Revisa la información básica del estudiante.</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={cerrarDetalleEstudiante}
+                                className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:shadow-md"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+
+                        <div className="grid gap-6 p-6 lg:grid-cols-[1.1fr_0.9fr]">
+                            <section className="space-y-3">
+                                <h4 className="text-xl font-bold text-slate-900">
+                                    {estudianteSeleccionado.nombre} {estudianteSeleccionado.apellido}
+                                </h4>
+                                <p><span className="font-semibold">Correo:</span> {estudianteSeleccionado.email || "No disponible"}</p>
+                                <p><span className="font-semibold">Teléfono:</span> {estudianteSeleccionado.celular || "No disponible"}</p>
+                                <p><span className="font-semibold">Dirección:</span> {estudianteSeleccionado.direccion || "No disponible"}</p>
+                                <p><span className="font-semibold">Rol:</span> {normalizarRol(estudianteSeleccionado.rol)}</p>
+                                <p>
+                                    <span className="font-semibold">Confirmación:</span>{" "}
+                                    {estudianteSeleccionado?.confirmEmail === false ? "Pendiente" : "Confirmado"}
+                                </p>
+                            </section>
+
+                            <section className="space-y-4">
+                                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <h5 className="mb-3 text-lg font-semibold text-slate-900">Información general</h5>
+                                    <p className="text-sm text-slate-600 leading-relaxed">
+                                        Este estudiante no tiene documentos ni residencias asociadas en este módulo.
+                                    </p>
+                                </div>
+
+                                {estudianteSeleccionado?.confirmEmail === false && (
+                                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                                        <p className="mb-3 text-sm text-emerald-900">
+                                            Este estudiante todavía no ha sido confirmado.
+                                        </p>
                                         <button
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleToggleEstadoUsuario(user);
+                                                handleToggleEstadoUsuario(estudianteSeleccionado);
                                             }}
-                                            disabled={confirmingArrendatarioId === (user?._id || user?.id)}
-                                            className={`rounded-full px-4 py-2 text-sm font-semibold transition-all disabled:opacity-60 ${
-                                                user?.confirmEmail === false
-                                                    ? "bg-emerald-600 text-white hover:shadow-md"
-                                                    : "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
-                                            }`}
+                                            disabled={confirmingArrendatarioId === (estudianteSeleccionado?._id || estudianteSeleccionado?.id)}
+                                            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:shadow-md transition-colors disabled:opacity-60"
                                         >
-                                            {confirmingArrendatarioId === (user?._id || user?.id)
+                                            {confirmingArrendatarioId === (estudianteSeleccionado?._id || estudianteSeleccionado?.id)
                                                 ? "Guardando..."
-                                                : user?.confirmEmail === false
-                                                    ? "Activar cuenta"
-                                                    : "Desactivar cuenta"}
+                                                : "Activar cuenta"}
                                         </button>
                                     </div>
-                                </div>
-                            )}
-
-                            {normalizarRol(user.rol) === "estudiante" && (
-                                <div className="mt-4 flex justify-end">
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleToggleEstadoUsuario(user);
-                                        }}
-                                        disabled={confirmingArrendatarioId === (user?._id || user?.id)}
-                                        className={`rounded-full px-4 py-2 text-sm font-semibold transition-all disabled:opacity-60 ${
-                                            user?.confirmEmail === false
-                                                ? "bg-emerald-600 text-white hover:shadow-md"
-                                                : "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
-                                        }`}
-                                    >
-                                        {confirmingArrendatarioId === (user?._id || user?.id)
-                                            ? "Guardando..."
-                                            : user?.confirmEmail === false
-                                                ? "Activar cuenta"
-                                                : "Desactivar cuenta"}
-                                    </button>
-                                </div>
-                            )}
+                                )}
+                            </section>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                </div>,
+                document.body
             )}
 
             {arrendatarioSeleccionado && createPortal(
