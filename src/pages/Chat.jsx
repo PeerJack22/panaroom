@@ -78,6 +78,12 @@ const Chat = () => {
     });
   }, []);
 
+  const formatearVistaUltimoMensaje = useCallback((contacto) => {
+    const texto = String(contacto?.ultimoMensaje || "").trim();
+    if (!texto) return "";
+    return contacto?.ultimoMensajeEsMio ? `Tú: ${texto}` : texto;
+  }, []);
+
   const obtenerParamsContacto = useCallback((contacto) => {
     const params = {};
     if (isArrendatario) {
@@ -106,16 +112,20 @@ const Chat = () => {
 
       const ultimo = raw[raw.length - 1];
       const mensajeNormalizado = normalizarMensaje(ultimo);
+      const ultimoEsMio = String(
+        ultimo?.remitente || mensajeNormalizado.remitente || ""
+      ).toLowerCase() === roleNormalized;
 
       return {
         ultimoMensaje: mensajeNormalizado.mensaje || "",
         ultimoMensajeAt: mensajeNormalizado.createdAt,
+        ultimoMensajeEsMio: ultimoEsMio,
       };
     } catch (error) {
       console.error("[Chat] cargar último mensaje", error);
       return {};
     }
-  }, [normalizarMensaje, obtenerParamsContacto]);
+  }, [normalizarMensaje, obtenerParamsContacto, roleNormalized]);
 
   useEffect(() => {
     const cargar = async () => {
@@ -307,6 +317,7 @@ const Chat = () => {
                 departamentoNombre: contacto.departamentoNombre || nuevo.departamentoNombre || null,
                 ultimoMensaje: nuevo.mensaje || contacto.ultimoMensaje || "",
                 ultimoMensajeAt: nuevo.createdAt || contacto.ultimoMensajeAt || null,
+                ultimoMensajeEsMio: String(nuevo.remitente || "").toLowerCase() === roleNormalized,
               }
             : contacto
         )));
@@ -331,6 +342,7 @@ const Chat = () => {
               unread: (c.unread || 0) + 1,
               ultimoMensaje: m?.mensaje || c.ultimoMensaje || "",
               ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
+              ultimoMensajeEsMio: String(m?.remitente || "").toLowerCase() === roleNormalized,
             } : c);
             // Obtener nombre del payload si está disponible
             let nombre = m?.nombreRemitente || m?.nombre || m?.nombreCompleto || `${m?.nombreRemitente || ''} ${m?.apellidoRemitente || ''}`.trim();
@@ -352,6 +364,7 @@ const Chat = () => {
               unread: 1,
               ultimoMensaje: m?.mensaje || "",
               ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
+              ultimoMensajeEsMio: String(m?.remitente || "").toLowerCase() === roleNormalized,
             }, ...prev];
           });
         }
@@ -464,6 +477,7 @@ const Chat = () => {
               ...contacto,
               ultimoMensaje: messageText,
               ultimoMensajeAt: new Date(),
+              ultimoMensajeEsMio: true,
             }
           : contacto
       )));
@@ -548,6 +562,16 @@ const Chat = () => {
                 <div className="p-3 rounded-2xl bg-white border-2 border-blue-600 mb-3">
                   <p className="font-semibold">{contactoActivo.nombre}</p>
                   {contactoActivo.tipo && <p className="text-xs text-gray-500">{contactoActivo.tipo}</p>}
+                  {(contactoActivo.ultimoMensaje || contactoActivo.ultimoMensajeAt) && (
+                    <div className="mt-2 flex items-start justify-between gap-3">
+                      <p className="min-w-0 flex-1 text-xs text-gray-600 truncate">
+                        {formatearVistaUltimoMensaje(contactoActivo) || "Sin mensajes aún"}
+                      </p>
+                      <span className="shrink-0 text-[11px] text-gray-400">
+                        {formatearHoraMensaje(contactoActivo.ultimoMensajeAt)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -568,7 +592,7 @@ const Chat = () => {
                       {(c.ultimoMensaje || c.ultimoMensajeAt) && (
                         <div className="mt-2 flex items-start justify-between gap-3">
                           <p className="min-w-0 flex-1 text-xs text-gray-600 truncate">
-                            {c.ultimoMensaje || "Sin mensajes aún"}
+                            {formatearVistaUltimoMensaje(c) || "Sin mensajes aún"}
                           </p>
                           <span className="shrink-0 text-[11px] text-gray-400">
                             {formatearHoraMensaje(c.ultimoMensajeAt)}
