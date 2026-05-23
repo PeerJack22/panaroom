@@ -504,24 +504,7 @@ export const Home = () => {
                 {/* HERO + FILTROS */}
                 <section className="bg-gradient-to-b from-blue-50 to-white py-12 px-6">
                     <div className="max-w-7xl mx-auto">
-                        <div className="mb-10">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-                                Encuentra tu <span className="text-blue-600">residencia ideal</span>
-                            </h1>
-                            <p className="text-lg text-gray-600">Búsqueda rápida y segura de departamentos en la zona EPN</p>
-                        </div>
-
-                        <div className="home-benefits-banner mb-8 overflow-hidden rounded-2xl border border-blue-100 bg-white/80 shadow-sm backdrop-blur-md">
-                            <div className="flex items-center gap-3 border-b border-blue-50 px-5 py-3">
-                                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-md">
-                                    P
-                                </span>
-                                <div>
-                                    <p className="text-sm font-semibold text-slate-900">Beneficios del sistema</p>
-                                    <p className="text-xs text-slate-500">Desliza para ver lo que te ayuda a resolver PanaRoom</p>
-                                </div>
-                            </div>
-
+                        <div className="home-benefits-banner -mx-6 mb-8 overflow-hidden border-y border-blue-100 bg-white/80 shadow-sm backdrop-blur-md">
                             <div className="home-benefits-marquee">
                                 <div className="home-benefits-marquee__track">
                                     {[...beneficiosSistema, ...beneficiosSistema].map((beneficio, index) => (
@@ -529,12 +512,18 @@ export const Home = () => {
                                             key={`${beneficio}-${index}`}
                                             className="home-benefits-pill"
                                         >
-                                            <span className="home-benefits-pill__dot" />
                                             <span>{beneficio}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
+                        </div>
+
+                        <div className="mb-10">
+                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+                                Encuentra tu <span className="text-blue-600">residencia ideal</span>
+                            </h1>
+                            <p className="text-lg text-gray-600">Búsqueda rápida y segura de departamentos en la zona EPN</p>
                         </div>
 
                         {/* FILTROS GRID */}
