@@ -5,7 +5,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import storeAuth from "../context/storeAuth";
-import { MdSend } from 'react-icons/md';
+import { MdChatBubble, MdSend } from 'react-icons/md';
 
 const Chat = () => {
   const location = useLocation();
@@ -471,16 +471,25 @@ const Chat = () => {
         const exists = prev.some(p => p.id && nuevo.id && String(p.id) === String(nuevo.id));
         if (exists) return prev; return [...prev, nuevo];
       });
-      setContactos((prevContactos) => prevContactos.map((contacto) => (
-        String(contacto.id) === String(contactoActivo.id)
+        setContactos((prevContactos) => prevContactos.map((contacto) => (
+          String(contacto.id) === String(contactoActivo.id)
+            ? {
+                ...contacto,
+                ultimoMensaje: messageText,
+                ultimoMensajeAt: new Date(),
+                ultimoMensajeEsMio: true,
+              }
+            : contacto
+        )));
+        setContactoActivo((prevContacto) => prevContacto && String(prevContacto.id) === String(contactoActivo.id)
           ? {
-              ...contacto,
+              ...prevContacto,
               ultimoMensaje: messageText,
               ultimoMensajeAt: new Date(),
               ultimoMensajeEsMio: true,
             }
-          : contacto
-      )));
+          : prevContacto
+        );
       reset({ mensaje: '' });
     } catch (err) {
       console.error('[Chat] enviar', err); toast.error('Error al enviar el mensaje');
@@ -607,67 +616,83 @@ const Chat = () => {
           </div>
 
           <div className="lg:col-span-2 border border-gray-200 rounded-2xl flex flex-col bg-white min-h-0 overflow-hidden">
-            <div className="border-b border-slate-200 p-4 bg-gray-50 rounded-t-2xl flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold">{contactoActivo?.nombre || 'Selecciona un contacto'}</h3>
-                {departamentoActivoNombre && (
-                  <p className="text-sm text-gray-600">
-                    Departamento: {departamentoActivoId ? (
-                      <Link to={`/dashboard/visualizar/${departamentoActivoId}`} className="font-semibold text-blue-600 underline">{departamentoActivoNombre}</Link>
-                    ) : (
-                      <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
-                    )}
-                  </p>
-                )}
-                {contactoActivo?.tipo === 'estudiante' && departamentoActivoNombre && (
-                  <p className="text-xs text-gray-500 mt-1">Esta conversación está asociada al departamento indicado arriba.</p>
-                )}
-              </div>
-
-              {isArrendatario && contactoActivo?.tipo === 'estudiante' && (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={asignarDepartamentoAlEstudiante}
-                    disabled={asignandoDepartamento}
-                    className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400 shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
-                  >
-                    {asignandoDepartamento ? 'Asignando...' : 'Asignar departamento'}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div ref={mensajesRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
-              {cargandoHistorial ? (
-                <div className="flex items-center justify-center h-full text-gray-500">Cargando historial...</div>
-              ) : mensajes.length===0 ? (
-                <div className="flex items-center justify-center h-full text-gray-500">No hay mensajes aún.</div>
-              ) : mensajes.map((msg,i)=>(
-                <div key={msg.id||i} className={`flex ${msg.remitente===roleNormalized? 'justify-end':'justify-start'}`}>
-                  <div className={`max-w-xs px-4 py-2 rounded-2xl ${msg.remitente===roleNormalized? 'bg-blue-600 text-white':'bg-gray-200 text-gray-800'}`}>
-                    <p className="text-sm">{msg.mensaje}</p>
-                    <p className="text-xs mt-1 text-gray-500">{new Date(msg.createdAt).toLocaleTimeString()}</p>
+            {!contactoActivo ? (
+              <div className="flex flex-1 items-center justify-center px-6 py-12">
+                <div className="max-w-md text-center">
+                  <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-blue-50 text-blue-600 shadow-sm">
+                    <MdChatBubble className="h-12 w-12" aria-hidden="true" />
                   </div>
+                  <h3 className="mt-6 text-2xl font-extrabold text-slate-900">Tu conversación está vacía</h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Para comenzar un chat, selecciona uno de tus contactos disponibles en el panel izquierdo.
+                  </p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <>
+                <div className="border-b border-slate-200 p-4 bg-gray-50 rounded-t-2xl flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-semibold">{contactoActivo?.nombre}</h3>
+                    {departamentoActivoNombre && (
+                      <p className="text-sm text-gray-600">
+                        Departamento: {departamentoActivoId ? (
+                          <Link to={`/dashboard/visualizar/${departamentoActivoId}`} className="font-semibold text-blue-600 underline">{departamentoActivoNombre}</Link>
+                        ) : (
+                          <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
+                        )}
+                      </p>
+                    )}
+                    {contactoActivo?.tipo === 'estudiante' && departamentoActivoNombre && (
+                      <p className="text-xs text-gray-500 mt-1">Esta conversación está asociada al departamento indicado arriba.</p>
+                    )}
+                  </div>
 
-            <div className="border-t border-gray-200 p-4">
-              <form onSubmit={handleSubmit(enviarMensaje)} className="flex gap-2">
-                <textarea {...register('mensaje',{ required: 'El mensaje es obligatorio' })} onKeyDown={onKeyDownTextarea}
-                  placeholder="Escribe tu mensaje..." rows={2}
-                  className="flex-1 px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
-                <button type="submit" disabled={enviando} className="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 disabled:bg-blue-400">
-                  {enviando ? (
-                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
-                  ) : (
-                    <MdSend className="h-5 w-5" />
+                  {isArrendatario && contactoActivo?.tipo === 'estudiante' && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={asignarDepartamentoAlEstudiante}
+                        disabled={asignandoDepartamento}
+                        className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400 shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
+                      >
+                        {asignandoDepartamento ? 'Asignando...' : 'Asignar departamento'}
+                      </button>
+                    </div>
                   )}
-                </button>
-              </form>
-              {errors.mensaje && <p className="text-sm text-red-600 mt-2">{errors.mensaje.message}</p>}
-            </div>
+                </div>
+
+                <div ref={mensajesRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
+                  {cargandoHistorial ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">Cargando historial...</div>
+                  ) : mensajes.length===0 ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">No hay mensajes aún.</div>
+                  ) : mensajes.map((msg,i)=>(
+                    <div key={msg.id||i} className={`flex ${msg.remitente===roleNormalized? 'justify-end':'justify-start'}`}>
+                      <div className={`max-w-xs px-4 py-2 rounded-2xl ${msg.remitente===roleNormalized? 'bg-blue-600 text-white':'bg-gray-200 text-gray-800'}`}>
+                        <p className="text-sm">{msg.mensaje}</p>
+                        <p className="text-xs mt-1 text-gray-500">{new Date(msg.createdAt).toLocaleTimeString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t border-gray-200 p-4">
+                  <form onSubmit={handleSubmit(enviarMensaje)} className="flex gap-2">
+                    <textarea {...register('mensaje',{ required: 'El mensaje es obligatorio' })} onKeyDown={onKeyDownTextarea}
+                      placeholder="Escribe tu mensaje..." rows={2}
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                    <button type="submit" disabled={enviando} className="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 disabled:bg-blue-400">
+                      {enviando ? (
+                        <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                      ) : (
+                        <MdSend className="h-5 w-5" />
+                      )}
+                    </button>
+                  </form>
+                  {errors.mensaje && <p className="text-sm text-red-600 mt-2">{errors.mensaje.message}</p>}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
