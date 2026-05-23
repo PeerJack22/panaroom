@@ -5,7 +5,6 @@ import { Register } from './pages/Register'
 import { Forgot } from './pages/Forgot'
 import { Confirm } from './pages/Confirm'
 import { NotFound } from './pages/NotFound'
-import AuthSuccess from './pages/AuthSuccess'
 import Dashboard from './layout/Dashboard'
 import Profile from './pages/Profile'
 import List from './pages/List'
@@ -54,7 +53,6 @@ function App() {
           <Route path='confirm/:token' element={<Confirm/>}/>
           <Route path='reset/:rol/:token' element={<Reset/>}/>
           <Route path='reset/:token' element={<Reset/>}/>
-          <Route path='auth/success' element={<AuthSuccess />} />
           <Route path='*' element={<NotFound />} />
         </Route>
 
