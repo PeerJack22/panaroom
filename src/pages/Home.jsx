@@ -5,9 +5,6 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^\d{7,15}$/;
-
 const normalizarServicio = (valor) => {
     if (!valor) return null;
     const texto = String(valor).trim().toLowerCase();
@@ -64,7 +61,6 @@ export const Home = () => {
     const { token } = storeAuth();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [servicios, setServicios] = useState([]);
-    const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
     const [categoriaFiltro, setCategoriaFiltro] = useState("todas");
     const [abierto, setAbierto] = useState(false);
     const [abiertoPrecio, setAbiertoPrecio] = useState(false);
@@ -88,16 +84,6 @@ export const Home = () => {
     const [animandoResidencias, setAnimandoResidencias] = useState(false);
     const [cargandoPropiedades, setCargandoPropiedades] = useState(true);
     const [errorPropiedades, setErrorPropiedades] = useState("");
-    const [mostrarFormularioArrendatario, setMostrarFormularioArrendatario] = useState(false);
-    const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
-    const [estadoSolicitud, setEstadoSolicitud] = useState({ tipo: "", mensaje: "" });
-    const [datosSolicitud, setDatosSolicitud] = useState({
-        nombre: "",
-        apellido: "",
-        direccion: "",
-        celular: "",
-        email: "",
-    });
     const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
     const propiedadesPorPagina = 6;
     
@@ -306,95 +292,6 @@ export const Home = () => {
         return `Hasta $${precioMax}`;
     };
 
-    const manejarCambioSolicitud = (e) => {
-        const { name, value } = e.target;
-
-        if (name === "celular") {
-            const soloDigitos = value.replace(/\D/g, "");
-            setDatosSolicitud((prev) => ({ ...prev, [name]: soloDigitos }));
-            return;
-        }
-
-        setDatosSolicitud((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const manejarCambioDocumentos = (e) => {
-        const nuevosArchivos = Array.from(e.target.files || []);
-        if (!nuevosArchivos.length) return;
-
-        setDocumentosArrendatario((prev) => [...prev, ...nuevosArchivos]);
-        e.target.value = "";
-    };
-
-    const enviarSolicitudArrendatario = async (e) => {
-        e.preventDefault();
-        if (enviandoSolicitud) return;
-        setEstadoSolicitud({ tipo: "", mensaje: "" });
-
-        if (!PHONE_REGEX.test(datosSolicitud.celular)) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: "El teléfono debe contener solo números (7 a 15 dígitos).",
-            });
-            return;
-        }
-
-        if (!EMAIL_REGEX.test(datosSolicitud.email)) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: "Ingresa un correo electrónico válido.",
-            });
-            return;
-        }
-
-        if (!documentosArrendatario || documentosArrendatario.length === 0) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: "Selecciona al menos un documento de identidad antes de enviar.",
-            });
-            return;
-        }
-
-        setEnviandoSolicitud(true);
-
-        try {
-            const formData = new FormData();
-            formData.append("nombre", datosSolicitud.nombre.trim());
-            formData.append("apellido", datosSolicitud.apellido.trim());
-            formData.append("direccion", datosSolicitud.direccion.trim());
-            formData.append("celular", datosSolicitud.celular.trim());
-            formData.append("email", datosSolicitud.email.trim().toLowerCase());
-
-            documentosArrendatario.forEach((archivo) => {
-                formData.append("imagenesDocumentos", archivo);
-            });
-
-            const url = `${import.meta.env.VITE_BACKEND_URL}/arrendatario/crear`;
-
-            const response = await axios.post(url, formData);
-
-            setEstadoSolicitud({
-                tipo: "ok",
-                mensaje: response?.data?.msg || "Solicitud enviada correctamente.",
-            });
-            setDatosSolicitud({
-                nombre: "",
-                apellido: "",
-                direccion: "",
-                celular: "",
-                email: "",
-            });
-            setDocumentosArrendatario([]);
-        } catch (error) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: error?.response?.data?.msg || "No se pudo enviar la solicitud. Inténtalo nuevamente.",
-            });
-        } finally {
-            setEnviandoSolicitud(false);
-        }
-    };
-
     const cerrarModalDetalle = () => {
         setDetalleSeleccionado(null);
         setMostrarMensajeDetalle(false);
@@ -434,6 +331,9 @@ export const Home = () => {
                         <a href="#servicios" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Servicios
                         </a>
+                        <Link to="/publicar-residencias" className="text-sm font-medium text-blue-300 hover:text-white transition-colors">
+                            ¿Quieres publicar tus residencias?
+                        </Link>
                         <a href="#contacto" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Contacto
                         </a>
@@ -484,6 +384,7 @@ export const Home = () => {
                             <a href="/" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Inicio</a>
                             <a href="#acerca" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Acerca de</a>
                             <a href="#servicios" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Servicios</a>
+                            <Link to="/publicar-residencias" className="block text-lg font-semibold text-blue-300 hover:text-white" onClick={() => setMobileMenuOpen(false)}>¿Quieres publicar tus residencias?</Link>
                             <a href="#contacto" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Contacto</a>
                             <hr className="my-2 border-slate-800" />
                             {!token ? (
@@ -1050,127 +951,6 @@ export const Home = () => {
                     </div>
                 </section>
 
-                {/* FORMULARIO ARRENDATARIO */}
-                <section className="px-6 py-16 bg-gradient-to-br from-blue-900 to-blue-800 text-white">
-                    <div className="max-w-4xl mx-auto rounded-3xl border border-white/20 bg-blue-800/50 backdrop-blur-sm p-8 md:p-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                            ¿Quieres publicar tus residencias?
-                        </h2>
-                        <p className="text-blue-100 text-lg mb-8 leading-relaxed">
-                            Llena tu solicitud y únete a nuestra comunidad de propietarios confiables.
-                        </p>
-
-                        <button
-                            type="button"
-                            onClick={() => setMostrarFormularioArrendatario((prev) => !prev)}
-                            className="inline-flex items-center rounded-full bg-white hover:bg-gray-100 text-blue-900 font-bold px-8 py-3 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
-                        >
-                            {mostrarFormularioArrendatario ? "Ocultar formulario" : "Solicitar ahora"}
-                        </button>
-
-                        <div
-                            className={`grid overflow-hidden transition-all duration-500 ease-in-out ${
-                                mostrarFormularioArrendatario
-                                    ? "grid-rows-[1fr] opacity-100 mt-8"
-                                    : "grid-rows-[0fr] opacity-0 mt-0"
-                            }`}
-                        >
-                            <div className="min-h-0">
-                                <form onSubmit={enviarSolicitudArrendatario} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input
-                                        type="text"
-                                        name="nombre"
-                                        value={datosSolicitud.nombre}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Nombre"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="apellido"
-                                        value={datosSolicitud.apellido}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Apellido"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="direccion"
-                                        value={datosSolicitud.direccion}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Dirección"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300 md:col-span-2"
-                                        required
-                                    />
-                                    <input
-                                        type="tel"
-                                        name="celular"
-                                        value={datosSolicitud.celular}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Celular"
-                                        inputMode="numeric"
-                                        pattern="[0-9]{7,15}"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={datosSolicitud.email}
-                                        onChange={manejarCambioSolicitud}
-                                        placeholder="Correo"
-                                        pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
-                                        className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-300"
-                                        required
-                                    />
-
-                                    <div className="md:col-span-2">
-                                        <label className="mb-2 block text-sm font-semibold text-white">
-                                            Documentos de identidad
-                                        </label>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            multiple
-                                            onChange={manejarCambioDocumentos}
-                                            className="w-full rounded-lg border border-blue-400 bg-blue-900/30 text-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white file:mr-4 file:rounded-md file:border-0 file:bg-white file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-900"
-                                        />
-                                        <p className="mt-2 text-xs text-blue-200">
-                                            Sube imágenes de tu cédula u otros documentos de identidad.
-                                        </p>
-                                        {documentosArrendatario.length > 0 && (
-                                            <p className="mt-1 text-xs text-green-300 font-semibold">
-                                                ✓ {documentosArrendatario.length} archivo(s) seleccionado(s)
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <div className="md:col-span-2 flex justify-end">
-                                        <button
-                                            type="submit"
-                                            disabled={enviandoSolicitud}
-                                            className="inline-flex items-center justify-center rounded-lg bg-white hover:bg-gray-100 disabled:bg-gray-400 disabled:cursor-not-allowed text-blue-900 font-bold px-8 py-3 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
-                                        >
-                                            {enviandoSolicitud ? "Enviando..." : "Enviar solicitud"}
-                                        </button>
-                                    </div>
-
-                                    {estadoSolicitud.mensaje && (
-                                        <div className={`md:col-span-2 p-4 rounded-lg text-sm font-semibold ${
-                                            estadoSolicitud.tipo === "ok"
-                                                ? "bg-green-500/20 text-green-100 border border-green-400"
-                                                : "bg-red-500/20 text-red-100 border border-red-400"
-                                        }`}>
-                                            {estadoSolicitud.mensaje}
-                                        </div>
-                                    )}
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </main>
 
             {/* FOOTER MEJORADO */}

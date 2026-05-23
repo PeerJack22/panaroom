@@ -16,6 +16,7 @@ import Reset from './pages/Reset'
 import Users from './pages/Users'
 import Feedback from './pages/Feedback'
 import Chat from './pages/Chat'
+import PublicarResidencias from './pages/PublicarResidencias'
 import PublicRoute from './routes/PublicRoute'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { useEffect } from 'react'
@@ -49,6 +50,7 @@ function App() {
           <Route path='login' element={<Login/>}/>
           <Route path='loginEstudiante' element={<Login/>}/>
           <Route path='register' element={<Register/>}/>
+          <Route path='publicar-residencias' element={<PublicarResidencias/>}/>
           <Route path='forgot/:id' element={<Forgot/>}/>
           <Route path='confirm/:token' element={<Confirm/>}/>
           <Route path='reset/:rol/:token' element={<Reset/>}/>
