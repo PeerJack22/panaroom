@@ -34,6 +34,11 @@ const Chat = () => {
   const isEstudiante = roleNormalized === "estudiante";
   const isArrendatario = roleNormalized === "arrendatario";
   const isAdministrador = roleNormalized === "administrador";
+  const textoDescripcionChat = isAdministrador
+    ? "Este módulo te permite una comunicación directa con los arrendatarios"
+    : isArrendatario
+      ? "Este módulo te permite una comunicación directa con los administradores y estudiantes"
+      : "Este módulo te permite una comunicación directa con los arrendatarios";
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
@@ -469,7 +474,7 @@ const Chat = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <header className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Chat</h1>
-          <p className="mt-2 text-sm text-slate-500">Este módulo te permite gestionar tus chats</p>
+          <p className="mt-2 text-sm text-slate-500">{textoDescripcionChat}</p>
           <hr className="mt-6 border-slate-200" />
         </header>
 
