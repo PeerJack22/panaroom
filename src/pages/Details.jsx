@@ -95,11 +95,48 @@ const Details = () => {
         if (!contenedor) return;
 
         const desplazamiento = Math.max(280, contenedor.clientWidth * 0.78);
+        const maxScrollLeft = Math.max(0, contenedor.scrollWidth - contenedor.clientWidth);
+
+        if (direccion === "left") {
+            if (contenedor.scrollLeft <= 20) {
+                contenedor.scrollTo({ left: maxScrollLeft, behavior: "smooth" });
+                return;
+            }
+
+            contenedor.scrollBy({
+                left: -desplazamiento,
+                behavior: "smooth",
+            });
+            return;
+        }
+
+        if (contenedor.scrollLeft + contenedor.clientWidth >= contenedor.scrollWidth - 20) {
+            contenedor.scrollTo({ left: 0, behavior: "smooth" });
+            return;
+        }
+
         contenedor.scrollBy({
-            left: direccion === "left" ? -desplazamiento : desplazamiento,
+            left: desplazamiento,
             behavior: "smooth",
         });
     };
+
+    useEffect(() => {
+        if (comentarios.length <= 1) return undefined;
+
+        const intervalo = setInterval(() => {
+            const contenedor = comentariosScrollRef.current;
+            if (!contenedor) return;
+
+            if (contenedor.scrollLeft + contenedor.clientWidth >= contenedor.scrollWidth - 20) {
+                contenedor.scrollTo({ left: 0, behavior: "smooth" });
+            } else {
+                contenedor.scrollBy({ left: Math.max(280, contenedor.clientWidth * 0.78), behavior: "smooth" });
+            }
+        }, 4500);
+
+        return () => clearInterval(intervalo);
+    }, [comentarios.length]);
 
     const formatearServicio = (valor) => {
         if (!valor) return null;
@@ -651,35 +688,36 @@ const Details = () => {
                 )}
 
                 {
-                    <section className="bg-white/70 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm mb-6">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                    <section className="relative bg-white/70 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm mb-6 overflow-hidden">
+                        <div className="absolute left-4 right-4 top-4 z-10 flex items-center justify-between pointer-events-none">
+                            <button
+                                type="button"
+                                onClick={() => moverComentarios("left")}
+                                disabled={comentarios.length <= 1}
+                                className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white/25 text-gray-700 backdrop-blur-md transition-all hover:bg-white/40 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
+                                aria-label="Ver comentario anterior"
+                            >
+                                <span className="text-2xl leading-none">‹</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => moverComentarios("right")}
+                                disabled={comentarios.length <= 1}
+                                className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white/25 text-gray-700 backdrop-blur-md transition-all hover:bg-white/40 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
+                                aria-label="Ver comentario siguiente"
+                            >
+                                <span className="text-2xl leading-none">›</span>
+                            </button>
+                        </div>
+
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 pt-10 sm:pt-0">
                             <div>
                                 <h2 className="text-xl font-semibold text-gray-800">Comentarios de usuarios</h2>
                                 <p className="text-sm text-gray-600">
                                     Calificación promedio: <span className="font-semibold text-gray-800">{promedioCalificacion}/5</span>
                                     <span className="ml-2 text-amber-500">{renderEstrellas(Math.round(Number(promedioCalificacion)))}</span>
                                 </p>
-                            </div>
-
-                            <div className="flex items-center gap-2 self-start sm:self-auto">
-                                <button
-                                    type="button"
-                                    onClick={() => moverComentarios("left")}
-                                    disabled={comentarios.length <= 1}
-                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/70 text-gray-700 backdrop-blur-sm transition-all hover:bg-white hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-                                    aria-label="Ver comentario anterior"
-                                >
-                                    <span className="text-xl leading-none">‹</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => moverComentarios("right")}
-                                    disabled={comentarios.length <= 1}
-                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/70 text-gray-700 backdrop-blur-sm transition-all hover:bg-white hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-                                    aria-label="Ver comentario siguiente"
-                                >
-                                    <span className="text-xl leading-none">›</span>
-                                </button>
                             </div>
                         </div>
 
