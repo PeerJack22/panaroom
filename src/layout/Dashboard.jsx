@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { FaClipboardList, FaComments, FaHouseChimney, FaUser, FaBed, FaUsers } from 'react-icons/fa6';
 import storeAuth from '../context/storeAuth'
 import storeProfile from '../context/storeProfile'
+import logo_proyecto from '../assets/logo_proyecto.png';
 
 const Dashboard = () => {
     const location = useLocation();
@@ -47,9 +48,14 @@ const Dashboard = () => {
                 }`}
             >
                 <div className="w-full">
-                    <div className={`mb-7 flex items-center ${sidebarCompact ? 'justify-center' : 'gap-3'}`}>
+                    <div className={`mb-7 flex flex-col items-center ${sidebarCompact ? 'justify-center' : 'gap-3'}`}>
+                        <img
+                            src={logo_proyecto}
+                            alt="PanaRoom"
+                            className={`${sidebarCompact ? 'h-11 w-11' : 'h-14 w-14'} rounded-xl object-contain shadow-md`}
+                        />
                         {!sidebarCompact && (
-                            <div>
+                            <div className="text-center">
                                 <h2 className="text-2xl font-extrabold text-white">PanaRoom</h2>
                                 <p className="text-sm text-slate-300">Panel de control</p>
                             </div>
@@ -104,10 +110,17 @@ const Dashboard = () => {
                 }`}
             >
                 <div>
-                    <div className="mb-6 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-2xl font-bold text-white">PanaRoom</h2>
-                            <p className="text-sm text-slate-300">Panel de control</p>
+                    <div className="mb-6 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <img
+                                src={logo_proyecto}
+                                alt="PanaRoom"
+                                className="h-12 w-12 rounded-xl object-contain shadow-md"
+                            />
+                            <div>
+                                <h2 className="text-2xl font-bold text-white">PanaRoom</h2>
+                                <p className="text-sm text-slate-300">Panel de control</p>
+                            </div>
                         </div>
                         <button
                             type="button"
