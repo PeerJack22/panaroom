@@ -58,7 +58,6 @@ export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedImages, setSelectedImages] = useState([]);
-    const [imagePreviews, setImagePreviews] = useState([]);
     const totalSteps = 4;
     const {
         register,
@@ -85,14 +84,7 @@ export const Form = () => {
         }
     }, [setValue, tieneParqueadero]);
 
-    useEffect(() => {
-        const previews = selectedImages.map((file) => URL.createObjectURL(file));
-        setImagePreviews(previews);
-
-        return () => {
-            previews.forEach((preview) => URL.revokeObjectURL(preview));
-        };
-    }, [selectedImages]);
+    // No mostramos miniaturas en la confirmación; mantenemos solo la lista de `selectedImages`.
 
     useEffect(() => {
         const coords = extractMarkerCoordinates(currentMapUrl);
@@ -547,73 +539,64 @@ export const Form = () => {
                 )}
 
                 {step === 4 && (
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                                <div className="grid gap-6 md:grid-cols-2">
-                                    <div>
-                                        <h2 className="text-xl font-bold mb-2">{values.titulo || "Residencia sin título"}</h2>
-                                        <p className="text-sm text-slate-700 mb-4">{values.descripcion || "Sin descripción registrada."}</p>
-
-                                        <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
-                                            <p><span className="font-semibold">Precio:</span> ${values.precioMensual || "0"}</p>
-                                            <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
-                                            <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>
-                                            <p><span className="font-semibold">Categoría:</span> {values.categoria || '-'}</p>
-                                            <p><span className="font-semibold">Parqueadero:</span> {values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"}</p>
-                                            {values.parqueadero === "true" && <p><span className="font-semibold"># Parqueaderos:</span> {values.numParqueaderos || '-'}</p>}
-                                            <p><span className="font-semibold">Bodega:</span> {values.bodega === "true" ? "Sí" : values.bodega === "false" ? "No" : '-'}</p>
-                                            <p><span className="font-semibold">Guardianía:</span> {values.guardiania === "true" ? "Sí" : values.guardiania === "false" ? "No" : '-'}</p>
-                                            <p><span className="font-semibold">Alícuota:</span> {values.alicuota === "true" ? `Sí${values.alicuota === "true" && values.alicoutaMonto ? ` (Monto: ${values.alicoutaMonto})` : ''}` : values.alicuota === "false" ? 'No' : '-'}</p>
-                                            <p><span className="font-semibold">Mascotas:</span> {values.mascotas === "true" ? "Sí" : values.mascotas === "false" ? "No" : '-'}</p>
-                                            <div className="col-span-2">
-                                                <p><span className="font-semibold">Servicios:</span> {Array.isArray(values.servicios) && values.servicios.length ? values.servicios.join(', ') : 'Sin servicios seleccionados'}</p>
-                                            </div>
-                                            <div className="col-span-2">
-                                                <p><span className="font-semibold">Dirección:</span> {values.direccion || '-'}</p>
-                                                <p><span className="font-semibold">Referencia:</span> {values.referencia || '-'}</p>
-                                                <p><span className="font-semibold">Ciudad:</span> {values.ciudad || '-'}</p>
-                                            </div>
-                                            <div className="col-span-2">
-                                                <p><span className="font-semibold">Imágenes seleccionadas:</span> {selectedImages.length}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div className="flex gap-4 items-start">
-                                            <div className="flex-1">
-                                                {values.urlMapa ? (
-                                                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                                                        <iframe
-                                                            title="Mapa de la residencia"
-                                                            src={values.urlMapa}
-                                                            className="h-40 w-full"
-                                                            loading="lazy"
-                                                            referrerPolicy="no-referrer-when-downgrade"
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <div className="h-40 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-100">
-                                                        <span className="text-sm text-slate-600">Sin ubicación seleccionada</span>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <div className="w-28">
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    {imagePreviews.length ? (
-                                                        imagePreviews.slice(0, 4).map((src, idx) => (
-                                                            <div key={idx} className="h-16 w-16 overflow-hidden rounded-md border border-slate-200 bg-slate-100">
-                                                                <img src={src} alt={`preview-${idx}`} className="h-full w-full object-cover" />
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <div className="h-16 w-16 flex items-center justify-center rounded-md border border-slate-200 bg-slate-100 text-xs text-slate-500">No images</div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                            <h3 className="text-lg font-bold text-slate-900 mb-3">Resumen</h3>
+                            <p className="text-sm text-slate-700 mb-4">Revisa la información antes de guardar. Solo se mostrarán los campos seleccionados.</p>
+                            <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
+                                <div>
+                                    <div className="font-semibold">Título</div>
+                                    <div className="mt-1 text-slate-600">{values.titulo || '-'}</div>
                                 </div>
+                                <div>
+                                    <div className="font-semibold">Precio</div>
+                                    <div className="mt-1 text-slate-600">${values.precioMensual || '0'}</div>
+                                </div>
+                                <div>
+                                    <div className="font-semibold">Habitaciones</div>
+                                    <div className="mt-1 text-slate-600">{values.numeroHabitaciones || '-'}</div>
+                                </div>
+                                <div>
+                                    <div className="font-semibold">Baños</div>
+                                    <div className="mt-1 text-slate-600">{values.numeroBanos || '-'}</div>
+                                </div>
+                                <div>
+                                    <div className="font-semibold">Parqueadero</div>
+                                    <div className="mt-1 text-slate-600">{values.parqueadero === 'true' ? 'Sí' : values.parqueadero === 'false' ? 'No' : '-'}</div>
+                                </div>
+                                <div>
+                                    <div className="font-semibold">Bodega</div>
+                                    <div className="mt-1 text-slate-600">{values.bodega === 'true' ? 'Sí' : values.bodega === 'false' ? 'No' : '-'}</div>
+                                </div>
+                                <div className="col-span-2">
+                                    <div className="font-semibold">Descripción</div>
+                                    <div className="mt-1 text-slate-600">{values.descripcion || '-'}</div>
+                                </div>
+                                <div className="col-span-2">
+                                    <div className="font-semibold">Servicios</div>
+                                    <div className="mt-1 text-slate-600">{Array.isArray(values.servicios) && values.servicios.length ? values.servicios.join(', ') : 'Sin servicios seleccionados'}</div>
+                                </div>
+                                <div>
+                                    <div className="font-semibold">Dirección</div>
+                                    <div className="mt-1 text-slate-600">{values.direccion || '-'}</div>
+                                </div>
+                                <div>
+                                    <div className="font-semibold">Referencia</div>
+                                    <div className="mt-1 text-slate-600">{values.referencia || '-'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                            <h3 className="text-lg font-bold text-slate-900 mb-3">Detalles adicionales</h3>
+                            <div className="text-sm text-slate-700 space-y-3">
+                                <div><span className="font-semibold">Ciudad:</span> <span className="text-slate-600">{values.ciudad || '-'}</span></div>
+                                <div><span className="font-semibold">Alícuota:</span> <span className="text-slate-600">{values.alicuota === 'true' ? `Sí${values.alicuota === 'true' && values.alicoutaMonto ? ` (Monto: ${values.alicoutaMonto})` : ''}` : values.alicuota === 'false' ? 'No' : '-'}</span></div>
+                                <div><span className="font-semibold">Mascotas:</span> <span className="text-slate-600">{values.mascotas === 'true' ? 'Sí' : values.mascotas === 'false' ? 'No' : '-'}</span></div>
+                                <div><span className="font-semibold">Guardianía:</span> <span className="text-slate-600">{values.guardiania === 'true' ? 'Sí' : values.guardiania === 'false' ? 'No' : '-'}</span></div>
+                                <div><span className="font-semibold"># Imágenes seleccionadas:</span> <span className="text-slate-600">{selectedImages.length}</span></div>
+                            </div>
+                        </div>
                     </div>
                 )}
             </fieldset>
