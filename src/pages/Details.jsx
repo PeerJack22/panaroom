@@ -751,7 +751,7 @@ const Details = () => {
                                 {modoComentario === "terminar" && (
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                            Calificación y comentario de la residencia (Obligatoria)
+                                            Calificación y comentario de la residencia (Obligatorios)
                                         </label>
                                         <div className="flex gap-2 justify-center">
                                             {[1, 2, 3, 4, 5].map((star) => (
