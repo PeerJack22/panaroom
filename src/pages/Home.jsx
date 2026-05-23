@@ -527,7 +527,7 @@ export const Home = () => {
                         </div>
 
                         {/* FILTROS GRID */}
-                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4'>
+                        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                             <div className="relative">
                                 <button
                                     type="button"
@@ -539,7 +539,7 @@ export const Home = () => {
                                 </button>
 
                                 {abiertoPrecio && (
-                                    <div className="absolute z-20 mt-2 w-[320px] rounded-xl border border-gray-300 bg-white shadow-xl p-4 space-y-3">
+                                    <div className="absolute z-20 mt-2 w-[min(320px,calc(100vw-2rem))] rounded-xl border border-gray-300 bg-white shadow-xl p-4 space-y-3">
                                         <div className="grid grid-cols-2 gap-2">
                                             <input
                                                 type="number"
@@ -611,7 +611,7 @@ export const Home = () => {
                                 ))}
                             </select>
 
-                            <div className="relative lg:col-span-1">
+                            <div className="relative md:col-span-2 lg:col-span-1">
                                 <div className="w-full rounded-xl border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 min-h-[44px] flex items-center gap-2 hover:border-blue-500 transition-colors shadow-sm">
                                     <div
                                         className="flex-1 flex flex-wrap gap-2 cursor-pointer"
@@ -667,7 +667,7 @@ export const Home = () => {
                                 )}
                             </div>
 
-                            <div className="relative lg:col-span-1">
+                            <div className="relative md:col-span-2 lg:col-span-1">
                                 <button
                                     type="button"
                                     onClick={() => setAbiertoMasFiltros((prev) => !prev)}
