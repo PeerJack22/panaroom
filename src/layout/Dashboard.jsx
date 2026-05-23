@@ -48,14 +48,14 @@ const Dashboard = () => {
                 }`}
             >
                 <div className="w-full">
-                    <div className={`mb-7 flex flex-col items-center ${sidebarCompact ? 'justify-center' : 'gap-3'}`}>
+                    <div className={`mb-7 flex items-center ${sidebarCompact ? 'justify-center' : 'gap-2.5'}`}>
                         <img
                             src={logo_proyecto}
                             alt="PanaRoom"
                             className={`${sidebarCompact ? 'h-11 w-11' : 'h-14 w-14'} rounded-xl object-contain shadow-md`}
                         />
                         {!sidebarCompact && (
-                            <div className="text-center">
+                            <div className="text-left">
                                 <h2 className="text-2xl font-extrabold text-white">PanaRoom</h2>
                                 <p className="text-sm text-slate-300">Panel de control</p>
                             </div>
