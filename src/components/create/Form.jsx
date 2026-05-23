@@ -58,7 +58,6 @@ export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedImages, setSelectedImages] = useState([]);
-    const [imagePreviews, setImagePreviews] = useState([]);
     const totalSteps = 4;
     const {
         register,
@@ -85,14 +84,7 @@ export const Form = () => {
         }
     }, [setValue, tieneParqueadero]);
 
-    useEffect(() => {
-        const previews = selectedImages.map((file) => URL.createObjectURL(file));
-        setImagePreviews(previews);
-
-        return () => {
-            previews.forEach((preview) => URL.revokeObjectURL(preview));
-        };
-    }, [selectedImages]);
+    // Nota: usamos `selectedImages` directamente; no necesitamos `imagePreviews`.
 
     useEffect(() => {
         const coords = extractMarkerCoordinates(currentMapUrl);
@@ -185,8 +177,8 @@ export const Form = () => {
             return;
         }
 
-        if (!selectedImages.length) {
-            toast.error("Debes subir al menos una imagen.");
+        if (selectedImages.length < 4) {
+            toast.error("Debes subir al menos 4 imágenes.");
             return;
         }
 
@@ -493,38 +485,38 @@ export const Form = () => {
 
                 {step === 3 && (
                     <>
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold">Imágenes de la residencia</label>
-                            <input
-                                type="file"
-                                multiple
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("imagen", {
-                                    validate: () =>
-                                        selectedImages.length > 0 || "Debes subir al menos una imagen.",
-                                    onChange: (e) => {
-                                        const newFiles = Array.from(e.target.files || []);
-                                        if (!newFiles.length) return;
+                                        <div>
+                                            <label className="mb-2 block text-sm font-semibold">Imágenes de la residencia (mínimo 4)</label>
+                                            <input
+                                                type="file"
+                                                multiple
+                                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                                                {...register("imagen", {
+                                                    validate: () =>
+                                                        selectedImages.length >= 4 || "Debes subir al menos 4 imágenes.",
+                                                    onChange: (e) => {
+                                                        const newFiles = Array.from(e.target.files || []);
+                                                        if (!newFiles.length) return;
 
-                                        setSelectedImages((prev) => {
-                                            const merged = [...prev, ...newFiles];
-                                            setValue("imagen", merged, { shouldValidate: true });
-                                            return merged;
-                                        });
-                                        clearErrors("imagen");
+                                                        setSelectedImages((prev) => {
+                                                            const merged = [...prev, ...newFiles];
+                                                            setValue("imagen", merged, { shouldValidate: true });
+                                                            return merged;
+                                                        });
+                                                        clearErrors("imagen");
 
-                                        // Permite volver a abrir el selector y agregar más archivos sin perder los anteriores.
-                                        e.target.value = "";
-                                    },
-                                })}
-                            />
-                            {errors.imagen && <p className="text-red-600 text-xs italic">{errors.imagen.message}</p>}
-                            {selectedImages.length > 0 && (
-                                <p className="text-xs text-slate-500 mt-2">
-                                    {selectedImages.length} imagen(es) seleccionada(s)
-                                </p>
-                            )}
-                        </div>
+                                                        // Permite volver a abrir el selector y agregar más archivos sin perder los anteriores.
+                                                        e.target.value = "";
+                                                    },
+                                                })}
+                                            />
+                                            {errors.imagen && <p className="text-red-600 text-xs italic">{errors.imagen.message}</p>}
+                                            {selectedImages.length > 0 && (
+                                                <p className="text-xs text-slate-500 mt-2">
+                                                    {selectedImages.length} imagen(es) seleccionada(s)
+                                                </p>
+                                            )}
+                                        </div>
 
                         <div>
                             <label className="mb-2 block text-sm font-semibold">Servicios incluidos</label>
@@ -548,93 +540,37 @@ export const Form = () => {
 
                 {step === 4 && (
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resumen final</p>
-                            <h3 className="mt-1 text-2xl font-black text-slate-900">{values.titulo || "Residencia sin título"}</h3>
-                            <p className="mt-2 text-sm leading-6 text-slate-600 line-clamp-3">{values.descripcion || "Sin descripción registrada."}</p>
-                        </div>
-
-                        <div className="rounded-2xl bg-slate-900 p-4 text-white shadow-sm">
-                            <p className="text-xs uppercase tracking-wide text-slate-300">Precio mensual</p>
-                            <p className="mt-2 text-2xl font-black">$ {values.precioMensual || "0"}</p>
-                        </div>
-
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">Habitaciones</p>
-                            <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroHabitaciones || "-"}</p>
-                        </div>
-
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">Baños</p>
-                            <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroBanos || "-"}</p>
-                        </div>
-
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">Parqueadero</p>
-                            <p className="mt-2 text-lg font-semibold text-slate-900">{values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"}</p>
-                            {values.parqueadero === "true" && <p className="mt-1 text-sm text-slate-600">Número: {values.numParqueaderos || "-"}</p>}
-                        </div>
-
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">Mapa</p>
-                            {values.urlMapa ? (
-                                <div className="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                                    <iframe
-                                        title="Mapa de la residencia"
-                                        src={values.urlMapa}
-                                        className="h-40 w-full"
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                    />
+                                <div className="prose">
+                                    <h2>{values.titulo || "Residencia sin título"}</h2>
+                                    <p>{values.descripcion || "Sin descripción registrada."}</p>
+                                    <ul>
+                                        <li><strong>Precio:</strong> $ {values.precioMensual || "0"}</li>
+                                        <li><strong>Habitaciones:</strong> {values.numeroHabitaciones || "-"}</li>
+                                        <li><strong>Baños:</strong> {values.numeroBanos || "-"}</li>
+                                        <li><strong>Parqueadero:</strong> {values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"} {values.parqueadero === "true" && `(Número: ${values.numParqueaderos || '-'})`}</li>
+                                        <li><strong>Servicios:</strong> {Array.isArray(values.servicios) && values.servicios.length ? values.servicios.join(', ') : 'Sin servicios seleccionados'}</li>
+                                        <li><strong>Categoría:</strong> {values.categoria || '-'}</li>
+                                        <li><strong>Dirección:</strong> {values.direccion || '-'}</li>
+                                        <li><strong>Referencia:</strong> {values.referencia || '-'}</li>
+                                        <li><strong>Imágenes seleccionadas:</strong> {selectedImages.length}</li>
+                                    </ul>
+                                    <div style={{ marginTop: 12 }}>
+                                        <p><strong>Mapa:</strong></p>
+                                        {values.urlMapa ? (
+                                            <div style={{ marginTop: 8 }}>
+                                                <iframe
+                                                    title="Mapa de la residencia"
+                                                    src={values.urlMapa}
+                                                    style={{ width: '100%', height: 280, border: 0 }}
+                                                    loading="lazy"
+                                                    referrerPolicy="no-referrer-when-downgrade"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p>Sin ubicación seleccionada</p>
+                                        )}
+                                    </div>
                                 </div>
-                            ) : (
-                                <p className="mt-2 text-sm text-slate-700">Sin ubicación seleccionada</p>
-                            )}
-                        </div>
-
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">Imágenes</p>
-                            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                                {imagePreviews.length ? (
-                                    imagePreviews.map((preview, index) => (
-                                        <div key={`${preview}-${index}`} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                                            <img src={preview} alt={`Vista previa ${index + 1}`} className="h-24 w-full object-cover" />
-                                        </div>
-                                    ))
-                                ) : (
-                                    <span className="text-sm text-slate-500">Sin imágenes seleccionadas</span>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">Servicios</p>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                                {Array.isArray(values.servicios) && values.servicios.length ? (
-                                    values.servicios.map((servicio) => (
-                                        <span key={servicio} className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
-                                            {servicio}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span className="text-sm text-slate-500">Sin servicios seleccionados</span>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">Detalles</p>
-                            <div className="mt-3 grid gap-2 text-sm text-slate-700 sm:grid-cols-2 lg:grid-cols-3">
-                                <p><span className="font-semibold">Dirección:</span> {values.direccion || "-"}</p>
-                                <p><span className="font-semibold">Referencia:</span> {values.referencia || "-"}</p>
-                                <p><span className="font-semibold">Categoría:</span> {values.categoria || "-"}</p>
-                                <p><span className="font-semibold">Alícuota:</span> {values.alicuota === "true" ? "Sí" : values.alicuota === "false" ? "No" : "-"}</p>
-                                {values.alicuota === "true" && <p><span className="font-semibold">Monto alícuota:</span> {values.alicoutaMonto || "-"}</p>}
-                                <p><span className="font-semibold">Mascotas:</span> {values.mascotas === "true" ? "Sí" : values.mascotas === "false" ? "No" : "-"}</p>
-                                <p><span className="font-semibold">Bodega:</span> {values.bodega === "true" ? "Sí" : values.bodega === "false" ? "No" : "-"}</p>
-                                <p className="sm:col-span-2 lg:col-span-3 text-slate-500">Si todo está correcto, presiona &quot;Guardar registro&quot;.</p>
-                            </div>
-                        </div>
                     </div>
                 )}
             </fieldset>
