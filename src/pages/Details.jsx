@@ -465,68 +465,68 @@ const Details = () => {
                         <div className="grid grid-cols-1 gap-3 text-sm text-gray-700">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col">
-                                    <span className="text-xs text-gray-500 uppercase">Título</span>
-                                    <span className="font-medium text-gray-900 truncate">{departamento.titulo}</span>
+                                    <span className="text-sm font-semibold text-gray-700">Titulo</span>
+                                    <span className="text-gray-900 truncate">{departamento.titulo}</span>
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-xs text-gray-500 uppercase">Precio</span>
-                                    <span className="font-semibold text-gray-900">$ {departamento.precioMensual}</span>
+                                    <span className="text-sm font-semibold text-gray-700">Precio</span>
+                                    <span className="text-gray-900">$ {departamento.precioMensual}</span>
                                 </div>
                             </div>
 
                             <div>
-                                <span className="text-xs text-gray-500 uppercase">Descripción</span>
-                                <p className="text-sm text-gray-700 line-clamp-3 mt-1">{departamento.descripcion}</p>
+                                <span className="text-sm font-semibold text-gray-700">Descripcion</span>
+                                <p className="text-gray-700 line-clamp-3 mt-1">{departamento.descripcion}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Dirección</span>
+                                    <span className="text-sm font-semibold text-gray-700">Direccion</span>
                                     <p className="text-gray-900 truncate">{departamento.direccion}</p>
                                 </div>
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Referencia</span>
+                                    <span className="text-sm font-semibold text-gray-700">Referencia</span>
                                     <p className="text-gray-900">{departamento.referencia || "-"}</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Habitaciones</span>
+                                    <span className="text-sm font-semibold text-gray-700">Habitaciones</span>
                                     <p className="text-gray-900">{departamento.numeroHabitaciones}</p>
                                 </div>
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Baños</span>
+                                    <span className="text-sm font-semibold text-gray-700">Banos</span>
                                     <p className="text-gray-900">{departamento.numeroBanos}</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Parqueadero</span>
+                                    <span className="text-sm font-semibold text-gray-700">Parqueadero</span>
                                     <p className="text-gray-900">{departamento.parqueadero ? "Sí" : "No"}</p>
                                 </div>
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Mascotas</span>
+                                    <span className="text-sm font-semibold text-gray-700">Mascotas</span>
                                     <p className="text-gray-900">{departamento.mascotas ? "Sí" : "No"}</p>
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {(((departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' && Number(departamento.alicoutaMonto) > 0) || departamento.alicuota)) && (
                                     <div>
-                                        <span className="text-xs text-gray-500 uppercase">Alícuota</span>
+                                        <span className="text-sm font-semibold text-gray-700">Alicuota</span>
                                         <p className="text-gray-900">{(departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' && Number(departamento.alicoutaMonto) > 0) ? `$ ${departamento.alicoutaMonto}` : (departamento.alicuota ? 'Sí' : 'No aplica')}</p>
                                     </div>
                                 )}
 
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Guardianía</span>
+                                    <span className="text-sm font-semibold text-gray-700">Guardiania</span>
                                     <p className="text-gray-900">{departamento.guardiania ? "Sí" : "No"}</p>
                                 </div>
 
                                 {departamento.parqueadero && (
                                     <div>
-                                        <span className="text-xs text-gray-500 uppercase">Nº parqueaderos</span>
+                                        <span className="text-sm font-semibold text-gray-700">Numero de parqueaderos</span>
                                         <p className="text-gray-900">{departamento.numParqueaderos != null ? departamento.numParqueaderos : '1'}</p>
                                     </div>
                                 )}
@@ -557,15 +557,15 @@ const Details = () => {
                             <h3 className="text-lg font-semibold text-gray-800 mb-3">Información del propietario</h3>
                             <div className="grid grid-cols-1 gap-2 text-sm text-gray-700">
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Nombre</span>
-                                    <p className="text-gray-900 font-medium">{propietario.nombre} {propietario.apellido}</p>
+                                    <span className="text-sm font-semibold text-gray-700">Nombre</span>
+                                    <p className="text-gray-900">{propietario.nombre} {propietario.apellido}</p>
                                 </div>
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Correo</span>
+                                    <span className="text-sm font-semibold text-gray-700">Correo</span>
                                     <p className="text-gray-900">{propietario.email}</p>
                                 </div>
                                 <div>
-                                    <span className="text-xs text-gray-500 uppercase">Teléfono</span>
+                                    <span className="text-sm font-semibold text-gray-700">Telefono</span>
                                     <p className="text-gray-900">{propietario.celular || "No disponible"}</p>
                                 </div>
                             </div>
