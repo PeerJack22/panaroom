@@ -709,7 +709,7 @@ const Details = () => {
                     <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4">
                         <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
                             <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                                {modoComentario === "terminar" ? "Comentario antes de terminar el contrato" : "Queja o sugerencia"}
+                                {modoComentario === "terminar" ? "Escribe tu comentario" : "Queja o sugerencia"}
                             </h3>
                             <p className="text-gray-600 leading-relaxed mb-4">
                                 {modoComentario === "terminar"
@@ -782,7 +782,7 @@ const Details = () => {
                                         Descripción
                                     </label>
                                     <textarea
-                                        placeholder={modoComentario === "terminar" ? "Escribe tu evaluación de la residencia..." : "Cuéntanos tu queja o sugerencia..."}
+                                        placeholder={modoComentario === "terminar" ? "Cuéntanos tu experiencia..." : "Cuéntanos tu queja o sugerencia..."}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 resize-none"
                                         rows="4"
                                         {...register("descripcion", { 
