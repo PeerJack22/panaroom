@@ -992,7 +992,7 @@ export const Home = () => {
                                 <img
                                     src="/images/chico_laptop.webp"
                                     alt="Estudiante usando una laptop"
-                                    className="w-full max-w-xl rounded-2xl object-cover shadow-sm"
+                                    className="w-full max-w-md rounded-2xl object-cover shadow-sm"
                                 />
                             </div>
                         </div>
