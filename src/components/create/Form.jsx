@@ -137,6 +137,7 @@ export const Form = () => {
                         const existe = lista.some((d) => String(d?.titulo || "").trim().toLowerCase() === titulo.toLowerCase());
                         if (existe) {
                             setError("titulo", { type: "validate", message: "Ya existe una residencia con ese título" });
+                            toast.warn("Ya existe una residencia con ese título.");
                             return;
                         }
                     } catch (err) {
