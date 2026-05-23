@@ -28,7 +28,7 @@ export const Register = () => {
             <div className="w-full sm:w-1/2 sm:h-screen flex justify-center items-center px-6 md:px-8 py-6 md:py-8 bg-white">
                 <div className="w-full max-w-md">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center sm:text-left">
-                        Registro estudiante
+                        Formulario de Registro
                     </h1>
                     <p className="text-gray-600 text-sm text-center sm:text-left mb-5">
                         Crea tu cuenta de estudiante y confirma tu correo para iniciar sesión

@@ -109,7 +109,7 @@ export const PublicarResidencias = () => {
     return (
         <div className="flex flex-col sm:flex-row h-screen bg-white" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             {/* Imagen lateral */}
-            <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
+            <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block relative">
                 <img
                     src="/images/quito.webp"
                     alt="Quito"
@@ -118,6 +118,19 @@ export const PublicarResidencias = () => {
                     loading="eager"
                     decoding="async"
                 />
+
+                {/* Overlay difuminado con título y tarjeta informativa */}
+                <div className="absolute inset-0 bg-black/25 backdrop-blur-sm flex flex-col justify-center items-start p-8">
+                    <h2 className="text-2xl md:text-3xl font-semibold text-white leading-tight mb-4">
+                        Crea tu cuenta de arrendatario para empezar a publicar residencias
+                    </h2>
+
+                    <div className="bg-white/90 rounded-xl p-4 max-w-sm shadow-lg">
+                        <p className="text-sm text-gray-800 leading-relaxed">
+                            Registra tus datos como arrendatario. Tras completar el registro, recibirás en tu correo electrónico el usuario y la contraseña para acceder. Una vez activada tu cuenta podrás publicar y gestionar tus residencias de forma segura y profesional.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* Contenedor de formulario */}
