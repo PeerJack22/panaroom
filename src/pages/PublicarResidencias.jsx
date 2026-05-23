@@ -107,118 +107,131 @@ export const PublicarResidencias = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+        <div className="flex flex-col sm:flex-row h-screen bg-white" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            {/* Imagen lateral */}
+            <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block">
+                <img
+                    src="/images/quito.webp"
+                    alt="Quito"
+                    className="w-full h-full object-cover object-center"
+                    fetchPriority="high"
+                    loading="eager"
+                    decoding="async"
+                />
+            </div>
 
-            <main className="px-6 py-16">
-                <div className="max-w-7xl mx-auto mb-6">
-                    <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Regresar</Link>
+            {/* Contenedor de formulario */}
+            <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center px-6">
+                <div className="md:w-4/5 sm:w-full">
+                    <h1 className="text-3xl font-bold mb-2 text-center uppercase text-blue-800">
+                        Publicar residencias
+                    </h1>
+                    <small className="text-gray-500 block my-4 text-sm text-center">Llena tu solicitud</small>
+
+                    <form onSubmit={enviarSolicitudArrendatario}>
+                        <div className="mb-4">
+                            <input
+                                type="text"
+                                name="nombre"
+                                value={datosSolicitud.nombre}
+                                onChange={manejarCambioSolicitud}
+                                placeholder="Nombre"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <input
+                                type="text"
+                                name="apellido"
+                                value={datosSolicitud.apellido}
+                                onChange={manejarCambioSolicitud}
+                                placeholder="Apellido"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <input
+                                type="text"
+                                name="direccion"
+                                value={datosSolicitud.direccion}
+                                onChange={manejarCambioSolicitud}
+                                placeholder="Dirección"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <input
+                                type="tel"
+                                name="celular"
+                                value={datosSolicitud.celular}
+                                onChange={manejarCambioSolicitud}
+                                placeholder="Celular"
+                                inputMode="numeric"
+                                pattern="[0-9]{7,15}"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <input
+                                type="email"
+                                name="email"
+                                value={datosSolicitud.email}
+                                onChange={manejarCambioSolicitud}
+                                placeholder="Correo"
+                                pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="mb-2 block text-sm font-semibold text-gray-700">Documentos de identidad</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={manejarCambioDocumentos}
+                                className="w-full rounded-lg border border-blue-200 bg-white text-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                            />
+                            {documentosArrendatario.length > 0 && (
+                                <p className="mt-1 text-xs text-green-600 font-semibold">✓ {documentosArrendatario.length} archivo(s) seleccionado(s)</p>
+                            )}
+                        </div>
+
+                        <div className="mb-6">
+                            <button
+                                type="submit"
+                                disabled={enviandoSolicitud}
+                                className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
+                            >
+                                {enviandoSolicitud ? 'Enviando...' : 'Enviar solicitud'}
+                            </button>
+                        </div>
+
+                        {estadoSolicitud.mensaje && (
+                            <div className={`p-3 rounded-lg text-sm font-semibold ${
+                                estadoSolicitud.tipo === "ok"
+                                    ? "bg-green-50 text-green-700 border border-green-200"
+                                    : "bg-red-50 text-red-700 border border-red-200"
+                            }`}>
+                                {estadoSolicitud.mensaje}
+                            </div>
+                        )}
+
+                        <div className="mt-4 border-t border-gray-200 pt-4 text-sm flex justify-center items-center">
+                            <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Regresar</Link>
+                        </div>
+                    </form>
                 </div>
-                <section className="max-w-7xl mx-auto rounded-3xl border border-blue-100 bg-white shadow-sm p-6 md:p-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div className="order-1 md:order-1">
-                            <img src="/images/quito.webp" alt="Quito" className="w-full h-80 md:h-[420px] object-cover rounded-2xl shadow-md" />
-                        </div>
-
-                        <div className="order-2 md:order-2 max-w-md mx-auto">
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                                ¿Quieres publicar tus residencias?
-                            </h1>
-                            <p className="text-gray-600 text-lg mb-6 leading-relaxed">
-                                Llena tu solicitud y únete a nuestra comunidad de propietarios confiables.
-                            </p>
-
-                            <form onSubmit={enviarSolicitudArrendatario} className="grid grid-cols-1 gap-3">
-                                <input
-                                    type="text"
-                                    name="nombre"
-                                    value={datosSolicitud.nombre}
-                                    onChange={manejarCambioSolicitud}
-                                    placeholder="Nombre"
-                                    className="w-full rounded-lg border border-blue-200 bg-blue-50 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    name="apellido"
-                                    value={datosSolicitud.apellido}
-                                    onChange={manejarCambioSolicitud}
-                                    placeholder="Apellido"
-                                    className="w-full rounded-lg border border-blue-200 bg-blue-50 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    name="direccion"
-                                    value={datosSolicitud.direccion}
-                                    onChange={manejarCambioSolicitud}
-                                    placeholder="Dirección"
-                                    className="w-full rounded-lg border border-blue-200 bg-blue-50 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
-                                    required
-                                />
-                                <input
-                                    type="tel"
-                                    name="celular"
-                                    value={datosSolicitud.celular}
-                                    onChange={manejarCambioSolicitud}
-                                    placeholder="Celular"
-                                    inputMode="numeric"
-                                    pattern="[0-9]{7,15}"
-                                    className="w-full rounded-lg border border-blue-200 bg-blue-50 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
-                                    required
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={datosSolicitud.email}
-                                    onChange={manejarCambioSolicitud}
-                                    placeholder="Correo"
-                                    pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
-                                    className="w-full rounded-lg border border-blue-200 bg-blue-50 text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
-                                    required
-                                />
-
-                                <div>
-                                    <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Documentos de identidad
-                                    </label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={manejarCambioDocumentos}
-                                        className="w-full rounded-lg border border-blue-200 bg-blue-50 text-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
-                                    />
-                                    {documentosArrendatario.length > 0 && (
-                                        <p className="mt-1 text-xs text-green-600 font-semibold">
-                                            ✓ {documentosArrendatario.length} archivo(s) seleccionado(s)
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="flex justify-end">
-                                    <button
-                                        type="submit"
-                                        disabled={enviandoSolicitud}
-                                        className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold px-6 py-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
-                                    >
-                                        {enviandoSolicitud ? "Enviando..." : "Enviar solicitud"}
-                                    </button>
-                                </div>
-
-                                {estadoSolicitud.mensaje && (
-                                    <div className={`p-3 rounded-lg text-sm font-semibold ${
-                                        estadoSolicitud.tipo === "ok"
-                                            ? "bg-green-50 text-green-700 border border-green-200"
-                                            : "bg-red-50 text-red-700 border border-red-200"
-                                    }`}>
-                                        {estadoSolicitud.mensaje}
-                                    </div>
-                                )}
-                            </form>
-                        </div>
-                    </div>
-                </section>
-            </main>
+            </div>
         </div>
     );
 };
