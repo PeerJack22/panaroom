@@ -120,12 +120,12 @@ export const PublicarResidencias = () => {
                 />
 
                 {/* Overlay difuminado con título y tarjeta informativa */}
-                <div className="absolute inset-0 bg-black/25 backdrop-blur-sm flex flex-col justify-center items-start p-8">
-                    <h2 className="text-2xl md:text-3xl font-semibold text-white leading-tight mb-4">
+                <div className="absolute inset-0 bg-black/25 backdrop-blur-sm flex flex-col justify-center items-center p-8 text-center">
+                    <h2 className="text-2xl md:text-3xl font-semibold text-white leading-tight mb-4 max-w-lg">
                         Crea tu cuenta de arrendatario para empezar a publicar residencias
                     </h2>
 
-                    <div className="bg-white/90 rounded-xl p-4 max-w-sm shadow-lg">
+                    <div className="bg-white/90 rounded-xl p-4 max-w-sm shadow-lg mx-auto">
                         <p className="text-sm text-gray-800 leading-relaxed">
                             Registra tus datos como arrendatario. Tras completar el registro, recibirás en tu correo electrónico el usuario y la contraseña para acceder. Una vez activada tu cuenta podrás publicar y gestionar tus residencias de forma segura y profesional.
                         </p>
@@ -137,9 +137,9 @@ export const PublicarResidencias = () => {
             <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center px-6">
                 <div className="md:w-4/5 sm:w-full">
                     <h1 className="text-3xl font-bold mb-2 text-center uppercase text-blue-800">
-                        Publicar residencias
+                        Formulario de registro
                     </h1>
-                    <small className="text-gray-500 block my-4 text-sm text-center">Llena tu solicitud</small>
+                    <small className="text-gray-500 block my-4 text-sm text-center">Llena con tus datos</small>
 
                     <form onSubmit={enviarSolicitudArrendatario}>
                         <div className="mb-4">
