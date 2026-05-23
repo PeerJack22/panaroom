@@ -801,7 +801,7 @@ const Details = () => {
                                         disabled={enviandoQueja || (modoComentario === "terminar" && calificacion === 0)}
                                         className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-full font-medium transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                                     >
-                                        {enviandoQueja ? 'Enviando...' : (modoComentario === "terminar" ? 'Enviar evaluación y terminar contrato' : 'Enviar queja/sugerencia')}
+                                        {enviandoQueja ? 'Enviando...' : (modoComentario === "terminar" ? 'Enviar evaluación y terminar contrato' : 'Enviar')}
                                     </button>
                                     <button
                                         type="button"
