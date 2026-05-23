@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { confirm } from "../../utils/swal";
 
 const Table = () => {
     const { fetchDataBackend } = useFetch();
@@ -86,9 +87,13 @@ const Table = () => {
         
         // Pedir confirmación si va a desactivar
         if (!nuevoEstado) {
-            const confirmar = window.confirm(
-                `¿Estás seguro de que deseas desactivar "${dep.titulo}"? Los estudiantes no podrán verlo.`
-            );
+            const confirmar = await confirm({
+                title: 'Desactivar departamento',
+                text: `¿Estás seguro de que deseas desactivar "${dep.titulo}"? Los estudiantes no podrán verlo.`,
+                confirmButtonText: 'Sí, desactivar',
+                cancelButtonText: 'Cancelar',
+                icon: 'warning',
+            });
             if (!confirmar) return;
         }
 
@@ -151,9 +156,13 @@ const Table = () => {
             return;
         }
 
-        const confirmar = window.confirm(
-            `¿Estás seguro de eliminar "${dep.titulo}"? Esta acción no se puede deshacer.`
-        );
+        const confirmar = await confirm({
+            title: 'Eliminar departamento',
+            text: `¿Estás seguro de eliminar "${dep.titulo}"? Esta acción no se puede deshacer.`,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            icon: 'warning',
+        });
         if (!confirmar) return;
 
         const loadingToast = toast.loading("Eliminando departamento...");

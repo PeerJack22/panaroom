@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
 import storeAuth from "../context/storeAuth";
+import { confirm } from "../utils/swal";
 import { CircleMarker, MapContainer, TileLayer } from "react-leaflet";
 import { createPortal } from "react-dom";
 
@@ -136,10 +137,14 @@ const Details = () => {
         reset();
     };
 
-    const abrirModalTerminarContrato = () => {
-        const deseaContinuar = window.confirm(
-            "¿Estás seguro de terminar el contrato? Antes de continuar debes escribir un comentario."
-        );
+    const abrirModalTerminarContrato = async () => {
+        const deseaContinuar = await confirm({
+            title: 'Terminar contrato',
+            text: '¿Estás seguro de terminar el contrato? Antes de continuar debes escribir un comentario.',
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar',
+            icon: 'warning',
+        });
 
         if (!deseaContinuar) return;
 

@@ -5,6 +5,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import storeAuth from "../context/storeAuth";
+import { confirm } from "../utils/swal";
 import { MdChatBubble, MdSend } from 'react-icons/md';
 
 const Chat = () => {
@@ -507,9 +508,13 @@ const Chat = () => {
       return;
     }
 
-    const confirmar = window.confirm(
-      `¿Deseas asignar el departamento a ${contactoActivo?.nombre || 'este estudiante'}?`
-    );
+    const confirmar = await confirm({
+      title: 'Asignar departamento',
+      text: `¿Deseas asignar el departamento a ${contactoActivo?.nombre || 'este estudiante'}?`,
+      confirmButtonText: 'Sí, asignar',
+      cancelButtonText: 'Cancelar',
+      icon: 'question',
+    });
     if (!confirmar) return;
 
     setAsignandoDepartamento(true);

@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { confirm } from "../utils/swal";
 
 const Users = () => {
     const navigate = useNavigate();
@@ -215,9 +216,13 @@ const Users = () => {
             return;
         }
 
-        const confirmar = window.confirm(
-            `¿${estaActivo ? "Desactivar" : "Activar"} la cuenta de ${usuario?.nombre || ""} ${usuario?.apellido || ""}?`
-        );
+        const confirmar = await confirm({
+            title: `${estaActivo ? 'Desactivar' : 'Activar'} cuenta`,
+            text: `¿${estaActivo ? 'Desactivar' : 'Activar'} la cuenta de ${usuario?.nombre || ''} ${usuario?.apellido || ''}?`,
+            confirmButtonText: estaActivo ? 'Sí, desactivar' : 'Sí, activar',
+            cancelButtonText: 'Cancelar',
+            icon: 'warning',
+        });
         if (!confirmar) return;
 
         setConfirmingArrendatarioId(usuarioId);
