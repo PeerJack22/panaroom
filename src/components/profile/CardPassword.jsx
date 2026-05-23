@@ -1,8 +1,12 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import storeProfile from "../../context/storeProfile";
 import storeAuth from "../../context/storeAuth";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 const CardPassword = () => {
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { user, updatePasswordProfile } = storeProfile();
     const { clearToken } = storeAuth();
@@ -25,12 +29,22 @@ const CardPassword = () => {
                         <label className="mb-2 block text-sm font-semibold text-slate-700">
                             Contraseña actual
                         </label>
-                        <input
-                            type="password"
-                            placeholder="Ingresa tu contraseña actual"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("passwordactual", { required: "La contraseña actual es obligatoria" })}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showCurrentPassword ? "text" : "password"}
+                                placeholder="Ingresa tu contraseña actual"
+                                className="block w-full rounded-xl border border-slate-300 px-4 py-3 pr-10 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                {...register("passwordactual", { required: "La contraseña actual es obligatoria" })}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword((prev) => !prev)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-blue-600 transition-colors"
+                                aria-label={showCurrentPassword ? "Ocultar contraseña actual" : "Mostrar contraseña actual"}
+                            >
+                                {showCurrentPassword ? <FaRegEyeSlash className="w-5 h-5" /> : <FaRegEye className="w-5 h-5" />}
+                            </button>
+                        </div>
                         {errors.passwordactual && <p className="mt-1 text-xs text-red-600">{errors.passwordactual.message}</p>}
                     </div>
 
@@ -38,12 +52,22 @@ const CardPassword = () => {
                         <label className="mb-2 block text-sm font-semibold text-slate-700">
                             Nueva contraseña
                         </label>
-                        <input
-                            type="password"
-                            placeholder="Ingresa la nueva contraseña"
-                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                            {...register("passwordnuevo", { required: "La nueva contraseña es obligatoria" })}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showNewPassword ? "text" : "password"}
+                                placeholder="Ingresa la nueva contraseña"
+                                className="block w-full rounded-xl border border-slate-300 px-4 py-3 pr-10 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                {...register("passwordnuevo", { required: "La nueva contraseña es obligatoria" })}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowNewPassword((prev) => !prev)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-blue-600 transition-colors"
+                                aria-label={showNewPassword ? "Ocultar nueva contraseña" : "Mostrar nueva contraseña"}
+                            >
+                                {showNewPassword ? <FaRegEyeSlash className="w-5 h-5" /> : <FaRegEye className="w-5 h-5" />}
+                            </button>
+                        </div>
                         {errors.passwordnuevo && <p className="mt-1 text-xs text-red-600">{errors.passwordnuevo.message}</p>}
                     </div>
 
