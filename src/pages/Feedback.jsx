@@ -557,74 +557,103 @@ const Feedback = () => {
                     ) : !itemsFiltrados.length ? (
                         <p className="text-slate-600">No existen registros para mostrar.</p>
                     ) : (
-                        <div className="space-y-3 max-h-[56rem] overflow-y-auto pr-2">
+                        <div className="grid grid-cols-1 gap-4 max-h-[56rem] overflow-y-auto pr-2">
                             {itemsFiltrados.map((item) => (
-                                <article key={item.id} className="border border-slate-100 rounded-xl p-4 bg-slate-50">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <p className="text-sm text-slate-700 mt-1 whitespace-pre-wrap">{item.mensaje}</p>
-                                        </div>
+                                <article key={item.id} className="rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg overflow-hidden">
+                                    <div className="flex flex-col gap-3 p-4 sm:p-5">
+                                        <div className="flex flex-wrap items-start justify-between gap-3">
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                                                        item.tipo === 'queja'
+                                                            ? 'bg-red-50 text-red-700 border border-red-200'
+                                                            : item.tipo === 'sugerencia'
+                                                                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                                                : 'bg-slate-100 text-slate-700 border border-slate-200'
+                                                    }`}>
+                                                        {item.tipo === 'queja' ? 'Queja' : item.tipo === 'sugerencia' ? 'Sugerencia' : 'Comentario'}
+                                                    </span>
 
-                                        <div className="ml-3 flex-shrink-0 flex flex-col items-end gap-2">
-                                            {item.manejaEstado && (
-                                                <span
-                                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                                        item.estado
-                                                            ? "bg-green-100 text-green-800"
-                                                            : "bg-yellow-100 text-yellow-800"
-                                                    }`}
-                                                >
-                                                    {item.estado ? "Revisado" : "Pendiente"}
-                                                </span>
-                                            )}
-                                            {(isAdmin || (isArrendatario && item.tipo === 'sugerencia')) && item.manejaEstado && !item.tieneRespuesta && (
-                                                <button
-                                                    onClick={() => abrirModalComentario(item)}
-                                                    className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                                                >
-                                                    Responder
-                                                </button>
-                                            )}
-                                            {item.tieneRespuesta && (
-                                                <span className="text-xs text-green-700 font-semibold">
-                                                    ✓ Respondido
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <p className="text-xs text-slate-500 mt-2">
-                                        {isAdmin && (
-                                            <>
-                                                Estudiante: {item.estudiante} • {" "}
-                                            </>
-                                        )}
-                                        Departamento: {" "}
-                                        {item.departamentoId ? (
-                                            <Link
-                                                to={`/dashboard/visualizar/${item.departamentoId}`}
-                                                state={{ from: FEEDBACK_ROUTE }}
-                                                className="text-blue-600 hover:text-blue-700 underline"
-                                            >
-                                                {item.departamento}
-                                            </Link>
-                                        ) : (
-                                            item.departamento
-                                        )}
-                                        {" "}• Fecha: {formatDate(item.fecha)}
-                                    </p>
-
-                                    {item.comentariosRespuesta && item.comentariosRespuesta.length > 0 && (
-                                        <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
-                                            <p className="text-xs font-semibold text-slate-700">Respuestas:</p>
-                                            {item.comentariosRespuesta.map((comentario, idx) => (
-                                                <div key={idx} className="bg-white rounded-md p-3 ml-2 border-l-2 border-green-500">
-                                                    <p className="text-sm text-slate-800">{comentario?.texto || comentario?.descripcion || comentario?.comentario || "Sin contenido"}</p>
-                                                    <p className="text-xs text-slate-500 mt-1">{comentario?.autor || "Admin"}</p>
+                                                    {item.manejaEstado && (
+                                                        <span
+                                                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                                                                item.estado
+                                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                                            }`}
+                                                        >
+                                                            {item.estado ? 'Revisado' : 'Pendiente'}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                            ))}
+
+                                                <div className="text-sm text-slate-600">
+                                                    {isAdmin && (
+                                                        <div>
+                                                            <span className="font-semibold text-slate-800">Estudiante:</span> {item.estudiante}
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <span className="font-semibold text-slate-800">Departamento:</span>{' '}
+                                                        {item.departamentoId ? (
+                                                            <Link
+                                                                to={`/dashboard/visualizar/${item.departamentoId}`}
+                                                                state={{ from: FEEDBACK_ROUTE }}
+                                                                className="text-blue-600 hover:text-blue-700 underline"
+                                                            >
+                                                                {item.departamento}
+                                                            </Link>
+                                                        ) : (
+                                                            item.departamento
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-semibold text-slate-800">Fecha:</span> {formatDate(item.fecha)}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col items-end gap-2">
+                                                {(isAdmin || (isArrendatario && item.tipo === 'sugerencia')) && item.manejaEstado && !item.tieneRespuesta && (
+                                                    <button
+                                                        onClick={() => abrirModalComentario(item)}
+                                                        className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm"
+                                                    >
+                                                        Responder
+                                                    </button>
+                                                )}
+                                                {item.tieneRespuesta && (
+                                                    <span className="text-xs text-emerald-700 font-semibold">
+                                                        ✓ Respondido
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
+
+                                        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+                                            <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">
+                                                {item.mensaje}
+                                            </p>
+                                        </div>
+
+                                        {item.comentariosRespuesta && item.comentariosRespuesta.length > 0 && (
+                                            <div className="space-y-3 pt-1">
+                                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Respuestas</p>
+                                                <div className="space-y-2">
+                                                    {item.comentariosRespuesta.map((comentario, idx) => (
+                                                        <div key={idx} className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
+                                                            <p className="text-sm text-slate-800">
+                                                                {comentario?.texto || comentario?.descripcion || comentario?.comentario || "Sin contenido"}
+                                                            </p>
+                                                            <p className="mt-1 text-xs font-medium text-emerald-700">
+                                                                {comentario?.autor || "Admin"}
+                                                            </p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </article>
                             ))}
                         </div>
