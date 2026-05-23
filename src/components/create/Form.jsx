@@ -58,6 +58,7 @@ export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedImages, setSelectedImages] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
     const totalSteps = 4;
     const {
         register,
@@ -84,7 +85,14 @@ export const Form = () => {
         }
     }, [setValue, tieneParqueadero]);
 
-    // Nota: usamos `selectedImages` directamente; no necesitamos `imagePreviews`.
+    useEffect(() => {
+        const previews = selectedImages.map((file) => URL.createObjectURL(file));
+        setImagePreviews(previews);
+
+        return () => {
+            previews.forEach((preview) => URL.revokeObjectURL(preview));
+        };
+    }, [selectedImages]);
 
     useEffect(() => {
         const coords = extractMarkerCoordinates(currentMapUrl);
@@ -540,35 +548,70 @@ export const Form = () => {
 
                 {step === 4 && (
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                                <div className="prose">
-                                    <h2>{values.titulo || "Residencia sin título"}</h2>
-                                    <p>{values.descripcion || "Sin descripción registrada."}</p>
-                                    <ul>
-                                        <li><strong>Precio:</strong> $ {values.precioMensual || "0"}</li>
-                                        <li><strong>Habitaciones:</strong> {values.numeroHabitaciones || "-"}</li>
-                                        <li><strong>Baños:</strong> {values.numeroBanos || "-"}</li>
-                                        <li><strong>Parqueadero:</strong> {values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"} {values.parqueadero === "true" && `(Número: ${values.numParqueaderos || '-'})`}</li>
-                                        <li><strong>Servicios:</strong> {Array.isArray(values.servicios) && values.servicios.length ? values.servicios.join(', ') : 'Sin servicios seleccionados'}</li>
-                                        <li><strong>Categoría:</strong> {values.categoria || '-'}</li>
-                                        <li><strong>Dirección:</strong> {values.direccion || '-'}</li>
-                                        <li><strong>Referencia:</strong> {values.referencia || '-'}</li>
-                                        <li><strong>Imágenes seleccionadas:</strong> {selectedImages.length}</li>
-                                    </ul>
-                                    <div style={{ marginTop: 12 }}>
-                                        <p><strong>Mapa:</strong></p>
-                                        {values.urlMapa ? (
-                                            <div style={{ marginTop: 8 }}>
-                                                <iframe
-                                                    title="Mapa de la residencia"
-                                                    src={values.urlMapa}
-                                                    style={{ width: '100%', height: 280, border: 0 }}
-                                                    loading="lazy"
-                                                    referrerPolicy="no-referrer-when-downgrade"
-                                                />
+                                <div className="grid gap-6 md:grid-cols-2">
+                                    <div>
+                                        <h2 className="text-xl font-bold mb-2">{values.titulo || "Residencia sin título"}</h2>
+                                        <p className="text-sm text-slate-700 mb-4">{values.descripcion || "Sin descripción registrada."}</p>
+
+                                        <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
+                                            <p><span className="font-semibold">Precio:</span> ${values.precioMensual || "0"}</p>
+                                            <p><span className="font-semibold">Habitaciones:</span> {values.numeroHabitaciones || "-"}</p>
+                                            <p><span className="font-semibold">Baños:</span> {values.numeroBanos || "-"}</p>
+                                            <p><span className="font-semibold">Categoría:</span> {values.categoria || '-'}</p>
+                                            <p><span className="font-semibold">Parqueadero:</span> {values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"}</p>
+                                            {values.parqueadero === "true" && <p><span className="font-semibold"># Parqueaderos:</span> {values.numParqueaderos || '-'}</p>}
+                                            <p><span className="font-semibold">Bodega:</span> {values.bodega === "true" ? "Sí" : values.bodega === "false" ? "No" : '-'}</p>
+                                            <p><span className="font-semibold">Guardianía:</span> {values.guardiania === "true" ? "Sí" : values.guardiania === "false" ? "No" : '-'}</p>
+                                            <p><span className="font-semibold">Alícuota:</span> {values.alicuota === "true" ? `Sí${values.alicuota === "true" && values.alicoutaMonto ? ` (Monto: ${values.alicoutaMonto})` : ''}` : values.alicuota === "false" ? 'No' : '-'}</p>
+                                            <p><span className="font-semibold">Mascotas:</span> {values.mascotas === "true" ? "Sí" : values.mascotas === "false" ? "No" : '-'}</p>
+                                            <div className="col-span-2">
+                                                <p><span className="font-semibold">Servicios:</span> {Array.isArray(values.servicios) && values.servicios.length ? values.servicios.join(', ') : 'Sin servicios seleccionados'}</p>
                                             </div>
-                                        ) : (
-                                            <p>Sin ubicación seleccionada</p>
-                                        )}
+                                            <div className="col-span-2">
+                                                <p><span className="font-semibold">Dirección:</span> {values.direccion || '-'}</p>
+                                                <p><span className="font-semibold">Referencia:</span> {values.referencia || '-'}</p>
+                                                <p><span className="font-semibold">Ciudad:</span> {values.ciudad || '-'}</p>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <p><span className="font-semibold">Imágenes seleccionadas:</span> {selectedImages.length}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex gap-4 items-start">
+                                            <div className="flex-1">
+                                                {values.urlMapa ? (
+                                                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                                                        <iframe
+                                                            title="Mapa de la residencia"
+                                                            src={values.urlMapa}
+                                                            className="h-40 w-full"
+                                                            loading="lazy"
+                                                            referrerPolicy="no-referrer-when-downgrade"
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="h-40 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-100">
+                                                        <span className="text-sm text-slate-600">Sin ubicación seleccionada</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="w-28">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {imagePreviews.length ? (
+                                                        imagePreviews.slice(0, 4).map((src, idx) => (
+                                                            <div key={idx} className="h-16 w-16 overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+                                                                <img src={src} alt={`preview-${idx}`} className="h-full w-full object-cover" />
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="h-16 w-16 flex items-center justify-center rounded-md border border-slate-200 bg-slate-100 text-xs text-slate-500">No images</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                     </div>

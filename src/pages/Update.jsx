@@ -104,6 +104,75 @@ const Update = () => {
     const tieneParqueadero = values.parqueadero === "true";
     const currentMapUrl = values.urlMapa;
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const fieldLabels = {
+        titulo: 'Título',
+        descripcion: 'Descripción',
+        precioMensual: 'Precio mensual',
+        numeroHabitaciones: 'Número de habitaciones',
+        numeroBanos: 'Número de baños',
+        serviciosIncluidos: 'Servicios incluidos',
+        alicuota: 'Alícuota',
+        alicoutaMonto: 'Monto alícuota',
+        mascotas: 'Mascotas',
+        urlMapa: 'Ubicación (mapa)',
+        referencia: 'Referencia',
+        bodega: 'Bodega',
+        parqueadero: 'Parqueadero',
+        numParqueaderos: 'Número de parqueaderos',
+        guardiania: 'Guardianía',
+    };
+
+    const cambios = useMemo(() => {
+        if (!departamento) return {};
+        const fields = [
+            'titulo','descripcion','precioMensual','numeroHabitaciones','numeroBanos','serviciosIncluidos',
+            'alicuota','alicoutaMonto','mascotas','urlMapa','referencia','bodega','parqueadero','numParqueaderos','guardiania'
+        ];
+
+        const normalize = (key, val) => {
+            if (key === 'precioMensual' || key === 'numeroHabitaciones' || key === 'numeroBanos' || key === 'alicoutaMonto' || key === 'numParqueaderos') {
+                return Number(val || 0);
+            }
+            if (key === 'alicuota' || key === 'mascotas' || key === 'bodega' || key === 'parqueadero' || key === 'guardiania') {
+                // compare as booleans
+                return String(val) === 'true';
+            }
+            if (key === 'serviciosIncluidos') {
+                const arr = Array.isArray(val) ? val.map(String) : (val ? [String(val)] : []);
+                return arr.map(s=>s.trim()).filter(Boolean).sort().join('|');
+            }
+            return String(val || '').trim();
+        };
+
+        const result = {};
+        fields.forEach((f) => {
+            const oldRaw = departamento?.[f];
+            const newRaw = values?.[f];
+            const oldN = normalize(f, oldRaw);
+            const newN = normalize(f, newRaw);
+            if (oldN !== newN) {
+                // human-friendly display
+                let displayOld;
+                let displayNew;
+                if (f === 'serviciosIncluidos') {
+                    displayOld = Array.isArray(oldRaw) ? oldRaw.join(', ') : (oldRaw || '-');
+                    displayNew = Array.isArray(newRaw) ? newRaw.join(', ') : (newRaw || '-');
+                } else if (['alicuota','mascotas','bodega','parqueadero','guardiania'].includes(f)) {
+                    displayOld = oldRaw ? 'Sí' : 'No';
+                    displayNew = String(newRaw) === 'true' || newRaw === true ? 'Sí' : 'No';
+                } else if (['precioMensual','numeroHabitaciones','numeroBanos','alicoutaMonto','numParqueaderos'].includes(f)) {
+                    displayOld = (oldRaw !== undefined && oldRaw !== null && oldRaw !== '') ? String(oldRaw) : '-';
+                    displayNew = (newRaw !== undefined && newRaw !== null && newRaw !== '') ? String(newRaw) : '-';
+                } else {
+                    displayOld = String(oldRaw ?? '-') || '-';
+                    displayNew = String(newRaw ?? '-') || '-';
+                }
+
+                result[f] = { before: displayOld, after: displayNew, label: fieldLabels[f] || f };
+            }
+        });
+        return result;
+    }, [departamento, values]);
     const totalSteps = 4;
     const getFieldsForStep = (currentStep) => {
         if (currentStep === 1) {
@@ -591,34 +660,26 @@ const Update = () => {
 
                     {step === 4 && (
                         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resumen final</p>
-                                <h3 className="mt-1 text-2xl font-black text-slate-900">{values.titulo || "Departamento sin título"}</h3>
-                                <p className="mt-2 text-sm leading-6 text-slate-600 line-clamp-3">{values.descripcion || "Sin descripción registrada."}</p>
+                            <div className="md:col-span-2">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cambios detectados</p>
+                                {Object.keys(cambios).length === 0 ? (
+                                    <p className="mt-2 text-sm text-slate-600">No hay cambios para guardar.</p>
+                                ) : (
+                                    <div className="mt-3 grid gap-2">
+                                        {Object.entries(cambios).map(([key, val]) => (
+                                            <div key={key} className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 bg-white p-3">
+                                                <div className="text-sm text-slate-700">{val.label || key}</div>
+                                                <div className="text-sm text-slate-600 text-right">
+                                                    <div><span className="text-slate-400">Antes:</span> {val.before}</div>
+                                                    <div><span className="text-slate-400">Ahora:</span> {val.after}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="rounded-2xl bg-slate-900 p-4 text-white shadow-sm">
-                                <p className="text-xs uppercase tracking-wide text-slate-300">Precio mensual</p>
-                                <p className="mt-2 text-2xl font-black">$ {values.precioMensual || "0"}</p>
-                            </div>
-
-                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                <p className="text-xs uppercase tracking-wide text-slate-500">Habitaciones</p>
-                                <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroHabitaciones || "-"}</p>
-                            </div>
-
-                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                <p className="text-xs uppercase tracking-wide text-slate-500">Baños</p>
-                                <p className="mt-2 text-2xl font-black text-slate-900">{values.numeroBanos || "-"}</p>
-                            </div>
-
-                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
-                                <p className="text-xs uppercase tracking-wide text-slate-500">Parqueadero</p>
-                                <p className="mt-2 text-lg font-semibold text-slate-900">{values.parqueadero === "true" ? "Sí" : values.parqueadero === "false" ? "No" : "-"}</p>
-                                {values.parqueadero === "true" && <p className="mt-1 text-sm text-slate-600">Número: {values.numParqueaderos || "-"}</p>}
-                            </div>
-
-                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2">
+                            <div>
                                 <p className="text-xs uppercase tracking-wide text-slate-500">Mapa</p>
                                 {values.urlMapa ? (
                                     <div className="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
@@ -635,21 +696,6 @@ const Update = () => {
                                 )}
                             </div>
 
-                            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:col-span-2 xl:col-span-3">
-                                <p className="text-xs uppercase tracking-wide text-slate-500">Servicios</p>
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {Array.isArray(values.serviciosIncluidos) && values.serviciosIncluidos.length ? (
-                                        values.serviciosIncluidos.map((servicio) => (
-                                            <span key={servicio} className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
-                                                {servicio}
-                                            </span>
-                                        ))
-                                    ) : (
-                                        <span className="text-sm text-slate-500">Sin servicios seleccionados</span>
-                                    )}
-                                </div>
-                            </div>
-
                             <p className="md:col-span-2 xl:col-span-3 text-sm text-slate-500">Si todo está correcto, presiona &quot;Guardar cambios&quot;.</p>
                         </div>
                     )}
@@ -660,7 +706,7 @@ const Update = () => {
                     {step < totalSteps ? (
                         <button type="button" onClick={handleNextStep} className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-slate-100 transition-colors hover:bg-slate-700">Siguiente</button>
                     ) : (
-                        <input type="submit" value={isSubmitting ? "Guardando..." : "Guardar cambios"} disabled={isSubmitting} className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50" />
+                        <input type="submit" value={isSubmitting ? "Guardando..." : "Guardar cambios"} disabled={isSubmitting || Object.keys(cambios).length === 0} className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50" />
                     )}
                 </div>
             </form>
