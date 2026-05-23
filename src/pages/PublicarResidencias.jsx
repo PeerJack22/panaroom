@@ -141,72 +141,79 @@ export const PublicarResidencias = () => {
                     </h1>
                     <small className="text-gray-500 block my-4 text-sm text-center">Llena con tus datos</small>
 
-                    <form onSubmit={enviarSolicitudArrendatario}>
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                name="nombre"
-                                value={datosSolicitud.nombre}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Nombre"
-                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                required
-                            />
+                    <form onSubmit={enviarSolicitudArrendatario} className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
+                                <input
+                                    type="text"
+                                    name="nombre"
+                                    value={datosSolicitud.nombre}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Ingresa tu nombre"
+                                    className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Apellido</label>
+                                <input
+                                    type="text"
+                                    name="apellido"
+                                    value={datosSolicitud.apellido}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Ingresa tu apellido"
+                                    className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    required
+                                />
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Dirección</label>
+                                <input
+                                    type="text"
+                                    name="direccion"
+                                    value={datosSolicitud.direccion}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Ingresa tu dirección de domicilio"
+                                    className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Celular</label>
+                                <input
+                                    type="tel"
+                                    name="celular"
+                                    value={datosSolicitud.celular}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Ingresa tu celular"
+                                    inputMode="numeric"
+                                    pattern="[0-9]{7,15}"
+                                    className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={datosSolicitud.email}
+                                    onChange={manejarCambioSolicitud}
+                                    placeholder="Ingresa tu correo electrónico"
+                                    pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                                    className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    required
+                                />
+                            </div>
                         </div>
 
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                name="apellido"
-                                value={datosSolicitud.apellido}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Apellido"
-                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                required
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                name="direccion"
-                                value={datosSolicitud.direccion}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Dirección"
-                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                required
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <input
-                                type="tel"
-                                name="celular"
-                                value={datosSolicitud.celular}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Celular"
-                                inputMode="numeric"
-                                pattern="[0-9]{7,15}"
-                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                required
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <input
-                                type="email"
-                                name="email"
-                                value={datosSolicitud.email}
-                                onChange={manejarCambioSolicitud}
-                                placeholder="Correo"
-                                pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
-                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                required
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="mb-2 block text-sm font-semibold text-gray-700">Documentos de identidad</label>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">Documentos de identidad</label>
                             <input
                                 type="file"
                                 accept="image/*"
