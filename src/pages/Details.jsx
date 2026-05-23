@@ -727,7 +727,7 @@ const Details = () => {
 
                         <div
                             ref={comentariosScrollRef}
-                            className="flex gap-4 overflow-x-hidden overflow-y-hidden pb-2 pr-1 snap-x snap-mandatory scrollbar-none"
+                            className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 pr-1 snap-x snap-mandatory scrollbar-none scroll-smooth touch-pan-x"
                         >
                             {comentarios.length > 0 ? comentarios.map((item) => (
                                 <article
