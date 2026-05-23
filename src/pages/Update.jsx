@@ -281,9 +281,11 @@ const Update = () => {
                 numParqueaderos: departamento?.numParqueaderos ?? "0",
                 guardiania: String(departamento?.guardiania ?? false),
             });
+            // Asegurar que el campo numParqueaderos tenga el valor correcto en el formulario
+            setValue("numParqueaderos", String(departamento?.numParqueaderos ?? "0"), { shouldDirty: false, shouldValidate: true });
             setCargando(false);
         }
-    }, [departamento, fetchDataBackend, id, reset, token]);
+    }, [departamento, fetchDataBackend, id, reset, token, setValue]);
 
     useEffect(() => {
         const coords = extractMarkerCoordinates(currentMapUrl);
