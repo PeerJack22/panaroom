@@ -99,25 +99,25 @@ const Details = () => {
 
         if (direccion === "left") {
             if (contenedor.scrollLeft <= 20) {
-                contenedor.scrollTo({ left: maxScrollLeft, behavior: "smooth" });
+                contenedor.scrollTo({ left: maxScrollLeft, behavior: "auto" });
                 return;
             }
 
-            contenedor.scrollBy({
-                left: -desplazamiento,
-                behavior: "smooth",
+            contenedor.scrollTo({
+                left: Math.max(0, contenedor.scrollLeft - desplazamiento),
+                behavior: "auto",
             });
             return;
         }
 
         if (contenedor.scrollLeft + contenedor.clientWidth >= contenedor.scrollWidth - 20) {
-            contenedor.scrollTo({ left: 0, behavior: "smooth" });
+            contenedor.scrollTo({ left: 0, behavior: "auto" });
             return;
         }
 
-        contenedor.scrollBy({
-            left: desplazamiento,
-            behavior: "smooth",
+        contenedor.scrollTo({
+            left: Math.min(maxScrollLeft, contenedor.scrollLeft + desplazamiento),
+            behavior: "auto",
         });
     };
 
