@@ -128,12 +128,16 @@ const Details = () => {
             const contenedor = comentariosScrollRef.current;
             if (!contenedor) return;
 
-            if (contenedor.scrollLeft + contenedor.clientWidth >= contenedor.scrollWidth - 20) {
-                contenedor.scrollTo({ left: 0, behavior: "smooth" });
-            } else {
-                contenedor.scrollBy({ left: Math.max(280, contenedor.clientWidth * 0.78), behavior: "smooth" });
+            const nextLeft = contenedor.scrollLeft + 1;
+            const maxLeft = Math.max(0, contenedor.scrollWidth - contenedor.clientWidth);
+
+            if (nextLeft >= maxLeft) {
+                contenedor.scrollTo({ left: 0, behavior: "auto" });
+                return;
             }
-        }, 4500);
+
+            contenedor.scrollTo({ left: nextLeft, behavior: "auto" });
+        }, 18);
 
         return () => clearInterval(intervalo);
     }, [comentarios.length]);
@@ -689,12 +693,12 @@ const Details = () => {
 
                 {
                     <section className="relative bg-white/70 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm mb-6 overflow-hidden">
-                        <div className="absolute left-4 right-4 top-4 z-10 flex items-center justify-between pointer-events-none">
+                        <div className="absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-2 pointer-events-none">
                             <button
                                 type="button"
                                 onClick={() => moverComentarios("left")}
                                 disabled={comentarios.length <= 1}
-                                className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white/25 text-gray-700 backdrop-blur-md transition-all hover:bg-white/40 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
+                                className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/20 text-gray-700 backdrop-blur-md transition-all hover:bg-white/35 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
                                 aria-label="Ver comentario anterior"
                             >
                                 <span className="text-2xl leading-none">‹</span>
@@ -704,7 +708,7 @@ const Details = () => {
                                 type="button"
                                 onClick={() => moverComentarios("right")}
                                 disabled={comentarios.length <= 1}
-                                className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white/25 text-gray-700 backdrop-blur-md transition-all hover:bg-white/40 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
+                                className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/20 text-gray-700 backdrop-blur-md transition-all hover:bg-white/35 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
                                 aria-label="Ver comentario siguiente"
                             >
                                 <span className="text-2xl leading-none">›</span>
@@ -723,7 +727,7 @@ const Details = () => {
 
                         <div
                             ref={comentariosScrollRef}
-                            className="flex gap-4 overflow-x-auto scroll-smooth pb-2 pr-1 snap-x snap-mandatory"
+                            className="flex gap-4 overflow-x-hidden overflow-y-hidden pb-2 pr-1 snap-x snap-mandatory scrollbar-none"
                         >
                             {comentarios.length > 0 ? comentarios.map((item) => (
                                 <article
