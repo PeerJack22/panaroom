@@ -557,13 +557,13 @@ const Feedback = () => {
                     ) : !itemsFiltrados.length ? (
                         <p className="text-slate-600">No existen registros para mostrar.</p>
                     ) : (
-                        <div className="grid grid-cols-1 gap-4 max-h-[56rem] overflow-y-auto pr-2">
+                        <div className="grid grid-cols-1 gap-4 max-h-[56rem] overflow-y-auto pr-2 lg:grid-cols-2 2xl:grid-cols-3">
                             {itemsFiltrados.map((item) => (
-                                <article key={item.id} className="rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg overflow-hidden">
-                                    <div className="flex flex-col gap-3 p-4 sm:p-5">
+                                <article key={item.id} className="flex h-full min-h-[320px] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg overflow-hidden">
+                                    <div className="flex h-full flex-col gap-3 p-4 sm:p-5">
                                         <div className="flex flex-wrap items-start justify-between gap-3">
-                                            <div className="flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
+                                            <div className="flex flex-col gap-2 min-w-0">
+                                                <div className="flex flex-wrap items-center gap-2">
                                                     <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
                                                         item.tipo === 'queja'
                                                             ? 'bg-red-50 text-red-700 border border-red-200'
@@ -613,21 +613,6 @@ const Feedback = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-col items-end gap-2">
-                                                {(isAdmin || (isArrendatario && item.tipo === 'sugerencia')) && item.manejaEstado && !item.tieneRespuesta && (
-                                                    <button
-                                                        onClick={() => abrirModalComentario(item)}
-                                                        className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm"
-                                                    >
-                                                        Responder
-                                                    </button>
-                                                )}
-                                                {item.tieneRespuesta && (
-                                                    <span className="text-xs text-emerald-700 font-semibold">
-                                                        ✓ Respondido
-                                                    </span>
-                                                )}
-                                            </div>
                                         </div>
 
                                         <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
@@ -653,6 +638,21 @@ const Feedback = () => {
                                                 </div>
                                             </div>
                                         )}
+
+                                        <div className="mt-auto flex items-end justify-end pt-2">
+                                            {(isAdmin || (isArrendatario && item.tipo === 'sugerencia')) && item.manejaEstado && !item.tieneRespuesta ? (
+                                                <button
+                                                    onClick={() => abrirModalComentario(item)}
+                                                    className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm"
+                                                >
+                                                    Responder
+                                                </button>
+                                            ) : item.tieneRespuesta ? (
+                                                <span className="text-xs text-emerald-700 font-semibold">
+                                                    ✓ Respondido
+                                                </span>
+                                            ) : null}
+                                        </div>
                                     </div>
                                 </article>
                             ))}
