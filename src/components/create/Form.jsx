@@ -66,6 +66,7 @@ export const Form = () => {
         clearErrors,
         trigger,
         watch,
+        setError,
         formState: { errors, isSubmitting },
     } = useForm();
     const { fetchDataBackend } = useFetch();
@@ -116,6 +117,27 @@ export const Form = () => {
         if (!valid) {
             toast.error("Completa los campos obligatorios antes de continuar.");
             return;
+        }
+
+        // Verificación adicional: si estamos en el paso 1, comprobar que el título sea único
+        if (step === 1) {
+            try {
+                const titulo = String(watch("titulo") || "").trim();
+                if (titulo) {
+                    const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
+                    const headers = { "Content-Type": "application/json" };
+                    const resp = await fetchDataBackend(url, null, "GET", headers);
+                    const lista = Array.isArray(resp) ? resp : (Array.isArray(resp?.data) ? resp.data : []);
+                    const existe = lista.some((d) => String(d?.titulo || "").trim().toLowerCase() === titulo.toLowerCase());
+                    if (existe) {
+                        setError("titulo", { type: "validate", message: "Ya existe una residencia con ese título" });
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error("Error verificando título único:", err);
+                // No cortar el flujo si la verificación falla por red
+            }
         }
 
         setStep((prev) => Math.min(prev + 1, totalSteps));
