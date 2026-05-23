@@ -78,6 +78,24 @@ const Chat = () => {
     });
   }, []);
 
+  const obtenerParamsContacto = useCallback((contacto) => {
+    const params = {};
+    if (isArrendatario) {
+      params.arrendatarioId = userId;
+      if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
+      if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
+    } else if (isEstudiante) {
+      params.estudianteId = userId;
+      if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
+      if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
+    } else if (isAdministrador) {
+      params.administradorId = userId;
+      if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
+      if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
+    }
+    return params;
+  }, [isAdministrador, isArrendatario, isEstudiante, userId]);
+
   const cargarUltimoMensajeContacto = useCallback(async (contacto, headers) => {
     try {
       const url = `${import.meta.env.VITE_BACKEND_URL}/listar-chats`;
@@ -98,24 +116,6 @@ const Chat = () => {
       return {};
     }
   }, [normalizarMensaje, obtenerParamsContacto]);
-
-  const obtenerParamsContacto = useCallback((contacto) => {
-    const params = {};
-    if (isArrendatario) {
-      params.arrendatarioId = userId;
-      if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
-      if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
-    } else if (isEstudiante) {
-      params.estudianteId = userId;
-      if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
-      if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
-    } else if (isAdministrador) {
-      params.administradorId = userId;
-      if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
-      if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
-    }
-    return params;
-  }, [isAdministrador, isArrendatario, isEstudiante, userId]);
 
   useEffect(() => {
     const cargar = async () => {
