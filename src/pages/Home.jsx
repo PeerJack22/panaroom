@@ -108,6 +108,14 @@ export const Home = () => {
         { value: "suit", label: "Suite" },
     ];
 
+    const beneficiosSistema = [
+        "Búsqueda rápida y centralizada",
+        "Filtros inteligentes para encontrar tu residencia ideal",
+        "Publicaciones verificadas y más confiables",
+        "Contacto directo con propietarios y estudiantes",
+        "Ahorra tiempo revisando solo opciones que sí te sirven",
+    ];
+
     const [propiedades, setPropiedades] = useState([]);
 
     useEffect(() => {
@@ -501,6 +509,32 @@ export const Home = () => {
                                 Encuentra tu <span className="text-blue-600">residencia ideal</span>
                             </h1>
                             <p className="text-lg text-gray-600">Búsqueda rápida y segura de departamentos en la zona EPN</p>
+                        </div>
+
+                        <div className="home-benefits-banner mb-8 overflow-hidden rounded-2xl border border-blue-100 bg-white/80 shadow-sm backdrop-blur-md">
+                            <div className="flex items-center gap-3 border-b border-blue-50 px-5 py-3">
+                                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-md">
+                                    P
+                                </span>
+                                <div>
+                                    <p className="text-sm font-semibold text-slate-900">Beneficios del sistema</p>
+                                    <p className="text-xs text-slate-500">Desliza para ver lo que te ayuda a resolver PanaRoom</p>
+                                </div>
+                            </div>
+
+                            <div className="home-benefits-marquee">
+                                <div className="home-benefits-marquee__track">
+                                    {[...beneficiosSistema, ...beneficiosSistema].map((beneficio, index) => (
+                                        <div
+                                            key={`${beneficio}-${index}`}
+                                            className="home-benefits-pill"
+                                        >
+                                            <span className="home-benefits-pill__dot" />
+                                            <span>{beneficio}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
 
                         {/* FILTROS GRID */}
