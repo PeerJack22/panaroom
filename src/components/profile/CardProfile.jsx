@@ -17,23 +17,29 @@ export const CardProfile = () => {
                     width={120}
                     height={120}
                 />
-                <h2 className="mt-2 text-xs font-semibold text-slate-900">{`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}</h2>
+                <h2 className="mt-2 text-sm font-semibold text-slate-900 text-center break-words px-2">{`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}</h2>
             </div>
 
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 items-stretch">
-                <div className="sm:col-span-2 flex flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
-                    <span className="text-[11px] font-semibold text-slate-600">Dirección</span>
-                    <span className="mt-0.5 text-xs font-medium text-slate-900">{user?.direccion || "-"}</span>
+                <div className="sm:col-span-2 flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                    <span className="text-sm font-semibold text-slate-600">Dirección</span>
+                    <span className="mt-0.5 break-words whitespace-normal text-sm font-medium leading-snug text-slate-900">
+                        {user?.direccion || "-"}
+                    </span>
                 </div>
 
-                <div className="flex flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
-                    <span className="text-[11px] font-semibold text-slate-600">Teléfono</span>
-                    <span className="mt-0.5 text-xs font-medium text-slate-900">{user?.telefono || user?.celular || "-"}</span>
+                <div className="flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                    <span className="text-sm font-semibold text-slate-600">Teléfono</span>
+                    <span className="mt-0.5 break-words whitespace-normal text-sm font-medium leading-snug text-slate-900">
+                        {user?.telefono || user?.celular || "-"}
+                    </span>
                 </div>
 
-                <div className="flex flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
-                    <span className="text-[11px] font-semibold text-slate-600">Correo</span>
-                    <span className="mt-0.5 text-xs font-medium text-slate-900">{user?.email || "-"}</span>
+                <div className="flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                    <span className="text-sm font-semibold text-slate-600">Correo</span>
+                    <span className="mt-0.5 break-words whitespace-normal text-sm font-medium leading-snug text-slate-900">
+                        {user?.email || "-"}
+                    </span>
                 </div>
             </div>
         </div>
