@@ -112,74 +112,75 @@ const FormularioPerfil = () => {
     return (
         <form
             onSubmit={handleSubmit(updateUser)}
-            className="flex h-full max-w-none flex-col rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-sm"
+            className="flex h-full max-w-none flex-col rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm"
         >
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Editar perfil</h2>
+            <h2 className="mb-4 text-xl font-bold text-slate-900">Editar perfil</h2>
 
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600">Nombre</label>
+            <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-600">Nombre</label>
                 <input
                     type="text"
                     placeholder="Ingresa tu nombre"
-                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 mb-4"
+                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     {...register("nombre", { required: "El nombre es obligatorio" })}
                 />
                 {errors.nombre && <p className="mt-1 text-xs text-red-600">{errors.nombre.message}</p>}
-            </div>
+                </div>
 
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600">Apellido</label>
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-600">Apellido</label>
                 <input
                     type="text"
                     placeholder="Ingresa tu apellido"
-                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 mb-4"
+                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     {...register("apellido", { required: "El apellido es obligatorio" })}
                 />
                 {errors.apellido && <p className="mt-1 text-xs text-red-600">{errors.apellido.message}</p>}
-            </div>
+                </div>
 
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600">Dirección</label>
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-600">Dirección</label>
                 <input
                     type="text"
                     placeholder="Ingresa tu dirección"
-                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 mb-4"
+                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     {...register("direccion", { required: "La dirección es obligatoria" })}
                 />
                 {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}
-            </div>
+                </div>
 
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600">Teléfono</label>
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-600">Teléfono</label>
                 <input
                     type="number"
                     placeholder="Ingresa tu teléfono"
-                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 mb-4"
+                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     {...register("celular", { required: "El celular es obligatorio" })}
                 />
                 {errors.celular && <p className="mt-1 text-xs text-red-600">{errors.celular.message}</p>}
-            </div>
+                </div>
 
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600">Correo electrónico</label>
+                <div className="md:col-span-2">
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-600">Correo electrónico</label>
                 <input
                     type="email"
                     placeholder="Ingresa tu correo"
-                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 bg-white outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100 mb-6"
+                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                     {...register("email", { required: "El correo es obligatorio" })}
                 />
                 {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-            </div>
+                </div>
 
-            <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <label className="mb-2 block text-sm font-semibold text-slate-600">Imagen de perfil</label>
+                <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-600">Imagen de perfil</label>
 
                 {!isAdmin ? (
-                    <div className="mt-4">
+                    <div className="mt-3">
                         <input
                             type="file"
                             accept="image/*"
-                            className="block w-full text-sm text-slate-600 file:mr-4 file:px-6 file:py-2.5 file:bg-blue-600 file:hover:bg-blue-700 file:text-white file:text-sm file:font-semibold file:rounded-full file:transition-all file:shadow-lg file:hover:shadow-blue-600/30 file:transform file:hover:-translate-y-0.5 outline-none focus:ring-2 focus:ring-blue-100"
+                            className="block w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:bg-blue-600 file:px-5 file:py-2 file:text-sm file:font-semibold file:text-white file:transition-all file:hover:bg-blue-700 file:hover:shadow-blue-600/30 file:shadow-lg file:transform file:hover:-translate-y-0.5 outline-none focus:ring-2 focus:ring-blue-100"
                             {...register("imagenPerfil", {
                                 validate: {
                                     lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
@@ -191,37 +192,25 @@ const FormularioPerfil = () => {
                         {errors.imagenPerfil && <p className="mt-1 text-xs text-red-600">{errors.imagenPerfil.message}</p>}
 
                         {uploadedImagePreview && (
-                            <div className="mt-4 flex items-center gap-4">
+                            <div className="mt-3 flex items-center gap-3">
                                 <img
                                     src={uploadedImagePreview}
                                     alt="Imagen subida"
-                                    className="h-24 w-24 rounded-full border-2 border-slate-100 object-cover"
+                                    className="h-20 w-20 rounded-full border-2 border-slate-100 object-cover"
                                 />
                                 <p className="text-sm text-slate-500">Puedes cambiar la imagen cuando quieras.</p>
                             </div>
                         )}
                     </div>
-                ) : (
-                    <div className="mt-4 flex min-h-[150px] items-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-white p-4">
-                        <img
-                            src={uploadedImagePreview || user?.avatarUrl || null}
-                            alt="Avatar actual"
-                            className="h-24 w-24 rounded-full border-2 border-slate-100 object-cover"
-                        />
-                        <div>
-                            <p className="text-sm font-semibold text-slate-700">Avatar del administrador</p>
-                            <p className="text-sm text-slate-500">Este rol no permite cambiar la imagen, pero se conserva el mismo espacio para mantener la alineación.</p>
-                        </div>
-                    </div>
-                )}
+                ) : null}
             </div>
 
-            <div className="mt-auto pt-2">
+            <div className="mt-4 pt-1">
                 <input
                     type="submit"
                     value={isSubmitting ? "Actualizando..." : "Actualizar"}
                     disabled={isSubmitting}
-                    className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
+                    className="w-full rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-all shadow-lg hover:bg-blue-700 hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                     />
             </div>
             
