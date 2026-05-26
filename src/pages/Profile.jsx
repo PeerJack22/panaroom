@@ -17,7 +17,7 @@ const Profile = () => {
                         <FormProfile />
                     </section>
 
-                    <aside className="grid w-full grid-cols-1 gap-4 xl:grid-cols-2 xl:content-start">
+                    <aside className="flex w-full flex-col gap-4 xl:content-start">
                         <CardProfile />
                         <CardPassword />
                     </aside>
