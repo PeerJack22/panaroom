@@ -9,18 +9,23 @@ export const CardProfile = () => {
 
     return (
         <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-3 text-slate-900 shadow-sm">
-            <div className="flex flex-col items-center">
+            <div className="flex items-center gap-3">
                 <img
                     src={imagenPerfil}
                     alt="img-client"
-                    className="h-14 w-14 rounded-full border-4 border-slate-300 object-cover shadow-sm"
+                    className="h-14 w-14 shrink-0 rounded-full border-4 border-slate-300 object-cover shadow-sm"
                     width={120}
                     height={120}
                 />
-                <h2 className="mt-2 text-sm font-semibold text-slate-900 text-center break-words px-2">{`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}</h2>
+                <div className="min-w-0">
+                    <h2 className="truncate text-sm font-semibold text-slate-900">
+                        {`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}
+                    </h2>
+                    <p className="mt-0.5 text-xs text-slate-500">Perfil del usuario</p>
+                </div>
             </div>
 
-            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 items-stretch">
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 items-stretch">
                 <div className="sm:col-span-2 flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
                     <span className="text-sm font-semibold text-slate-600">Dirección</span>
                     <span className="mt-0.5 break-words whitespace-normal text-sm font-medium leading-snug text-slate-900">
