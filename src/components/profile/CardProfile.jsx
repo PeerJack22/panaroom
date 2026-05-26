@@ -8,39 +8,38 @@ export const CardProfile = () => {
         "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
 
     return (
-        <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-3 text-slate-900 shadow-sm">
-            <div className="flex items-center gap-3">
+        <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm">
+            <div className="flex items-center gap-4 pb-2">
                 <img
                     src={imagenPerfil}
                     alt="img-client"
-                    className="h-14 w-14 shrink-0 rounded-full border-4 border-slate-300 object-cover shadow-sm"
+                    className="h-20 w-20 shrink-0 rounded-full border-4 border-slate-300 object-cover shadow-sm"
                     width={120}
                     height={120}
                 />
                 <div className="min-w-0">
-                    <h2 className="truncate text-sm font-semibold text-slate-900">
+                    <h2 className="truncate text-lg font-semibold text-slate-900">
                         {`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}
                     </h2>
-                    <p className="mt-0.5 text-xs text-slate-500">Perfil del usuario</p>
                 </div>
             </div>
 
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 items-stretch">
-                <div className="sm:col-span-2 flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 items-stretch">
+                <div className="sm:col-span-2 flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-center">
                     <span className="text-sm font-semibold text-slate-600">Dirección</span>
                     <span className="mt-0.5 break-words whitespace-normal text-sm font-medium leading-snug text-slate-900">
                         {user?.direccion || "-"}
                     </span>
                 </div>
 
-                <div className="flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                <div className="flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-center">
                     <span className="text-sm font-semibold text-slate-600">Teléfono</span>
                     <span className="mt-0.5 break-words whitespace-normal text-sm font-medium leading-snug text-slate-900">
                         {user?.telefono || user?.celular || "-"}
                     </span>
                 </div>
 
-                <div className="flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                <div className="flex min-w-0 flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-center">
                     <span className="text-sm font-semibold text-slate-600">Correo</span>
                     <span className="mt-0.5 break-words whitespace-normal text-sm font-medium leading-snug text-slate-900">
                         {user?.email || "-"}
