@@ -175,34 +175,35 @@ const FormularioPerfil = () => {
                 <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
                     <label className="mb-1.5 block text-sm font-semibold text-slate-600">Imagen de perfil</label>
 
-                {!isAdmin ? (
-                    <div className="mt-3">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="block w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:bg-blue-600 file:px-5 file:py-2 file:text-sm file:font-semibold file:text-white file:transition-all file:hover:bg-blue-700 file:hover:shadow-blue-600/30 file:shadow-lg file:transform file:hover:-translate-y-0.5 outline-none focus:ring-2 focus:ring-blue-100"
-                            {...register("imagenPerfil", {
-                                validate: {
-                                    lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
-                                    acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
-                                },
-                                onChange: handleFileChange
-                            })}
-                        />
-                        {errors.imagenPerfil && <p className="mt-1 text-xs text-red-600">{errors.imagenPerfil.message}</p>}
+                    {!isAdmin ? (
+                        <div className="mt-3">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="block w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:bg-blue-600 file:px-5 file:py-2 file:text-sm file:font-semibold file:text-white file:transition-all file:hover:bg-blue-700 file:hover:shadow-blue-600/30 file:shadow-lg file:transform file:hover:-translate-y-0.5 outline-none focus:ring-2 focus:ring-blue-100"
+                                {...register("imagenPerfil", {
+                                    validate: {
+                                        lessThan10MB: files => !files[0] || files[0].size <= 10000000 || 'El archivo debe ser menor a 10MB',
+                                        acceptedFormats: files => !files[0] || ['image/jpeg', 'image/png', 'image/gif'].includes(files[0].type) || 'Solo se aceptan imágenes (PNG, JPEG, GIF)'
+                                    },
+                                    onChange: handleFileChange
+                                })}
+                            />
+                            {errors.imagenPerfil && <p className="mt-1 text-xs text-red-600">{errors.imagenPerfil.message}</p>}
 
-                        {uploadedImagePreview && (
-                            <div className="mt-3 flex items-center gap-3">
-                                <img
-                                    src={uploadedImagePreview}
-                                    alt="Imagen subida"
-                                    className="h-20 w-20 rounded-full border-2 border-slate-100 object-cover"
-                                />
-                                <p className="text-sm text-slate-500">Puedes cambiar la imagen cuando quieras.</p>
-                            </div>
-                        )}
-                    </div>
-                ) : null}
+                            {uploadedImagePreview && (
+                                <div className="mt-3 flex items-center gap-3">
+                                    <img
+                                        src={uploadedImagePreview}
+                                        alt="Imagen subida"
+                                        className="h-20 w-20 rounded-full border-2 border-slate-100 object-cover"
+                                    />
+                                    <p className="text-sm text-slate-500">Puedes cambiar la imagen cuando quieras.</p>
+                                </div>
+                            )}
+                        </div>
+                    ) : null}
+                </div>
             </div>
 
             <div className="mt-4 pt-1">
