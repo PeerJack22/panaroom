@@ -78,6 +78,7 @@ const Update = () => {
         setValue,
         clearErrors,
         watch,
+        setError,
         formState: { errors, isSubmitting },
     } = useForm({
         defaultValues: {
@@ -306,6 +307,58 @@ const Update = () => {
             if (!canContinue) {
                 toast.error("Completa los campos obligatorios antes de continuar.");
                 return;
+            }
+        }
+
+        if (step === 1) {
+            const tituloActual = String(values.titulo || "").trim();
+            const tituloOriginal = String(departamento?.titulo || "").trim();
+            const tituloNormalizado = tituloActual.toLowerCase();
+
+            if (tituloActual && tituloNormalizado !== tituloOriginal.toLowerCase()) {
+                try {
+                    const storedUser = JSON.parse(localStorage.getItem("auth-token") || "null");
+                    const authToken = token || storedUser?.state?.token || null;
+                    const headers = { "Content-Type": "application/json" };
+                    if (authToken) headers.Authorization = `Bearer ${authToken}`;
+
+                    const url = `${import.meta.env.VITE_BACKEND_URL}/departamentos`;
+                    const response = await fetchDataBackend(url, null, "GET", headers);
+                    const lista = Array.isArray(response)
+                        ? response
+                        : Array.isArray(response?.data)
+                            ? response.data
+                            : [];
+
+                    const existeTitulo = lista.some((dep) => {
+                        const tituloDep = String(dep?.titulo || "").trim().toLowerCase();
+                        const idDep = dep?._id || dep?.id;
+                        if (!tituloDep) return false;
+                        if (String(idDep || "") === String(departamento?._id || id || "")) return false;
+                        return tituloDep === tituloNormalizado;
+                    });
+
+                    if (existeTitulo) {
+                        setError("titulo", {
+                            type: "validate",
+                            message: "Ya existe una residencia con ese título.",
+                        });
+                        toast.warn("Ya existe una residencia con ese título.");
+                        return;
+                    }
+                } catch (error) {
+                    const status = error?.response?.status || error?.status || null;
+                    if (status === 401 || status === 403) {
+                        setError("titulo", {
+                            type: "validate",
+                            message: "Acceso denegado. Por favor inicia sesión nuevamente.",
+                        });
+                        toast.error("Acceso denegado. Por favor inicia sesión nuevamente.");
+                        return;
+                    }
+
+                    console.warn("No se pudo verificar si el título ya existe:", error);
+                }
             }
         }
 

@@ -57,6 +57,7 @@ const Details = () => {
     const [departamento, setDepartamento] = useState(null);
     const [propietario, setPropietario] = useState(null);
     const [imagenActiva, setImagenActiva] = useState(null);
+    const [imagenCarrusel, setImagenCarrusel] = useState(0);
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
     const [modoComentario, setModoComentario] = useState(null);
@@ -79,6 +80,16 @@ const Details = () => {
     const irImagenAnterior = () => {
         if (!departamento?.imagenes?.length) return;
         setImagenActiva((prev) => (prev - 1 + departamento.imagenes.length) % departamento.imagenes.length);
+    };
+
+    const irCarruselAnterior = () => {
+        if (!departamento?.imagenes?.length) return;
+        setImagenCarrusel((prev) => (prev - 1 + departamento.imagenes.length) % departamento.imagenes.length);
+    };
+
+    const irCarruselSiguiente = () => {
+        if (!departamento?.imagenes?.length) return;
+        setImagenCarrusel((prev) => (prev + 1) % departamento.imagenes.length);
     };
 
     const renderEstrellas = (valor) => {
@@ -347,6 +358,10 @@ const Details = () => {
     }, [id, fetchDataBackend]);
 
     useEffect(() => {
+        setImagenCarrusel(0);
+    }, [departamento?.imagenes?.length]);
+
+    useEffect(() => {
         const fetchComentarios = async () => {
             try {
                 const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/comentarios/${id}`;
@@ -599,49 +614,107 @@ const Details = () => {
 
                 </div>
 
-                <section className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">Ubicación referencial</h2>
-                    <div className="rounded-lg overflow-hidden border border-gray-300">
-                        <MapContainer
-                            key={`${mapCenter[0]}-${mapCenter[1]}`}
-                            center={mapCenter}
-                            zoom={15}
-                            minZoom={MAP_MIN_ZOOM}
-                            maxZoom={MAP_MAX_ZOOM}
-                            maxBounds={EPN_MAX_BOUNDS}
-                            maxBoundsViscosity={1.0}
-                            style={{ height: "24rem", width: "100%" }}
-                        >
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1]) && (
-                                <CircleMarker center={markerCoords} radius={8} pathOptions={{ color: "#1d4ed8" }} />
-                            )}
-                        </MapContainer>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                        Ubicación de referencia cercana a la Escuela Politécnica Nacional, Quito.
-                    </p>
-                </section>
-
-                {departamento.imagenes?.length > 0 && (
-                    <section className="mt-8 mb-8">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Imágenes de la residencia</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                            {departamento.imagenes.map((img, index) => (
-                                <img
-                                    key={index}
-                                    src={img.url}
-                                    alt={`Imagen ${index + 1}`}
-                                    onClick={() => abrirLightbox(index)}
-                                    className={`w-full object-cover rounded-xl border border-gray-200 shadow-sm cursor-zoom-in hover:scale-[1.03] transition-transform ${index === 0 ? 'md:col-span-2 md:h-72 h-56' : 'h-36'}`}
+                <section className="mb-6 grid gap-6 lg:grid-cols-2">
+                    <div className="rounded-2xl bg-gray-50 p-5 border border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Ubicación referencial</h2>
+                        <div className="overflow-hidden rounded-xl border border-gray-300">
+                            <MapContainer
+                                key={`${mapCenter[0]}-${mapCenter[1]}`}
+                                center={mapCenter}
+                                zoom={15}
+                                minZoom={MAP_MIN_ZOOM}
+                                maxZoom={MAP_MAX_ZOOM}
+                                maxBounds={EPN_MAX_BOUNDS}
+                                maxBoundsViscosity={1.0}
+                                style={{ height: "24rem", width: "100%" }}
+                            >
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
-                            ))}
+                                {markerCoords && isWithinEpnBounds(markerCoords[0], markerCoords[1]) && (
+                                    <CircleMarker center={markerCoords} radius={8} pathOptions={{ color: "#1d4ed8" }} />
+                                )}
+                            </MapContainer>
                         </div>
-                    </section>
-                )}
+                        <p className="mt-2 text-xs text-gray-500">
+                            Ubicación de referencia cercana a la Escuela Politécnica Nacional, Quito.
+                        </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-gray-50 p-5 border border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Imágenes de la residencia</h2>
+
+                        {departamento.imagenes?.length > 0 ? (
+                            <div className="space-y-4">
+                                <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                                    <button
+                                        type="button"
+                                        onClick={irCarruselAnterior}
+                                        className="absolute left-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white shadow-lg transition hover:bg-black/70"
+                                        aria-label="Imagen anterior"
+                                    >
+                                        ‹
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={irCarruselSiguiente}
+                                        className="absolute right-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white shadow-lg transition hover:bg-black/70"
+                                        aria-label="Imagen siguiente"
+                                    >
+                                        ›
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => abrirLightbox(imagenCarrusel)}
+                                        className="group block w-full"
+                                    >
+                                        <img
+                                            src={departamento.imagenes[imagenCarrusel]?.url}
+                                            alt={`Imagen principal ${imagenCarrusel + 1}`}
+                                            className="h-72 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                                        />
+                                    </button>
+                                </div>
+
+                                <p className="text-center text-xs text-gray-500">
+                                    Imagen {imagenCarrusel + 1} de {departamento.imagenes.length}
+                                </p>
+
+                                {departamento.imagenes.length > 1 ? (
+                                    <div className="overflow-x-auto pb-2">
+                                        <div className="flex gap-3 snap-x snap-mandatory">
+                                            {departamento.imagenes.map((img, index) => {
+                                                return (
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        onClick={() => setImagenCarrusel(index)}
+                                                        className={`shrink-0 snap-start overflow-hidden rounded-xl border shadow-sm transition-all ${
+                                                            index === imagenCarrusel
+                                                                ? 'border-blue-600 ring-2 ring-blue-200'
+                                                                : 'border-gray-200 bg-white hover:border-blue-300'
+                                                        }`}
+                                                    >
+                                                        <img
+                                                            src={img.url}
+                                                            alt={`Imagen ${index + 1}`}
+                                                            className="h-28 w-36 object-cover transition-transform duration-300 hover:scale-[1.03]"
+                                                        />
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ) : null}
+                            </div>
+                        ) : (
+                            <div className="flex h-72 items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white text-sm text-gray-500">
+                                No hay imágenes disponibles.
+                            </div>
+                        )}
+                    </div>
+                </section>
 
                 {
                     <section className="bg-white/70 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm mb-6 overflow-hidden">
