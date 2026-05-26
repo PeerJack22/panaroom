@@ -8,8 +8,8 @@ export const CardProfile = () => {
         "https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3"
 
     return (
-        <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm">
-            <div className="flex items-center gap-4 pb-2">
+        <div className="mx-auto w-full rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+            <div className="flex items-center gap-4 pb-3">
                 <img
                     src={imagenPerfil}
                     alt="img-client"
@@ -18,7 +18,7 @@ export const CardProfile = () => {
                     height={120}
                 />
                 <div className="min-w-0">
-                    <h2 className="truncate text-lg font-semibold text-slate-900">
+                    <h2 className="truncate text-xl font-semibold text-slate-900">
                         {`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}
                     </h2>
                 </div>
