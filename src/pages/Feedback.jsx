@@ -414,7 +414,7 @@ const Feedback = () => {
                     // Actualizar el item con la nueva respuesta
                     const nuevoComentario = {
                         texto: comentarioAdmin,
-                        autor: "Administrador",
+                        autor: isAdmin ? "Administrador" : isArrendatario ? "Arrendatario" : isEstudiante ? "Estudiante" : "Usuario",
                         fecha: new Date().toISOString(),
                     };
 
