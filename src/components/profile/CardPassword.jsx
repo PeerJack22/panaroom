@@ -20,20 +20,20 @@ const CardPassword = () => {
 
     return (
         <>
-            <div className="mt-0 h-full w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-4 shadow-sm mx-auto">
-                <h1 className="mb-3 text-lg font-bold text-slate-900">Actualizar contraseña</h1>
-                <hr className="mb-4 border-slate-200" />
+            <div className="mx-auto mt-0 w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                <h1 className="mb-2 text-base font-bold text-slate-900">Actualizar contraseña</h1>
+                <hr className="mb-3 border-slate-200" />
 
                 <form onSubmit={handleSubmit(updatePassword)}>
-                    <div className="mb-4">
-                        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    <div className="mb-3">
+                        <label className="mb-1 block text-sm font-semibold text-slate-700">
                             Contraseña actual
                         </label>
                         <div className="relative">
                             <input
                                 type={showCurrentPassword ? "text" : "password"}
                                 placeholder="Ingresa tu contraseña actual"
-                                className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 pr-10 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 pr-10 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                                 {...register("passwordactual", { required: "La contraseña actual es obligatoria" })}
                             />
                             <button
@@ -48,15 +48,15 @@ const CardPassword = () => {
                         {errors.passwordactual && <p className="mt-1 text-xs text-red-600">{errors.passwordactual.message}</p>}
                     </div>
 
-                    <div className="mb-4">
-                        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    <div className="mb-3">
+                        <label className="mb-1 block text-sm font-semibold text-slate-700">
                             Nueva contraseña
                         </label>
                         <div className="relative">
                             <input
                                 type={showNewPassword ? "text" : "password"}
                                 placeholder="Ingresa la nueva contraseña"
-                                className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 pr-10 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 pr-10 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                                 {...register("passwordnuevo", { required: "La nueva contraseña es obligatoria" })}
                             />
                             <button
