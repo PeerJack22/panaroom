@@ -383,10 +383,10 @@ const Feedback = () => {
         try {
             // 1. Enviar comentario
             const urlComentario = `${import.meta.env.VITE_BACKEND_URL}/queja-sugerencia/comentario`;
-            const payloadComentario = {
-                id: quejaId,
-                comentarioUsuario: comentarioAdmin,
-            };
+            // Enviar el campo de comentario según el rol para que el backend lo registre correctamente
+            const payloadComentario = isAdmin
+                ? { id: quejaId, comentarioAdmin: comentarioAdmin }
+                : { id: quejaId, comentarioUsuario: comentarioAdmin };
 
             const responseComentario = await axios.put(urlComentario, payloadComentario, {
                 headers: {
@@ -412,9 +412,28 @@ const Feedback = () => {
 
                 if (responseEstado?.status >= 200 && responseEstado?.status < 300) {
                     // Actualizar el item con la nueva respuesta
+                    // Intentar detectar el autor real desde la respuesta del servidor
+                    const rc = responseComentario?.data;
+                    const detectado =
+                        normalizeResponseComment(rc) ||
+                        normalizeResponseComment(rc?.comentarioAdmin) ||
+                        normalizeResponseComment(rc?.comentarioUsuario) ||
+                        normalizeResponseComment(rc?.respuesta) ||
+                        null;
+
+                    const autorDetectado = detectado?.autor
+                        ? String(detectado.autor)
+                        : isAdmin
+                        ? "Administrador"
+                        : isArrendatario
+                        ? "Arrendatario"
+                        : isEstudiante
+                        ? "Estudiante"
+                        : "Usuario";
+
                     const nuevoComentario = {
                         texto: comentarioAdmin,
-                        autor: isAdmin ? "Administrador" : isArrendatario ? "Arrendatario" : isEstudiante ? "Estudiante" : "Usuario",
+                        autor: autorDetectado,
                         fecha: new Date().toISOString(),
                     };
 
