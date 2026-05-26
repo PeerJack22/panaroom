@@ -13,27 +13,27 @@ export const CardProfile = () => {
                 <img
                     src={imagenPerfil}
                     alt="img-client"
-                    className="h-16 w-16 rounded-full border-4 border-slate-300 object-cover shadow-sm"
+                    className="h-14 w-14 rounded-full border-4 border-slate-300 object-cover shadow-sm"
                     width={120}
                     height={120}
                 />
-                <h2 className="mt-2 text-sm font-semibold text-slate-900">{`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}</h2>
+                <h2 className="mt-2 text-xs font-semibold text-slate-900">{`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}</h2>
             </div>
 
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 items-stretch">
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 items-stretch">
                 <div className="sm:col-span-2 flex flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
-                    <span className="text-xs font-semibold text-slate-600">Dirección</span>
-                    <span className="mt-1 text-sm font-medium text-slate-900">{user?.direccion || "-"}</span>
+                    <span className="text-[11px] font-semibold text-slate-600">Dirección</span>
+                    <span className="mt-0.5 text-xs font-medium text-slate-900">{user?.direccion || "-"}</span>
                 </div>
 
                 <div className="flex flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
-                    <span className="text-xs font-semibold text-slate-600">Teléfono</span>
-                    <span className="mt-1 text-sm font-medium text-slate-900">{user?.telefono || user?.celular || "-"}</span>
+                    <span className="text-[11px] font-semibold text-slate-600">Teléfono</span>
+                    <span className="mt-0.5 text-xs font-medium text-slate-900">{user?.telefono || user?.celular || "-"}</span>
                 </div>
 
                 <div className="flex flex-col justify-center rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
-                    <span className="text-xs font-semibold text-slate-600">Correo</span>
-                    <span className="mt-1 text-sm font-medium text-slate-900">{user?.email || "-"}</span>
+                    <span className="text-[11px] font-semibold text-slate-600">Correo</span>
+                    <span className="mt-0.5 text-xs font-medium text-slate-900">{user?.email || "-"}</span>
                 </div>
             </div>
         </div>

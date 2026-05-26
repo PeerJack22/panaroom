@@ -12,12 +12,12 @@ const Profile = () => {
                     <hr className="mt-4 border-slate-200" />
                 </header>
 
-                <main className="grid flex-1 grid-cols-1 gap-3 overflow-hidden xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
-                    <section className="w-full">
+                <main className="grid flex-1 grid-cols-1 gap-3 overflow-hidden xl:grid-cols-[1.15fr_0.85fr] xl:items-stretch">
+                    <section className="h-full w-full">
                         <FormProfile />
                     </section>
 
-                    <aside className="flex w-full flex-col gap-3 xl:content-start">
+                    <aside className="flex h-full w-full flex-col gap-3 xl:content-start">
                         <CardProfile />
                         <CardPassword />
                     </aside>
