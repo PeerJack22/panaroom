@@ -472,13 +472,16 @@ const Details = () => {
         ? (comentariosConCalificacion.reduce((acc, item) => acc + Number(item.calificacion), 0) / comentariosConCalificacion.length).toFixed(1)
         : "0.0";
     const rutaRegreso = location?.state?.from || "/dashboard/listar";
+    const estadoRegreso = location?.state?.from === "/dashboard/chat"
+        ? location?.state?.chatState || undefined
+        : undefined;
 
     return (
         <div className="max-w-6xl mx-auto mt-8 mb-10 px-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 md:p-6">
                     <button
                         type="button"
-                        onClick={() => navigate(rutaRegreso)}
+                        onClick={() => navigate(rutaRegreso, estadoRegreso ? { state: estadoRegreso } : undefined)}
                         className="mb-4 inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                         ← Atrás

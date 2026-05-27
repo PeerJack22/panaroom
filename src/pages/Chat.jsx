@@ -57,7 +57,11 @@ const Chat = () => {
   const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
   const irADetalleDepartamento = () => {
     if (!departamentoActivoId) return;
-    navigate(`/dashboard/visualizar/${departamentoActivoId}`);
+    navigate(`/dashboard/visualizar/${departamentoActivoId}`, {
+      state: {
+        from: "/dashboard/chat",
+      },
+    });
   };
   const contactoInicializadoRef = useRef(false);
   const ultimoContactoIdCargadoRef = useRef(null);
@@ -643,10 +647,10 @@ const Chat = () => {
                 <div className="border-b border-slate-200 p-4 bg-gray-50 rounded-t-2xl flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-lg font-semibold">{contactoActivo?.nombre}</h3>
-                    {(departamentoActivoId || departamentoActivoNombre) && (
+                    {departamentoActivoNombre && (
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-600">
                         <span>Departamento:</span>
-                        <span className="font-semibold text-gray-800">{departamentoActivoNombre || departamentoActivoId || 'Departamento asociado'}</span>
+                        <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
                         <button
                           type="button"
                           onClick={irADetalleDepartamento}
