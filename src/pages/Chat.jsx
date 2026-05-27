@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import { MdChatBubble, MdSend } from 'react-icons/md';
 
 const Chat = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { rol, token, user } = storeAuth();
   const userId = user?._id || user?.id || null;
   const abrirChatAdministrador = Boolean(location?.state?.abrirChatAdministrador);
@@ -54,6 +55,10 @@ const Chat = () => {
   const mensajesRef = useRef(null);
   const departamentoActivoId = contactoActivo?.departamentoId || departamentoId || null;
   const departamentoActivoNombre = contactoActivo?.departamentoNombre || departamentoNombre || null;
+  const irADetalleDepartamento = () => {
+    if (!departamentoActivoId) return;
+    navigate(`/dashboard/visualizar/${departamentoActivoId}`);
+  };
   const contactoInicializadoRef = useRef(false);
   const ultimoContactoIdCargadoRef = useRef(null);
 
@@ -639,13 +644,19 @@ const Chat = () => {
                   <div>
                     <h3 className="text-lg font-semibold">{contactoActivo?.nombre}</h3>
                     {departamentoActivoNombre && (
-                      <p className="text-sm text-gray-600">
-                        Departamento: {departamentoActivoId ? (
-                          <Link to={`/dashboard/visualizar/${departamentoActivoId}`} className="font-semibold text-blue-600 underline">{departamentoActivoNombre}</Link>
-                        ) : (
-                          <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                        <span>Departamento:</span>
+                        <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
+                        {departamentoActivoId && (
+                          <button
+                            type="button"
+                            onClick={irADetalleDepartamento}
+                            className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100"
+                          >
+                            Ver detalle
+                          </button>
                         )}
-                      </p>
+                      </div>
                     )}
                     {contactoActivo?.tipo === 'estudiante' && departamentoActivoNombre && (
                       <p className="text-xs text-gray-500 mt-1">Esta conversación está asociada al departamento indicado arriba.</p>
