@@ -521,7 +521,7 @@ const Table = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4 min-w-0">
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                         <div className="relative">
                             <button
                                 type="button"
@@ -574,51 +574,36 @@ const Table = () => {
                             )}
                         </div>
 
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <span className="w-full md:w-auto text-xs text-gray-600">Número de habitaciones</span>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    name="habitaciones"
-                                    value={filters.habitaciones}
-                                    onChange={handleFilterChange}
-                                    placeholder="Ej: 2"
-                                    className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
-                                />
-                            </div>
-                        </div>
+                        <input
+                            type="number"
+                            min="0"
+                            name="habitaciones"
+                            value={filters.habitaciones}
+                            onChange={handleFilterChange}
+                            placeholder="Número de habitaciones"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
+                        />
 
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <span className="w-full md:w-auto text-xs text-gray-600">Número de baños</span>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    name="banos"
-                                    value={filters.banos}
-                                    onChange={handleFilterChange}
-                                    placeholder="Ej: 1"
-                                    className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
-                                />
-                            </div>
-                        </div>
+                        <input
+                            type="number"
+                            min="0"
+                            name="banos"
+                            value={filters.banos}
+                            onChange={handleFilterChange}
+                            placeholder="Número de baños"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
+                        />
 
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <span className="w-full md:w-auto text-xs text-gray-600">Categoría</span>
-                                <select
-                                    name="categoria"
-                                    value={filters.categoria}
-                                    onChange={handleFilterChange}
-                                    className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
-                                >
-                                    <option value="">Todas las categorías</option>
-                                    <option value="departamento">Departamento</option>
-                                    <option value="suit">Suite</option>
-                                </select>
-                            </div>
-                        </div>
+                        <select
+                            name="categoria"
+                            value={filters.categoria}
+                            onChange={handleFilterChange}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
+                        >
+                            <option value="">Todas las categorías</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="suit">Suite</option>
+                        </select>
 
                         <div className="relative">
                             <div className="w-full rounded-xl border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-blue-500 px-3 py-2 min-h-[44px] flex items-center gap-2 hover:border-blue-500 transition-colors shadow-sm">
