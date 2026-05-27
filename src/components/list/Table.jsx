@@ -515,7 +515,7 @@ const Table = () => {
                         <button
                             type="button"
                             onClick={limpiarFiltrosAdmin}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors shadow-sm"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 text-xs text-gray-700 hover:bg-gray-100 transition-colors shadow-sm"
                         >
                             Limpiar filtros
                         </button>

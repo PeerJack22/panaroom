@@ -643,19 +643,17 @@ const Chat = () => {
                 <div className="border-b border-slate-200 p-4 bg-gray-50 rounded-t-2xl flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-lg font-semibold">{contactoActivo?.nombre}</h3>
-                    {departamentoActivoNombre && (
+                    {(departamentoActivoId || departamentoActivoNombre) && (
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-600">
                         <span>Departamento:</span>
-                        <span className="font-semibold text-gray-800">{departamentoActivoNombre}</span>
-                        {departamentoActivoId && (
-                          <button
-                            type="button"
-                            onClick={irADetalleDepartamento}
-                            className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100"
-                          >
-                            Ver detalle
-                          </button>
-                        )}
+                        <span className="font-semibold text-gray-800">{departamentoActivoNombre || departamentoActivoId || 'Departamento asociado'}</span>
+                        <button
+                          type="button"
+                          onClick={irADetalleDepartamento}
+                          className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100"
+                        >
+                          Ver detalle
+                        </button>
                       </div>
                     )}
                     {contactoActivo?.tipo === 'estudiante' && departamentoActivoNombre && (
