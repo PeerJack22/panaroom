@@ -648,9 +648,7 @@ const Chat = () => {
                   <div>
                     <h3 className="text-lg font-semibold">{contactoActivo?.nombre}</h3>
                     {(departamentoActivoId || departamentoActivoNombre) && (
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-600">
-                        <span>Departamento:</span>
-                        <span className="font-semibold text-gray-800">{departamentoActivoNombre || 'Departamento asociado'}</span>
+                      <div className="mt-2">
                         <button
                           type="button"
                           onClick={irADetalleDepartamento}
