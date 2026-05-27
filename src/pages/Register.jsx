@@ -7,7 +7,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 export const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
 
     const registro = async (data) => {
         try {
@@ -17,6 +17,10 @@ export const Register = () => {
         } catch (error) {
             toast.error(error.response?.data?.msg || "Error al registrarse");
         }
+    };
+
+    const registroInvalido = () => {
+        toast.error("Completa los campos obligatorios antes de registrarte");
     };
 
     return (
@@ -34,7 +38,7 @@ export const Register = () => {
                         Crea tu cuenta de estudiante y confirma tu correo para iniciar sesión
                     </p>
 
-                    <form onSubmit={handleSubmit(registro)} className="space-y-3">
+                    <form onSubmit={handleSubmit(registro, registroInvalido)} className="space-y-3" noValidate>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
@@ -114,8 +118,12 @@ export const Register = () => {
                             </div>
                         </div>
 
-                        <button className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 mt-4">
-                            Registrarse
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5 mt-4"
+                        >
+                            {isSubmitting ? "Registrando..." : "Registrarse"}
                         </button>
                     </form>
 
