@@ -752,10 +752,11 @@ export const Home = () => {
                                             </span>
                                         </div>
 
-                                        <div className="mb-3 flex items-center gap-2 text-sm text-amber-500">
-                                            <FaStar className="text-base" />
-                                            <span className="font-semibold text-slate-700">{obtenerPromedioMock(propiedad)}</span>
-                                            <span className="text-slate-500">Promedio</span>
+                                        <div className="mb-3 flex justify-end">
+                                            <div className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-sm font-semibold text-amber-600">
+                                                <FaStar className="text-sm" />
+                                                <span>{obtenerPromedioMock(propiedad)}</span>
+                                            </div>
                                         </div>
 
                                         {/* Rating temporarily disabled */}
