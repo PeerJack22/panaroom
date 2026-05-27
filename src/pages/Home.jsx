@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaComments, FaBullhorn } from "react-icons/fa6";
+import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaComments, FaBullhorn, FaStar } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
@@ -56,6 +56,18 @@ const esBooleanoTrue = (valor) => {
         return ["true", "1", "si", "sí"].includes(normalizado);
     }
     return false;
+};
+
+const obtenerPromedioMock = (propiedad) => {
+    const base = `${propiedad?.id || ""}-${propiedad?.titulo || ""}`;
+    let suma = 0;
+
+    for (let index = 0; index < base.length; index += 1) {
+        suma += base.charCodeAt(index);
+    }
+
+    const normalizado = (suma % 14) / 10 + 3.6;
+    return Math.min(5, Number(normalizado.toFixed(1)));
 };
 
 export const Home = () => {
@@ -738,6 +750,12 @@ export const Home = () => {
                                             <span className="text-lg font-bold text-blue-600 whitespace-nowrap">
                                                 ${propiedad.precio}
                                             </span>
+                                        </div>
+
+                                        <div className="mb-3 flex items-center gap-2 text-sm text-amber-500">
+                                            <FaStar className="text-base" />
+                                            <span className="font-semibold text-slate-700">{obtenerPromedioMock(propiedad)}</span>
+                                            <span className="text-slate-500">Promedio</span>
                                         </div>
 
                                         {/* Rating temporarily disabled */}
