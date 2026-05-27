@@ -580,7 +580,7 @@ const Table = () => {
                             name="habitaciones"
                             value={filters.habitaciones}
                             onChange={handleFilterChange}
-                            placeholder="Número de habitaciones"
+                            placeholder="Habitaciones"
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
                         />
 
@@ -590,7 +590,7 @@ const Table = () => {
                             name="banos"
                             value={filters.banos}
                             onChange={handleFilterChange}
-                            placeholder="Número de baños"
+                            placeholder="Baños"
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
                         />
 
@@ -600,7 +600,7 @@ const Table = () => {
                             onChange={handleFilterChange}
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
                         >
-                            <option value="">Todas las categorías</option>
+                            <option value="">Categorías</option>
                             <option value="departamento">Departamento</option>
                             <option value="suit">Suite</option>
                         </select>
