@@ -521,7 +521,7 @@ const Table = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4 min-w-0">
                         <div className="relative">
                             <button
                                 type="button"
@@ -581,7 +581,7 @@ const Table = () => {
                             value={filters.habitaciones}
                             onChange={handleFilterChange}
                             placeholder="Número de habitaciones"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
+                            className="w-full min-w-0 px-3 py-2 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm truncate"
                         />
 
                         <input
@@ -591,14 +591,14 @@ const Table = () => {
                             value={filters.banos}
                             onChange={handleFilterChange}
                             placeholder="Número de baños"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm"
+                            className="w-full min-w-0 px-3 py-2 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 placeholder:text-gray-400 hover:border-blue-500 transition-colors shadow-sm truncate"
                         />
 
                         <select
                             name="categoria"
                             value={filters.categoria}
                             onChange={handleFilterChange}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 hover:border-blue-500 transition-colors shadow-sm"
+                            className="w-full min-w-0 px-3 py-2 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs text-gray-700 hover:border-blue-500 transition-colors shadow-sm truncate"
                         >
                             <option value="">Todas las categorías</option>
                             <option value="departamento">Departamento</option>
