@@ -127,7 +127,7 @@ export const PublicarResidencias = () => {
 
                     <div className="bg-white/90 rounded-xl p-4 max-w-sm shadow-lg mx-auto">
                         <p className="text-sm text-gray-800 leading-relaxed">
-                            Registra tus datos como arrendatario. Tras completar el registro, recibirás en tu correo electrónico el usuario y la contraseña para acceder. Una vez activada tu cuenta podrás publicar y gestionar tus residencias de forma segura y profesional.
+                            Registra tus datos como arrendatario. Tras completar el registro, el administrador revisará tu solicitud y recibirás en tu correo electrónico el usuario y la contraseña para acceder. Una vez activada tu cuenta podrás publicar y gestionar tus residencias de forma segura y profesional.
                         </p>
                     </div>
                 </div>
