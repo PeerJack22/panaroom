@@ -1,6 +1,6 @@
 import logo_proyecto from '../assets/logo_proyecto.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaComments, FaBullhorn, FaStar } from "react-icons/fa6";
+import { FaYoutube, FaGithub, FaClipboardList, FaComments, FaBullhorn, FaStar, FaEnvelope, FaWhatsapp } from "react-icons/fa6";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
@@ -1027,6 +1027,29 @@ export const Home = () => {
                             <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors">
                                 <FaGithub className="text-lg" />
                             </a>
+                        </div>
+
+                        {/* Sección de Contacto */}
+                        <div className="flex flex-col items-center md:items-end gap-2 mt-4 md:mt-0">
+                            <h4 className="text-lg font-semibold text-white mb-2">Soporte Técnico</h4>
+                            <div className="flex items-center gap-2">
+                                <FaEnvelope className="text-base text-slate-400" />
+                                <a
+                                    href="mailto:soporte@panaroom.com"
+                                    className="text-sm text-slate-300 hover:text-white transition-colors"
+                                >
+                                    soporte@panaroom.com
+                                </a>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <FaWhatsapp className="text-base text-slate-400" />
+                                <a
+                                    href="https://wa.me/593999999999" target="_blank" rel="noopener noreferrer"
+                                    className="text-sm text-slate-300 hover:text-white transition-colors"
+                                >
+                                    +593 99 999 9999
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
