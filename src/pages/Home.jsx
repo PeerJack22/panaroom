@@ -128,6 +128,16 @@ export const Home = () => {
             descripcion: "Resuelve dudas por chat y toma decisiones más rápido sin salir de la plataforma.",
             destacado: "Chat en tiempo real",
         },
+        {
+            titulo: "Seguridad y filtros avanzados",
+            descripcion: "Solo opciones que se adaptan a tus necesidades reales, con verificación constante de anuncios para tu tranquilidad.",
+            destacado: "Tu seguridad primero",
+        },
+        {
+            titulo: "Todo en un solo lugar",
+            descripcion: "Desde la búsqueda inicial hasta el contacto final, simplificamos tu mudanza para que solo te preocupes por tus estudios.",
+            destacado: "Gestión integral",
+        },
     ];
 
     const [propiedades, setPropiedades] = useState([]);
@@ -340,7 +350,7 @@ export const Home = () => {
     };
 
     return (
-        <div className="font-sans">
+        <div className="font-sans" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             {/* NAVBAR MEJORADO */}
             <nav className="fixed w-full z-[60] bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-md transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
@@ -436,7 +446,7 @@ export const Home = () => {
             <main className="pt-28 bg-white">
                 {/* HERO + FILTROS */}
                 <section className="bg-gradient-to-b from-blue-50 to-white pt-0 pb-12">
-                    <div className="mb-10 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 shadow-2xl w-full">
+                    <div className="mb-10 overflow-hidden bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-2xl w-full">
                         <Swiper
                             modules={[Autoplay, Pagination]}
                             autoplay={{ delay: 4500, disableOnInteraction: false }}
