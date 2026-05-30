@@ -63,6 +63,7 @@ const Chat = () => {
       },
     });
   };
+  const ultimaCargaRef = useRef(null);
 
   const normalizarMensaje = useCallback((m) => ({
     id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
@@ -243,10 +244,15 @@ const Chat = () => {
   // cargar historial cuando cambia contacto
   useEffect(() => {
     const cargar = async () => {
-      if (!token || !contactoActivo?.id) {
+      if (!token || !contactoActivo?.id || !userId) {
         setMensajes([]);
+        ultimaCargaRef.current = null;
         return;
       }
+
+      const hashCarga = `${contactoActivo.id}-${contactoActivo.departamentoId || ''}`;
+      if (ultimaCargaRef.current === hashCarga) return;
+
       setCargandoHistorial(true);
       try {
         const url = `${import.meta.env.VITE_BACKEND_URL}/listar-chats`;
@@ -254,7 +260,9 @@ const Chat = () => {
         const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, params });
         const raw = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.chats) ? res.data.chats : []);
         const normalizados = raw.map((m) => normalizarMensaje(m));
+        
         setMensajes(normalizados);
+        ultimaCargaRef.current = hashCarga;
 
         if ((!contactoActivo?.departamentoId || !contactoActivo?.departamentoNombre) && normalizados.length > 0) {
           const ultimoConDepartamento = [...normalizados].reverse().find((m) => m?.departamentoId || m?.departamentoNombre);
@@ -262,24 +270,23 @@ const Chat = () => {
             const departamentoIdDerivado = ultimoConDepartamento.departamentoId || null;
             const departamentoNombreDerivado = ultimoConDepartamento.departamentoNombre || null;
 
-            setContactos((prevContactos) => prevContactos.map((contacto) => (
-              String(contacto.id) === String(contactoActivo.id)
-                ? {
-                    ...contacto,
-                    departamentoId: contacto.departamentoId || departamentoIdDerivado,
-                    departamentoNombre: contacto.departamentoNombre || departamentoNombreDerivado,
-                  }
-                : contacto
-            )));
-            // También actualizar el contacto activo para que la UI muestre el departamento inmediatamente
-            setContactoActivo((prev) => prev && String(prev.id) === String(contactoActivo.id)
-              ? {
-                  ...prev,
-                  departamentoId: prev.departamentoId || departamentoIdDerivado,
-                  departamentoNombre: prev.departamentoNombre || departamentoNombreDerivado,
-                }
-              : prev
-            );
+            const necesitaId = !contactoActivo.departamentoId && departamentoIdDerivado;
+            const necesitaNombre = !contactoActivo.departamentoNombre && departamentoNombreDerivado;
+
+            if (necesitaId || necesitaNombre) {
+              const contactoActualizado = {
+                ...contactoActivo,
+                departamentoId: contactoActivo.departamentoId || departamentoIdDerivado,
+                departamentoNombre: contactoActivo.departamentoNombre || departamentoNombreDerivado,
+              };
+
+              setContactos((prev) => prev.map((c) => String(c.id) === String(contactoActivo.id) ? contactoActualizado : c));
+              setContactoActivo(contactoActualizado);
+              
+              // Actualizar el ref inmediatamente para que el re-render disparado por setContactoActivo
+              // identifique que ya cargamos estos datos y no vuelva a disparar el fetch.
+              ultimaCargaRef.current = `${contactoActualizado.id}-${contactoActualizado.departamentoId || ''}`;
+            }
           }
         }
       } catch (err) {
