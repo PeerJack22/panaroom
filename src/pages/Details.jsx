@@ -375,8 +375,20 @@ const Details = () => {
         if (!contenedor || !departamento?.imagenes?.length) return;
 
         const botonActivo = contenedor.querySelector(`[data-thumbnail-index="${imagenCarrusel}"]`);
-        if (botonActivo && typeof botonActivo.scrollIntoView === "function") {
-            botonActivo.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        if (!botonActivo) return;
+
+        // Evitar que la página haga scroll vertical; solo desplazamos el scroll horizontal del contenedor
+        try {
+            // Cálculo: centrar el thumbnail dentro del contenedor sin tocar el scroll vertical de la página
+            const targetScrollLeft = botonActivo.offsetLeft - (contenedor.clientWidth / 2) + (botonActivo.clientWidth / 2);
+            if (typeof contenedor.scrollTo === "function") {
+                contenedor.scrollTo({ left: Math.max(0, Math.round(targetScrollLeft)), behavior: "smooth" });
+            } else {
+                contenedor.scrollLeft = Math.max(0, Math.round(targetScrollLeft));
+            }
+        } catch (err) {
+            // Fallback: si algo falla, no hacer nada para evitar salto de página
+            console.debug("No se pudo desplazar miniaturas sin scroll vertical:", err);
         }
     }, [imagenCarrusel, departamento?.imagenes?.length]);
 
