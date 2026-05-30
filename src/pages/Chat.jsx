@@ -311,22 +311,23 @@ const Chat = () => {
           if (exists) return prev;
           return [...prev, nuevo];
         });
-        setContactos((prevContactos) => prevContactos.map((contacto) => (
-          String(contacto.id) === String(contactoActivo?.id)
-            ? {
-                ...contacto,
-                departamentoId: contacto.departamentoId || nuevo.departamentoId || null,
-                departamentoNombre: contacto.departamentoNombre || nuevo.departamentoNombre || null,
-                ultimoMensaje: nuevo.mensaje || contacto.ultimoMensaje || "",
-                ultimoMensajeAt: nuevo.createdAt || contacto.ultimoMensajeAt || null,
-                ultimoMensajeEsMio: String(nuevo.remitente || "").toLowerCase() === roleNormalized,
-              }
-            : contacto
-        )));
+        setContactos((prev) => {
+          const target = prev.find(c => String(c.id) === String(contactoActivo?.id));
+          const rest = prev.filter(c => String(c.id) !== String(contactoActivo?.id));
+          const updated = {
+            ...(target || {}),
+            ultimoMensaje: nuevo.mensaje,
+            ultimoMensajeAt: nuevo.createdAt,
+            ultimoMensajeEsMio: false,
+            unread: 0
+          };
+          return [updated, ...rest];
+        });
         setContactoActivo((prevContacto) => prevContacto ? {
           ...prevContacto,
-          departamentoId: prevContacto.departamentoId || nuevo.departamentoId || null,
-          departamentoNombre: prevContacto.departamentoNombre || nuevo.departamentoNombre || null,
+          ultimoMensaje: nuevo.mensaje,
+          ultimoMensajeAt: nuevo.createdAt,
+          ultimoMensajeEsMio: false,
         } : prevContacto);
       } else {
         // increment unread for contact
@@ -337,15 +338,16 @@ const Chat = () => {
         const tipo = m.administradorId && String(m.administradorId) !== String(userId) ? 'administrador' 
           : (m.arrendatarioId && String(m.arrendatarioId) !== String(userId) ? 'arrendatario' : 'estudiante');
         if (otherId) {
-          setContactos(prev => {
+          setContactos((prev) => {
             const found = prev.find(c => String(c.id) === String(otherId));
-            if (found) return prev.map(c => c.id === found.id ? {
-              ...c,
+            const rest = prev.filter(c => String(c.id) !== String(otherId));
+            const updated = found ? {
+              ...found,
               unread: (c.unread || 0) + 1,
-              ultimoMensaje: m?.mensaje || c.ultimoMensaje || "",
+              ultimoMensaje: m?.mensaje || found.ultimoMensaje || "",
               ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
               ultimoMensajeEsMio: String(m?.remitente || "").toLowerCase() === roleNormalized,
-            } : c);
+            } : null;
             // Obtener nombre del payload si está disponible
             let nombre = m?.nombreRemitente || m?.nombre || m?.nombreCompleto || `${m?.nombreRemitente || ''} ${m?.apellidoRemitente || ''}`.trim();
             
@@ -359,6 +361,10 @@ const Chat = () => {
             if (!nombre || nombre.trim() === '') {
               nombre = tipo === 'administrador' ? 'Administrador' : (tipo === 'arrendatario' ? 'Arrendatario' : 'Estudiante');
             }
+
+            if (updated) return [updated, ...rest];
+
+            // Si es un contacto totalmente nuevo que no estaba en la lista
             return [{
               id: otherId,
               tipo,
@@ -468,16 +474,17 @@ const Chat = () => {
         const exists = prev.some(p => p.id && nuevo.id && String(p.id) === String(nuevo.id));
         if (exists) return prev; return [...prev, nuevo];
       });
-        setContactos((prevContactos) => prevContactos.map((contacto) => (
-          String(contacto.id) === String(contactoActivo.id)
-            ? {
-                ...contacto,
-                ultimoMensaje: messageText,
-                ultimoMensajeAt: new Date(),
-                ultimoMensajeEsMio: true,
-              }
-            : contacto
-        )));
+        setContactos((prev) => {
+          const target = prev.find(c => String(c.id) === String(contactoActivo.id));
+          const rest = prev.filter(c => String(c.id) !== String(contactoActivo.id));
+          const updated = {
+            ...(target || {}),
+            ultimoMensaje: messageText,
+            ultimoMensajeAt: new Date(),
+            ultimoMensajeEsMio: true,
+          };
+          return [updated, ...rest];
+        });
         setContactoActivo((prevContacto) => prevContacto && String(prevContacto.id) === String(contactoActivo.id)
           ? {
               ...prevContacto,
@@ -595,16 +602,16 @@ const Chat = () => {
                     className={`w-full text-left p-3 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-all flex items-center gap-3 ${String(contactoActivo?.id||'')===String(c.id)?'border-blue-600 bg-blue-50':' '}`}>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold">{c.nombre}</p>
-                        {c.unread>0 && <span className="inline-flex items-center justify-center bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6">{c.unread}</span>}
+                        <p className={`text-sm ${c.unread > 0 ? 'font-black text-slate-900' : 'font-semibold text-slate-700'}`}>{c.nombre}</p>
+                        {c.unread > 0 && <span className="inline-flex items-center justify-center bg-blue-600 text-white text-[10px] font-bold rounded-full w-5 h-5 shadow-sm">{c.unread}</span>}
                       </div>
                       <p className="text-xs text-gray-500 capitalize">{c.tipo}</p>
                       {(c.ultimoMensaje || c.ultimoMensajeAt) && (
                         <div className="mt-2 flex items-start justify-between gap-3">
-                          <p className="min-w-0 flex-1 text-xs text-gray-600 truncate">
+                          <p className={`min-w-0 flex-1 text-xs truncate ${c.unread > 0 ? 'font-bold text-slate-800' : 'text-gray-500'}`}>
                             {formatearVistaUltimoMensaje(c) || "Sin mensajes aún"}
                           </p>
-                          <span className="shrink-0 text-[11px] text-gray-400">
+                          <span className={`shrink-0 text-[11px] ${c.unread > 0 ? 'font-bold text-blue-600' : 'text-gray-400'}`}>
                             {formatearHoraMensaje(c.ultimoMensajeAt)}
                           </span>
                         </div>
