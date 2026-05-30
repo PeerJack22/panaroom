@@ -546,20 +546,20 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="mb-8">
+    <div className="min-h-full bg-slate-50 py-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+      <div className="w-full px-2 md:px-4">
+        <header className="mb-6">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Chat</h1>
           <p className="mt-2 text-sm text-slate-500">{textoDescripcionChat}</p>
-          <hr className="mt-6 border-slate-200" />
+          <hr className="mt-4 border-slate-200" />
         </header>
 
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-3 md:p-6">
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px] min-h-0">
-          <div className="rounded-2xl border border-gray-200 shadow-sm bg-gray-50 p-4 flex flex-col min-h-0">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Contactos</h2>
-            <div className="flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 h-auto lg:h-[calc(100vh-250px)] min-h-[600px] lg:min-h-0">
+          <div className="rounded-2xl border border-gray-200 shadow-sm bg-gray-50 p-4 flex flex-col h-[300px] lg:h-full min-h-0">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 shrink-0">Contactos</h2>
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {contactoActivo && (
                 <div className="p-3 rounded-2xl bg-white border-2 border-blue-600 mb-3">
                   <p className="font-semibold">{contactoActivo.nombre}</p>
@@ -577,7 +577,7 @@ const Chat = () => {
                 </div>
               )}
 
-              <div className="space-y-2 overflow-y-auto flex-1">
+              <div className="space-y-2 overflow-y-auto flex-1 pr-1">
                 {cargandoContactos ? (
                   <p className="text-xs text-gray-500">Cargando contactos...</p>
                 ) : contactos.length === 0 ? (
@@ -607,7 +607,7 @@ const Chat = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-2 border border-gray-200 rounded-2xl flex flex-col bg-white min-h-0 overflow-hidden">
+          <div className="lg:col-span-2 border border-gray-200 rounded-2xl flex flex-col bg-white h-[500px] lg:h-full min-h-0 overflow-hidden shadow-sm">
             {!contactoActivo ? (
               <div className="flex flex-1 items-center justify-center px-6 py-12">
                 <div className="max-w-md text-center">
