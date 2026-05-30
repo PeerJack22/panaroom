@@ -115,9 +115,9 @@ const FormularioPerfil = () => {
         >
             <h2 className="mb-3 text-lg font-bold text-slate-900">Editar perfil</h2>
 
-            <div className="flex flex-col gap-6">
+            <div className={`flex-1 flex flex-col ${isAdmin ? "justify-center gap-8 py-4" : "gap-6"}`}>
                 {/* Columna de Datos */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className={`grid grid-cols-1 ${!isAdmin ? "sm:grid-cols-2 gap-4" : "gap-6"}`}>
                     <div>
                         <label className="mb-1 block text-sm font-semibold text-slate-600">Nombre</label>
                         <input
@@ -162,7 +162,7 @@ const FormularioPerfil = () => {
                         {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}
                     </div>
 
-                    <div className="sm:col-span-1">
+                    <div>
                         <label className="mb-1 block text-sm font-semibold text-slate-600">Teléfono</label>
                         <input
                             type="text"
@@ -178,7 +178,7 @@ const FormularioPerfil = () => {
                         {errors.celular && <p className="mt-1 text-xs text-red-600">{errors.celular.message}</p>}
                     </div>
 
-                    <div className="sm:col-span-2">
+                    <div className={!isAdmin ? "sm:col-span-2" : ""}>
                         <label className="mb-1 block text-sm font-semibold text-slate-600">Correo electrónico</label>
                         <input
                             type="email"
