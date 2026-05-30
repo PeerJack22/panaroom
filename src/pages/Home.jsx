@@ -117,19 +117,16 @@ export const Home = () => {
             titulo: "Encuentra residencia sin perder tiempo",
             descripcion: "Filtra por precio, habitaciones, baños, servicios y más para llegar directo a opciones reales que te sirven.",
             destacado: "Búsqueda rápida",
-            icono: FaClipboardList,
         },
         {
             titulo: "Publicaciones claras y verificadas",
             descripcion: "Explora residencias con fotos, detalles completos, mapa y datos listos para comparar con confianza.",
             destacado: "Más confianza",
-            icono: FaBullhorn,
         },
         {
             titulo: "Habla directo con propietarios y estudiantes",
             descripcion: "Resuelve dudas por chat y toma decisiones más rápido sin salir de la plataforma.",
             destacado: "Chat en tiempo real",
-            icono: FaComments,
         },
     ];
 
@@ -438,62 +435,36 @@ export const Home = () => {
             {/* MAIN CONTENT */}
             <main className="pt-28 bg-white">
                 {/* HERO + FILTROS */}
-                <section className="bg-gradient-to-b from-blue-50 to-white pt-0 pb-12 px-6">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="mb-10 overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 shadow-2xl">
-                            <Swiper
-                                modules={[Autoplay, Pagination]}
-                                autoplay={{ delay: 4500, disableOnInteraction: false }}
-                                pagination={{ clickable: true }}
-                                loop
-                                className="home-hero-swiper"
-                            >
-                                {bannerSlides.map((slide, index) => {
-                                    const Icono = slide.icono;
-                                    return (
-                                        <SwiperSlide key={`${slide.titulo}-${index}`}>
-                                            <div className="grid min-h-[320px] grid-cols-1 items-center gap-8 px-6 py-10 md:min-h-[380px] md:grid-cols-[1.2fr_0.8fr] md:px-10 lg:px-12">
-                                                <div className="max-w-2xl">
-                                                    <span className="inline-flex items-center rounded-full border border-blue-300/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100">
-                                                        {slide.destacado}
-                                                    </span>
-                                                    <h2 className="mt-5 text-3xl font-black leading-tight text-white md:text-5xl">
-                                                        {slide.titulo}
-                                                    </h2>
-                                                    <p className="mt-4 max-w-xl text-base leading-7 text-slate-200 md:text-lg">
-                                                        {slide.descripcion}
-                                                    </p>
+                <section className="bg-gradient-to-b from-blue-50 to-white pt-0 pb-12">
+                    <div className="mb-10 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 shadow-2xl w-full">
+                        <Swiper
+                            modules={[Autoplay, Pagination]}
+                            autoplay={{ delay: 4500, disableOnInteraction: false }}
+                            pagination={{ clickable: true }}
+                            loop
+                            className="home-hero-swiper"
+                        >
+                            {bannerSlides.map((slide, index) => (
+                                <SwiperSlide key={`${slide.titulo}-${index}`}>
+                                    <div className="flex min-h-[320px] flex-col items-center justify-center px-6 py-10 text-center md:min-h-[380px] md:px-10 lg:px-12">
+                                        <div className="max-w-4xl">
+                                            <span className="inline-flex items-center rounded-full border border-blue-300/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100">
+                                                {slide.destacado}
+                                            </span>
+                                            <h2 className="mt-5 text-3xl font-black leading-tight text-white md:text-5xl">
+                                                {slide.titulo}
+                                            </h2>
+                                            <p className="mt-4 mx-auto max-w-2xl text-base leading-7 text-slate-200 md:text-lg">
+                                                {slide.descripcion}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    </div>
 
-                                                    <div className="mt-6 flex flex-wrap gap-3">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => navigate("/login")}
-                                                            className="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition-transform hover:-translate-y-0.5 hover:bg-blue-700"
-                                                        >
-                                                            Empezar ahora
-                                                        </button>
-                                                        <a
-                                                            href="#servicios"
-                                                            className="rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-                                                        >
-                                                            Ver servicios
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex justify-center md:justify-end">
-                                                    <div className="relative flex h-44 w-44 items-center justify-center rounded-[2rem] border border-white/15 bg-white/10 p-6 shadow-2xl backdrop-blur-md md:h-56 md:w-56">
-                                                        <div className="absolute inset-4 rounded-[1.5rem] bg-gradient-to-br from-blue-400/30 via-cyan-300/10 to-transparent" />
-                                                        <Icono className="relative text-6xl text-white md:text-7xl" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </SwiperSlide>
-                                    );
-                                })}
-                            </Swiper>
-                        </div>
-
+                    <div className="max-w-7xl mx-auto px-6">
                         <div className="mb-10">
                             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
                                 Encuentra tu <span className="text-blue-600">residencia ideal</span>
@@ -986,30 +957,30 @@ export const Home = () => {
                 {/* SERVICIOS */}
                 <section id="servicios" className="px-6 py-16 bg-white">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Nuestros Servicios</h2>
-                        <p className="text-gray-600 text-center mb-12">Ofrecemos soluciones completas para tu búsqueda de residencia</p>
+                        <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">¿Por qué elegir PanaRoom?</h2>
+                        <p className="text-gray-600 text-center mb-12">Diseñamos una plataforma pensada en la seguridad y comodidad de la comunidad universitaria</p>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 {
                                     icon: FaClipboardList,
-                                    titulo: "Gestión de Publicaciones",
-                                    contenido: "Publica y administra residencias de forma fácil y eficiente."
+                                    titulo: "Seguridad Garantizada",
+                                    contenido: "Validamos cada perfil de arrendatario para asegurar que las ofertas sean legítimas y confiables."
                                 },
                                 {
-                                    icon: FaUser,
-                                    titulo: "Perfiles Personalizados",
-                                    contenido: "Crea tu perfil y conecta con propietarios confiables."
+                                    icon: FaStar,
+                                    titulo: "Búsqueda Inteligente",
+                                    contenido: "Filtros avanzados diseñados para encontrar exactamente lo que necesitas en la zona de la EPN."
                                 },
                                 {
                                     icon: FaComments,
-                                    titulo: "Chat en Tiempo Real",
-                                    contenido: "Comunícate directamente con propietarios y arrendatarios."
+                                    titulo: "Contacto Directo",
+                                    contenido: "Chat interno para hablar con propietarios sin intermediarios y de forma segura."
                                 },
                                 {
                                     icon: FaBullhorn,
-                                    titulo: "Quejas y Sugerencias",
-                                    contenido: "Envía tus comentarios para mejorar la experiencia."
+                                    titulo: "Transparencia Total",
+                                    contenido: "Información detallada, fotos reales y ubicación precisa en cada publicación."
                                 }
                             ].map((servicio, i) => {
                                 const IconComponent = servicio.icon;
