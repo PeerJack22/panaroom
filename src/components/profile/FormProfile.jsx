@@ -127,7 +127,8 @@ const FormularioPerfil = () => {
                             {...register("nombre", { 
                                 required: "El nombre es obligatorio",
                                 maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                                pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                                pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" },
+                                validate: val => val.trim().length > 0 || "El nombre no puede estar vacío"
                             })}
                         />
                         {errors.nombre && <p className="mt-1 text-xs text-red-600">{errors.nombre.message}</p>}
@@ -142,7 +143,8 @@ const FormularioPerfil = () => {
                             {...register("apellido", { 
                                 required: "El apellido es obligatorio",
                                 maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                                pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                                pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" },
+                                validate: val => val.trim().length > 0 || "El apellido no puede estar vacío"
                             })}
                         />
                         {errors.apellido && <p className="mt-1 text-xs text-red-600">{errors.apellido.message}</p>}
@@ -156,7 +158,8 @@ const FormularioPerfil = () => {
                             className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                             {...register("direccion", { 
                                 required: "La dirección es obligatoria",
-                                maxLength: { value: 20, message: "Máximo 20 caracteres" }
+                                maxLength: { value: 20, message: "Máximo 20 caracteres" },
+                                validate: val => val.trim().length > 0 || "La dirección no puede estar vacía"
                             })}
                         />
                         {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}

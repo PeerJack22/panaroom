@@ -556,8 +556,8 @@ const Update = () => {
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Título</label>
                                 <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("titulo", { 
                                     required: "El título es obligatorio.",
-                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
-                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ]+$/, message: "Solo letras permitidas (sin espacios)." },
+                                    maxLength: { value: 30, message: "Máximo 30 caracteres." },
+                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras y espacios permitidos." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })} />
                                 {errors.titulo && <p className="mt-1 text-xs text-red-600">{errors.titulo.message}</p>}
@@ -567,7 +567,7 @@ const Update = () => {
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Descripción</label>
                                 <textarea rows="4" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("descripcion", { 
                                     required: "La descripción es obligatoria.",
-                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                    maxLength: { value: 60, message: "Máximo 60 caracteres." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })} />
                                 {errors.descripcion && <p className="mt-1 text-xs text-red-600">{errors.descripcion.message}</p>}

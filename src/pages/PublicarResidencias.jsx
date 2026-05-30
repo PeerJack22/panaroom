@@ -117,8 +117,8 @@ export const PublicarResidencias = () => {
             return;
         }
 
-        if (datosSolicitud.direccion.length > 20) {
-            setEstadoSolicitud({ tipo: "error", mensaje: "La dirección no puede exceder los 20 caracteres." });
+        if (!datosSolicitud.direccion.trim() || datosSolicitud.direccion.length > 20) {
+            setEstadoSolicitud({ tipo: "error", mensaje: "La dirección es obligatoria y no puede exceder los 20 caracteres." });
             return;
         }
 

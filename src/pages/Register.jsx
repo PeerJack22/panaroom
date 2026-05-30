@@ -49,7 +49,8 @@ export const Register = () => {
                                     {...register("nombre", { 
                                         required: "El nombre es obligatorio",
                                         maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" },
+                                        validate: val => val.trim().length > 0 || "El nombre no puede estar vacío"
                                     })}
                                 />
                                 {errors.nombre && <p className="text-sm text-red-600 mt-1">{errors.nombre.message}</p>}
@@ -64,7 +65,8 @@ export const Register = () => {
                                     {...register("apellido", { 
                                         required: "El apellido es obligatorio",
                                         maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" },
+                                        validate: val => val.trim().length > 0 || "El apellido no puede estar vacío"
                                     })}
                                 />
                                 {errors.apellido && <p className="text-sm text-red-600 mt-1">{errors.apellido.message}</p>}
@@ -78,7 +80,8 @@ export const Register = () => {
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     {...register("direccion", { 
                                         required: "La dirección es obligatoria",
-                                        maxLength: { value: 20, message: "Máximo 20 caracteres" }
+                                        maxLength: { value: 20, message: "Máximo 20 caracteres" },
+                                        validate: val => val.trim().length > 0 || "La dirección no puede estar vacía"
                                     })}
                                 />
                                 {errors.direccion && <p className="text-sm text-red-600 mt-1">{errors.direccion.message}</p>}

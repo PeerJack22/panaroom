@@ -395,8 +395,8 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("titulo", { 
                                     required: "El título es obligatorio.",
-                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
-                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ]+$/, message: "Solo letras permitidas (sin espacios)." },
+                                    maxLength: { value: 30, message: "Máximo 30 caracteres." },
+                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras y espacios permitidos." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
                             />
@@ -410,7 +410,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("descripcion", { 
                                     required: "La descripción es obligatoria.",
-                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                    maxLength: { value: 60, message: "Máximo 60 caracteres." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
                             />
