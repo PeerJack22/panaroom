@@ -458,7 +458,7 @@ export const Home = () => {
                                 <SwiperSlide key={`${slide.titulo}-${index}`}>
                                     <div className="flex min-h-[320px] flex-col items-center justify-center px-6 py-10 text-center md:min-h-[380px] md:px-10 lg:px-12">
                                         <div className="max-w-4xl">
-                                            <span className="inline-flex items-center rounded-full border border-blue-300/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100">
+                                            <span className="inline-flex items-center rounded-full border border-blue-300/30 bg-white/10 px-3 py-1 text-xs font-semibold tracking-[0.2em] text-blue-100">
                                                 {slide.destacado}
                                             </span>
                                             <h2 className="mt-5 text-3xl font-black leading-tight text-white md:text-5xl">

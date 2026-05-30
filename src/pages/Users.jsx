@@ -505,7 +505,7 @@ const Users = () => {
                                     <h2 className="text-xl font-bold text-slate-900 leading-tight truncate">
                                         {user.nombre} {user.apellido}
                                     </h2>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{normalizarRol(user.rol)}</span>
+                                    <span className="text-[10px] font-bold text-slate-400 tracking-wider">{normalizarRol(user.rol)}</span>
                                 </div>
                             </div>
                             <div className="space-y-1 text-slate-700 mb-4 flex-1">
@@ -627,7 +627,7 @@ const Users = () => {
                         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5 bg-white shrink-0">
                             <div>
                                 <h3 className="text-xl md:text-2xl font-black text-slate-900">Información del Estudiante</h3>
-                                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Perfil de usuario</p>
+                                <p className="text-xs text-slate-500 font-medium tracking-wider">Verificación de identidad</p>
                             </div>
                             <button
                                 type="button"
@@ -658,15 +658,15 @@ const Users = () => {
                                     <div className="space-y-4 border-t border-slate-100 pt-6">
                                         <div className="flex items-center gap-3 text-slate-600">
                                             <FaEnvelope className="h-4 w-4 text-slate-400" />
-                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400 uppercase">Email</span><span className="text-sm font-medium">{estudianteSeleccionado.email}</span></div>
+                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400">Email</span><span className="text-sm font-medium">{estudianteSeleccionado.email}</span></div>
                                         </div>
                                         <div className="flex items-center gap-3 text-slate-600">
                                             <FaPhone className="h-4 w-4 text-slate-400" />
-                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400 uppercase">Teléfono</span><span className="text-sm font-medium">{estudianteSeleccionado.celular || "No disponible"}</span></div>
+                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400">Teléfono</span><span className="text-sm font-medium">{estudianteSeleccionado.celular || "No disponible"}</span></div>
                                         </div>
                                         <div className="flex items-center gap-3 text-slate-600">
                                             <FaLocationDot className="h-4 w-4 text-slate-400" />
-                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400 uppercase">Dirección</span><span className="text-sm font-medium">{estudianteSeleccionado.direccion || "No disponible"}</span></div>
+                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400">Dirección</span><span className="text-sm font-medium">{estudianteSeleccionado.direccion || "No disponible"}</span></div>
                                         </div>
                                     </div>
                                 </div>

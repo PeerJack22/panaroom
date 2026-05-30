@@ -59,7 +59,7 @@ export const Confirm = () => {
             <div className="text-center max-w-xl">
                 {confirmStatus === 'loading' && (
                     <>
-                        <p className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 uppercase">Verificando cuenta</p>
+                        <p className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Verificando cuenta</p>
                         <p className="text-lg md:text-xl text-slate-600 mb-6">{confirmMessage}</p>
                     </>
                 )}
