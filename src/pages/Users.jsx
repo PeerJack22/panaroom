@@ -393,11 +393,11 @@ const Users = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+        <div className="min-h-full bg-slate-50 py-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            <div className="w-full flex flex-col px-2 md:px-4">
             <h1 className='text-3xl sm:text-4xl font-extrabold text-slate-900'>Usuarios</h1>
             <p className='mt-2 text-sm text-slate-500'>Este módulo te permite gestionar los usuarios</p>
             <hr className="mt-6 border-slate-200" />
-
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                     type="text"
@@ -448,7 +448,7 @@ const Users = () => {
                     {usuariosFiltrados.map(user => (
                         <div
                             key={user._id}
-                            className={`bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl ${["arrendatario", "estudiante"].includes(normalizarRol(user.rol)) ? "cursor-pointer" : ""}`}
+                            className="bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl"
                             onClick={() => {
                                 if (normalizarRol(user.rol) === "arrendatario") {
                                     abrirDetalleArrendatario(user);
@@ -787,6 +787,7 @@ const Users = () => {
                 </div>,
                 document.body
             )}
+            </div>
         </div>
     );
 };

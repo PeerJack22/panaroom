@@ -285,7 +285,7 @@ export const Form = () => {
     return (
         <form
             onSubmit={handleSubmit(registerResidencia)}
-            className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"
+            className="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"
         >
             <div className="mb-6 flex items-start justify-between gap-4">
                 <div>
