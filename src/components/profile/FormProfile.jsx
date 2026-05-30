@@ -115,86 +115,89 @@ const FormularioPerfil = () => {
         >
             <h2 className="mb-3 text-lg font-bold text-slate-900">Editar perfil</h2>
 
-            <div className="grid gap-3 md:grid-cols-2">
-                <div>
-                    <label className="mb-1 block text-sm font-semibold text-slate-600">Nombre</label>
-                <input
-                    type="text"
-                    placeholder="Ingresa tu nombre"
-                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("nombre", { 
-                        required: "El nombre es obligatorio",
-                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
-                    })}
-                />
-                {errors.nombre && <p className="mt-1 text-xs text-red-600">{errors.nombre.message}</p>}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                {/* Columna de Datos */}
+                <div className={`${!isAdmin ? "md:col-span-7 lg:col-span-8" : "md:col-span-12"} grid grid-cols-1 sm:grid-cols-2 gap-4`}>
+                    <div>
+                        <label className="mb-1 block text-sm font-semibold text-slate-600">Nombre</label>
+                        <input
+                            type="text"
+                            placeholder="Ingresa tu nombre"
+                            className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                            {...register("nombre", { 
+                                required: "El nombre es obligatorio",
+                                maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                                pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                            })}
+                        />
+                        {errors.nombre && <p className="mt-1 text-xs text-red-600">{errors.nombre.message}</p>}
+                    </div>
+
+                    <div>
+                        <label className="mb-1 block text-sm font-semibold text-slate-600">Apellido</label>
+                        <input
+                            type="text"
+                            placeholder="Ingresa tu apellido"
+                            className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                            {...register("apellido", { 
+                                required: "El apellido es obligatorio",
+                                maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                                pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                            })}
+                        />
+                        {errors.apellido && <p className="mt-1 text-xs text-red-600">{errors.apellido.message}</p>}
+                    </div>
+
+                    <div className="sm:col-span-1">
+                        <label className="mb-1 block text-sm font-semibold text-slate-600">Dirección</label>
+                        <input
+                            type="text"
+                            placeholder="Ingresa tu dirección"
+                            className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                            {...register("direccion", { 
+                                required: "La dirección es obligatoria",
+                                maxLength: { value: 20, message: "Máximo 20 caracteres" }
+                            })}
+                        />
+                        {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}
+                    </div>
+
+                    <div className="sm:col-span-1">
+                        <label className="mb-1 block text-sm font-semibold text-slate-600">Teléfono</label>
+                        <input
+                            type="text"
+                            placeholder="Ingresa tu teléfono"
+                            className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                            {...register("celular", { 
+                                required: "El celular es obligatorio",
+                                minLength: { value: 10, message: "Debe tener 10 dígitos" },
+                                maxLength: { value: 10, message: "Debe tener 10 dígitos" },
+                                pattern: { value: /^[0-9]+$/, message: "Solo números permitidos" }
+                            })}
+                        />
+                        {errors.celular && <p className="mt-1 text-xs text-red-600">{errors.celular.message}</p>}
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label className="mb-1 block text-sm font-semibold text-slate-600">Correo electrónico</label>
+                        <input
+                            type="email"
+                            placeholder="Ingresa tu correo"
+                            className="block w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2 text-slate-500 outline-none cursor-not-allowed"
+                            readOnly
+                            {...register("email")}
+                        />
+                        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
+                    </div>
                 </div>
 
-                <div>
-                    <label className="mb-1 block text-sm font-semibold text-slate-600">Apellido</label>
-                <input
-                    type="text"
-                    placeholder="Ingresa tu apellido"
-                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("apellido", { 
-                        required: "El apellido es obligatorio",
-                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
-                    })}
-                />
-                {errors.apellido && <p className="mt-1 text-xs text-red-600">{errors.apellido.message}</p>}
-                </div>
-
-                <div>
-                    <label className="mb-1 block text-sm font-semibold text-slate-600">Dirección</label>
-                <input
-                    type="text"
-                    placeholder="Ingresa tu dirección"
-                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("direccion", { 
-                        required: "La dirección es obligatoria",
-                        maxLength: { value: 20, message: "Máximo 20 caracteres" }
-                    })}
-                />
-                {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}
-                </div>
-
-                <div>
-                    <label className="mb-1 block text-sm font-semibold text-slate-600">Teléfono</label>
-                <input
-                    type="text"
-                    placeholder="Ingresa tu teléfono"
-                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("celular", { 
-                        required: "El celular es obligatorio",
-                        minLength: { value: 10, message: "Debe tener 10 dígitos" },
-                        maxLength: { value: 10, message: "Debe tener 10 dígitos" },
-                        pattern: { value: /^[0-9]+$/, message: "Solo números permitidos" }
-                    })}
-                />
-                {errors.celular && <p className="mt-1 text-xs text-red-600">{errors.celular.message}</p>}
-                </div>
-
-                <div className="md:col-span-2">
-                    <label className="mb-1 block text-sm font-semibold text-slate-600">Correo electrónico</label>
-                <input
-                    type="email"
-                    placeholder="Ingresa tu correo"
-                    className="block w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2 text-slate-500 outline-none cursor-not-allowed"
-                    readOnly
-                    {...register("email")}
-                />
-                {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-                </div>
-
+                {/* Columna de Imagen (Solo si no es Admin) */}
                 {!isAdmin && (
-                    <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-2.5">
+                    <div className="md:col-span-5 lg:col-span-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 flex flex-col">
                         <label className="mb-1 block text-sm font-semibold text-slate-600">
                             Imagen de perfil
                         </label>
-
-                        <div className="mt-2">
+                        <div className="mt-2 flex-1 flex flex-col justify-center">
                             <input
                                 type="file"
                                 accept="image/*"
@@ -210,13 +213,13 @@ const FormularioPerfil = () => {
                             {errors.imagenPerfil && <p className="mt-1 text-xs text-red-600">{errors.imagenPerfil.message}</p>}
 
                             {uploadedImagePreview && (
-                                <div className="mt-2 flex items-center gap-3">
+                                <div className="mt-4 flex flex-col items-center text-center gap-3">
                                     <img
                                         src={uploadedImagePreview}
                                         alt="Imagen subida"
-                                        className="h-16 w-16 rounded-full border-2 border-slate-100 object-cover"
+                                        className="h-28 w-28 rounded-full border-4 border-white shadow-md object-cover"
                                     />
-                                    <p className="text-xs text-slate-500">Puedes cambiar la imagen cuando quieras.</p>
+                                    <p className="text-xs text-slate-500 max-w-[150px]">Puedes cambiar la imagen cuando quieras.</p>
                                 </div>
                             )}
                         </div>
