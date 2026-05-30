@@ -5,7 +5,18 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
 import storeAuth from "../context/storeAuth";
-import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import { Marker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+
+const redPinIcon = L.divIcon({
+    className: "custom-pin",
+    html: `<svg width="30" height="42" viewBox="0 0 30 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 0C6.71573 0 0 6.71573 0 15C0 26.25 15 42 15 42C15 42 30 26.25 30 15C30 6.71573 23.2843 0 15 0ZM15 20.25C12.1005 20.25 9.75 18.1495 9.75 15.25C9.75 12.3505 12.1005 10.25 15 10.25C17.8995 10.25 20.25 12.3505 20.25 15.25C20.25 18.1495 17.8995 20.25 15 20.25Z" fill="#EF4444"/>
+            <circle cx="15" cy="15" r="5" fill="white"/>
+           </svg>`,
+    iconSize: [30, 42],
+    iconAnchor: [15, 42],
+});
 
 const DEFAULT_CENTER = [-0.2106, -78.4897];
 const EPN_BOUNDS = {
@@ -611,7 +622,7 @@ const Update = () => {
                                         />
                                         <MapClickSelector />
                                         {selectedPoint && (
-                                            <CircleMarker center={selectedPoint} radius={8} pathOptions={{ color: "#1d4ed8" }} />
+                                            <Marker position={selectedPoint} icon={redPinIcon} />
                                         )}
                                     </MapContainer>
                                 </div>
