@@ -4,6 +4,10 @@ import { FaYoutube, FaGithub, FaClipboardList, FaUser, FaComments, FaBullhorn, F
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import storeAuth from '../context/storeAuth';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 const normalizarServicio = (valor) => {
     if (!valor) return null;
@@ -108,12 +112,25 @@ export const Home = () => {
         { value: "suit", label: "Suite" },
     ];
 
-    const beneficiosSistema = [
-        "Búsqueda rápida y centralizada",
-        "Filtros inteligentes para encontrar tu residencia ideal",
-        "Publicaciones verificadas y más confiables",
-        "Contacto directo con propietarios y estudiantes",
-        "Ahorra tiempo revisando solo opciones que sí te sirven",
+    const bannerSlides = [
+        {
+            titulo: "Encuentra residencia sin perder tiempo",
+            descripcion: "Filtra por precio, habitaciones, baños, servicios y más para llegar directo a opciones reales que te sirven.",
+            destacado: "Búsqueda rápida",
+            icono: FaClipboardList,
+        },
+        {
+            titulo: "Publicaciones claras y verificadas",
+            descripcion: "Explora residencias con fotos, detalles completos, mapa y datos listos para comparar con confianza.",
+            destacado: "Más confianza",
+            icono: FaBullhorn,
+        },
+        {
+            titulo: "Habla directo con propietarios y estudiantes",
+            descripcion: "Resuelve dudas por chat y toma decisiones más rápido sin salir de la plataforma.",
+            destacado: "Chat en tiempo real",
+            icono: FaComments,
+        },
     ];
 
     const [propiedades, setPropiedades] = useState([]);
@@ -423,19 +440,58 @@ export const Home = () => {
                 {/* HERO + FILTROS */}
                 <section className="bg-gradient-to-b from-blue-50 to-white pt-0 pb-12 px-6">
                     <div className="max-w-7xl mx-auto">
-                        <div className="home-benefits-banner -mx-6 mb-8 overflow-hidden border-y border-blue-100 bg-white/80 shadow-sm backdrop-blur-md">
-                            <div className="home-benefits-marquee">
-                                <div className="home-benefits-marquee__track">
-                                    {[...beneficiosSistema, ...beneficiosSistema].map((beneficio, index) => (
-                                        <div
-                                            key={`${beneficio}-${index}`}
-                                            className="home-benefits-pill"
-                                        >
-                                            <span>{beneficio}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                        <div className="mb-10 overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 shadow-2xl">
+                            <Swiper
+                                modules={[Autoplay, Pagination]}
+                                autoplay={{ delay: 4500, disableOnInteraction: false }}
+                                pagination={{ clickable: true }}
+                                loop
+                                className="home-hero-swiper"
+                            >
+                                {bannerSlides.map((slide, index) => {
+                                    const Icono = slide.icono;
+                                    return (
+                                        <SwiperSlide key={`${slide.titulo}-${index}`}>
+                                            <div className="grid min-h-[320px] grid-cols-1 items-center gap-8 px-6 py-10 md:min-h-[380px] md:grid-cols-[1.2fr_0.8fr] md:px-10 lg:px-12">
+                                                <div className="max-w-2xl">
+                                                    <span className="inline-flex items-center rounded-full border border-blue-300/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100">
+                                                        {slide.destacado}
+                                                    </span>
+                                                    <h2 className="mt-5 text-3xl font-black leading-tight text-white md:text-5xl">
+                                                        {slide.titulo}
+                                                    </h2>
+                                                    <p className="mt-4 max-w-xl text-base leading-7 text-slate-200 md:text-lg">
+                                                        {slide.descripcion}
+                                                    </p>
+
+                                                    <div className="mt-6 flex flex-wrap gap-3">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => navigate("/login")}
+                                                            className="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition-transform hover:-translate-y-0.5 hover:bg-blue-700"
+                                                        >
+                                                            Empezar ahora
+                                                        </button>
+                                                        <a
+                                                            href="#servicios"
+                                                            className="rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                                                        >
+                                                            Ver servicios
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex justify-center md:justify-end">
+                                                    <div className="relative flex h-44 w-44 items-center justify-center rounded-[2rem] border border-white/15 bg-white/10 p-6 shadow-2xl backdrop-blur-md md:h-56 md:w-56">
+                                                        <div className="absolute inset-4 rounded-[1.5rem] bg-gradient-to-br from-blue-400/30 via-cyan-300/10 to-transparent" />
+                                                        <Icono className="relative text-6xl text-white md:text-7xl" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </SwiperSlide>
+                                    );
+                                })}
+                            </Swiper>
                         </div>
 
                         <div className="mb-10">
