@@ -285,6 +285,9 @@ const Feedback = () => {
     const [quejaSeleccionada, setQuejaSeleccionada] = useState(null);
     const [comentarioAdmin, setComentarioAdmin] = useState("");
     const [enviandoComentario, setEnviandoComentario] = useState(false);
+    const [paginaActual, setPaginaActual] = useState(1);
+    const [animando, setAnimando] = useState(false);
+    const itemsPorPagina = 6;
     const tiposConRevision = ["queja", "sugerencia"];
 
     const roleNormalized = String(rol || "").toLowerCase();
@@ -502,6 +505,42 @@ const Feedback = () => {
         return resultado;
     }, [items, filtro, filtroTipo]);
 
+    useEffect(() => {
+        setPaginaActual(1);
+    }, [filtro, filtroTipo]);
+
+    const totalPaginas = Math.max(1, Math.ceil(itemsFiltrados.length / itemsPorPagina));
+    const indiceInicio = (paginaActual - 1) * itemsPorPagina;
+    const itemsPaginados = itemsFiltrados.slice(indiceInicio, indiceInicio + itemsPorPagina);
+
+    const cambiarPagina = (nuevaPagina) => {
+        if (nuevaPagina < 1 || nuevaPagina > totalPaginas || nuevaPagina === paginaActual) return;
+        setAnimando(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            setPaginaActual(nuevaPagina);
+            setAnimando(false);
+        }, 200);
+    };
+
+    const paginasVisibles = (() => {
+        if (totalPaginas <= 7) return Array.from({ length: totalPaginas }, (_, index) => index + 1);
+        const inicio = Math.max(1, paginaActual - 2);
+        const fin = Math.min(totalPaginas, inicio + 4);
+        const inicioAjustado = Math.max(1, fin - 4);
+        const paginas = [];
+        if (inicioAjustado > 1) {
+            paginas.push(1);
+            if (inicioAjustado > 2) paginas.push("...");
+        }
+        for (let p = inicioAjustado; p <= fin; p += 1) paginas.push(p);
+        if (fin < totalPaginas) {
+            if (fin < totalPaginas - 1) paginas.push("...");
+            paginas.push(totalPaginas);
+        }
+        return paginas;
+    })();
+
     const conteoPendientes = useMemo(
         () => items.filter((item) => item.manejaEstado && !item.estado).length,
         [items]
@@ -522,9 +561,9 @@ const Feedback = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-            <div className="max-w-6xl mx-auto py-8 px-4">
-                <header className="mb-6">
+        <div className="min-h-full bg-slate-50 py-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            <div className="w-full flex flex-col px-2 md:px-4">
+                <header className="mb-4">
                     <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Quejas y sugerencias</h1>
                     <p className="mt-2 text-sm text-slate-500">Este módulo te permite gestionar quejas y sugerencias</p>
                     <hr className="mt-4 border-slate-200" />
@@ -584,8 +623,8 @@ const Feedback = () => {
                     ) : !itemsFiltrados.length ? (
                         <p className="text-slate-600">No existen registros para mostrar.</p>
                     ) : (
-                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 items-stretch">
-                            {itemsFiltrados.map((item) => (
+                        <div className={`grid grid-cols-1 gap-6 lg:grid-cols-3 items-stretch transition-all duration-300 ease-out ${animando ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
+                            {itemsPaginados.map((item) => (
                                 <article key={item.id} className="flex h-full min-h-[350px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
                                     <div className="flex h-full flex-col p-5">
                                         {/* Badges de Tipo y Estado */}
@@ -686,6 +725,70 @@ const Feedback = () => {
                                     </div>
                                 </article>
                             ))}
+                        </div>
+                    )}
+
+                    {/* PAGINACIÓN */}
+                    {totalPaginas > 1 && (
+                        <div className="flex justify-center mt-12 mb-4">
+                            <div className="flex items-center gap-2 flex-wrap justify-center">
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(1)}
+                                    disabled={paginaActual === 1}
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    &laquo;
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(paginaActual - 1)}
+                                    disabled={paginaActual === 1}
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    &lsaquo;
+                                </button>
+
+                                {paginasVisibles.map((pagina, index) =>
+                                    pagina === "..." ? (
+                                        <span key={`ellipsis-${index}`} className="px-2 text-gray-400 text-sm select-none">
+                                            ...
+                                        </span>
+                                    ) : (
+                                        <button
+                                            key={pagina}
+                                            type="button"
+                                            onClick={() => cambiarPagina(pagina)}
+                                            className={`h-10 w-10 rounded-lg text-sm font-semibold transition-all ${
+                                                pagina === paginaActual
+                                                    ? "bg-blue-600 text-white border border-blue-600 shadow-md"
+                                                    : "bg-white text-gray-600 border border-gray-300 hover:border-blue-600 hover:text-blue-600"
+                                            }`}
+                                        >
+                                            {pagina}
+                                        </button>
+                                    )
+                                )}
+
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(paginaActual + 1)}
+                                    disabled={paginaActual === totalPaginas}
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    &rsaquo;
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => cambiarPagina(totalPaginas)}
+                                    disabled={paginaActual === totalPaginas}
+                                    className="h-10 w-10 rounded-lg border border-gray-300 bg-white text-gray-600 text-sm font-semibold transition-all hover:border-blue-600 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    &raquo;
+                                </button>
+                            </div>
                         </div>
                     )}
                 </section>

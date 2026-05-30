@@ -2,12 +2,12 @@ import Table from "../components/list/Table";
 
 const List = () => {
     return (
-        <div className="min-h-screen bg-slate-50 py-8" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <header className="mb-8">
+        <div className="min-h-full bg-slate-50 py-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+            <div className="w-full flex flex-col px-2 md:px-4">
+            <header className="mb-6">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Residencias</h1>
             <p className="mt-2 text-sm text-slate-500">Este módulo te permite gestionar residencias</p>
-            <hr className="mt-6 border-slate-200" />
+            <hr className="mt-4 border-slate-200" />
             </header>
 
             <main>
