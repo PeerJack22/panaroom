@@ -81,6 +81,12 @@ export const PublicarResidencias = () => {
         const nuevosArchivos = Array.from(e.target.files || []);
         if (!nuevosArchivos.length) return;
 
+        if (documentosArrendatario.length + nuevosArchivos.length > 5) {
+            toast.warn("Solo se permiten hasta 5 documentos en total.");
+            e.target.value = "";
+            return;
+        }
+
         const idCarga = toast.loading("Optimizando documentos...");
         try {
             const comprimidos = await Promise.all(

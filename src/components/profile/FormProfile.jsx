@@ -6,6 +6,51 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const compressImage = (file, { quality = 0.8, maxWidth = 1280, maxHeight = 1280 } = {}) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    if (!blob) return reject(new Error("Error al comprimir"));
+                    const newName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                    const compressedFile = new File([blob], newName, { type: "image/jpeg", lastModified: Date.now() });
+                    resolve(compressedFile);
+                }, "image/jpeg", quality);
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+};
+
 const FormularioPerfil = () => {
     const { user, updateProfile, profile } = storeProfile();
     const { rol } = storeAuth();
@@ -15,20 +60,32 @@ const FormularioPerfil = () => {
         register,
         handleSubmit,
         reset,
+        setValue,
         formState: { errors },
     } = useForm();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadedImagePreview, setUploadedImagePreview] = useState(null);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (uploadedImagePreview && !uploadedImagePreview.includes("http")) {
-                URL.revokeObjectURL(uploadedImagePreview);
+            const idCarga = toast.loading("Optimizando imagen de perfil...");
+            try {
+                const comprimida = await compressImage(file);
+                if (uploadedImagePreview && !uploadedImagePreview.includes("http")) {
+                    URL.revokeObjectURL(uploadedImagePreview);
+                }
+                const imageUrl = URL.createObjectURL(comprimida);
+                setUploadedImagePreview(imageUrl);
+                
+                // Reemplazar el archivo en el estado de react-hook-form con el comprimido
+                setValue("imagenPerfil", [comprimida], { shouldValidate: true });
+                toast.update(idCarga, { render: "Imagen optimizada!", type: "success", isLoading: false, autoClose: 2000 });
+            } catch (err) {
+                console.error("Error al procesar avatar:", err);
+                toast.update(idCarga, { render: "Error al procesar la imagen", type: "error", isLoading: false, autoClose: 3000 });
             }
-            const imageUrl = URL.createObjectURL(file);
-            setUploadedImagePreview(imageUrl);
         }
     };
 
