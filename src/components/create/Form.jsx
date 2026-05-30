@@ -539,7 +539,7 @@ export const Form = () => {
                             <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
                             <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { 
                                 required: "El precio mensual es obligatorio.", 
-                                min: { value: 0, message: "Mínimo 0." },
+                                min: { value: 1, message: "Mínimo 1." },
                                 max: { value: 999, message: "Máximo 3 cifras (999)." }
                             })} />
                             {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
@@ -618,7 +618,7 @@ export const Form = () => {
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Monto alícuota</label>
                                 <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { 
                                     required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, 
-                                    min: { value: 0, message: "Mínimo 0." },
+                                    min: { value: 1, message: "Mínimo 1." },
                                     max: { value: 999, message: "Máximo 3 cifras (999)." }
                                 })} />
                                 {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
