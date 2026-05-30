@@ -941,16 +941,14 @@ export const Home = () => {
                 )}
 
                 {/* ACERCA DE */}
-                <section id="acerca" className="px-6 py-16 bg-blue-50">
+                <section id="acerca" className="px-6 pt-4 pb-16 bg-blue-50">
                     <div className="max-w-7xl mx-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                            <div>
+                            <div className="text-center">
                                 <h2 className="text-4xl font-bold text-gray-900 mb-6">Acerca de PanaRoom</h2>
-                                <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
-                                    <p className="text-gray-700 text-lg leading-relaxed">
-                                        PanaRoom es una plataforma web dedicada a facilitar la gestión de residencias estudiantiles, conectando propietarios con estudiantes que buscan alojamiento seguro y confiable en la zona de la Escuela Politécnica Nacional. Nuestro objetivo es hacer el proceso más transparente, accesible y eficiente para todos.
-                                    </p>
-                                </div>
+                                <p className="text-gray-700 text-lg leading-relaxed">
+                                    PanaRoom es una plataforma web dedicada a facilitar la gestión de residencias estudiantiles, conectando propietarios con estudiantes que buscan alojamiento seguro y confiable en la zona de la Escuela Politécnica Nacional. Nuestro objetivo es hacer el proceso más transparente, accesible y eficiente para todos.
+                                </p>
                             </div>
 
                             <div className="flex justify-center md:justify-end">
