@@ -817,9 +817,9 @@ const Update = () => {
                 <div className="mt-6 flex items-center justify-between gap-4">
                     <button type="button" onClick={handlePreviousStep} disabled={step === 1} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">Anterior</button>
                     {step < totalSteps ? (
-                        <button type="button" onClick={handleNextStep} className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-slate-100 transition-colors hover:bg-slate-700">Siguiente</button>
+                        <button type="button" onClick={handleNextStep} className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-slate-100 transition-colors hover:bg-slate-700">Siguiente</button>
                     ) : (
-                        <input type="submit" value={isSubmitting ? "Guardando..." : "Guardar cambios"} disabled={isSubmitting || Object.keys(cambios).length === 0} className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50" />
+                        <input type="submit" value={isSubmitting ? "Guardando..." : "Guardar cambios"} disabled={isSubmitting || Object.keys(cambios).length === 0} className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50" />
                     )}
                 </div>
             </form>

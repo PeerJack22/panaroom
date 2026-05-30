@@ -805,7 +805,7 @@ export const Form = () => {
                     <button
                         type="button"
                         onClick={handleNextStep}
-                        className="rounded-xl bg-slate-900 px-5 py-2.5 text-slate-100 uppercase font-bold hover:bg-slate-700 transition-all"
+                        className="rounded-xl bg-slate-900 px-5 py-2.5 text-slate-100 font-bold hover:bg-slate-700 transition-all"
                     >
                         Siguiente
                     </button>
@@ -814,7 +814,7 @@ export const Form = () => {
                         type="submit"
                         value={isSubmitting ? "Guardando..." : "Guardar registro"}
                         disabled={isSubmitting}
-                        className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-white uppercase font-bold transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700"
+                        className="cursor-pointer rounded-xl bg-blue-700 px-5 py-2.5 text-white font-bold transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700"
                     />
                 )}
             </div>
