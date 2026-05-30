@@ -12,8 +12,8 @@ const Profile = () => {
                     <hr className="mt-4 border-slate-200" />
                 </header>
 
-                <main className="grid grid-cols-1 gap-4 xl:grid-cols-[0.85fr_1.15fr] xl:items-start">
-                    <aside className="flex w-full flex-col gap-4">
+                <main className="grid grid-cols-1 gap-4 xl:grid-cols-[0.85fr_1.15fr] xl:items-stretch">
+                    <aside className="flex w-full flex-col gap-4 h-full">
                         <CardProfile />
                         <CardPassword />
                     </aside>

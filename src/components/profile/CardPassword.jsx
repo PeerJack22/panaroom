@@ -19,12 +19,11 @@ const CardPassword = () => {
     };
 
     return (
-        <>
-            <div className="mx-auto w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="mb-2 text-lg font-bold text-slate-900">Actualizar contraseña</h2>
-                <hr className="mb-4 border-slate-200" />
+        <div className="flex-1 flex flex-col w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-2 text-lg font-bold text-slate-900">Actualizar contraseña</h2>
+            <hr className="mb-4 border-slate-200" />
 
-                <form onSubmit={handleSubmit(updatePassword)}>
+            <form onSubmit={handleSubmit(updatePassword)} className="flex-1 flex flex-col">
                     <div className="mb-3">
                         <label className="mb-1 block text-sm font-semibold text-slate-700">
                             Contraseña actual
@@ -81,11 +80,10 @@ const CardPassword = () => {
                     <input
                         type="submit"
                         value="Cambiar"
-                        className="w-full rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-all shadow-lg hover:bg-blue-700 hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
+                        className="mt-auto w-full rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-all shadow-lg hover:bg-blue-700 hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
                     />
                 </form>
-            </div>
-        </>
+        </div>
     );
 };
 
