@@ -115,9 +115,9 @@ const FormularioPerfil = () => {
         >
             <h2 className="mb-3 text-lg font-bold text-slate-900">Editar perfil</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div className="flex flex-col gap-6">
                 {/* Columna de Datos */}
-                <div className={`${!isAdmin ? "md:col-span-7 lg:col-span-8" : "md:col-span-12"} grid grid-cols-1 sm:grid-cols-2 gap-4`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label className="mb-1 block text-sm font-semibold text-slate-600">Nombre</label>
                         <input
@@ -193,7 +193,7 @@ const FormularioPerfil = () => {
 
                 {/* Columna de Imagen (Solo si no es Admin) */}
                 {!isAdmin && (
-                    <div className="md:col-span-5 lg:col-span-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 flex flex-col">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 flex flex-col">
                         <label className="mb-1 block text-sm font-semibold text-slate-600">
                             Imagen de perfil
                         </label>
