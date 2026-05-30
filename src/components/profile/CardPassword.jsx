@@ -20,9 +20,9 @@ const CardPassword = () => {
 
     return (
         <>
-            <div className="mx-auto mt-0 w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-3 shadow-sm xl:mt-auto">
-                <h1 className="mb-2 text-base font-bold text-slate-900">Actualizar contraseña</h1>
-                <hr className="mb-3 border-slate-200" />
+            <div className="mx-auto w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:mt-auto">
+                <h2 className="mb-2 text-lg font-bold text-slate-900">Actualizar contraseña</h2>
+                <hr className="mb-4 border-slate-200" />
 
                 <form onSubmit={handleSubmit(updatePassword)}>
                     <div className="mb-3">

@@ -9,16 +9,16 @@ export const CardProfile = () => {
 
     return (
         <div className="mx-auto w-full rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-            <div className="flex items-center gap-4 pb-3">
+            <div className="flex flex-col sm:flex-row items-center gap-4 pb-4">
                 <img
                     src={imagenPerfil}
                     alt="img-client"
-                    className="h-20 w-20 shrink-0 rounded-full border-4 border-slate-300 object-cover shadow-sm"
-                    width={120}
-                    height={120}
+                    className="h-24 w-24 shrink-0 rounded-full border-4 border-slate-100 object-cover shadow-sm"
+                    width={96}
+                    height={96}
                 />
-                <div className="min-w-0">
-                    <h2 className="truncate text-xl font-semibold text-slate-900">
+                <div className="min-w-0 text-center sm:text-left">
+                    <h2 className="text-xl font-bold text-slate-900 break-words">
                         {`${user?.nombre || ""} ${user?.apellido || ""}`.trim() || "Usuario"}
                     </h2>
                 </div>

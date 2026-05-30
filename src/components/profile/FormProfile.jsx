@@ -111,7 +111,7 @@ const FormularioPerfil = () => {
     return (
         <form
             onSubmit={handleSubmit(updateUser)}
-            className="flex h-full max-w-none flex-col rounded-2xl border border-slate-200 bg-white p-3 text-slate-900 shadow-sm"
+            className="flex h-full max-w-none flex-col rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm"
         >
             <h2 className="mb-3 text-lg font-bold text-slate-900">Editar perfil</h2>
 
@@ -189,7 +189,7 @@ const FormularioPerfil = () => {
                 </div>
 
                 {!isAdmin && (
-                    <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-2.5 min-h-[118px]">
+                    <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-2.5">
                         <label className="mb-1 block text-sm font-semibold text-slate-600">
                             Imagen de perfil
                         </label>
