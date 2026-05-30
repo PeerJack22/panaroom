@@ -391,10 +391,10 @@ const Feedback = () => {
         try {
             // 1. Enviar comentario
             const urlComentario = `${import.meta.env.VITE_BACKEND_URL}/queja-sugerencia/comentario`;
-            // Enviar el campo de comentario según el rol para que el backend lo registre correctamente
-            const payloadComentario = isAdmin
-                ? { id: quejaId, comentarioAdmin: comentarioAdmin }
-                : { id: quejaId, comentarioUsuario: comentarioAdmin };
+            
+            // Se unifica el envío a 'comentarioUsuario' ya que el backend lo requiere como obligatorio
+            // independientemente del rol que esté respondiendo (Admin o Arrendatario).
+            const payloadComentario = { id: quejaId, comentarioUsuario: comentarioAdmin };
 
             const responseComentario = await axios.put(urlComentario, payloadComentario, {
                 headers: {
