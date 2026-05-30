@@ -917,7 +917,6 @@ const Details = () => {
                                         rows="4"
                                         {...register("descripcion", { 
                                             required: "La descripción es obligatoria.",
-                                            minLength: { value: 10, message: "Mínimo 10 caracteres." }
                                             minLength: { value: 10, message: "Mínimo 10 caracteres." },
                                             validate: val => val.trim().length >= 10 || "La descripción no puede estar vacía o contener solo espacios (mínimo 10 caracteres reales)."
                                         })}
