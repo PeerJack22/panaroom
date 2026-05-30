@@ -139,6 +139,12 @@ export const Form = () => {
         }
     }, [setValue, tieneParqueadero]);
 
+    useEffect(() => {
+        if (!alicuotaActiva) {
+            setValue("alicoutaMonto", "0", { shouldDirty: true, shouldValidate: true });
+        }
+    }, [setValue, alicuotaActiva]);
+
     // No mostramos miniaturas en la confirmación; mantenemos solo la lista de `selectedImages`.
 
     useEffect(() => {

@@ -818,6 +818,9 @@ const Feedback = () => {
                                 className="w-full border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 resize-none"
                                 rows="4"
                             />
+                            {comentarioAdmin.length > 0 && !comentarioAdmin.trim() && (
+                                <p className="text-red-600 text-xs mt-1 italic font-semibold">La respuesta no puede consistir solo de espacios en blanco.</p>
+                            )}
 
                             <div className="flex gap-3 mt-6 justify-end">
                                 <button

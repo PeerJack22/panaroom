@@ -896,6 +896,9 @@ const Details = () => {
                                                 </button>
                                             ))}
                                         </div>
+                                        {calificacion === 0 && (
+                                            <p className="text-center text-[10px] text-red-600 font-bold mt-1 uppercase tracking-tight">Debes calificar con al menos 1 estrella</p>
+                                        )}
                                         {calificacion > 0 && (
                                             <p className="text-center text-sm text-gray-600 mt-2">
                                                 Calificación: <span className="font-semibold">{calificacion}/5</span>
@@ -915,6 +918,8 @@ const Details = () => {
                                         {...register("descripcion", { 
                                             required: "La descripción es obligatoria.",
                                             minLength: { value: 10, message: "Mínimo 10 caracteres." }
+                                            minLength: { value: 10, message: "Mínimo 10 caracteres." },
+                                            validate: val => val.trim().length >= 10 || "La descripción no puede estar vacía o contener solo espacios (mínimo 10 caracteres reales)."
                                         })}
                                     />
                                     {errors.descripcion && (

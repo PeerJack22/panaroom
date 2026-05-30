@@ -298,7 +298,17 @@ const Update = () => {
         setSelectedPoint(null);
     }, [currentMapUrl]);
 
-    // Nota: no forzamos numParqueaderos a 0 aquí para evitar sobrescribir el valor cargado desde el departamento.
+    useEffect(() => {
+        if (!cargando && departamento && !tieneParqueadero) {
+            setValue("numParqueaderos", "0", { shouldValidate: true });
+        }
+    }, [tieneParqueadero, setValue, cargando, departamento]);
+
+    useEffect(() => {
+        if (!cargando && departamento && !alicuotaActiva) {
+            setValue("alicoutaMonto", "0", { shouldValidate: true });
+        }
+    }, [alicuotaActiva, setValue, cargando, departamento]);
 
     const handleNextStep = async () => {
         const fields = getFieldsForStep(step);
