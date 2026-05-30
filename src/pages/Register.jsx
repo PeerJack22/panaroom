@@ -127,8 +127,8 @@ export const Register = () => {
                         </button>
                     </form>
 
-                    <div className="mt-4 border-t border-gray-200 pt-3 text-center text-sm text-gray-600 flex justify-between items-center">
-                        <p>¿Ya tienes una cuenta?</p>
+                    <div className="mt-4 border-t border-gray-200 pt-3 text-sm flex justify-between items-center">
+                        <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Regresar</Link>
                         <Link
                             to="/loginEstudiante"
                             className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"

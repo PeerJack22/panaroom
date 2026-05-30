@@ -246,7 +246,7 @@ export const PublicarResidencias = () => {
                             </div>
                         )}
 
-                        <div className="mt-4 border-t border-gray-200 pt-4 text-sm flex justify-center items-center">
+                        <div className="mt-4 border-t border-gray-200 pt-4 text-sm flex justify-start items-center">
                             <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Regresar</Link>
                         </div>
                     </form>
