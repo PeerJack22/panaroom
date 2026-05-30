@@ -304,14 +304,6 @@ const Chat = () => {
         return false;
       })();
 
-      // desktop notification (no toast for every msg)
-      try {
-        const remit = String(m?.remitente || '').toLowerCase();
-        if (remit && remit !== roleNormalized && Notification && Notification.permission === 'granted') {
-          new Notification(m.remitente || 'Nuevo mensaje', { body: m.mensaje || '' });
-        }
-      } catch (err) { console.warn('Notification error', err); }
-
       if (belongs) {
         const nuevo = normalizarMensaje(m);
         setMensajes(prev => {
@@ -391,11 +383,6 @@ const Chat = () => {
       socket.disconnect();
     };
   }, [token, contactoActivo, normalizarMensaje, obtenerParamsContacto, roleNormalized, userId, isArrendatario, isEstudiante, isAdministrador]);
-
-  // request notifications
-  useEffect(() => {
-    if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission();
-  }, []);
 
   // autoscroll
   useEffect(() => {

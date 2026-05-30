@@ -1,18 +1,68 @@
-import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaClipboardList, FaComments, FaHouseChimney, FaUser, FaBed, FaUsers } from 'react-icons/fa6';
+import { io } from "socket.io-client";
 import storeAuth from '../context/storeAuth'
 import storeProfile from '../context/storeProfile'
 import logo_proyecto from '../assets/logo_proyecto.png';
 
 const Dashboard = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const urlActual = location.pathname;
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const { clearToken, rol } = storeAuth();
+    const { clearToken, rol, token } = storeAuth();
     const { user, clearUser } = storeProfile();
+    const userId = user?._id || user?.id || null;
+
+    // Configuración global de notificaciones y Socket
+    useEffect(() => {
+        if (!token || !userId) return;
+
+        // Solicitar permisos de notificación al iniciar sesión (entrar al dashboard)
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        const socketBase = String(import.meta.env.VITE_BACKEND_URL || "").replace(/\/api\/?$/, "");
+        if (!socketBase) return;
+
+        const socket = io(socketBase, {
+            transports: ['polling'],
+            auth: { token },
+            withCredentials: true,
+        });
+
+        socket.on('nuevo-mensaje-chat', (payload) => {
+            const m = payload?.chat || payload;
+            const remit = String(m?.remitente || '').toLowerCase();
+            const miRol = String(rol || '').toLowerCase();
+
+            // Notificar solo si:
+            // 1. El remitente no soy yo.
+            // 2. NO estoy en la pantalla de chat O la pestaña está en segundo plano (document.hidden)
+            if (remit && remit !== miRol && (location.pathname !== '/dashboard/chat' || document.hidden)) {
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    const titulo = `Mensaje de ${m.nombreRemitente || 'PanaRoom'}`;
+                    const notification = new Notification(titulo, {
+                        body: m.mensaje,
+                        icon: logo_proyecto,
+                    });
+
+                    notification.onclick = () => {
+                        window.focus();
+                        navigate('/dashboard/chat');
+                    };
+                }
+            }
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [token, userId, rol, location.pathname, navigate]);
 
     const avatarUrl =
         user?.avatarUrl ||
