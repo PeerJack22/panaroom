@@ -130,7 +130,7 @@ export const PublicarResidencias = () => {
     };
 
     return (
-        <div className="flex flex-col sm:flex-row h-screen bg-white" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+        <div className="flex flex-col sm:flex-row min-h-screen bg-white" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             {/* Imagen lateral */}
             <div className="w-full sm:w-1/2 h-1/3 sm:h-screen hidden sm:block relative">
                 <img
@@ -174,8 +174,8 @@ export const PublicarResidencias = () => {
             </div>
 
             {/* Contenedor de formulario */}
-            <div className="w-full sm:w-1/2 h-screen bg-white flex justify-center items-center px-6">
-                <div className="w-full max-w-2xl">
+            <div className="w-full sm:w-1/2 min-h-screen bg-white flex justify-center items-center px-6 py-10">
+                <div className="md:w-4/5 sm:w-full">
                     <h1 className="text-3xl font-bold mb-2 text-center uppercase text-blue-800">
                         Formulario de registro
                     </h1>
