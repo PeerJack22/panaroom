@@ -9,7 +9,13 @@ import storeAuth from "../context/storeAuth";
 import { confirm } from "../utils/swal";
 import { Marker, MapContainer, TileLayer } from "react-leaflet";
 import { createPortal } from "react-dom";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import L from "leaflet";
+
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 const redPinIcon = L.divIcon({
     className: "custom-pin",
@@ -69,6 +75,7 @@ const Details = () => {
     const [propietario, setPropietario] = useState(null);
     const [imagenActiva, setImagenActiva] = useState(null);
     const [imagenCarrusel, setImagenCarrusel] = useState(0);
+    const [swiperInstancia, setSwiperInstancia] = useState(null);
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
     const [modoComentario, setModoComentario] = useState(null);
@@ -76,7 +83,6 @@ const Details = () => {
     const [calificacion, setCalificacion] = useState(0);
     const [comentarios, setComentarios] = useState([]);
     const carruselMiniaturasRef = useRef(null);
-    const carruselComentariosRef = useRef(null);
 
     const isEstudiante = rol === 'estudiante';
     const isAdministrador = rol === 'administrador';
@@ -93,27 +99,6 @@ const Details = () => {
     const irImagenAnterior = () => {
         if (!departamento?.imagenes?.length) return;
         setImagenActiva((prev) => (prev - 1 + departamento.imagenes.length) % departamento.imagenes.length);
-    };
-
-    const irCarruselAnterior = () => {
-        if (!departamento?.imagenes?.length) return;
-        setImagenCarrusel((prev) => (prev - 1 + departamento.imagenes.length) % departamento.imagenes.length);
-    };
-
-    const irCarruselSiguiente = () => {
-        if (!departamento?.imagenes?.length) return;
-        setImagenCarrusel((prev) => (prev + 1) % departamento.imagenes.length);
-    };
-
-    const moverCarruselComentarios = (direccion) => {
-        const contenedor = carruselComentariosRef.current;
-        if (!contenedor) return;
-
-        const desplazamiento = Math.max(260, Math.floor(contenedor.clientWidth * 0.8));
-        contenedor.scrollBy({
-            left: direccion === "izquierda" ? -desplazamiento : desplazamiento,
-            behavior: "smooth",
-        });
     };
 
     const renderEstrellas = (valor) => {
@@ -685,35 +670,30 @@ const Details = () => {
 
                         {departamento.imagenes?.length > 0 ? (
                             <div className="space-y-4">
-                                <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-                                    <button
-                                        type="button"
-                                        onClick={irCarruselAnterior}
-                                        className="absolute left-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white shadow-lg transition hover:bg-black/70"
-                                        aria-label="Imagen anterior"
-                                    >
-                                        ‹
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={irCarruselSiguiente}
-                                        className="absolute right-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white shadow-lg transition hover:bg-black/70"
-                                        aria-label="Imagen siguiente"
-                                    >
-                                        ›
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => abrirLightbox(imagenCarrusel)}
-                                        className="group block w-full"
-                                    >
-                                        <img
-                                            src={departamento.imagenes[imagenCarrusel]?.url}
-                                            alt={`Imagen principal ${imagenCarrusel + 1}`}
-                                            className="h-72 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                                        />
-                                    </button>
-                                </div>
+                                <Swiper
+                                    modules={[Autoplay, Navigation]}
+                                    autoplay={{ delay: 4000, disableOnInteraction: false }}
+                                    navigation
+                                    onSwiper={setSwiperInstancia}
+                                    onSlideChange={(swiper) => setImagenCarrusel(swiper.activeIndex)}
+                                    className="relative h-72 w-full rounded-2xl border border-gray-200 bg-white shadow-sm"
+                                >
+                                    {departamento.imagenes.map((img, index) => (
+                                        <SwiperSlide key={index}>
+                                            <button
+                                                type="button"
+                                                onClick={() => abrirLightbox(index)}
+                                                className="h-full w-full"
+                                            >
+                                                <img
+                                                    src={img.url}
+                                                    alt={`Imagen ${index + 1}`}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </button>
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
 
                                 <p className="text-center text-xs text-gray-500">
                                     Imagen {imagenCarrusel + 1} de {departamento.imagenes.length}
@@ -727,7 +707,10 @@ const Details = () => {
                                                     <button
                                                         key={index}
                                                         type="button"
-                                                        onClick={() => setImagenCarrusel(index)}
+                                                        onClick={() => {
+                                                            setImagenCarrusel(index);
+                                                            if (swiperInstancia) swiperInstancia.slideTo(index);
+                                                        }}
                                                         data-thumbnail-index={index}
                                                         className={`shrink-0 snap-start overflow-hidden rounded-xl border shadow-sm transition-all ${
                                                             index === imagenCarrusel
@@ -767,54 +750,49 @@ const Details = () => {
                             </div>
                         </div>
 
-                        <div className="relative">
-                            {comentarios.length > 1 && (
-                                <>
-                                    <button
-                                        type="button"
-                                        onClick={() => moverCarruselComentarios("izquierda")}
-                                        className="absolute left-0 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-md transition hover:bg-white hover:text-blue-600"
-                                        aria-label="Comentarios anteriores"
-                                    >
-                                        ‹
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => moverCarruselComentarios("derecha")}
-                                        className="absolute right-0 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-md transition hover:bg-white hover:text-blue-600"
-                                        aria-label="Siguientes comentarios"
-                                    >
-                                        ›
-                                    </button>
-                                </>
-                            )}
-
-                            <div ref={carruselComentariosRef} className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 pr-1 snap-x snap-mandatory scroll-smooth touch-pan-x px-11">
-                                {comentarios.length > 0 ? comentarios.map((item) => (
-                                    <article
-                                        key={item.id}
-                                        className="min-w-[280px] max-w-[320px] shrink-0 snap-start rounded-2xl border border-white/70 bg-white/75 backdrop-blur-md p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-                                    >
-                                        <div className="flex items-start justify-between gap-2 mb-3">
-                                            <div className="min-w-0">
-                                                <p className="font-semibold text-gray-800 text-sm truncate">{item.nombre}</p>
-                                                <p className="text-xs text-gray-500 mt-0.5">
-                                                    {item.fecha ? new Date(item.fecha).toLocaleDateString("es-EC") : ""}
+                        <div className="relative mt-4">
+                            {comentarios.length > 0 ? (
+                                <Swiper
+                                    modules={[Autoplay, Pagination]}
+                                    autoplay={{
+                                        delay: 3500,
+                                        disableOnInteraction: false,
+                                        pauseOnMouseEnter: true
+                                    }}
+                                    pagination={{ clickable: true }}
+                                    spaceBetween={20}
+                                    slidesPerView={1}
+                                    breakpoints={{
+                                        640: { slidesPerView: 2 },
+                                        1024: { slidesPerView: 3 }
+                                    }}
+                                    loop={comentarios.length > 3}
+                                    className="pb-12"
+                                >
+                                    {comentarios.map((item) => (
+                                        <SwiperSlide key={item.id} className="h-auto">
+                                            <article className="h-full rounded-2xl border border-white/70 bg-white/75 backdrop-blur-md p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md flex flex-col">
+                                                <div className="flex items-start justify-between gap-2 mb-4">
+                                                    <div className="min-w-0">
+                                                        <p className="font-bold text-gray-900 text-sm truncate">{item.nombre}</p>
+                                                        <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mt-0.5">
+                                                            {item.fecha ? new Date(item.fecha).toLocaleDateString("es-EC") : ""}
+                                                        </p>
+                                                    </div>
+                                                    <div className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-amber-500 text-xs">
+                                                        {renderEstrellas(item.calificacion)}
+                                                    </div>
+                                                </div>
+                                                <p className="text-sm text-gray-700 leading-relaxed line-clamp-4 flex-1">
+                                                    {item.comentario}
                                                 </p>
-                                            </div>
-                                            <div className="shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-amber-500 text-sm">
-                                                {renderEstrellas(item.calificacion)}
-                                            </div>
-                                        </div>
-
-                                        <p className="text-sm text-gray-700 leading-relaxed line-clamp-4">
-                                            {item.comentario}
-                                        </p>
-                                    </article>
-                                )) : (
-                                    <p className="text-sm text-gray-500">Todavía no hay comentarios en esta residencia.</p>
-                                )}
-                            </div>
+                                            </article>
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            ) : (
+                                <p className="text-sm text-gray-500 text-center py-6 italic">Todavía no hay comentarios en esta residencia.</p>
+                            )}
                         </div>
                     </section>
                 }
