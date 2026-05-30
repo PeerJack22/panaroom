@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { confirm } from "../utils/swal";
+import { MdInfo } from 'react-icons/md';
 
 const Users = () => {
     const navigate = useNavigate();
@@ -487,35 +488,28 @@ const Users = () => {
                     {usuariosPaginados.map(user => (
                         <div
                             key={user._id}
-                            className="bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl"
-                            onClick={() => {
-                                if (normalizarRol(user.rol) === "arrendatario") {
-                                    abrirDetalleArrendatario(user);
-                                }
-                                if (normalizarRol(user.rol) === "estudiante") {
-                                    abrirDetalleEstudiante(user);
-                                }
-                            }}
-                            role={["arrendatario", "estudiante"].includes(normalizarRol(user.rol)) ? "button" : undefined}
-                            tabIndex={["arrendatario", "estudiante"].includes(normalizarRol(user.rol)) ? 0 : undefined}
-                            onKeyDown={(e) => {
-                                if (!["arrendatario", "estudiante"].includes(normalizarRol(user.rol))) return;
-                                if (e.key === "Enter" || e.key === " ") {
-                                    e.preventDefault();
-                                    if (normalizarRol(user.rol) === "arrendatario") abrirDetalleArrendatario(user);
-                                    if (normalizarRol(user.rol) === "estudiante") abrirDetalleEstudiante(user);
-                                }
-                            }}
+                            className="bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col"
                         >
                             <h2 className="text-xl font-bold text-slate-900 mb-2">
                                 {user.nombre} {user.apellido}
                             </h2>
-                            <div className="space-y-1 text-slate-700 mb-4">
+                            <div className="space-y-1 text-slate-700 mb-4 flex-1">
                                 <p><span className="font-semibold">Correo:</span> {user.email || "No disponible"}</p>
                                 <p><span className="font-semibold">Teléfono:</span> {user.celular || "No disponible"}</p>
                             </div>
 
-                            <div className="mt-auto flex justify-end pt-3">
+                            <div className="mt-auto flex justify-end items-center gap-3 pt-3 border-t border-slate-100">
+                                <button
+                                    type="button"
+                                    title="Ver detalles"
+                                    onClick={() => {
+                                        if (normalizarRol(user.rol) === "arrendatario") abrirDetalleArrendatario(user);
+                                        if (normalizarRol(user.rol) === "estudiante") abrirDetalleEstudiante(user);
+                                    }}
+                                    className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 transition-colors hover:bg-slate-50 shadow-sm"
+                                >
+                                    <MdInfo className="h-5 w-5" />
+                                </button>
                                 <button
                                     type="button"
                                     onClick={(e) => {
@@ -607,7 +601,7 @@ const Users = () => {
 
             {estudianteSeleccionado && createPortal(
                 <div
-                    className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4 py-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
                     onClick={cerrarDetalleEstudiante}
                 >
                     <div
@@ -673,7 +667,7 @@ const Users = () => {
 
             {arrendatarioSeleccionado && createPortal(
                 <div
-                    className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4 py-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
                     onClick={cerrarDetalleArrendatario}
                 >
                     <div
@@ -837,7 +831,7 @@ const Users = () => {
 
             {arrendatarioSeleccionado && documentoLightboxIndex !== null && documentosArrendatarioSeleccionado.length > 0 && createPortal(
                 <div
-                    className="fixed inset-0 z-[100000] bg-black/85 flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[60] bg-black/85 flex items-center justify-center p-4"
                     onClick={cerrarLightboxDocumento}
                 >
                     <button
