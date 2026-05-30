@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import storeAuth from "../context/storeAuth";
+import { FaUser, FaHouseChimney, FaCalendarDays, FaReply } from "react-icons/fa6";
 
 const FEEDBACK_ROUTE = "/dashboard/quejas-sugerencias";
 
@@ -337,6 +338,13 @@ const Feedback = () => {
                     .map((item, index) => normalizeFeedbackItem(item, index))
                     .filter((item) => item && item.tipo !== "comentario");
 
+                // Ordenar por fecha (más reciente primero)
+                normalizedList.sort((a, b) => {
+                    const dateA = a.fecha ? new Date(a.fecha) : new Date(0);
+                    const dateB = b.fecha ? new Date(b.fecha) : new Date(0);
+                    return dateB.getTime() - dateA.getTime(); // Descendente
+                });
+
                 setItems(normalizedList);
             } catch (error) {
                 console.error("[Feedback] Error al cargar:", error);
@@ -576,68 +584,75 @@ const Feedback = () => {
                     ) : !itemsFiltrados.length ? (
                         <p className="text-slate-600">No existen registros para mostrar.</p>
                     ) : (
-                        <div className="grid grid-cols-1 gap-4 max-h-[56rem] overflow-y-auto pr-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 items-stretch">
                             {itemsFiltrados.map((item) => (
-                                <article key={item.id} className="flex h-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                                    <div className="flex h-full flex-col gap-3 p-4 sm:p-5">
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="min-w-0 flex-1 text-sm text-slate-600">
-                                                {isAdmin && (
-                                                    <div>
-                                                        <span className="font-semibold text-slate-800">Estudiante:</span> {item.estudiante}
-                                                    </div>
-                                                )}
-                                                <div>
-                                                    <span className="font-semibold text-slate-800">Departamento:</span>{' '}
-                                                    {item.departamentoId ? (
-                                                        <Link
-                                                            to={`/dashboard/visualizar/${item.departamentoId}`}
-                                                            state={{ from: FEEDBACK_ROUTE }}
-                                                            className="text-blue-600 hover:text-blue-700 underline"
-                                                        >
-                                                            {item.departamento}
-                                                        </Link>
-                                                    ) : (
-                                                        item.departamento
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <span className="font-semibold text-slate-800">Fecha:</span> {formatDate(item.fecha)}
-                                                </div>
-                                            </div>
+                                <article key={item.id} className="flex h-full min-h-[350px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
+                                    <div className="flex h-full flex-col p-5">
+                                        {/* Badges de Tipo y Estado */}
+                                        <div className="flex justify-between items-center mb-4">
+                                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                                                item.tipo === 'queja' ? 'bg-red-100 text-red-700' : 
+                                                item.tipo === 'sugerencia' ? 'bg-blue-100 text-blue-700' : 
+                                                'bg-slate-100 text-slate-700'
+                                            }`}>
+                                                {item.tipo}
+                                            </span>
 
-                                            <div className="flex shrink-0 flex-col items-end gap-2">
-                                                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                                                    item.tipo === 'queja'
-                                                        ? 'border border-red-200 bg-red-50 text-red-700'
-                                                        : item.tipo === 'sugerencia'
-                                                            ? 'border border-blue-200 bg-blue-50 text-blue-700'
-                                                            : 'border border-slate-200 bg-slate-100 text-slate-700'
+                                            {item.manejaEstado && (
+                                                <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                                                    item.estado ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                                                 }`}>
-                                                    {item.tipo === 'queja' ? 'Queja' : item.tipo === 'sugerencia' ? 'Sugerencia' : 'Comentario'}
+                                                    <span className={`h-1.5 w-1.5 rounded-full ${item.estado ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                                                    {item.estado ? 'Revisado' : 'Pendiente'}
                                                 </span>
+                                            )}
+                                        </div>
 
-                                                {item.manejaEstado && (
-                                                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                                                        item.estado
-                                                            ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
-                                                            : 'border border-amber-200 bg-amber-50 text-amber-700'
-                                                    }`}>
-                                                        {item.estado ? 'Revisado' : 'Pendiente'}
-                                                    </span>
+                                        {/* Metadata con Iconos */}
+                                        <div className="space-y-2.5 mb-5">
+                                            {isAdmin && (
+                                                <div className="flex items-center gap-2 text-xs text-slate-600">
+                                                    <FaUser className="shrink-0 text-slate-400" />
+                                                    <span className="font-bold text-slate-700">Estudiante:</span>
+                                                    <span className="truncate">{item.estudiante}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-2 text-xs text-slate-600">
+                                                <FaHouseChimney className="shrink-0 text-slate-400" />
+                                                <span className="font-bold text-slate-700">Residencia:</span>
+                                                {item.departamentoId ? (
+                                                    <Link
+                                                        to={`/dashboard/visualizar/${item.departamentoId}`}
+                                                        state={{ from: FEEDBACK_ROUTE }}
+                                                        className="text-blue-600 hover:text-blue-700 font-bold truncate"
+                                                    >
+                                                        {item.departamento}
+                                                    </Link>
+                                                ) : (
+                                                    <span className="truncate">{item.departamento}</span>
                                                 )}
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-slate-600">
+                                                <FaCalendarDays className="shrink-0 text-slate-400" />
+                                                <span className="font-bold text-slate-700">Fecha:</span>
+                                                <span>{formatDate(item.fecha)}</span>
                                             </div>
                                         </div>
 
-                                        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+                                        {/* Mensaje principal */}
+                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 flex-1 mb-5">
                                             <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
                                                 {item.mensaje}
                                             </p>
                                         </div>
 
+                                        {/* Sección de Respuestas */}
                                         {item.comentariosRespuesta && item.comentariosRespuesta.length > 0 && (
-                                            <div className="space-y-3 pt-1">
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Respuestas</p>
+                                            <div className="space-y-3 mb-5">
+                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                    <FaReply className="rotate-180" />
+                                                    <span>Respuestas</span>
+                                                </div>
                                                 <div className="space-y-2">
                                                     {item.comentariosRespuesta.map((comentario, idx) => (
                                                         <div key={idx} className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
@@ -653,16 +668,17 @@ const Feedback = () => {
                                             </div>
                                         )}
 
-                                        <div className="mt-auto flex items-end justify-end pt-2">
+                                        {/* Botón de Acción al final */}
+                                        <div className="mt-auto pt-2">
                                             {(isAdmin || (isArrendatario && item.tipo === 'sugerencia')) && item.manejaEstado && !item.tieneRespuesta ? (
                                                 <button
                                                     onClick={() => abrirModalComentario(item)}
-                                                    className="rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
+                                                    className="w-full rounded-full bg-blue-600 py-2.5 text-xs font-bold text-white shadow-lg transition-all hover:bg-blue-700 active:scale-95"
                                                 >
                                                     Responder
                                                 </button>
                                             ) : item.tieneRespuesta ? (
-                                                <span className="text-xs font-semibold text-emerald-700">
+                                                <span className="text-xs font-bold text-emerald-600 flex items-center justify-end gap-1">
                                                     ✓ Respondido
                                                 </span>
                                             ) : null}
