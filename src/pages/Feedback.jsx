@@ -679,6 +679,7 @@ const Feedback = () => {
                                         </div>
 
                                         {/* Mensaje principal */}
+                                        <p className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">Comentario:</p>
                                         <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 flex-1 mb-5">
                                             <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
                                                 {item.mensaje}
