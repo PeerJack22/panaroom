@@ -30,7 +30,7 @@ export const Register = () => {
         >
             {/* Formulario */}
             <div className="w-full sm:w-1/2 sm:h-screen flex justify-center items-center px-6 md:px-8 py-6 md:py-8 bg-white">
-                <div className="w-full max-w-md">
+                <div className="w-full max-w-2xl">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center sm:text-left">
                         Formulario de Registro
                     </h1>

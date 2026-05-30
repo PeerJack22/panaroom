@@ -5,7 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { confirm } from "../utils/swal";
-import { MdInfo } from 'react-icons/md';
+import { MdInfo, MdClose } from 'react-icons/md';
+import { FaUser, FaEnvelope, FaPhone, FaLocationDot, FaBriefcase, FaIdCard, FaCheckCircle, FaClock, FaHouseChimney } from "react-icons/fa6";
 
 const Users = () => {
     const navigate = useNavigate();
@@ -601,48 +602,65 @@ const Users = () => {
 
             {estudianteSeleccionado && createPortal(
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 md:p-6 backdrop-blur-sm"
                     onClick={cerrarDetalleEstudiante}
                 >
                     <div
-                        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-slate-200"
+                        className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl flex flex-col border border-slate-200"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
+                        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5 bg-white shrink-0">
                             <div>
-                                <h3 className="text-2xl font-extrabold text-slate-900">Detalle del estudiante</h3>
-                                <p className="text-sm text-slate-600">Revisa la información básica del estudiante.</p>
+                                <h3 className="text-xl md:text-2xl font-black text-slate-900">Información del Estudiante</h3>
+                                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Perfil de usuario</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={cerrarDetalleEstudiante}
-                                className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:shadow-md"
+                                className="p-2 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all"
                             >
-                                Cerrar
+                                <MdClose className="h-6 w-6" />
                             </button>
                         </div>
 
-                        <div className="grid gap-6 p-6 lg:grid-cols-[1.1fr_0.9fr]">
-                            <section className="space-y-3">
-                                <h4 className="text-xl font-bold text-slate-900">
-                                    {estudianteSeleccionado.nombre} {estudianteSeleccionado.apellido}
-                                </h4>
-                                <p><span className="font-semibold">Correo:</span> {estudianteSeleccionado.email || "No disponible"}</p>
-                                <p><span className="font-semibold">Teléfono:</span> {estudianteSeleccionado.celular || "No disponible"}</p>
-                                <p><span className="font-semibold">Dirección:</span> {estudianteSeleccionado.direccion || "No disponible"}</p>
-                                <p><span className="font-semibold">Rol:</span> {normalizarRol(estudianteSeleccionado.rol)}</p>
-                                <p>
-                                    <span className="font-semibold">Confirmación:</span>{" "}
-                                    {estudianteSeleccionado?.confirmEmail === false ? "Pendiente" : "Confirmado"}
-                                </p>
-                            </section>
+                        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-inner">
+                                            <FaUser className="h-7 w-7" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xl font-bold text-slate-900 leading-tight">
+                                                {estudianteSeleccionado.nombre} {estudianteSeleccionado.apellido}
+                                            </h4>
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 mt-1">
+                                                <FaBriefcase className="h-3 w-3" /> {normalizarRol(estudianteSeleccionado.rol)}
+                                            </span>
+                                        </div>
+                                    </div>
 
-                            <section className="space-y-4">
+                                    <div className="space-y-4 border-t border-slate-100 pt-6">
+                                        <div className="flex items-center gap-3 text-slate-600">
+                                            <FaEnvelope className="h-4 w-4 text-slate-400" />
+                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400 uppercase">Email</span><span className="text-sm font-medium">{estudianteSeleccionado.email}</span></div>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-slate-600">
+                                            <FaPhone className="h-4 w-4 text-slate-400" />
+                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400 uppercase">Teléfono</span><span className="text-sm font-medium">{estudianteSeleccionado.celular || "No disponible"}</span></div>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-slate-600">
+                                            <FaLocationDot className="h-4 w-4 text-slate-400" />
+                                            <div className="flex flex-col"><span className="text-[10px] font-bold text-slate-400 uppercase">Dirección</span><span className="text-sm font-medium">{estudianteSeleccionado.direccion || "No disponible"}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {estudianteSeleccionado?.confirmEmail === false && (
-                                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                                        <p className="mb-3 text-sm text-emerald-900">
-                                            Este estudiante todavía no ha sido confirmado.
-                                        </p>
+                                    <div className="flex flex-col justify-center">
+                                    <div className="rounded-3xl border border-emerald-100 bg-emerald-50/50 p-6 text-center">
+                                        <FaClock className="h-10 w-10 text-emerald-600 mx-auto mb-3 opacity-80" />
+                                        <p className="mb-4 text-sm font-semibold text-emerald-900">Este estudiante tiene su cuenta pendiente de activación.</p>
                                         <button
                                             type="button"
                                             onClick={(e) => {
@@ -650,15 +668,16 @@ const Users = () => {
                                                 handleToggleEstadoUsuario(estudianteSeleccionado);
                                             }}
                                             disabled={confirmingArrendatarioId === (estudianteSeleccionado?._id || estudianteSeleccionado?.id)}
-                                            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:shadow-md transition-colors disabled:opacity-60"
+                                            className="w-full rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all active:scale-95 disabled:opacity-60"
                                         >
                                             {confirmingArrendatarioId === (estudianteSeleccionado?._id || estudianteSeleccionado?.id)
                                                 ? "Guardando..."
                                                 : "Activar cuenta"}
                                         </button>
                                     </div>
+                                    </div>
                                 )}
-                            </section>
+                            </div>
                         </div>
                     </div>
                 </div>,
@@ -831,7 +850,7 @@ const Users = () => {
 
             {arrendatarioSeleccionado && documentoLightboxIndex !== null && documentosArrendatarioSeleccionado.length > 0 && createPortal(
                 <div
-                    className="fixed inset-0 z-[60] bg-black/85 flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md"
                     onClick={cerrarLightboxDocumento}
                 >
                     <button
