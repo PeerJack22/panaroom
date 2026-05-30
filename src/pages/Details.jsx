@@ -700,8 +700,8 @@ const Details = () => {
                                 </p>
 
                                 {departamento.imagenes.length > 1 ? (
-                                    <div className="overflow-x-auto pb-2">
-                                        <div ref={carruselMiniaturasRef} className="flex gap-3 snap-x snap-mandatory scroll-smooth">
+                                    <div className="overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                        <div ref={carruselMiniaturasRef} className="flex gap-3 snap-x snap-mandatory scroll-smooth px-1">
                                             {departamento.imagenes.map((img, index) => {
                                                 return (
                                                     <button
@@ -767,11 +767,11 @@ const Details = () => {
                                         1024: { slidesPerView: 3 }
                                     }}
                                     loop={comentarios.length > 3}
-                                    className="pb-12"
+                                    className="pb-16"
                                 >
                                     {comentarios.map((item) => (
                                         <SwiperSlide key={item.id} className="h-auto">
-                                            <article className="h-full rounded-2xl border border-white/70 bg-white/75 backdrop-blur-md p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md flex flex-col">
+                                            <article className="h-full min-h-[220px] rounded-2xl border border-white/70 bg-white/75 backdrop-blur-md p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md flex flex-col">
                                                 <div className="flex items-start justify-between gap-2 mb-4">
                                                     <div className="min-w-0">
                                                         <p className="font-bold text-gray-900 text-sm truncate">{item.nombre}</p>
