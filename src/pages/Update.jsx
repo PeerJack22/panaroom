@@ -554,19 +554,32 @@ const Update = () => {
                         <div className="grid gap-5 md:grid-cols-2">
                             <div className="md:col-span-2">
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Título</label>
-                                <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("titulo", { required: "El título es obligatorio." })} />
+                                <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("titulo", { 
+                                    required: "El título es obligatorio.",
+                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ]+$/, message: "Solo letras permitidas (sin espacios)." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
+                                })} />
                                 {errors.titulo && <p className="mt-1 text-xs text-red-600">{errors.titulo.message}</p>}
                             </div>
 
                             <div className="md:col-span-2">
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Descripción</label>
-                                <textarea rows="4" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("descripcion", { required: "La descripción es obligatoria." })} />
+                                <textarea rows="4" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("descripcion", { 
+                                    required: "La descripción es obligatoria.",
+                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
+                                })} />
                                 {errors.descripcion && <p className="mt-1 text-xs text-red-600">{errors.descripcion.message}</p>}
                             </div>
 
                             <div className="md:col-span-2">
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Referencia</label>
-                                <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("referencia")} />
+                                <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("referencia", {
+                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                    validate: val => !val || val.trim().length > 0 || "No puede consistir solo de espacios."
+                                })} />
+                                {errors.referencia && <p className="mt-1 text-xs text-red-600">{errors.referencia.message}</p>}
                             </div>
 
                             <div className="md:col-span-2">
@@ -620,19 +633,31 @@ const Update = () => {
                         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
-                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { required: "El precio mensual es obligatorio.", min: { value: 0, message: "El precio no puede ser negativo." } })} />
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { 
+                                    required: "El precio mensual es obligatorio.", 
+                                    min: { value: 0, message: "Mínimo 0." },
+                                    max: { value: 999, message: "Máximo 3 cifras (999)." }
+                                })} />
                                 {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
                             </div>
 
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Número de habitaciones</label>
-                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 habitación." } })} />
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { 
+                                    required: "Este campo es obligatorio.", 
+                                    min: { value: 1, message: "Mínimo 1." },
+                                    max: { value: 10, message: "Máximo 10." }
+                                })} />
                                 {errors.numeroHabitaciones && <p className="mt-1 text-xs text-red-600">{errors.numeroHabitaciones.message}</p>}
                             </div>
 
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Número de baños</label>
-                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroBanos", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 baño." } })} />
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroBanos", { 
+                                    required: "Este campo es obligatorio.", 
+                                    min: { value: 1, message: "Mínimo 1." },
+                                    max: { value: 10, message: "Máximo 10." }
+                                })} />
                                 {errors.numeroBanos && <p className="mt-1 text-xs text-red-600">{errors.numeroBanos.message}</p>}
                             </div>
 
@@ -648,7 +673,11 @@ const Update = () => {
                             {tieneParqueadero && (
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">Número de parqueaderos</label>
-                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numParqueaderos", { required: tieneParqueadero ? "Indica cuántos parqueaderos tiene." : false, min: { value: 1, message: "Debe ser al menos 1." } })} />
+                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numParqueaderos", { 
+                                        required: tieneParqueadero ? "Indica cuántos parqueaderos tiene." : false, 
+                                        min: { value: 1, message: "Mínimo 1." },
+                                        max: { value: 10, message: "Máximo 10." }
+                                    })} />
                                     {errors.numParqueaderos && <p className="mt-1 text-xs text-red-600">{errors.numParqueaderos.message}</p>}
                                 </div>
                             )}
@@ -683,7 +712,11 @@ const Update = () => {
                             {alicuotaActiva && (
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">Monto alícuota</label>
-                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, min: { value: 0, message: "El monto no puede ser negativo." } })} />
+                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { 
+                                        required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, 
+                                        min: { value: 0, message: "Mínimo 0." },
+                                        max: { value: 999, message: "Máximo 3 cifras (999)." }
+                                    })} />
                                     {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
                                 </div>
                             )}

@@ -1,10 +1,56 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^\d{10}$/;
 const NAME_REGEX = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+
+const compressImage = (file, { quality = 0.8, maxWidth = 1280, maxHeight = 1280 } = {}) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    if (!blob) return reject(new Error("Error al comprimir"));
+                    const newName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                    const compressedFile = new File([blob], newName, { type: "image/jpeg", lastModified: Date.now() });
+                    resolve(compressedFile);
+                }, "image/jpeg", quality);
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+};
 
 export const PublicarResidencias = () => {
     const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
@@ -31,11 +77,21 @@ export const PublicarResidencias = () => {
         setDatosSolicitud((prev) => ({ ...prev, [name]: value }));
     };
 
-    const manejarCambioDocumentos = (e) => {
+    const manejarCambioDocumentos = async (e) => {
         const nuevosArchivos = Array.from(e.target.files || []);
         if (!nuevosArchivos.length) return;
 
-        setDocumentosArrendatario((prev) => [...prev, ...nuevosArchivos]);
+        const idCarga = toast.loading("Optimizando documentos...");
+        try {
+            const comprimidos = await Promise.all(
+                nuevosArchivos.map(f => compressImage(f, { quality: 0.8 }))
+            );
+            setDocumentosArrendatario((prev) => [...prev, ...comprimidos]);
+            toast.update(idCarga, { render: "Documentos listos!", type: "success", isLoading: false, autoClose: 2000 });
+        } catch (err) {
+            console.error("Error al comprimir:", err);
+            toast.update(idCarga, { render: "Error al procesar archivos", type: "error", isLoading: false, autoClose: 3000 });
+        }
         e.target.value = "";
     };
 

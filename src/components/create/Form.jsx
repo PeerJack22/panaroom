@@ -54,6 +54,60 @@ const extractMarkerCoordinates = (url) => {
     return [lat, lng];
 };
 
+const compressImage = (file, { quality = 0.8, maxWidth = 1280, maxHeight = 1280 } = {}) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                // Pintar fondo blanco para evitar que las transparencias de PNG se vuelvan negras
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (!blob) return reject(new Error("Error al comprimir"));
+                        // Asegurar que la extensión sea .jpg independientemente del original
+                        const newName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                        const compressedFile = new File([blob], newName, {
+                            type: "image/jpeg",
+                            lastModified: Date.now(),
+                        });
+                        resolve(compressedFile);
+                    },
+                    "image/jpeg",
+                    quality
+                );
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+};
+
 export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -341,7 +395,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("titulo", { 
                                     required: "El título es obligatorio.",
-                                    maxLength: { value: 10, message: "Máximo 10 caracteres." },
+                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
                                     pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ]+$/, message: "Solo letras permitidas (sin espacios)." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
@@ -371,7 +425,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("direccion", { 
                                     required: "La dirección es obligatoria.",
-                                    maxLength: { value: 15, message: "Máximo 15 caracteres." },
+                                    maxLength: { value: 25, message: "Máximo 25 caracteres." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
                             />
@@ -386,7 +440,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("referencia", { 
                                     required: "La referencia es obligatoria.",
-                                    maxLength: { value: 15, message: "Máximo 15 caracteres." },
+                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
                             />
@@ -572,10 +626,11 @@ export const Form = () => {
                                             <input
                                                 type="file"
                                                 multiple
+                                                accept="image/*"
                                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                                 {...register("imagen", {
                                                     validate: () => (selectedImages.length > 0 && selectedImages.length <= 4) || "Sube entre 1 y 4 imágenes.",
-                                                    onChange: (e) => {
+                                                    onChange: async (e) => {
                                                         const newFiles = Array.from(e.target.files || []);
                                                         if (!newFiles.length) return;
 
@@ -585,12 +640,23 @@ export const Form = () => {
                                                             return;
                                                         }
 
-                                                        setSelectedImages((prev) => {
-                                                            const merged = [...prev, ...newFiles];
-                                                            setValue("imagen", merged, { shouldValidate: true });
-                                                            return merged;
-                                                        });
-                                                        clearErrors("imagen");
+                                                        const idCarga = toast.loading("Comprimiendo imágenes...");
+                                                        try {
+                                                            const compressedFiles = await Promise.all(
+                                                                newFiles.map(f => compressImage(f, { quality: 0.8 }))
+                                                            );
+
+                                                            setSelectedImages((prev) => {
+                                                                const merged = [...prev, ...compressedFiles];
+                                                                setValue("imagen", merged, { shouldValidate: true });
+                                                                return merged;
+                                                            });
+                                                            clearErrors("imagen");
+                                                            toast.update(idCarga, { render: "Imágenes optimizadas!", type: "success", isLoading: false, autoClose: 2000 });
+                                                        } catch (err) {
+                                                            console.error("Error al procesar imágenes:", err);
+                                                            toast.update(idCarga, { render: "Error al comprimir imágenes", type: "error", isLoading: false, autoClose: 3000 });
+                                                        }
 
                                                         // Permite volver a abrir el selector y agregar más archivos sin perder los anteriores.
                                                         e.target.value = "";
