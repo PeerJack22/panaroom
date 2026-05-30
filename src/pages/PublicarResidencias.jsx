@@ -9,6 +9,7 @@ export const PublicarResidencias = () => {
     const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
     const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
     const [estadoSolicitud, setEstadoSolicitud] = useState({ tipo: "", mensaje: "" });
+    const [modalAyudaAbierto, setModalAyudaAbierto] = useState(false);
     const [datosSolicitud, setDatosSolicitud] = useState({
         nombre: "",
         apellido: "",
@@ -122,7 +123,7 @@ export const PublicarResidencias = () => {
                 {/* Overlay difuminado con título y tarjeta informativa */}
                 <div className="absolute inset-0 bg-black/25 backdrop-blur-sm flex flex-col justify-center items-center p-8 text-center">
                     <h2 className="text-2xl md:text-3xl font-semibold text-white leading-tight mb-4 max-w-lg">
-                        Crea tu cuenta de arrendatario para empezar a publicar residencias
+                        Crea tu cuenta de arrendatario
                     </h2>
 
                     <div className="bg-white/95 rounded-2xl p-7 max-w-sm shadow-2xl mx-auto border border-white/20">
@@ -238,9 +239,18 @@ export const PublicarResidencias = () => {
                                 onChange={manejarCambioDocumentos}
                                 className="w-full rounded-lg border border-blue-200 bg-white text-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
                             />
-                            {documentosArrendatario.length > 0 && (
-                                <p className="mt-1 text-xs text-green-600 font-semibold">✓ {documentosArrendatario.length} archivo(s) seleccionado(s)</p>
-                            )}
+                            <div className="flex justify-between items-center mt-1">
+                                {documentosArrendatario.length > 0 ? (
+                                    <p className="text-xs text-green-600 font-semibold">✓ {documentosArrendatario.length} archivo(s) seleccionado(s)</p>
+                                ) : <div />}
+                                <button
+                                    type="button"
+                                    onClick={() => setModalAyudaAbierto(true)}
+                                    className="text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                                >
+                                    ¿Qué debo subir?
+                                </button>
+                            </div>
                         </div>
 
                         <div className="mb-6">
@@ -269,6 +279,43 @@ export const PublicarResidencias = () => {
                     </form>
                 </div>
             </div>
+
+            {/* Modal de ayuda */}
+            {modalAyudaAbierto && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm">
+                    <div className="relative w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl border border-slate-200">
+                        <h3 className="text-xl font-bold text-slate-900 mb-4 text-center">Documentos sugeridos</h3>
+                        <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
+                            <p className="font-semibold text-slate-800">
+                                Las imagenes deben ayudar a validar que su perfil es real y sus residencias.
+                            </p>
+                            <ul className="space-y-3">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600 font-bold">•</span> Copia de cedula del propietario o responsable.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600 font-bold">•</span> Planilla de luz, agua o internet del inmueble.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600 font-bold">•</span> Contrato, predio o documento que relacione la direccion.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600 font-bold">•</span> Fotos o respaldo adicional si aplica.
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="mt-8">
+                            <button
+                                type="button"
+                                onClick={() => setModalAyudaAbierto(false)}
+                                className="w-full rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
+                            >
+                                Entendido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
