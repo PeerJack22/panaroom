@@ -164,6 +164,12 @@ export const Form = () => {
         setStep((prev) => Math.max(prev - 1, 1));
     };
 
+    const removeImage = (index) => {
+        const updated = selectedImages.filter((_, i) => i !== index);
+        setSelectedImages(updated);
+        setValue("imagen", updated, { shouldValidate: true });
+    };
+
     const handleMapSelect = ([lat, lng]) => {
         if (!isWithinEpnBounds(lat, lng)) {
             toast.error("Selecciona un punto dentro de la zona aledaña a la EPN.");
@@ -333,7 +339,12 @@ export const Form = () => {
                                 type="text"
                                 placeholder="Ingresar título"
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("titulo", { required: "El título es obligatorio." })}
+                                {...register("titulo", { 
+                                    required: "El título es obligatorio.",
+                                    maxLength: { value: 10, message: "Máximo 10 caracteres." },
+                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ]+$/, message: "Solo letras permitidas (sin espacios)." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
+                                })}
                             />
                             {errors.titulo && <p className="text-red-600 text-xs italic">{errors.titulo.message}</p>}
                         </div>
@@ -343,7 +354,11 @@ export const Form = () => {
                             <textarea
                                 placeholder="Ingresa la descripción de forma general como características del inmueble, mobiliario, etc."
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("descripcion", { required: "La descripción es obligatoria." })}
+                                {...register("descripcion", { 
+                                    required: "La descripción es obligatoria.",
+                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
+                                })}
                             />
                             {errors.descripcion && <p className="text-red-600 text-xs italic">{errors.descripcion.message}</p>}
                         </div>
@@ -354,7 +369,11 @@ export const Form = () => {
                                 type="text"
                                 placeholder="Ingresar dirección"
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("direccion", { required: "La dirección es obligatoria." })}
+                                {...register("direccion", { 
+                                    required: "La dirección es obligatoria.",
+                                    maxLength: { value: 15, message: "Máximo 15 caracteres." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
+                                })}
                             />
                             {errors.direccion && <p className="text-red-600 text-xs italic">{errors.direccion.message}</p>}
                         </div>
@@ -365,7 +384,11 @@ export const Form = () => {
                                 type="text"
                                 placeholder="Ingresar referencia del lugar"
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                {...register("referencia", { required: "La referencia es obligatoria." })}
+                                {...register("referencia", { 
+                                    required: "La referencia es obligatoria.",
+                                    maxLength: { value: 15, message: "Máximo 15 caracteres." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
+                                })}
                             />
                             {errors.referencia && <p className="text-red-600 text-xs italic">{errors.referencia.message}</p>}
                         </div>
@@ -443,19 +466,31 @@ export const Form = () => {
                     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
-                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { required: "El precio mensual es obligatorio.", min: { value: 0, message: "El precio no puede ser negativo." } })} />
+                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { 
+                                required: "El precio mensual es obligatorio.", 
+                                min: { value: 0, message: "Mínimo 0." },
+                                max: { value: 999, message: "Máximo 3 cifras (999)." }
+                            })} />
                             {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
                         </div>
 
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-slate-700">Número de habitaciones</label>
-                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 habitación." } })} />
+                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { 
+                                required: "Este campo es obligatorio.", 
+                                min: { value: 1, message: "Debe haber al menos 1." },
+                                max: { value: 10, message: "Máximo 10." }
+                            })} />
                             {errors.numeroHabitaciones && <p className="mt-1 text-xs text-red-600">{errors.numeroHabitaciones.message}</p>}
                         </div>
 
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-slate-700">Número de baños</label>
-                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroBanos", { required: "Este campo es obligatorio.", min: { value: 1, message: "Debe haber al menos 1 baño." } })} />
+                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroBanos", { 
+                                required: "Este campo es obligatorio.", 
+                                min: { value: 1, message: "Debe haber al menos 1." },
+                                max: { value: 10, message: "Máximo 10." }
+                            })} />
                             {errors.numeroBanos && <p className="mt-1 text-xs text-red-600">{errors.numeroBanos.message}</p>}
                         </div>
 
@@ -471,7 +506,11 @@ export const Form = () => {
                         {tieneParqueadero && (
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Número de parqueaderos</label>
-                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numParqueaderos", { required: tieneParqueadero ? "Indica cuántos parqueaderos tiene." : false, min: { value: 1, message: "Debe ser al menos 1." } })} />
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numParqueaderos", { 
+                                    required: tieneParqueadero ? "Indica cuántos parqueaderos tiene." : false, 
+                                    min: { value: 1, message: "Debe ser al menos 1." },
+                                    max: { value: 10, message: "Máximo 10." }
+                                })} />
                                 {errors.numParqueaderos && <p className="mt-1 text-xs text-red-600">{errors.numParqueaderos.message}</p>}
                             </div>
                         )}
@@ -506,7 +545,11 @@ export const Form = () => {
                         {alicuotaActiva && (
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Monto alícuota</label>
-                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, min: { value: 0, message: "El monto no puede ser negativo." } })} />
+                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { 
+                                    required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, 
+                                    min: { value: 0, message: "Mínimo 0." },
+                                    max: { value: 999, message: "Máximo 3 cifras (999)." }
+                                })} />
                                 {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
                             </div>
                         )}
@@ -525,17 +568,22 @@ export const Form = () => {
                 {step === 3 && (
                     <>
                                         <div>
-                                            <label className="mb-2 block text-sm font-semibold">Imágenes de la residencia (mínimo 4)</label>
+                                            <label className="mb-2 block text-sm font-semibold">Imágenes de la residencia (máximo 4)</label>
                                             <input
                                                 type="file"
                                                 multiple
                                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                                 {...register("imagen", {
-                                                    validate: () =>
-                                                        selectedImages.length >= 4 || "Debes subir al menos 4 imágenes.",
+                                                    validate: () => (selectedImages.length > 0 && selectedImages.length <= 4) || "Sube entre 1 y 4 imágenes.",
                                                     onChange: (e) => {
                                                         const newFiles = Array.from(e.target.files || []);
                                                         if (!newFiles.length) return;
+
+                                                        if (selectedImages.length + newFiles.length > 4) {
+                                                            toast.warn("Solo se permiten hasta 4 imágenes.");
+                                                            e.target.value = "";
+                                                            return;
+                                                        }
 
                                                         setSelectedImages((prev) => {
                                                             const merged = [...prev, ...newFiles];
@@ -550,9 +598,29 @@ export const Form = () => {
                                                 })}
                                             />
                                             {errors.imagen && <p className="text-red-600 text-xs italic">{errors.imagen.message}</p>}
+                                            
+                                            {/* Preview de imágenes */}
                                             {selectedImages.length > 0 && (
-                                                <p className="text-xs text-slate-500 mt-2">
-                                                    {selectedImages.length} imagen(es) seleccionada(s)
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+                                                    {selectedImages.map((file, idx) => (
+                                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                                                            <img src={URL.createObjectURL(file)} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                                                            <button 
+                                                                type="button" 
+                                                                onClick={() => removeImage(idx)}
+                                                                className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {selectedImages.length > 0 && (
+                                                <p className="text-xs text-slate-500 mt-2 mb-5">
+                                                    {selectedImages.length} de 4 imagen(es) seleccionada(s)
                                                 </p>
                                             )}
                                         </div>
