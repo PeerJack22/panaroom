@@ -43,7 +43,7 @@ export const PublicarResidencias = () => {
         e.preventDefault();
         if (enviandoSolicitud) return;
 
-        setEstadoSolicitud({ tipo: "", mensaje: "" });
+        // Nota: se omite asignar mensaje de éxito aquí porque `response` aún no está definido
 
         if (!datosSolicitud.nombre.trim() || datosSolicitud.nombre.length > 10 || !NAME_REGEX.test(datosSolicitud.nombre)) {
             setEstadoSolicitud({
@@ -109,7 +109,7 @@ export const PublicarResidencias = () => {
 
             setEstadoSolicitud({
                 tipo: "ok",
-                mensaje: response?.data?.msg || "Solicitud enviada correctamente.",
+                mensaje: response?.data?.msg || "Se validará tus datos y una vez validados se te enviará las credenciasles para el acceso",
             });
             setDatosSolicitud({
                 nombre: "",
