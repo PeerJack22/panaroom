@@ -3,7 +3,8 @@ import { useState } from 'react';
 import axios from 'axios';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^\d{7,15}$/;
+const PHONE_REGEX = /^\d{10}$/;
+const NAME_REGEX = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
 
 export const PublicarResidencias = () => {
     const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
@@ -44,10 +45,31 @@ export const PublicarResidencias = () => {
 
         setEstadoSolicitud({ tipo: "", mensaje: "" });
 
+        if (!datosSolicitud.nombre.trim() || datosSolicitud.nombre.length > 10 || !NAME_REGEX.test(datosSolicitud.nombre)) {
+            setEstadoSolicitud({
+                tipo: "error",
+                mensaje: "El nombre debe contener solo letras y máximo 10 caracteres.",
+            });
+            return;
+        }
+
+        if (!datosSolicitud.apellido.trim() || datosSolicitud.apellido.length > 10 || !NAME_REGEX.test(datosSolicitud.apellido)) {
+            setEstadoSolicitud({
+                tipo: "error",
+                mensaje: "El apellido debe contener solo letras y máximo 10 caracteres.",
+            });
+            return;
+        }
+
+        if (datosSolicitud.direccion.length > 20) {
+            setEstadoSolicitud({ tipo: "error", mensaje: "La dirección no puede exceder los 20 caracteres." });
+            return;
+        }
+
         if (!PHONE_REGEX.test(datosSolicitud.celular)) {
             setEstadoSolicitud({
                 tipo: "error",
-                mensaje: "El teléfono debe contener solo números (7 a 15 dígitos).",
+                mensaje: "El celular debe tener exactamente 10 dígitos numéricos.",
             });
             return;
         }
@@ -170,6 +192,8 @@ export const PublicarResidencias = () => {
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Ingresa tu nombre"
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    maxLength={10}
+                                    pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+"
                                     required
                                 />
                             </div>
@@ -183,6 +207,8 @@ export const PublicarResidencias = () => {
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Ingresa tu apellido"
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    maxLength={10}
+                                    pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+"
                                     required
                                 />
                             </div>
@@ -196,6 +222,7 @@ export const PublicarResidencias = () => {
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Ingresa tu dirección de domicilio"
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                                    maxLength={20}
                                     required
                                 />
                             </div>
@@ -209,7 +236,8 @@ export const PublicarResidencias = () => {
                                     onChange={manejarCambioSolicitud}
                                     placeholder="Ingresa tu celular"
                                     inputMode="numeric"
-                                    pattern="[0-9]{7,15}"
+                                    pattern="[0-9]{10}"
+                                    maxLength={10}
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     required
                                 />

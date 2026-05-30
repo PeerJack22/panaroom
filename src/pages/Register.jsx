@@ -46,7 +46,11 @@ export const Register = () => {
                                     type="text"
                                     placeholder="Ingresa tu nombre"
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    {...register("nombre", { required: "El nombre es obligatorio" })}
+                                    {...register("nombre", { 
+                                        required: "El nombre es obligatorio",
+                                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                                    })}
                                 />
                                 {errors.nombre && <p className="text-sm text-red-600 mt-1">{errors.nombre.message}</p>}
                             </div>
@@ -57,7 +61,11 @@ export const Register = () => {
                                     type="text"
                                     placeholder="Ingresa tu apellido"
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    {...register("apellido", { required: "El apellido es obligatorio" })}
+                                    {...register("apellido", { 
+                                        required: "El apellido es obligatorio",
+                                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                                    })}
                                 />
                                 {errors.apellido && <p className="text-sm text-red-600 mt-1">{errors.apellido.message}</p>}
                             </div>
@@ -68,7 +76,10 @@ export const Register = () => {
                                     type="text"
                                     placeholder="Ingresa tu dirección de domicilio"
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    {...register("direccion", { required: "La dirección es obligatoria" })}
+                                    {...register("direccion", { 
+                                        required: "La dirección es obligatoria",
+                                        maxLength: { value: 20, message: "Máximo 20 caracteres" }
+                                    })}
                                 />
                                 {errors.direccion && <p className="text-sm text-red-600 mt-1">{errors.direccion.message}</p>}
                             </div>
@@ -76,10 +87,16 @@ export const Register = () => {
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Celular</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     placeholder="Ingresa tu celular"
+                                    inputMode="numeric"
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    {...register("celular", { required: "El celular es obligatorio" })}
+                                    {...register("celular", { 
+                                        required: "El celular es obligatorio",
+                                        minLength: { value: 10, message: "Debe tener 10 dígitos" },
+                                        maxLength: { value: 10, message: "Debe tener 10 dígitos" },
+                                        pattern: { value: /^[0-9]+$/, message: "Solo números permitidos" }
+                                    })}
                                 />
                                 {errors.celular && <p className="text-sm text-red-600 mt-1">{errors.celular.message}</p>}
                             </div>
@@ -104,7 +121,14 @@ export const Register = () => {
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Crea una contraseña segura"
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pr-10 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    {...register("password", { required: "La contraseña es obligatoria" })}
+                                    {...register("password", { 
+                                        required: "La contraseña es obligatoria",
+                                        minLength: { value: 8, message: "Mínimo 8 caracteres" },
+                                        pattern: {
+                                            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/,
+                                            message: "Debe incluir mayúscula, minúscula, número y carácter especial"
+                                        }
+                                    })}
                                 />
                                 <button
                                     type="button"
