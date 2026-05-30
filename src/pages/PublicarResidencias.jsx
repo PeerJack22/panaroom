@@ -125,10 +125,27 @@ export const PublicarResidencias = () => {
                         Crea tu cuenta de arrendatario para empezar a publicar residencias
                     </h2>
 
-                    <div className="bg-white/90 rounded-xl p-4 max-w-sm shadow-lg mx-auto">
-                        <p className="text-sm text-gray-800 leading-relaxed">
-                            Registra tus datos como arrendatario. Tras completar el registro, el administrador revisará tu solicitud y recibirás en tu correo electrónico el usuario y la contraseña para acceder. Una vez activada tu cuenta podrás publicar y gestionar tus residencias de forma segura y profesional.
-                        </p>
+                    <div className="bg-white/95 rounded-2xl p-7 max-w-sm shadow-2xl mx-auto border border-white/20">
+                        <div className="relative space-y-6">
+                            {/* Línea vertical conectora */}
+                            <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-blue-600/30" />
+                            
+                            {[
+                                "Registra tus datos personales en el formulario.",
+                                "Sube fotos de tus documentos de identidad.",
+                                "Espera la validación por parte del administrador.",
+                                "Recibe tu usuario y clave en tu correo electrónico.",
+                                "Accede a tu panel y empieza a publicar residencias."
+                            ].map((paso, index) => (
+                                <div key={index} className="relative flex items-start gap-4">
+                                    {/* Punto indicador */}
+                                    <div className="mt-1.5 h-3.5 w-3.5 shrink-0 rounded-full bg-blue-600 border-2 border-white shadow-sm" />
+                                    <p className="text-sm text-gray-800 font-medium text-left leading-relaxed">
+                                        {paso}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
