@@ -57,7 +57,14 @@ const CardPassword = () => {
                                 type={showNewPassword ? "text" : "password"}
                                 placeholder="Ingresa la nueva contraseña"
                                 className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 pr-10 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                                {...register("passwordnuevo", { required: "La nueva contraseña es obligatoria" })}
+                                {...register("passwordnuevo", { 
+                                    required: "La nueva contraseña es obligatoria",
+                                    minLength: { value: 8, message: "Mínimo 8 caracteres" },
+                                    pattern: {
+                                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/,
+                                        message: "Debe incluir mayúscula, minúscula, número y carácter especial"
+                                    }
+                                })}
                             />
                             <button
                                 type="button"
