@@ -477,8 +477,6 @@ const Details = () => {
         : undefined;
 
     return (
-        <div className="max-w-6xl mx-auto mt-8 mb-10 px-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 md:p-6">
         <div className="min-h-full bg-slate-50 py-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             <div className="w-full flex flex-col px-2 md:px-4">
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 md:p-6 mb-6">
@@ -1002,6 +1000,7 @@ const Details = () => {
                     document.body
                 )}
             </div>
+        </div>
         </div>
     );
     };
