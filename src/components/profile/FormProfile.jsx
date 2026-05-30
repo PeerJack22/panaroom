@@ -188,12 +188,12 @@ const FormularioPerfil = () => {
                 {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
                 </div>
 
-                <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-2.5 min-h-[118px]">
-                    <label className={`mb-1 block text-sm font-semibold text-slate-600 ${isAdmin ? 'invisible' : ''}`}>
-                        Imagen de perfil
-                    </label>
+                {!isAdmin && (
+                    <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-2.5 min-h-[118px]">
+                        <label className="mb-1 block text-sm font-semibold text-slate-600">
+                            Imagen de perfil
+                        </label>
 
-                    {!isAdmin ? (
                         <div className="mt-2">
                             <input
                                 type="file"
@@ -220,13 +220,11 @@ const FormularioPerfil = () => {
                                 </div>
                             )}
                         </div>
-                    ) : (
-                        <div className="mt-2 min-h-[72px]" aria-hidden="true" />
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
-            <div className="mt-3 pt-1">
+            <div className="mt-auto pt-3">
                 <input
                     type="submit"
                     value={isSubmitting ? "Actualizando..." : "Actualizar"}
