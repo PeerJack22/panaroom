@@ -42,7 +42,6 @@ const FormularioPerfil = () => {
                 apellido: data.apellido,
                 direccion: data.direccion || "",
                 [fieldName]: data.celular || "",
-                email: data.email,
             };
 
             const respuesta = await updateProfile(payload, user._id);
@@ -123,7 +122,11 @@ const FormularioPerfil = () => {
                     type="text"
                     placeholder="Ingresa tu nombre"
                     className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("nombre", { required: "El nombre es obligatorio" })}
+                    {...register("nombre", { 
+                        required: "El nombre es obligatorio",
+                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                    })}
                 />
                 {errors.nombre && <p className="mt-1 text-xs text-red-600">{errors.nombre.message}</p>}
                 </div>
@@ -134,7 +137,11 @@ const FormularioPerfil = () => {
                     type="text"
                     placeholder="Ingresa tu apellido"
                     className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("apellido", { required: "El apellido es obligatorio" })}
+                    {...register("apellido", { 
+                        required: "El apellido es obligatorio",
+                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
+                    })}
                 />
                 {errors.apellido && <p className="mt-1 text-xs text-red-600">{errors.apellido.message}</p>}
                 </div>
@@ -145,7 +152,10 @@ const FormularioPerfil = () => {
                     type="text"
                     placeholder="Ingresa tu dirección"
                     className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("direccion", { required: "La dirección es obligatoria" })}
+                    {...register("direccion", { 
+                        required: "La dirección es obligatoria",
+                        maxLength: { value: 20, message: "Máximo 20 caracteres" }
+                    })}
                 />
                 {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}
                 </div>
@@ -153,10 +163,15 @@ const FormularioPerfil = () => {
                 <div>
                     <label className="mb-1 block text-sm font-semibold text-slate-600">Teléfono</label>
                 <input
-                    type="number"
+                    type="text"
                     placeholder="Ingresa tu teléfono"
                     className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("celular", { required: "El celular es obligatorio" })}
+                    {...register("celular", { 
+                        required: "El celular es obligatorio",
+                        minLength: { value: 10, message: "Debe tener 10 dígitos" },
+                        maxLength: { value: 10, message: "Debe tener 10 dígitos" },
+                        pattern: { value: /^[0-9]+$/, message: "Solo números permitidos" }
+                    })}
                 />
                 {errors.celular && <p className="mt-1 text-xs text-red-600">{errors.celular.message}</p>}
                 </div>
@@ -166,8 +181,9 @@ const FormularioPerfil = () => {
                 <input
                     type="email"
                     placeholder="Ingresa tu correo"
-                    className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                    {...register("email", { required: "El correo es obligatorio" })}
+                    className="block w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2 text-slate-500 outline-none cursor-not-allowed"
+                    readOnly
+                    {...register("email")}
                 />
                 {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
                 </div>
