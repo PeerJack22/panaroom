@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { confirm } from "../utils/swal";
 import { MdInfo, MdClose } from 'react-icons/md';
-import { FaUser, FaEnvelope, FaPhone, FaLocationDot, FaBriefcase, FaIdCard, FaCheckCircle, FaClock, FaHouseChimney } from "react-icons/fa6";
+import { FaUser, FaEnvelope, FaPhone, FaLocationDot, FaBriefcase,FaClock} from "react-icons/fa6";
 
 const Users = () => {
     const navigate = useNavigate();
@@ -486,14 +486,28 @@ const Users = () => {
                 </div>
             ) : (
                 <div className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 transition-all duration-300 ease-out ${animando ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
-                    {usuariosPaginados.map(user => (
+                    {usuariosPaginados.map(user => {
+                        const fallbackAvatar = 'https://tse2.mm.bing.net/th/id/OIP.6izc_1ssklKdYfOk564lrwHaHa?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3';
+                        const userAvatar = user.avatarUrl || user.avatarArren || user.avatarArrenIA || fallbackAvatar;
+
+                        return (
                         <div
                             key={user._id}
                             className="bg-white rounded-2xl shadow-lg p-6 transform transition hover:-translate-y-1 hover:shadow-xl flex flex-col"
                         >
-                            <h2 className="text-xl font-bold text-slate-900 mb-2">
-                                {user.nombre} {user.apellido}
-                            </h2>
+                            <div className="flex items-center gap-4 mb-4">
+                                <img
+                                    src={userAvatar}
+                                    alt={`${user.nombre} ${user.apellido}`}
+                                    className="h-14 w-14 rounded-full border-2 border-slate-100 object-cover shadow-sm bg-slate-100 shrink-0"
+                                />
+                                <div className="min-w-0">
+                                    <h2 className="text-xl font-bold text-slate-900 leading-tight truncate">
+                                        {user.nombre} {user.apellido}
+                                    </h2>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{normalizarRol(user.rol)}</span>
+                                </div>
+                            </div>
                             <div className="space-y-1 text-slate-700 mb-4 flex-1">
                                 <p><span className="font-semibold">Correo:</span> {user.email || "No disponible"}</p>
                                 <p><span className="font-semibold">Teléfono:</span> {user.celular || "No disponible"}</p>
@@ -532,7 +546,8 @@ const Users = () => {
                                 </button>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
