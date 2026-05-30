@@ -20,7 +20,7 @@ const CardPassword = () => {
 
     return (
         <>
-            <div className="mx-auto w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:mt-auto">
+            <div className="mx-auto w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h2 className="mb-2 text-lg font-bold text-slate-900">Actualizar contraseña</h2>
                 <hr className="mb-4 border-slate-200" />
 
