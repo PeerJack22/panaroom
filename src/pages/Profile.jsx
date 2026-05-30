@@ -5,7 +5,7 @@ import FormProfile from '../components/profile/FormProfile'
 const Profile = () => {
     return (
         <div className="min-h-full bg-slate-50 py-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-            <div className="mx-auto flex max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
+            <div className="w-full flex flex-col px-2 md:px-4">
                 <header className="mb-4 shrink-0">
                     <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Perfil</h1>
                     <p className="mt-1 text-sm text-slate-500">Este módulo te permite gestionar el perfil del usuario</p>
