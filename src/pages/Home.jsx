@@ -1018,42 +1018,47 @@ export const Home = () => {
             {/* FOOTER MEJORADO */}
             <footer id="contacto" className="bg-slate-900/95 text-slate-300 py-8 border-t border-slate-800 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-sm">
                         <p>&copy; 2026 PanaRoom. Todos los derechos reservados.</p>
 
-                        {/* Sección de Redes Sociales */}
-                        <div className="flex flex-col items-center gap-2">
-                            <h4 className="text-lg font-semibold text-white mb-2">Redes Sociales</h4>
-                            <div className="flex gap-4">
-                                <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors">
-                                    <FaYoutube className="text-lg" />
-                                </a>
-                                <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors">
-                                    <FaGithub className="text-lg" />
-                                </a>
+                        <div className="flex flex-col md:flex-row items-center gap-8">
+                            {/* Sección de Redes Sociales */}
+                            <div className="flex flex-col items-center md:items-start gap-2">
+                                <h4 className="text-base font-bold text-white mb-1">Redes Sociales</h4>
+                                <div className="flex gap-3">
+                                    <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors border border-slate-700">
+                                        <FaYoutube className="text-base" />
+                                    </a>
+                                    <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors border border-slate-700">
+                                        <FaGithub className="text-base" />
+                                    </a>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Sección de Contacto */}
-                        <div className="flex flex-col items-center md:items-end gap-2 mt-4 md:mt-0">
-                            <h4 className="text-lg font-semibold text-white mb-2">Soporte Técnico</h4>
-                            <div className="flex items-center gap-2">
-                                <FaEnvelope className="text-base text-slate-400" />
-                                <a
-                                    href="mailto:soporte@panaroom.com"
-                                    className="text-sm text-slate-300 hover:text-white transition-colors"
-                                >
-                                    soporte@panaroom.com
-                                </a>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <FaWhatsapp className="text-base text-slate-400" />
-                                <a
-                                    href="https://wa.me/593999999999" target="_blank" rel="noopener noreferrer"
-                                    className="text-sm text-slate-300 hover:text-white transition-colors"
-                                >
-                                    +593 99 999 9999
-                                </a>
+                            {/* Divisor sutil */}
+                            <div className="hidden md:block w-px h-12 bg-slate-800" />
+
+                            {/* Sección de Contacto */}
+                            <div className="flex flex-col items-center md:items-start gap-2">
+                                <h4 className="text-base font-bold text-white mb-1">Soporte Técnico</h4>
+                                <div className="flex items-center gap-2">
+                                    <FaEnvelope className="text-sm text-slate-400" />
+                                    <a
+                                        href="mailto:soporte@panaroom.com"
+                                        className="text-xs text-slate-300 hover:text-white transition-colors"
+                                    >
+                                        soporte@panaroom.com
+                                    </a>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <FaWhatsapp className="text-sm text-slate-400" />
+                                    <a
+                                        href="https://wa.me/593999999999" target="_blank" rel="noopener noreferrer"
+                                        className="text-xs text-slate-300 hover:text-white transition-colors"
+                                    >
+                                        +593 99 999 9999
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
