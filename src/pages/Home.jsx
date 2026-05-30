@@ -1020,13 +1020,18 @@ export const Home = () => {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
                         <p>&copy; 2026 PanaRoom. Todos los derechos reservados.</p>
-                        <div className="flex gap-4">
-                            <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors">
-                                <FaYoutube className="text-lg" />
-                            </a>
-                            <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors">
-                                <FaGithub className="text-lg" />
-                            </a>
+
+                        {/* Sección de Redes Sociales */}
+                        <div className="flex flex-col items-center gap-2">
+                            <h4 className="text-lg font-semibold text-white mb-2">Redes Sociales</h4>
+                            <div className="flex gap-4">
+                                <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors">
+                                    <FaYoutube className="text-lg" />
+                                </a>
+                                <a href="https://github.com/PeerJack22/panaroom" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors">
+                                    <FaGithub className="text-lg" />
+                                </a>
+                            </div>
                         </div>
 
                         {/* Sección de Contacto */}
