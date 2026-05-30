@@ -63,8 +63,6 @@ const Chat = () => {
       },
     });
   };
-  const contactoInicializadoRef = useRef(false);
-  const ultimoContactoIdCargadoRef = useRef(null);
 
   const normalizarMensaje = useCallback((m) => ({
     id: m?._id || m?.id || `${m?.mensaje}-${m?.createdAt}`,
@@ -187,48 +185,68 @@ const Chat = () => {
   }, [token, userId, isArrendatario, isEstudiante, isAdministrador, cargarUltimoMensajeContacto]);
 
   useEffect(() => {
-    if (!contactos.length || contactoInicializadoRef.current) return;
+    if (!contactos.length) return;
 
-    if (contactoActivo) {
-      contactoInicializadoRef.current = true;
-      return;
-    }
-
+    // Determinar si hay un contacto de destino proveniente de la navegación (state)
     let siguienteContacto = null;
+    let esDesdeNavegacionDirecta = false;
 
     if (abrirChatAdministrador) {
       siguienteContacto = contactos.find((c) => c.tipo === 'administrador') || null;
+      esDesdeNavegacionDirecta = true;
     }
 
     if (!siguienteContacto && contactoDestinoId && contactoDestinoTipo) {
-      siguienteContacto = contactos.find(
+      const existente = contactos.find(
         (c) => String(c.id) === String(contactoDestinoId) && String(c.tipo) === String(contactoDestinoTipo)
-      ) || {
-        id: contactoDestinoId,
-        tipo: contactoDestinoTipo,
-        nombre: contactoDestinoNombre || 'Contacto',
-        unread: 0,
-        departamentoId: departamentoId || null,
-        departamentoNombre: departamentoNombre || null,
-      };
+      );
+
+      if (existente) {
+        // Actualizamos el departamentoId con el que viene del state (ej: desde Details.jsx)
+        // Esto permite cambiar el contexto del chat si el estudiante pregunta por otra propiedad del mismo dueño.
+        siguienteContacto = {
+          ...existente,
+          departamentoId: departamentoId || existente.departamentoId,
+          departamentoNombre: departamentoNombre || existente.departamentoNombre
+        };
+      } else {
+        siguienteContacto = {
+          id: contactoDestinoId,
+          tipo: contactoDestinoTipo,
+          nombre: contactoDestinoNombre || 'Contacto',
+          unread: 0,
+          departamentoId: departamentoId || null,
+          departamentoNombre: departamentoNombre || null,
+        };
+      }
+      esDesdeNavegacionDirecta = true;
     }
 
-    if (!siguienteContacto && isArrendatario) {
-      siguienteContacto = contactos.find((c) => c.tipo === 'estudiante') || contactos[0] || null;
+    // Lógica de activación:
+    // 1. Si venimos con un destino explícito (desde navegación), forzamos la actualización si cambió algo.
+    // 2. Si no hay contacto activo, ponemos uno por defecto.
+    if (esDesdeNavegacionDirecta && siguienteContacto) {
+      const idDistinto = String(siguienteContacto.id) !== String(contactoActivo?.id);
+      const deptoDistinto = siguienteContacto.departamentoId !== contactoActivo?.departamentoId;
+      
+      if (idDistinto || deptoDistinto) {
+        setContactoActivo(siguienteContacto);
+      }
+    } else if (!contactoActivo) {
+      const porDefecto = isArrendatario 
+        ? (contactos.find((c) => c.tipo === 'estudiante') || contactos[0]) 
+        : contactos[0];
+      if (porDefecto) setContactoActivo(porDefecto);
     }
-
-    if (siguienteContacto) {
-      setContactoActivo(siguienteContacto);
-      contactoInicializadoRef.current = true;
-    }
-  }, [abrirChatAdministrador, contactoActivo, contactoDestinoId, contactoDestinoNombre, contactoDestinoTipo, contactos, departamentoId, departamentoNombre, isArrendatario]);
+  }, [abrirChatAdministrador, contactoActivo, contactoDestinoId, contactoDestinoNombre, contactoDestinoTipo, contactos, departamentoId, departamentoNombre, isArrendatario, location.state]);
 
   // cargar historial cuando cambia contacto
   useEffect(() => {
     const cargar = async () => {
-      if (!token || !contactoActivo?.id) return;
-      if (ultimoContactoIdCargadoRef.current === contactoActivo.id) return;
-      ultimoContactoIdCargadoRef.current = contactoActivo.id;
+      if (!token || !contactoActivo?.id) {
+        setMensajes([]);
+        return;
+      }
       setCargandoHistorial(true);
       try {
         const url = `${import.meta.env.VITE_BACKEND_URL}/listar-chats`;
@@ -311,18 +329,11 @@ const Chat = () => {
           if (exists) return prev;
           return [...prev, nuevo];
         });
-        setContactos((prev) => {
-          const target = prev.find(c => String(c.id) === String(contactoActivo?.id));
-          const rest = prev.filter(c => String(c.id) !== String(contactoActivo?.id));
-          const updated = {
-            ...(target || {}),
-            ultimoMensaje: nuevo.mensaje,
-            ultimoMensajeAt: nuevo.createdAt,
-            ultimoMensajeEsMio: false,
-            unread: 0
-          };
-          return [updated, ...rest];
-        });
+        setContactos((prev) => prev.map((c) => 
+          String(c.id) === String(contactoActivo?.id)
+            ? { ...c, ultimoMensaje: nuevo.mensaje, ultimoMensajeAt: nuevo.createdAt, ultimoMensajeEsMio: false, unread: 0 }
+            : c
+        ));
         setContactoActivo((prevContacto) => prevContacto ? {
           ...prevContacto,
           ultimoMensaje: nuevo.mensaje,
@@ -338,43 +349,16 @@ const Chat = () => {
         const tipo = m.administradorId && String(m.administradorId) !== String(userId) ? 'administrador' 
           : (m.arrendatarioId && String(m.arrendatarioId) !== String(userId) ? 'arrendatario' : 'estudiante');
         if (otherId) {
-          setContactos((prev) => {
-            const found = prev.find(c => String(c.id) === String(otherId));
-            const rest = prev.filter(c => String(c.id) !== String(otherId));
-            const updated = found ? {
-              ...found,
-              unread: (c.unread || 0) + 1,
-              ultimoMensaje: m?.mensaje || found.ultimoMensaje || "",
-              ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
-              ultimoMensajeEsMio: String(m?.remitente || "").toLowerCase() === roleNormalized,
-            } : null;
-            // Obtener nombre del payload si está disponible
-            let nombre = m?.nombreRemitente || m?.nombre || m?.nombreCompleto || `${m?.nombreRemitente || ''} ${m?.apellidoRemitente || ''}`.trim();
-            
-            // Si no hay nombre en el payload, buscar en localStorage
-            if (!nombre || nombre.trim() === '') {
-              const userMap = JSON.parse(localStorage.getItem('userNameMap') || '{}');
-              nombre = userMap[otherId] || '';
-            }
-            
-            // Fallback a nombre genérico si sigue sin nombre
-            if (!nombre || nombre.trim() === '') {
-              nombre = tipo === 'administrador' ? 'Administrador' : (tipo === 'arrendatario' ? 'Arrendatario' : 'Estudiante');
-            }
-
-            if (updated) return [updated, ...rest];
-
-            // Si es un contacto totalmente nuevo que no estaba en la lista
-            return [{
-              id: otherId,
-              tipo,
-              nombre,
-              unread: 1,
-              ultimoMensaje: m?.mensaje || "",
-              ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
-              ultimoMensajeEsMio: String(m?.remitente || "").toLowerCase() === roleNormalized,
-            }, ...prev];
-          });
+          setContactos((prev) => prev.map((c) => (
+            String(c.id) === String(otherId)
+              ? { 
+                  ...c, 
+                  ultimoMensaje: m?.mensaje || c.ultimoMensaje || "", 
+                  ultimoMensajeAt: m?.createdAt ? new Date(m.createdAt) : new Date(),
+                  ultimoMensajeEsMio: String(m?.remitente || "").toLowerCase() === roleNormalized,
+                }
+              : c
+          )));
         }
       }
     };
@@ -474,17 +458,11 @@ const Chat = () => {
         const exists = prev.some(p => p.id && nuevo.id && String(p.id) === String(nuevo.id));
         if (exists) return prev; return [...prev, nuevo];
       });
-        setContactos((prev) => {
-          const target = prev.find(c => String(c.id) === String(contactoActivo.id));
-          const rest = prev.filter(c => String(c.id) !== String(contactoActivo.id));
-          const updated = {
-            ...(target || {}),
-            ultimoMensaje: messageText,
-            ultimoMensajeAt: new Date(),
-            ultimoMensajeEsMio: true,
-          };
-          return [updated, ...rest];
-        });
+        setContactos((prev) => prev.map((c) => (
+          String(c.id) === String(contactoActivo.id)
+            ? { ...c, ultimoMensaje: messageText, ultimoMensajeAt: new Date(), ultimoMensajeEsMio: true }
+            : c
+        )));
         setContactoActivo((prevContacto) => prevContacto && String(prevContacto.id) === String(contactoActivo.id)
           ? {
               ...prevContacto,
@@ -602,16 +580,15 @@ const Chat = () => {
                     className={`w-full text-left p-3 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition-all flex items-center gap-3 ${String(contactoActivo?.id||'')===String(c.id)?'border-blue-600 bg-blue-50':' '}`}>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <p className={`text-sm ${c.unread > 0 ? 'font-black text-slate-900' : 'font-semibold text-slate-700'}`}>{c.nombre}</p>
-                        {c.unread > 0 && <span className="inline-flex items-center justify-center bg-blue-600 text-white text-[10px] font-bold rounded-full w-5 h-5 shadow-sm">{c.unread}</span>}
+                        <p className="text-sm font-semibold text-slate-700">{c.nombre}</p>
                       </div>
                       <p className="text-xs text-gray-500 capitalize">{c.tipo}</p>
                       {(c.ultimoMensaje || c.ultimoMensajeAt) && (
                         <div className="mt-2 flex items-start justify-between gap-3">
-                          <p className={`min-w-0 flex-1 text-xs truncate ${c.unread > 0 ? 'font-bold text-slate-800' : 'text-gray-500'}`}>
+                          <p className="min-w-0 flex-1 text-xs text-gray-500 truncate">
                             {formatearVistaUltimoMensaje(c) || "Sin mensajes aún"}
                           </p>
-                          <span className={`shrink-0 text-[11px] ${c.unread > 0 ? 'font-bold text-blue-600' : 'text-gray-400'}`}>
+                          <span className="shrink-0 text-[11px] text-gray-400">
                             {formatearHoraMensaje(c.ultimoMensajeAt)}
                           </span>
                         </div>
