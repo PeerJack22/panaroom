@@ -144,6 +144,39 @@ const Details = () => {
         return servicios;
     };
 
+    const resolveMetodoPago = (dep) => {
+        const raw = dep?.metodoPago;
+
+        if (raw && typeof raw === "object") {
+            return {
+                tipoBanco: raw?.tipoBanco || raw?.banco || dep?.tipoBanco || dep?.banco || "",
+                cuentaBancaria: raw?.cuentaBancaria || raw?.numeroCuenta || dep?.cuentaBancaria || dep?.numeroCuenta || "",
+                numeroCedula: raw?.numeroCedula || raw?.cedula || dep?.numeroCedula || dep?.cedula || "",
+            };
+        }
+
+        if (typeof raw === "string") {
+            try {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === "object") {
+                    return {
+                        tipoBanco: parsed?.tipoBanco || parsed?.banco || dep?.tipoBanco || dep?.banco || "",
+                        cuentaBancaria: parsed?.cuentaBancaria || parsed?.numeroCuenta || dep?.cuentaBancaria || dep?.numeroCuenta || "",
+                        numeroCedula: parsed?.numeroCedula || parsed?.cedula || dep?.numeroCedula || dep?.cedula || "",
+                    };
+                }
+            } catch {
+                // ignorar strings no JSON
+            }
+        }
+
+        return {
+            tipoBanco: dep?.tipoBanco || dep?.banco || "",
+            cuentaBancaria: dep?.cuentaBancaria || dep?.numeroCuenta || "",
+            numeroCedula: dep?.numeroCedula || dep?.cedula || "",
+        };
+    };
+
     const cerrarModalComentario = () => {
         setModoComentario(null);
         setTipoComentario("queja");
@@ -624,6 +657,35 @@ const Details = () => {
                                     <p className="text-gray-900">{propietario.celular || "No disponible"}</p>
                                 </div>
                             </div>
+
+                            {(() => {
+                                const metodoPago = resolveMetodoPago(departamento);
+                                const tieneMetodoPago = Boolean(
+                                    metodoPago.tipoBanco || metodoPago.cuentaBancaria || metodoPago.numeroCedula
+                                );
+
+                                if (!tieneMetodoPago) return null;
+
+                                return (
+                                    <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                                        <h4 className="text-sm font-semibold text-gray-800 mb-3">Método de pago</h4>
+                                        <div className="grid grid-cols-1 gap-3 text-sm text-gray-700">
+                                            <div>
+                                                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Tipo de banco</span>
+                                                <p className="text-gray-900">{metodoPago.tipoBanco || "No disponible"}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Cuenta bancaria</span>
+                                                <p className="text-gray-900">{metodoPago.cuentaBancaria || "No disponible"}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Cédula</span>
+                                                <p className="text-gray-900">{metodoPago.numeroCedula || "No disponible"}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
 
                             {(isAdministrador || (isEstudiante && !tieneEstudianteAsignado)) && (
                                 <button
