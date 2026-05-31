@@ -693,6 +693,7 @@ export const Form = () => {
                                 {...register("metodoPago.tipoBanco", {
                                     required: "Debes indicar el tipo de banco.",
                                     maxLength: { value: 40, message: "Máximo 40 caracteres." },
+                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, message: "Solo se permiten letras." },
                                 })}
                             />
                             {errors?.metodoPago?.tipoBanco && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.tipoBanco.message}</p>}

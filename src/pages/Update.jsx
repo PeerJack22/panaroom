@@ -885,7 +885,8 @@ const Update = () => {
                             </div>
                             <div className="space-y-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                                 <h3 className="text-sm font-bold text-slate-700 uppercase">Método de pago</h3>
-                                <input type="text" placeholder="Tipo de banco" maxLength={40} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { maxLength: { value: 40, message: "Máximo 40 caracteres." } })} />
+                                <input type="text" placeholder="Tipo de banco" maxLength={40} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { maxLength: { value: 40, message: "Máximo 40 caracteres." }, pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, message: "Solo se permiten letras." } })} />
+                                {errors?.metodoPago?.tipoBanco && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.tipoBanco.message}</p>}
                                 <input
                                     type="text"
                                     inputMode="numeric"
