@@ -108,6 +108,11 @@ const Update = () => {
             parqueadero: "false",
             numParqueaderos: "0",
             guardiania: "false",
+            metodoPago: {
+                tipoBanco: "",
+                cuentaBancaria: "",
+                numeroCedula: ""
+            }
         },
     });
 
@@ -116,11 +121,15 @@ const Update = () => {
     const tieneParqueadero = values.parqueadero === "true";
     const currentMapUrl = values.urlMapa;
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const getValueByPath = (object, path) => {
+        if (!object || !path) return undefined;
+        return path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), object);
+    };
     const cambios = useMemo(() => {
         const fieldLabels = {
             titulo: 'Título',
             descripcion: 'Descripción',
-            precioMensual: 'Precio mensual',
+            precioMensual: 'Cuota mensual',
             numeroHabitaciones: 'Número de habitaciones',
             numeroBanos: 'Número de baños',
             serviciosIncluidos: 'Servicios incluidos',
@@ -133,12 +142,16 @@ const Update = () => {
             parqueadero: 'Parqueadero',
             numParqueaderos: 'Número de parqueaderos',
             guardiania: 'Guardianía',
+            'metodoPago.tipoBanco': 'Tipo de banco',
+            'metodoPago.cuentaBancaria': 'Cuenta bancaria',
+            'metodoPago.numeroCedula': 'Cédula método de pago',
         };
         if (!departamento) return {};
         const fields = [
             'titulo','descripcion','precioMensual','numeroHabitaciones','numeroBanos','serviciosIncluidos',
             'alicuota','alicoutaMonto','mascotas','urlMapa','referencia','bodega','parqueadero','numParqueaderos','guardiania'
         ];
+        fields.push('metodoPago.tipoBanco', 'metodoPago.cuentaBancaria', 'metodoPago.numeroCedula');
 
         const normalize = (key, val) => {
             if (key === 'precioMensual' || key === 'numeroHabitaciones' || key === 'numeroBanos' || key === 'alicoutaMonto' || key === 'numParqueaderos') {
@@ -157,8 +170,8 @@ const Update = () => {
 
         const result = {};
         fields.forEach((f) => {
-            const oldRaw = departamento?.[f];
-            const newRaw = values?.[f];
+            const oldRaw = getValueByPath(departamento, f);
+            const newRaw = getValueByPath(values, f);
             const oldN = normalize(f, oldRaw);
             const newN = normalize(f, newRaw);
             if (oldN !== newN) {
@@ -192,21 +205,29 @@ const Update = () => {
 
         if (currentStep === 2) {
             return [
-                "precioMensual",
                 "numeroHabitaciones",
                 "numeroBanos",
                 "parqueadero",
                 ...(tieneParqueadero ? ["numParqueaderos"] : []),
                 "bodega",
                 "guardiania",
-                "alicuota",
-                ...(alicuotaActiva ? ["alicoutaMonto"] : []),
                 "mascotas",
             ];
         }
 
         if (currentStep === 3) {
             return ["serviciosIncluidos"];
+        }
+
+        if (currentStep === 4) {
+            return [
+                "precioMensual",
+                "alicuota",
+                ...(alicuotaActiva ? ["alicoutaMonto"] : []),
+                "metodoPago.tipoBanco",
+                "metodoPago.cuentaBancaria",
+                "metodoPago.numeroCedula",
+            ];
         }
 
         return [];
@@ -292,6 +313,11 @@ const Update = () => {
                 parqueadero: String(departamento?.parqueadero ?? false),
                 numParqueaderos: departamento?.numParqueaderos ?? "0",
                 guardiania: String(departamento?.guardiania ?? false),
+                metodoPago: {
+                    tipoBanco: departamento?.metodoPago?.tipoBanco || "",
+                    cuentaBancaria: departamento?.metodoPago?.cuentaBancaria || "",
+                    numeroCedula: departamento?.metodoPago?.numeroCedula || ""
+                }
             });
             // Asegurar que el campo numParqueaderos tenga el valor correcto en el formulario
             setValue("numParqueaderos", String(departamento?.numParqueaderos ?? "0"), { shouldDirty: false, shouldValidate: true });
@@ -462,6 +488,11 @@ const Update = () => {
             parqueadero: String(data.parqueadero) === "true",
             numParqueaderos: calcularNumParqueaderos(),
             guardiania: String(data.guardiania) === "true",
+            metodoPago: {
+                tipoBanco: data.metodoPago.tipoBanco,
+                cuentaBancaria: data.metodoPago.cuentaBancaria,
+                numeroCedula: data.metodoPago.numeroCedula,
+            }
         };
 
         const loadingToast = toast.loading("Actualizando departamento...");
@@ -548,12 +579,12 @@ const Update = () => {
 
             <div className="mb-8">
                 <div className="flex items-center justify-between gap-2">
-                    {[1, 2, 3, 4].map((n) => (
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
                         <div key={n} className="flex items-center flex-1">
                             <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${n <= step ? "bg-blue-700 border-blue-700 text-white" : "bg-white border-slate-300 text-slate-500"}`}>
                                 {n}
                             </div>
-                            {n < 4 && (
+                            {n < 6 && (
                                 <div className={`h-1 flex-1 mx-2 rounded ${n < step ? "bg-blue-700" : "bg-slate-200"}`} />
                             )}
                         </div>
@@ -566,9 +597,11 @@ const Update = () => {
                 <fieldset className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
                     <legend className="rounded-full bg-white px-4 py-1 text-lg font-bold text-slate-800 shadow-sm">
                         {step === 1 && "Información básica"}
-                        {step === 2 && "Datos del inmueble"}
-                        {step === 3 && "Ubicación y servicios"}
-                        {step === 4 && "Confirmación"}
+                        {step === 2 && "Ubicación"}
+                        {step === 3 && "Características"}
+                        {step === 4 && "Costos y Pago"}
+                        {step === 5 && "Imágenes"}
+                        {step === 6 && "Confirmación"}
                     </legend>
 
                     {step === 1 && (
@@ -593,7 +626,11 @@ const Update = () => {
                                 })} />
                                 {errors.descripcion && <p className="mt-1 text-xs text-red-600">{errors.descripcion.message}</p>}
                             </div>
+                        </div>
+                    )}
 
+                    {step === 2 && (
+                        <div className="grid gap-5 md:grid-cols-2">
                             <div className="md:col-span-2">
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Referencia</label>
                                 <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("referencia", {
@@ -650,18 +687,8 @@ const Update = () => {
                         </div>
                     )}
 
-                    {step === 2 && (
+                    {step === 3 && (
                         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
-                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { 
-                                    required: "El precio mensual es obligatorio.", 
-                                    min: { value: 1, message: "Mínimo 1." },
-                                    max: { value: 999, message: "Máximo 3 cifras (999)." }
-                                })} />
-                                {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
-                            </div>
-
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Número de habitaciones</label>
                                 <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { 
@@ -722,27 +749,6 @@ const Update = () => {
                             </div>
 
                             <div>
-                                <label className="mb-2 block text-sm font-semibold text-slate-700">Alicuota</label>
-                                <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("alicuota", { required: "Indica si aplica alícuota." })} />Sí</label>
-                                    <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("alicuota", { required: "Indica si aplica alícuota." })} />No</label>
-                                </div>
-                                {errors.alicuota && <p className="mt-1 text-xs text-red-600">{errors.alicuota.message}</p>}
-                            </div>
-
-                            {alicuotaActiva && (
-                                <div>
-                                    <label className="mb-2 block text-sm font-semibold text-slate-700">Monto alícuota</label>
-                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { 
-                                        required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, 
-                                        min: { value: 1, message: "Mínimo 1." },
-                                        max: { value: 999, message: "Máximo 3 cifras (999)." }
-                                    })} />
-                                    {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
-                                </div>
-                            )}
-
-                            <div>
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Mascotas</label>
                                 <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
                                     <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />Sí</label>
@@ -750,21 +756,13 @@ const Update = () => {
                                 </div>
                                 {errors.mascotas && <p className="mt-1 text-xs text-red-600">{errors.mascotas.message}</p>}
                             </div>
-                        </div>
-                    )}
 
-                    {step === 3 && (
-                        <div className="grid gap-5 md:grid-cols-2">
-                            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                                <h2 className="text-lg font-bold text-slate-900">Servicios incluidos</h2>
-                                <p className="mt-1 text-sm text-slate-500">Selecciona al menos uno antes de continuar.</p>
-                                <div className="mt-4 flex flex-wrap gap-4">
+                            <div className="md:col-span-2 lg:col-span-3">
+                                <h2 className="text-sm font-bold text-slate-700 mb-2">Servicios incluidos</h2>
+                                <div className="flex flex-wrap gap-4">
                                     {servicioOptions.map((servicio) => (
                                         <label key={servicio.value} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
-                                            <input type="checkbox" value={servicio.label} {...register("serviciosIncluidos", { validate: (value) => {
-                                                const seleccionados = Array.isArray(value) ? value : value ? [value] : [];
-                                                return seleccionados.length > 0 || "Selecciona al menos un servicio.";
-                                            } })} />
+                                            <input type="checkbox" value={servicio.label} {...register("serviciosIncluidos", { validate: (v) => v.length > 0 || "Selecciona al menos uno." })} />
                                             {servicio.label}
                                         </label>
                                     ))}
@@ -775,6 +773,46 @@ const Update = () => {
                     )}
 
                     {step === 4 && (
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <div className="space-y-5">
+                                <h3 className="text-sm font-bold uppercase text-slate-700">Cargos mensuales</h3>
+                                <div>
+                                    <label className="mb-2 block text-sm font-semibold text-slate-700">Cuota mensual</label>
+                                    <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { required: "Obligatorio.", min: 1 })} />
+                                    {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="mb-2 block text-sm font-semibold">Alícuota</label>
+                                        <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                            <label className="inline-flex items-center gap-2 text-xs"><input type="radio" value="true" {...register("alicuota")} />Sí</label>
+                                            <label className="inline-flex items-center gap-2 text-xs"><input type="radio" value="false" {...register("alicuota")} />No</label>
+                                        </div>
+                                    </div>
+                                    {alicuotaActiva && (
+                                        <div>
+                                            <label className="mb-2 block text-sm font-semibold">Monto de alícuota</label>
+                                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm" {...register("alicoutaMonto", { required: alicuotaActiva, min: 1 })} />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="space-y-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                                <h3 className="text-sm font-bold text-slate-700 uppercase">Método de pago</h3>
+                                <input type="text" placeholder="Tipo de banco" className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { required: "Obligatorio" })} />
+                                <input type="text" placeholder="Número de cuenta" className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.cuentaBancaria", { required: "Obligatorio" })} />
+                                <input type="text" placeholder="Cédula" className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.numeroCedula", { required: "Obligatorio" })} />
+                            </div>
+                        </div>
+                    )}
+
+                    {step === 5 && (
+                        <div className="text-center py-10">
+                            <p className="text-slate-500 italic">La actualización de imágenes se realiza desde el visor de detalles.</p>
+                        </div>
+                    )}
+
+                    {step === 6 && (
                         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                             <div className="md:col-span-2">
                                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cambios detectados</p>

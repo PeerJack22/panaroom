@@ -336,11 +336,9 @@ export const Form = () => {
             formData.append("imagenes", img);
         });
 
-        if (data.metodoPago) {
-            formData.append("metodoPago[tipoBanco]", data.metodoPago.tipoBanco);
-            formData.append("metodoPago[cuentaBancaria]", data.metodoPago.cuentaBancaria);
-            formData.append("metodoPago[numeroCedula]", data.metodoPago.numeroCedula);
-        }
+        formData.append("metodoPago[tipoBanco]", data.metodoPago?.tipoBanco || "");
+        formData.append("metodoPago[cuentaBancaria]", data.metodoPago?.cuentaBancaria || "");
+        formData.append("metodoPago[numeroCedula]", data.metodoPago?.numeroCedula || "");
 
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
@@ -638,77 +636,153 @@ export const Form = () => {
                     </div>
                 )}
 
-                {step === 3 && (
+                {step === 4 && (
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="space-y-5">
+                            <h3 className="text-sm font-bold uppercase text-slate-700">Cuotas mensuales</h3>
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Cuota mensual</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                    {...register("precioMensual", {
+                                        required: "Debes indicar la cuota mensual.",
+                                        min: { value: 1, message: "La cuota mensual debe ser mayor a 0." },
+                                    })}
+                                />
+                                {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <label className="mb-2 block text-sm font-semibold text-slate-700">Alicuota</label>
+                                    <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+                                        <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("alicuota", { required: "Indica si aplica alícuota." })} />Sí</label>
+                                        <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("alicuota", { required: "Indica si aplica alícuota." })} />No</label>
+                                    </div>
+                                    {errors.alicuota && <p className="mt-1 text-xs text-red-600">{errors.alicuota.message}</p>}
+                                </div>
+
+                                {alicuotaActiva && (
+                                    <div>
+                                        <label className="mb-2 block text-sm font-semibold text-slate-700">Monto de alícuota</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                            {...register("alicoutaMonto", {
+                                                required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false,
+                                                min: { value: 1, message: "Mínimo 1." },
+                                                max: { value: 999, message: "Máximo 3 cifras (999)." },
+                                            })}
+                                        />
+                                        {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                            <h3 className="text-sm font-bold uppercase text-slate-700">Método de pago</h3>
+                            <input
+                                type="text"
+                                placeholder="Tipo de banco"
+                                className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                {...register("metodoPago.tipoBanco", { required: "Debes indicar el tipo de banco." })}
+                            />
+                            {errors?.metodoPago?.tipoBanco && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.tipoBanco.message}</p>}
+
+                            <input
+                                type="text"
+                                placeholder="Número de cuenta"
+                                className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                {...register("metodoPago.cuentaBancaria", { required: "Debes indicar el número de cuenta." })}
+                            />
+                            {errors?.metodoPago?.cuentaBancaria && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.cuentaBancaria.message}</p>}
+
+                            <input
+                                type="text"
+                                placeholder="Cédula"
+                                className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                {...register("metodoPago.numeroCedula", { required: "Debes indicar la cédula." })}
+                            />
+                            {errors?.metodoPago?.numeroCedula && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.numeroCedula.message}</p>}
+                        </div>
+                    </div>
+                )}
+
+                {step === 5 && (
                     <>
-                                        <div>
-                                            <label className="mb-2 block text-sm font-semibold">Imágenes de la residencia (máximo 4)</label>
-                                            <input
-                                                type="file"
-                                                multiple
-                                                accept="image/*"
-                                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                                {...register("imagen", {
-                                                    validate: () => (selectedImages.length > 0 && selectedImages.length <= 4) || "Sube entre 1 y 4 imágenes.",
-                                                    onChange: async (e) => {
-                                                        const newFiles = Array.from(e.target.files || []);
-                                                        if (!newFiles.length) return;
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold">Imágenes de la residencia (máximo 4)</label>
+                            <input
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                                {...register("imagen", {
+                                    validate: () => (selectedImages.length > 0 && selectedImages.length <= 4) || "Sube entre 1 y 4 imágenes.",
+                                    onChange: async (e) => {
+                                        const newFiles = Array.from(e.target.files || []);
+                                        if (!newFiles.length) return;
 
-                                                        if (selectedImages.length + newFiles.length > 4) {
-                                                            toast.warn("Solo se permiten hasta 4 imágenes.");
-                                                            e.target.value = "";
-                                                            return;
-                                                        }
+                                        if (selectedImages.length + newFiles.length > 4) {
+                                            toast.warn("Solo se permiten hasta 4 imágenes.");
+                                            e.target.value = "";
+                                            return;
+                                        }
 
-                                                        const idCarga = toast.loading("Comprimiendo imágenes...");
-                                                        try {
-                                                            const compressedFiles = await Promise.all(
-                                                                newFiles.map(f => compressImage(f, { quality: 0.8 }))
-                                                            );
+                                        const idCarga = toast.loading("Comprimiendo imágenes...");
+                                        try {
+                                            const compressedFiles = await Promise.all(
+                                                newFiles.map(f => compressImage(f, { quality: 0.8 }))
+                                            );
 
-                                                            setSelectedImages((prev) => {
-                                                                const merged = [...prev, ...compressedFiles];
-                                                                setValue("imagen", merged, { shouldValidate: true });
-                                                                return merged;
-                                                            });
-                                                            clearErrors("imagen");
-                                                            toast.update(idCarga, { render: "Imágenes optimizadas!", type: "success", isLoading: false, autoClose: 2000 });
-                                                        } catch (err) {
-                                                            console.error("Error al procesar imágenes:", err);
-                                                            toast.update(idCarga, { render: "Error al comprimir imágenes", type: "error", isLoading: false, autoClose: 3000 });
-                                                        }
+                                            setSelectedImages((prev) => {
+                                                const merged = [...prev, ...compressedFiles];
+                                                setValue("imagen", merged, { shouldValidate: true });
+                                                return merged;
+                                            });
+                                            clearErrors("imagen");
+                                            toast.update(idCarga, { render: "Imágenes optimizadas!", type: "success", isLoading: false, autoClose: 2000 });
+                                        } catch (err) {
+                                            console.error("Error al procesar imágenes:", err);
+                                            toast.update(idCarga, { render: "Error al comprimir imágenes", type: "error", isLoading: false, autoClose: 3000 });
+                                        }
 
-                                                        // Permite volver a abrir el selector y agregar más archivos sin perder los anteriores.
-                                                        e.target.value = "";
-                                                    },
-                                                })}
-                                            />
-                                            {errors.imagen && <p className="text-red-600 text-xs italic">{errors.imagen.message}</p>}
-                                            
-                                            {/* Preview de imágenes */}
-                                            {selectedImages.length > 0 && (
-                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
-                                                    {selectedImages.map((file, idx) => (
-                                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-                                                            <img src={URL.createObjectURL(file)} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
-                                                            <button 
-                                                                type="button" 
-                                                                onClick={() => removeImage(idx)}
-                                                                className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                            {selectedImages.length > 0 && (
-                                                <p className="text-xs text-slate-500 mt-2 mb-5">
-                                                    {selectedImages.length} de 4 imagen(es) seleccionada(s)
-                                                </p>
-                                            )}
+                                        // Permite volver a abrir el selector y agregar más archivos sin perder los anteriores.
+                                        e.target.value = "";
+                                    },
+                                })}
+                            />
+                            {errors.imagen && <p className="text-red-600 text-xs italic">{errors.imagen.message}</p>}
+
+                            {/* Preview de imágenes */}
+                            {selectedImages.length > 0 && (
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+                                    {selectedImages.map((file, idx) => (
+                                        <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                                            <img src={URL.createObjectURL(file)} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeImage(idx)}
+                                                className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
                                         </div>
+                                    ))}
+                                </div>
+                            )}
+                            {selectedImages.length > 0 && (
+                                <p className="text-xs text-slate-500 mt-2 mb-5">
+                                    {selectedImages.length} de 4 imagen(es) seleccionada(s)
+                                </p>
+                            )}
+                        </div>
                     </>
                 )}
 
@@ -723,7 +797,7 @@ export const Form = () => {
                                     <div className="mt-1 text-slate-600">{values.titulo || '-'}</div>
                                 </div>
                                 <div>
-                                    <div className="font-semibold">Precio</div>
+                                    <div className="font-semibold">Cuota mensual</div>
                                     <div className="mt-1 text-slate-600">${values.precioMensual || '0'}</div>
                                 </div>
                                 <div>
