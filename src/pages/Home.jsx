@@ -1019,9 +1019,9 @@ export const Home = () => {
             <footer id="contacto" className="bg-slate-900/95 text-slate-300 py-8 border-t border-slate-800 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-sm">
-                        <p>&copy; 2026 PanaRoom. Todos los derechos reservados.</p>
+                        <p className="w-full md:w-auto md:order-last text-center md:text-right">&copy; 2026 PanaRoom. Todos los derechos reservados.</p>
 
-                        <div className="flex flex-col md:flex-row items-center gap-8">
+                        <div className="w-full md:w-auto md:order-first flex flex-col md:flex-row items-center gap-8">
                             {/* Sección de Redes Sociales */}
                             <div className="flex flex-col items-center md:items-start gap-2">
                                 <h4 className="text-base font-bold text-white mb-1">Redes Sociales</h4>
