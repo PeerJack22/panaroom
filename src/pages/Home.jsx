@@ -141,6 +141,7 @@ export const Home = () => {
     ];
 
     const [propiedades, setPropiedades] = useState([]);
+    const [ratingsMap, setRatingsMap] = useState({});
 
     
 
@@ -186,6 +187,55 @@ export const Home = () => {
 
         cargarDepartamentosPublicos();
     }, []);
+
+    // Cuando carguen las propiedades, obtener calificaciones reales por propiedad
+    useEffect(() => {
+        if (!propiedades || propiedades.length === 0) return;
+
+        const controller = new AbortController();
+
+        const fetchRatings = async () => {
+            const map = {};
+
+            await Promise.all(
+                propiedades.map(async (p) => {
+                    try {
+                        const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/comentarios/${p.id}`;
+                        const res = await axios.get(url, { signal: controller.signal });
+                        const lista = Array.isArray(res?.data)
+                            ? res.data
+                            : Array.isArray(res?.data?.comentarios)
+                            ? res.data.comentarios
+                            : Array.isArray(res?.data?.data)
+                            ? res.data.data
+                            : [];
+
+                        const comentarios = lista.filter((c) => {
+                            const tipo = String((c?.tipoComentario || c?.tipo || "")).toLowerCase();
+                            return tipo === "comentario";
+                        });
+
+                        const califs = comentarios
+                            .map((c) => Number(c?.calificacion) || 0)
+                            .filter((n) => !Number.isNaN(n) && n > 0);
+
+                        const avg = califs.length ? califs.reduce((a, b) => a + b, 0) / califs.length : 0;
+                        map[p.id] = Number(avg ? avg.toFixed(1) : 0);
+                    } catch (err) {
+                        // Si falla una petición, asignar 0 y continuar
+                        map[p.id] = 0;
+                        console.debug("No se pudo obtener calificaciones para:", p.id, err?.message || err);
+                    }
+                })
+            );
+
+            setRatingsMap(map);
+        };
+
+        fetchRatings();
+
+        return () => controller.abort();
+    }, [propiedades]);
 
     // Ratings temporarily disabled to avoid runtime initialization errors
 
@@ -792,7 +842,7 @@ export const Home = () => {
                                         <div className="mb-3 flex justify-end">
                                             <div className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-sm font-semibold text-amber-600">
                                                 <FaStar className="text-sm" />
-                                                <span>{obtenerPromedioMock(propiedad)}</span>
+                                                    <span>{(ratingsMap[propiedad.id] || ratingsMap[propiedad.id] === 0) ? ratingsMap[propiedad.id] : obtenerPromedioMock(propiedad)}</span>
                                             </div>
                                         </div>
 
