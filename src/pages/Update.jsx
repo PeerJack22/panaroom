@@ -125,6 +125,14 @@ const Update = () => {
         if (!object || !path) return undefined;
         return path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), object);
     };
+    const resolveNumParqueaderos = (source) => {
+        const valor = source?.numParqueaderos ?? source?.numeroParqueaderos ?? source?.parqueaderos;
+        return valor !== undefined && valor !== null && String(valor).trim() !== "" ? String(valor) : "";
+    };
+    const resolveAlicuotaMonto = (source) => {
+        const valor = source?.alicoutaMonto ?? source?.montoAlicuota ?? source?.montoAlicuota;
+        return valor !== undefined && valor !== null && String(valor).trim() !== "" ? String(valor) : "";
+    };
     const cambios = useMemo(() => {
         const fieldLabels = {
             titulo: 'Título',
@@ -305,13 +313,13 @@ const Update = () => {
                 numeroBanos: departamento?.numeroBanos ?? "",
                 serviciosIncluidos: normalizarServicios(departamento?.serviciosIncluidos),
                 alicuota: String(departamento?.alicuota ?? false),
-                alicoutaMonto: departamento?.alicoutaMonto ?? "",
+                alicoutaMonto: resolveAlicuotaMonto(departamento),
                 mascotas: String(departamento?.mascotas ?? false),
                 urlMapa: departamento?.urlMapa || "",
                 referencia: departamento?.referencia || "",
                 bodega: String(departamento?.bodega ?? false),
                 parqueadero: String(departamento?.parqueadero ?? false),
-                numParqueaderos: departamento?.numParqueaderos ?? "0",
+                numParqueaderos: resolveNumParqueaderos(departamento),
                 guardiania: String(departamento?.guardiania ?? false),
                 metodoPago: {
                     tipoBanco: departamento?.metodoPago?.tipoBanco || "",
@@ -320,7 +328,8 @@ const Update = () => {
                 }
             });
             // Asegurar que el campo numParqueaderos tenga el valor correcto en el formulario
-            setValue("numParqueaderos", String(departamento?.numParqueaderos ?? "0"), { shouldDirty: false, shouldValidate: true });
+            setValue("numParqueaderos", resolveNumParqueaderos(departamento), { shouldDirty: false, shouldValidate: true });
+            setValue("alicoutaMonto", resolveAlicuotaMonto(departamento), { shouldDirty: false, shouldValidate: true });
             setCargando(false);
         }
     }, [departamento, fetchDataBackend, id, reset, token, setValue]);
@@ -337,13 +346,13 @@ const Update = () => {
 
     useEffect(() => {
         if (!cargando && departamento && !tieneParqueadero) {
-            setValue("numParqueaderos", "0", { shouldValidate: true });
+            setValue("numParqueaderos", resolveNumParqueaderos(departamento), { shouldValidate: true });
         }
     }, [tieneParqueadero, setValue, cargando, departamento]);
 
     useEffect(() => {
         if (!cargando && departamento && !alicuotaActiva) {
-            setValue("alicoutaMonto", "0", { shouldValidate: true });
+            setValue("alicoutaMonto", resolveAlicuotaMonto(departamento), { shouldValidate: true });
         }
     }, [alicuotaActiva, setValue, cargando, departamento]);
 
@@ -799,9 +808,9 @@ const Update = () => {
                             </div>
                             <div className="space-y-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                                 <h3 className="text-sm font-bold text-slate-700 uppercase">Método de pago</h3>
-                                <input type="text" placeholder="Tipo de banco" className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { required: "Obligatorio" })} />
-                                <input type="text" placeholder="Número de cuenta" className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.cuentaBancaria", { required: "Obligatorio" })} />
-                                <input type="text" placeholder="Cédula" className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.numeroCedula", { required: "Obligatorio" })} />
+                                <input type="text" placeholder="Tipo de banco" maxLength={40} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { required: "Obligatorio", maxLength: { value: 40, message: "Máximo 40 caracteres." } })} />
+                                <input type="text" placeholder="Número de cuenta" maxLength={20} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.cuentaBancaria", { required: "Obligatorio", maxLength: { value: 20, message: "Máximo 20 caracteres." } })} />
+                                <input type="text" placeholder="Cédula" maxLength={15} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.numeroCedula", { required: "Obligatorio", maxLength: { value: 15, message: "Máximo 15 caracteres." } })} />
                             </div>
                         </div>
                     )}

@@ -686,24 +686,36 @@ export const Form = () => {
                             <input
                                 type="text"
                                 placeholder="Tipo de banco"
+                                maxLength={40}
                                 className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                                {...register("metodoPago.tipoBanco", { required: "Debes indicar el tipo de banco." })}
+                                {...register("metodoPago.tipoBanco", {
+                                    required: "Debes indicar el tipo de banco.",
+                                    maxLength: { value: 40, message: "Máximo 40 caracteres." },
+                                })}
                             />
                             {errors?.metodoPago?.tipoBanco && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.tipoBanco.message}</p>}
 
                             <input
                                 type="text"
                                 placeholder="Número de cuenta"
+                                maxLength={20}
                                 className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                                {...register("metodoPago.cuentaBancaria", { required: "Debes indicar el número de cuenta." })}
+                                {...register("metodoPago.cuentaBancaria", {
+                                    required: "Debes indicar el número de cuenta.",
+                                    maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                })}
                             />
                             {errors?.metodoPago?.cuentaBancaria && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.cuentaBancaria.message}</p>}
 
                             <input
                                 type="text"
                                 placeholder="Cédula"
+                                maxLength={15}
                                 className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                                {...register("metodoPago.numeroCedula", { required: "Debes indicar la cédula." })}
+                                {...register("metodoPago.numeroCedula", {
+                                    required: "Debes indicar la cédula.",
+                                    maxLength: { value: 15, message: "Máximo 15 caracteres." },
+                                })}
                             />
                             {errors?.metodoPago?.numeroCedula && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.numeroCedula.message}</p>}
                         </div>
@@ -720,7 +732,7 @@ export const Form = () => {
                                 accept="image/*"
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("imagen", {
-                                    validate: () => (selectedImages.length > 0 && selectedImages.length <= 4) || "Sube entre 1 y 4 imágenes.",
+                                    validate: () => (selectedImages.length === 4) || "Debes subir exactamente 4 imágenes.",
                                     onChange: async (e) => {
                                         const newFiles = Array.from(e.target.files || []);
                                         if (!newFiles.length) return;
@@ -731,7 +743,6 @@ export const Form = () => {
                                             return;
                                         }
 
-                                        const idCarga = toast.loading("Comprimiendo imágenes...");
                                         try {
                                             const compressedFiles = await Promise.all(
                                                 newFiles.map(f => compressImage(f, { quality: 0.8 }))
@@ -743,10 +754,9 @@ export const Form = () => {
                                                 return merged;
                                             });
                                             clearErrors("imagen");
-                                            toast.update(idCarga, { render: "Imágenes optimizadas!", type: "success", isLoading: false, autoClose: 2000 });
                                         } catch (err) {
                                             console.error("Error al procesar imágenes:", err);
-                                            toast.update(idCarga, { render: "Error al comprimir imágenes", type: "error", isLoading: false, autoClose: 3000 });
+                                            toast.error("Error al comprimir imágenes");
                                         }
 
                                         // Permite volver a abrir el selector y agregar más archivos sin perder los anteriores.
