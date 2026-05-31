@@ -95,6 +95,8 @@ const Update = () => {
         defaultValues: {
             titulo: "",
             descripcion: "",
+            categoria: "",
+            direccion: "",
             precioMensual: "",
             numeroHabitaciones: "",
             numeroBanos: "",
@@ -168,6 +170,8 @@ const Update = () => {
         const fieldLabels = {
             titulo: 'Título',
             descripcion: 'Descripción',
+            categoria: 'Categoría',
+            direccion: 'Dirección',
             precioMensual: 'Cuota mensual',
             numeroHabitaciones: 'Número de habitaciones',
             numeroBanos: 'Número de baños',
@@ -187,7 +191,7 @@ const Update = () => {
         };
         if (!departamento) return {};
         const fields = [
-            'titulo','descripcion','precioMensual','numeroHabitaciones','numeroBanos','serviciosIncluidos',
+            'titulo','descripcion','categoria','direccion','precioMensual','numeroHabitaciones','numeroBanos','serviciosIncluidos',
             'alicuota','alicoutaMonto','mascotas','urlMapa','referencia','bodega','parqueadero','numParqueaderos','guardiania'
         ];
         fields.push('metodoPago.tipoBanco', 'metodoPago.cuentaBancaria', 'metodoPago.numeroCedula');
@@ -236,13 +240,21 @@ const Update = () => {
         });
         return result;
     }, [departamento, values]);
-    const totalSteps = 4;
+    const totalSteps = 5;
     const getFieldsForStep = (currentStep) => {
         if (currentStep === 1) {
-            return ["titulo", "descripcion", "referencia", "urlMapa"];
+            return ["titulo", "descripcion", "categoria"];
         }
 
         if (currentStep === 2) {
+            return [
+                "direccion",
+                "referencia",
+                "urlMapa",
+            ];
+        }
+
+        if (currentStep === 3) {
             return [
                 "numeroHabitaciones",
                 "numeroBanos",
@@ -251,11 +263,9 @@ const Update = () => {
                 "bodega",
                 "guardiania",
                 "mascotas",
+                "disponible",
+                "serviciosIncluidos",
             ];
-        }
-
-        if (currentStep === 3) {
-            return ["serviciosIncluidos"];
         }
 
         if (currentStep === 4) {
@@ -339,6 +349,8 @@ const Update = () => {
             reset({
                 titulo: departamento?.titulo || "",
                 descripcion: departamento?.descripcion || "",
+                categoria: departamento?.categoria || "",
+                direccion: departamento?.direccion || "",
                 precioMensual: departamento?.precioMensual ?? "",
                 numeroHabitaciones: departamento?.numeroHabitaciones ?? "",
                 numeroBanos: departamento?.numeroBanos ?? "",
@@ -511,6 +523,8 @@ const Update = () => {
         const payload = {
             titulo: String(data.titulo || "").trim(),
             descripcion: String(data.descripcion || "").trim(),
+            categoria: String(data.categoria || "").trim(),
+            direccion: String(data.direccion || "").trim(),
             precioMensual: Number(data.precioMensual) || 0,
             numeroHabitaciones: Number(data.numeroHabitaciones) || 0,
             numeroBanos: Number(data.numeroBanos) || 0,
@@ -615,12 +629,12 @@ const Update = () => {
 
             <div className="mb-8">
                 <div className="flex items-center justify-between gap-2">
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                    {[1, 2, 3, 4, 5].map((n) => (
                         <div key={n} className="flex items-center flex-1">
                             <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${n <= step ? "bg-blue-700 border-blue-700 text-white" : "bg-white border-slate-300 text-slate-500"}`}>
                                 {n}
                             </div>
-                            {n < 6 && (
+                            {n < 5 && (
                                 <div className={`h-1 flex-1 mx-2 rounded ${n < step ? "bg-blue-700" : "bg-slate-200"}`} />
                             )}
                         </div>
@@ -636,8 +650,7 @@ const Update = () => {
                         {step === 2 && "Ubicación"}
                         {step === 3 && "Características"}
                         {step === 4 && "Costos y Pago"}
-                        {step === 5 && "Imágenes"}
-                        {step === 6 && "Confirmación"}
+                        {step === 5 && "Confirmación"}
                     </legend>
 
                     {step === 1 && (
@@ -662,11 +675,35 @@ const Update = () => {
                                 })} />
                                 {errors.descripcion && <p className="mt-1 text-xs text-red-600">{errors.descripcion.message}</p>}
                             </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Categoría</label>
+                                <select className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("categoria", {
+                                    required: "Selecciona una categoría.",
+                                })}>
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="Departamento">Departamento</option>
+                                    <option value="Suite">Suite</option>
+                                    <option value="Habitación">Habitación</option>
+                                    <option value="Casa">Casa</option>
+                                </select>
+                                {errors.categoria && <p className="mt-1 text-xs text-red-600">{errors.categoria.message}</p>}
+                            </div>
                         </div>
                     )}
 
                     {step === 2 && (
                         <div className="grid gap-5 md:grid-cols-2">
+                            <div className="md:col-span-2">
+                                <label className="mb-2 block text-sm font-semibold text-slate-700">Dirección</label>
+                                <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("direccion", {
+                                    required: "La dirección es obligatoria.",
+                                    maxLength: { value: 80, message: "Máximo 80 caracteres." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
+                                })} />
+                                {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}
+                            </div>
+
                             <div className="md:col-span-2">
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Referencia</label>
                                 <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("referencia", {
@@ -843,12 +880,6 @@ const Update = () => {
                     )}
 
                     {step === 5 && (
-                        <div className="text-center py-10">
-                            <p className="text-slate-500 italic">La actualización de imágenes se realiza desde el visor de detalles.</p>
-                        </div>
-                    )}
-
-                    {step === 6 && (
                         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                             <div className="md:col-span-2">
                                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cambios detectados</p>
