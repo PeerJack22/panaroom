@@ -390,16 +390,16 @@ const Update = () => {
     }, [currentMapUrl]);
 
     useEffect(() => {
-        if (!cargando && departamento && !tieneParqueadero) {
-            setValue("numParqueaderos", resolveNumParqueaderos(departamento), { shouldValidate: true });
+        if (!cargando && !tieneParqueadero) {
+            setValue("numParqueaderos", "0", { shouldValidate: true, shouldDirty: true });
         }
-    }, [tieneParqueadero, setValue, cargando, departamento]);
+    }, [tieneParqueadero, setValue, cargando]);
 
     useEffect(() => {
-        if (!cargando && departamento && !alicuotaActiva) {
-            setValue("alicoutaMonto", resolveAlicuotaMonto(departamento), { shouldValidate: true });
+        if (!cargando && !alicuotaActiva) {
+            setValue("alicoutaMonto", "0", { shouldValidate: true, shouldDirty: true });
         }
-    }, [alicuotaActiva, setValue, cargando, departamento]);
+    }, [alicuotaActiva, setValue, cargando]);
 
     const handleNextStep = async () => {
         const fields = getFieldsForStep(step);
