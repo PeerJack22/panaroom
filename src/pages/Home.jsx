@@ -198,7 +198,7 @@ export const Home = () => {
             const map = {};
 
             await Promise.all(
-                propiedades.map(async (p) => {
+                        propiedades.map(async (p) => {
                     try {
                         const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/comentarios/${p.id}`;
                         const res = await axios.get(url, { signal: controller.signal });
@@ -216,14 +216,14 @@ export const Home = () => {
                         });
 
                         const califs = comentarios
-                            .map((c) => Number(c?.calificacion) || 0)
+                            .map((c) => Number(c?.calificacion))
                             .filter((n) => !Number.isNaN(n) && n > 0);
 
-                        const avg = califs.length ? califs.reduce((a, b) => a + b, 0) / califs.length : 0;
-                        map[p.id] = Number(avg ? avg.toFixed(1) : 0);
+                        const avg = califs.length ? califs.reduce((a, b) => a + b, 0) / califs.length : null;
+                        map[p.id] = califs.length ? Number(avg.toFixed(1)) : null;
                     } catch (err) {
-                        // Si falla una petición, asignar 0 y continuar
-                        map[p.id] = 0;
+                        // Si falla una petición, mantener null para indicar 'sin datos'
+                        map[p.id] = null;
                         console.debug("No se pudo obtener calificaciones para:", p.id, err?.message || err);
                     }
                 })
@@ -840,9 +840,32 @@ export const Home = () => {
                                         </div>
 
                                         <div className="mb-3 flex justify-end">
-                                            <div className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-sm font-semibold text-amber-600">
-                                                <FaStar className="text-sm" />
-                                                    <span>{(ratingsMap[propiedad.id] || ratingsMap[propiedad.id] === 0) ? ratingsMap[propiedad.id] : obtenerPromedioMock(propiedad)}</span>
+                                            <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-2.5 py-1 text-sm font-semibold text-amber-600">
+                                                {(() => {
+                                                    const rating = ratingsMap[propiedad.id];
+                                                    if (rating === undefined) {
+                                                        // Aún no cargado: mostrar el promedio mock como placeholder
+                                                        return (
+                                                            <>
+                                                                <FaStar className="text-sm" />
+                                                                <span>{obtenerPromedioMock(propiedad)}</span>
+                                                            </>
+                                                        );
+                                                    }
+
+                                                    if (rating === null) {
+                                                        // Sin calificaciones reales aún: mostrar una sola estrella gris
+                                                        return <FaStar className="text-slate-400 w-4 h-4" />;
+                                                    }
+
+                                                    // Valor numérico disponible
+                                                    return (
+                                                        <>
+                                                            <FaStar className="text-sm" />
+                                                            <span>{rating}</span>
+                                                        </>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
 
