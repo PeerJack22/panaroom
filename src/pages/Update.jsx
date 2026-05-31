@@ -133,6 +133,37 @@ const Update = () => {
         const valor = source?.alicoutaMonto ?? source?.montoAlicuota ?? source?.montoAlicuota;
         return valor !== undefined && valor !== null && String(valor).trim() !== "" ? String(valor) : "";
     };
+    const resolveMetodoPago = (source) => {
+        const raw = source?.metodoPago;
+        if (raw && typeof raw === "object") {
+            return {
+                tipoBanco: raw?.tipoBanco || raw?.banco || "",
+                cuentaBancaria: raw?.cuentaBancaria || raw?.numeroCuenta || "",
+                numeroCedula: raw?.numeroCedula || raw?.cedula || "",
+            };
+        }
+
+        if (typeof raw === "string") {
+            try {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === "object") {
+                    return {
+                        tipoBanco: parsed?.tipoBanco || parsed?.banco || "",
+                        cuentaBancaria: parsed?.cuentaBancaria || parsed?.numeroCuenta || "",
+                        numeroCedula: parsed?.numeroCedula || parsed?.cedula || "",
+                    };
+                }
+            } catch {
+                // Si no es JSON válido, seguir con los campos planos
+            }
+        }
+
+        return {
+            tipoBanco: source?.tipoBanco || source?.banco || "",
+            cuentaBancaria: source?.cuentaBancaria || source?.numeroCuenta || "",
+            numeroCedula: source?.numeroCedula || source?.cedula || "",
+        };
+    };
     const cambios = useMemo(() => {
         const fieldLabels = {
             titulo: 'Título',
@@ -321,11 +352,7 @@ const Update = () => {
                 parqueadero: String(departamento?.parqueadero ?? false),
                 numParqueaderos: resolveNumParqueaderos(departamento),
                 guardiania: String(departamento?.guardiania ?? false),
-                metodoPago: {
-                    tipoBanco: departamento?.metodoPago?.tipoBanco || "",
-                    cuentaBancaria: departamento?.metodoPago?.cuentaBancaria || "",
-                    numeroCedula: departamento?.metodoPago?.numeroCedula || ""
-                }
+                metodoPago: resolveMetodoPago(departamento)
             });
             // Asegurar que el campo numParqueaderos tenga el valor correcto en el formulario
             setValue("numParqueaderos", resolveNumParqueaderos(departamento), { shouldDirty: false, shouldValidate: true });
