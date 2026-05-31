@@ -634,7 +634,7 @@ const Feedback = () => {
                                                 item.tipo === 'sugerencia' ? 'bg-blue-100 text-blue-700' : 
                                                 'bg-slate-100 text-slate-700'
                                             }`}>
-                                                {item.tipo}
+                                                {item.tipo === 'queja' ? 'Queja' : item.tipo === 'sugerencia' ? 'Sugerencia' : (String(item.tipo || '').charAt(0).toUpperCase() + String(item.tipo || '').slice(1))}
                                             </span>
 
                                             {item.manejaEstado && (
