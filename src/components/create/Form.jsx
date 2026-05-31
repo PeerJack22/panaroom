@@ -177,7 +177,7 @@ export const Form = () => {
     const stepFields = {
         1: ["titulo", "descripcion", "categoria"],
         2: ["direccion", "referencia", "urlMapa"],
-        3: ["numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "mascotas", "servicios", ...(tieneParqueadero ? ["numParqueaderos"] : [])],
+        3: ["numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "mascotas", "serviciosIncluidos", ...(tieneParqueadero ? ["numParqueaderos"] : [])],
         4: ["precioMensual", "alicuota", "alicoutaMonto", "metodoPago.tipoBanco", "metodoPago.cuentaBancaria", "metodoPago.numeroCedula"],
         5: ["imagen"],
     };
@@ -280,10 +280,10 @@ export const Form = () => {
             return;
         }
 
-        const serviciosSeleccionados = Array.isArray(data.servicios)
-            ? data.servicios
-            : data.servicios
-                ? [data.servicios]
+        const serviciosSeleccionados = Array.isArray(data.serviciosIncluidos)
+            ? data.serviciosIncluidos
+            : data.serviciosIncluidos
+                ? [data.serviciosIncluidos]
                 : [];
 
         const mapServicioBackend = {
@@ -310,7 +310,7 @@ export const Form = () => {
         formData.append("arrendatario", user._id);
 
         Object.keys(data).forEach((key) => {
-            if (["imagen", "servicios", "metodoPago"].includes(key)) {
+            if (["imagen", "serviciosIncluidos", "metodoPago"].includes(key)) {
                 return;
             } else if (key === "parqueadero") {
                 formData.append("parqueadero", data[key] === "true" ? "true" : "false");
@@ -820,7 +820,7 @@ export const Form = () => {
                                 </div>
                                 <div className="col-span-2">
                                     <div className="font-semibold">Servicios</div>
-                                    <div className="mt-1 text-slate-600">{Array.isArray(values.servicios) && values.servicios.length ? values.servicios.join(', ') : 'Sin servicios seleccionados'}</div>
+                                    <div className="mt-1 text-slate-600">{Array.isArray(values.serviciosIncluidos) && values.serviciosIncluidos.length ? values.serviciosIncluidos.join(', ') : 'Sin servicios seleccionados'}</div>
                                 </div>
                                 <div>
                                     <div className="font-semibold">Dirección</div>
