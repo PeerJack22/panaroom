@@ -389,6 +389,14 @@ export const Home = () => {
         setMostrarMensajeDetalle(false);
     };
 
+    const irArriba = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const recargarPagina = () => {
+        window.location.reload();
+    };
+
     const manejarClickDetalles = (propiedad) => {
         if (token) {
             navigate(`/dashboard/visualizar/${propiedad.id}`);
@@ -405,18 +413,18 @@ export const Home = () => {
             <nav className="fixed w-full z-[60] bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-md transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-3 group">
+                    <button type="button" onClick={recargarPagina} className="flex items-center gap-3 group text-left">
                         <img className="w-12 h-12 rounded-lg shadow-lg group-hover:scale-110 transition-transform" src={logo_proyecto} alt="PanaRoom" />
                         <div>
                             <span className="text-2xl font-bold text-white block leading-none">PanaRoom</span>
                         </div>
-                    </Link>
+                    </button>
 
                     {/* Desktop Menu */}
                     <div className="hidden lg:flex items-center gap-8">
-                        <a href="/" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
+                        <button type="button" onClick={irArriba} className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Inicio
-                        </a>
+                        </button>
                         <a href="#acerca" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">
                             Acerca de
                         </a>
@@ -473,7 +481,9 @@ export const Home = () => {
                 {mobileMenuOpen && (
                     <div className="lg:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-800 shadow-xl">
                         <div className="px-6 py-4 space-y-3">
-                            <a href="/" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Inicio</a>
+                            <button type="button" className="block w-full text-left text-lg font-semibold text-slate-200 hover:text-white" onClick={() => { irArriba(); setMobileMenuOpen(false); }}>
+                                Inicio
+                            </button>
                             <a href="#acerca" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Acerca de</a>
                             <a href="#servicios" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Servicios</a>
                             <a href="#contacto" className="block text-lg font-semibold text-slate-200 hover:text-white" onClick={() => setMobileMenuOpen(false)}>Contacto</a>
@@ -482,7 +492,7 @@ export const Home = () => {
                             {!token ? (
                                 <div className="space-y-2">
                                     <button onClick={() => { navigate("/register"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all shadow-md">Registrarse</button>
-                                    <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full py-2 text-center rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100">Iniciar Sesión</button>
+                                    <button onClick={() => { navigate("/login"); setMobileMenuOpen(false); }} className="w-full px-6 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm font-semibold rounded-full transition-all shadow-lg transform hover:-translate-y-0.5">Iniciar Sesión</button>
                                 </div>
                             ) : (
                                 <button onClick={() => { navigate("/dashboard"); setMobileMenuOpen(false); }} className="w-full py-2 rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100">Dashboard</button>
@@ -1091,7 +1101,7 @@ export const Home = () => {
             {/* FOOTER MEJORADO */}
             <footer id="contacto" className="bg-slate-900/95 text-slate-300 py-8 border-t border-slate-800 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-sm">
+                    <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-8 text-sm">
                         <p className="w-full md:w-auto md:order-last text-center md:text-right">&copy; 2026 PanaRoom. Todos los derechos reservados.</p>
 
                         <div className="w-full md:w-auto md:order-first flex flex-col md:flex-row items-center gap-8">
