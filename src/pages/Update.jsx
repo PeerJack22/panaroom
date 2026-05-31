@@ -166,6 +166,12 @@ const Update = () => {
             numeroCedula: source?.numeroCedula || source?.cedula || "",
         };
     };
+    const resolveCategoria = (source) => {
+        const valor = String(source?.categoria || "").trim().toLowerCase();
+        if (valor === "departamento" || valor === "depa") return "departamento";
+        if (valor === "suit" || valor === "suite") return "suit";
+        return "";
+    };
     const cambios = useMemo(() => {
         const fieldLabels = {
             titulo: 'Título',
@@ -349,7 +355,7 @@ const Update = () => {
             reset({
                 titulo: departamento?.titulo || "",
                 descripcion: departamento?.descripcion || "",
-                categoria: departamento?.categoria || "",
+                categoria: resolveCategoria(departamento),
                 direccion: departamento?.direccion || "",
                 precioMensual: departamento?.precioMensual ?? "",
                 numeroHabitaciones: departamento?.numeroHabitaciones ?? "",
@@ -523,7 +529,7 @@ const Update = () => {
         const payload = {
             titulo: String(data.titulo || "").trim(),
             descripcion: String(data.descripcion || "").trim(),
-            categoria: String(data.categoria || "").trim(),
+            categoria: String(data.categoria || "").trim().toLowerCase(),
             direccion: String(data.direccion || "").trim(),
             precioMensual: Number(data.precioMensual) || 0,
             numeroHabitaciones: Number(data.numeroHabitaciones) || 0,
@@ -677,15 +683,18 @@ const Update = () => {
                             </div>
 
                             <div>
-                                <label className="mb-2 block text-sm font-semibold text-slate-700">Categoría</label>
-                                <select className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("categoria", {
-                                    required: "Selecciona una categoría.",
-                                })}>
-                                    <option value="">Selecciona una opción</option>
-                                    <option value="Departamento">Departamento</option>
-                                    <option value="Suite">Suite</option>
-                                    <option value="Habitación">Habitación</option>
-                                    <option value="Casa">Casa</option>
+                                <label className="mb-2 block text-sm font-semibold">Categoría</label>
+                                <select
+                                    className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                                    defaultValue=""
+                                    {...register("categoria", {
+                                        required: "Debes seleccionar una categoría.",
+                                        validate: (v) => ["departamento", "suit"].includes(String(v)) || "Categoría inválida.",
+                                    })}
+                                >
+                                    <option value="" disabled>Seleccionar categoría...</option>
+                                    <option value="departamento">Departamento</option>
+                                    <option value="suit">Suite</option>
                                 </select>
                                 {errors.categoria && <p className="mt-1 text-xs text-red-600">{errors.categoria.message}</p>}
                             </div>
