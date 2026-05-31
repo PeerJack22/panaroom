@@ -686,7 +686,7 @@ const Update = () => {
                                 {errors.descripcion && <p className="mt-1 text-xs text-red-600">{errors.descripcion.message}</p>}
                             </div>
 
-                            <div>
+                            <div className="md:col-span-2">
                                 <label className="mb-2 block text-sm font-semibold">Categoría</label>
                                 <select
                                     className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
@@ -886,8 +886,30 @@ const Update = () => {
                             <div className="space-y-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                                 <h3 className="text-sm font-bold text-slate-700 uppercase">Método de pago</h3>
                                 <input type="text" placeholder="Tipo de banco" maxLength={40} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { maxLength: { value: 40, message: "Máximo 40 caracteres." } })} />
-                                <input type="text" placeholder="Número de cuenta" maxLength={20} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.cuentaBancaria", { maxLength: { value: 20, message: "Máximo 20 caracteres." } })} />
-                                <input type="text" placeholder="Cédula" maxLength={15} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.numeroCedula", { maxLength: { value: 15, message: "Máximo 15 caracteres." } })} />
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="Número de cuenta"
+                                    maxLength={20}
+                                    className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm"
+                                    {...register("metodoPago.cuentaBancaria", {
+                                        maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                        pattern: { value: /^\d*$/, message: "Solo se permiten números." },
+                                    })}
+                                />
+                                {errors?.metodoPago?.cuentaBancaria && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.cuentaBancaria.message}</p>}
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="Cédula"
+                                    maxLength={15}
+                                    className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm"
+                                    {...register("metodoPago.numeroCedula", {
+                                        maxLength: { value: 15, message: "Máximo 15 caracteres." },
+                                        pattern: { value: /^\d*$/, message: "Solo se permiten números." },
+                                    })}
+                                />
+                                {errors?.metodoPago?.numeroCedula && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.numeroCedula.message}</p>}
                             </div>
                         </div>
                     )}

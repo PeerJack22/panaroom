@@ -345,6 +345,8 @@ export const Form = () => {
         formData.append("metodoPago[tipoBanco]", data.metodoPago?.tipoBanco || "");
         formData.append("metodoPago[cuentaBancaria]", data.metodoPago?.cuentaBancaria || "");
         formData.append("metodoPago[numeroCedula]", data.metodoPago?.numeroCedula || "");
+        formData.append("metodoPago[qrPago][url]", "null");
+        formData.append("metodoPago[qrPago][public_id]", "null");
 
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
@@ -697,24 +699,28 @@ export const Form = () => {
 
                             <input
                                 type="text"
+                                inputMode="numeric"
                                 placeholder="Número de cuenta"
                                 maxLength={20}
                                 className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                                 {...register("metodoPago.cuentaBancaria", {
                                     required: "Debes indicar el número de cuenta.",
                                     maxLength: { value: 20, message: "Máximo 20 caracteres." },
+                                    pattern: { value: /^\d*$/, message: "Solo se permiten números." },
                                 })}
                             />
                             {errors?.metodoPago?.cuentaBancaria && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.cuentaBancaria.message}</p>}
 
                             <input
                                 type="text"
+                                inputMode="numeric"
                                 placeholder="Cédula"
                                 maxLength={15}
                                 className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                                 {...register("metodoPago.numeroCedula", {
                                     required: "Debes indicar la cédula.",
                                     maxLength: { value: 15, message: "Máximo 15 caracteres." },
+                                    pattern: { value: /^\d*$/, message: "Solo se permiten números." },
                                 })}
                             />
                             {errors?.metodoPago?.numeroCedula && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.numeroCedula.message}</p>}
