@@ -79,9 +79,12 @@ export const Forgot = () => {
                         </div>
                     </form>
 
-                    <div className="mt-4 border-t border-gray-200 pt-4 text-sm flex justify-between items-center">
+                    <div className="mt-4 border-t border-gray-200 pt-3 text-sm flex justify-between items-center">
                         <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">Regresar</Link>
-                        <Link to="/login" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                        <Link
+                            to="/login"
+                            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-full transition-all shadow-lg hover:shadow-blue-600/30 transform hover:-translate-y-0.5"
+                        >
                             Iniciar sesión
                         </Link>
                     </div>
