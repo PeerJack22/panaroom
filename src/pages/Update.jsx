@@ -545,9 +545,13 @@ const Update = () => {
             numParqueaderos: calcularNumParqueaderos(),
             guardiania: String(data.guardiania) === "true",
             metodoPago: {
-                tipoBanco: data.metodoPago.tipoBanco,
-                cuentaBancaria: data.metodoPago.cuentaBancaria,
-                numeroCedula: data.metodoPago.numeroCedula,
+                tipoBanco: String(data?.metodoPago?.tipoBanco || "").trim(),
+                cuentaBancaria: String(data?.metodoPago?.cuentaBancaria || "").trim(),
+                numeroCedula: String(data?.metodoPago?.numeroCedula || "").trim(),
+                qrPago: {
+                    url: null,
+                    public_id: null,
+                },
             }
         };
 
@@ -881,9 +885,9 @@ const Update = () => {
                             </div>
                             <div className="space-y-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                                 <h3 className="text-sm font-bold text-slate-700 uppercase">Método de pago</h3>
-                                <input type="text" placeholder="Tipo de banco" maxLength={40} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { required: "Obligatorio", maxLength: { value: 40, message: "Máximo 40 caracteres." } })} />
-                                <input type="text" placeholder="Número de cuenta" maxLength={20} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.cuentaBancaria", { required: "Obligatorio", maxLength: { value: 20, message: "Máximo 20 caracteres." } })} />
-                                <input type="text" placeholder="Cédula" maxLength={15} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.numeroCedula", { required: "Obligatorio", maxLength: { value: 15, message: "Máximo 15 caracteres." } })} />
+                                <input type="text" placeholder="Tipo de banco" maxLength={40} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { maxLength: { value: 40, message: "Máximo 40 caracteres." } })} />
+                                <input type="text" placeholder="Número de cuenta" maxLength={20} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.cuentaBancaria", { maxLength: { value: 20, message: "Máximo 20 caracteres." } })} />
+                                <input type="text" placeholder="Cédula" maxLength={15} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.numeroCedula", { maxLength: { value: 15, message: "Máximo 15 caracteres." } })} />
                             </div>
                         </div>
                     )}
