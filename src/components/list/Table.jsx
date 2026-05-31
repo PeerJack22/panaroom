@@ -443,15 +443,16 @@ const Table = () => {
         if (siguiente === paginaActual) return;
 
         setAnimandoDepartamentos(true);
-        // Intentar desplazar al contenedor principal si existe (igual que Home), si no usar window
-        const contenedor = document.querySelector('.container') || document.querySelector('main');
-        if (contenedor && typeof contenedor.scrollIntoView === 'function') {
-            contenedor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
+        // Ir al inicio de la página (mismo comportamiento que en Home)
+        try {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Fallback inmediato por si el navegador no anima correctamente
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+        } catch (err) {
+            // Silenciar errores de scroll
+            console.debug('Scroll to top failed:', err);
         }
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
 
         setTimeout(() => {
             setPaginaActual(siguiente);
