@@ -486,12 +486,12 @@ const Details = () => {
 
     return (
         <div className="min-h-full bg-slate-50 py-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-            <div className="w-full flex flex-col px-2 md:px-4">
-                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 md:p-6 mb-6">
+            <div className="mx-auto w-full max-w-7xl flex flex-col px-2 md:px-4">
+                <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
                     <button
                         type="button"
                         onClick={() => navigate(rutaRegreso, estadoRegreso ? { state: estadoRegreso } : undefined)}
-                        className="mb-4 inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                        className="mb-6 inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors shadow-sm"
                     >
                         ← Atrás
                     </button>
@@ -517,10 +517,10 @@ const Details = () => {
                     <section className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
                         <h2 className="mb-3 text-lg font-semibold text-gray-800">Información general</h2>
 
-                        <div className="grid grid-cols-1 gap-3 text-sm text-gray-700">
-                            <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4 text-sm text-gray-700">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="flex flex-col">
-                                    <span className="text-sm font-semibold text-gray-700">Titulo</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Título</span>
                                     <span className="text-gray-900 truncate">{departamento.titulo}</span>
                                 </div>
                                 <div className="flex flex-col">
@@ -530,58 +530,58 @@ const Details = () => {
                             </div>
 
                             <div>
-                                <span className="text-sm font-semibold text-gray-700">Descripcion</span>
+                                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Descripción</span>
                                 <p className="text-gray-700 line-clamp-3 mt-1">{departamento.descripcion}</p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Direccion</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Dirección</span>
                                     <p className="text-gray-900 truncate">{departamento.direccion}</p>
                                 </div>
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Referencia</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Referencia</span>
                                     <p className="text-gray-900">{departamento.referencia || "-"}</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Habitaciones</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Habitaciones</span>
                                     <p className="text-gray-900">{departamento.numeroHabitaciones}</p>
                                 </div>
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Banos</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Baños</span>
                                     <p className="text-gray-900">{departamento.numeroBanos}</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Parqueadero</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Parqueadero</span>
                                     <p className="text-gray-900">{departamento.parqueadero ? "Sí" : "No"}</p>
                                 </div>
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Mascotas</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Mascotas</span>
                                     <p className="text-gray-900">{departamento.mascotas ? "Sí" : "No"}</p>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                 {(((departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' && Number(departamento.alicoutaMonto) > 0) || departamento.alicuota)) && (
                                     <div>
-                                        <span className="text-sm font-semibold text-gray-700">Alicuota</span>
+                                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Alícuota</span>
                                         <p className="text-gray-900">{(departamento.alicoutaMonto != null && departamento.alicoutaMonto !== '' && Number(departamento.alicoutaMonto) > 0) ? `$ ${departamento.alicoutaMonto}` : (departamento.alicuota ? 'Sí' : 'No aplica')}</p>
                                     </div>
                                 )}
 
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Guardiania</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Guardianía</span>
                                     <p className="text-gray-900">{departamento.guardiania ? "Sí" : "No"}</p>
                                 </div>
 
                                 {departamento.parqueadero && (
                                     <div>
-                                        <span className="text-sm font-semibold text-gray-700">Numero de parqueaderos</span>
+                                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Parqueaderos</span>
                                         <p className="text-gray-900">{departamento.numParqueaderos != null ? departamento.numParqueaderos : '1'}</p>
                                     </div>
                                 )}
@@ -610,17 +610,17 @@ const Details = () => {
                     {propietario && (
                         <section className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
                             <h3 className="text-lg font-semibold text-gray-800 mb-3">Información del propietario</h3>
-                            <div className="grid grid-cols-1 gap-2 text-sm text-gray-700">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 text-sm text-gray-700">
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Nombre</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Nombre</span>
                                     <p className="text-gray-900">{propietario.nombre} {propietario.apellido}</p>
                                 </div>
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Correo</span>
-                                    <p className="text-gray-900">{propietario.email}</p>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Correo</span>
+                                    <p className="text-gray-900 truncate">{propietario.email}</p>
                                 </div>
                                 <div>
-                                    <span className="text-sm font-semibold text-gray-700">Telefono</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Teléfono</span>
                                     <p className="text-gray-900">{propietario.celular || "No disponible"}</p>
                                 </div>
                             </div>
@@ -652,7 +652,7 @@ const Details = () => {
                 <section className="mb-6 grid gap-6 lg:grid-cols-2">
                     <div className="rounded-2xl bg-gray-50 p-5 border border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Ubicación referencial</h2>
-                        <div className="overflow-hidden rounded-xl border border-gray-300">
+                        <div className="overflow-hidden rounded-xl border border-gray-300 h-[320px] sm:h-[400px]">
                             <MapContainer
                                 key={`${mapCenter[0]}-${mapCenter[1]}`}
                                 center={mapCenter}
@@ -661,7 +661,7 @@ const Details = () => {
                                 maxZoom={MAP_MAX_ZOOM}
                                 maxBounds={EPN_MAX_BOUNDS}
                                 maxBoundsViscosity={1.0}
-                                style={{ height: "24rem", width: "100%" }}
+                                style={{ height: "100%", width: "100%" }}
                             >
                                 <TileLayer
                                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -688,7 +688,7 @@ const Details = () => {
                                     navigation
                                     onSwiper={setSwiperInstancia}
                                     onSlideChange={(swiper) => setImagenCarrusel(swiper.activeIndex)}
-                                    className="relative h-72 w-full rounded-2xl border border-gray-200 bg-white shadow-sm"
+                                    className="relative h-64 sm:h-80 md:h-96 w-full rounded-2xl border border-gray-200 bg-white shadow-sm"
                                 >
                                     {departamento.imagenes.map((img, index) => (
                                         <SwiperSlide key={index}>
