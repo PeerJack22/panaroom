@@ -123,7 +123,7 @@ export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedImages, setSelectedImages] = useState([]);
-    const totalSteps = 4;
+    const totalSteps = 6;
     const {
         register,
         handleSubmit,
@@ -169,9 +169,11 @@ export const Form = () => {
     }, [currentMapUrl]);
 
     const stepFields = {
-        1: ["titulo", "descripcion", "direccion", "referencia", "urlMapa", "categoria"],
-        2: ["precioMensual", "numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "alicuota", "alicoutaMonto", "mascotas", ...(tieneParqueadero ? ["numParqueaderos"] : [])],
-        3: ["imagen"],
+        1: ["titulo", "descripcion", "categoria"],
+        2: ["direccion", "referencia", "urlMapa"],
+        3: ["numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "mascotas", "servicios", ...(tieneParqueadero ? ["numParqueaderos"] : [])],
+        4: ["precioMensual", "alicuota", "alicoutaMonto", "metodoPago.tipoBanco", "metodoPago.cuentaBancaria", "metodoPago.numeroCedula"],
+        5: ["imagen"],
     };
 
     useEffect(() => {
@@ -302,9 +304,7 @@ export const Form = () => {
         formData.append("arrendatario", user._id);
 
         Object.keys(data).forEach((key) => {
-            if (key === "imagen") {
-                return;
-            } else if (key === "servicios") {
+            if (["imagen", "servicios", "metodoPago"].includes(key)) {
                 return;
             } else if (key === "parqueadero") {
                 formData.append("parqueadero", data[key] === "true" ? "true" : "false");
@@ -335,6 +335,12 @@ export const Form = () => {
         selectedImages.forEach((img) => {
             formData.append("imagenes", img);
         });
+
+        if (data.metodoPago) {
+            formData.append("metodoPago[tipoBanco]", data.metodoPago.tipoBanco);
+            formData.append("metodoPago[cuentaBancaria]", data.metodoPago.cuentaBancaria);
+            formData.append("metodoPago[numeroCedula]", data.metodoPago.numeroCedula);
+        }
 
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
@@ -380,12 +386,12 @@ export const Form = () => {
 
             <div className="mb-8">
                 <div className="flex items-center justify-between gap-2">
-                    {[1, 2, 3, 4].map((n) => (
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
                         <div key={n} className="flex items-center flex-1">
                             <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${n <= step ? "bg-blue-700 border-blue-700 text-white" : "bg-white border-slate-300 text-slate-500"}`}>
                                 {n}
                             </div>
-                            {n < 4 && (
+                            {n < 6 && (
                                 <div className={`h-1 flex-1 mx-2 rounded ${n < step ? "bg-blue-700" : "bg-slate-200"}`} />
                             )}
                         </div>
@@ -397,9 +403,11 @@ export const Form = () => {
             <fieldset className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
                 <legend className="rounded-full bg-white px-4 py-1 text-xl font-bold text-slate-800 shadow-sm">
                     {step === 1 && "Información básica"}
-                    {step === 2 && "Datos del inmueble"}
-                    {step === 3 && "Imágenes y servicios"}
-                    {step === 4 && "Confirmación"}
+                    {step === 2 && "Ubicación"}
+                    {step === 3 && "Características"}
+                    {step === 4 && "Costos y Pago"}
+                    {step === 5 && "Imágenes de la residencia"}
+                    {step === 6 && "Confirmación"}
                 </legend>
 
                 {step === 1 && (
@@ -435,6 +443,27 @@ export const Form = () => {
                         </div>
 
                         <div>
+                            <label className="mb-2 block text-sm font-semibold">Categoría</label>
+                            <select
+                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
+                                defaultValue=""
+                                {...register("categoria", {
+                                    required: "Debes seleccionar una categoría.",
+                                    validate: (v) => ["departamento", "suit"].includes(String(v)) || "Categoría inválida.",
+                                })}
+                            >
+                                <option value="" disabled>Seleccionar categoría...</option>
+                                <option value="departamento">Departamento</option>
+                                <option value="suit">Suite</option>
+                            </select>
+                            {errors.categoria && <p className="text-red-600 text-xs italic">{errors.categoria.message}</p>}
+                        </div>
+                    </>
+                )}
+
+                {step === 2 && (
+                    <>
+                        <div>
                             <label className="mb-2 block text-sm font-semibold">Dirección</label>
                             <input
                                 type="text"
@@ -465,23 +494,6 @@ export const Form = () => {
                         </div>
 
                         <input type="hidden" {...register("ciudad")} />
-
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold">Categoría</label>
-                            <select
-                                className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
-                                defaultValue=""
-                                {...register("categoria", {
-                                    required: "Debes seleccionar una categoría.",
-                                    validate: (v) => ["departamento", "suit"].includes(String(v)) || "Categoría inválida.",
-                                })}
-                            >
-                                <option value="" disabled>Seleccionar categoría...</option>
-                                <option value="departamento">Departamento</option>
-                                <option value="suit">Suite</option>
-                            </select>
-                            {errors.categoria && <p className="text-red-600 text-xs italic">{errors.categoria.message}</p>}
-                        </div>
 
                         <input
                             type="hidden"
@@ -533,18 +545,8 @@ export const Form = () => {
                     </>
                 )}
 
-                {step === 2 && (
+                {step === 3 && (
                     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold text-slate-700">Precio mensual</label>
-                            <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("precioMensual", { 
-                                required: "El precio mensual es obligatorio.", 
-                                min: { value: 1, message: "Mínimo 1." },
-                                max: { value: 999, message: "Máximo 3 cifras (999)." }
-                            })} />
-                            {errors.precioMensual && <p className="mt-1 text-xs text-red-600">{errors.precioMensual.message}</p>}
-                        </div>
-
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-slate-700">Número de habitaciones</label>
                             <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("numeroHabitaciones", { 
@@ -707,29 +709,11 @@ export const Form = () => {
                                                 </p>
                                             )}
                                         </div>
-
-                        <div>
-                            <label className="mb-2 block text-sm font-semibold">Servicios incluidos</label>
-                            <div className="flex gap-6">
-                                <label className="flex items-center gap-2">
-                                    <input type="checkbox" value="agua" {...register("servicios")} />
-                                    Agua
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input type="checkbox" value="luz" {...register("servicios")} />
-                                    Luz
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input type="checkbox" value="internet" {...register("servicios")} />
-                                    Internet
-                                </label>
-                            </div>
-                        </div>
                     </>
                 )}
 
-                {step === 4 && (
-                    <div className="grid gap-6 md:grid-cols-2">
+                {step === 6 && (
+                    <div className="grid gap-6 lg:grid-cols-2">
                         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                             <h3 className="text-lg font-bold text-slate-900 mb-3">Resumen</h3>
                             <p className="text-sm text-slate-700 mb-4">Revisa la información antes de guardar. Solo se mostrarán los campos seleccionados.</p>
@@ -785,6 +769,12 @@ export const Form = () => {
                                 <div><span className="font-semibold">Mascotas:</span> <span className="text-slate-600">{values.mascotas === 'true' ? 'Sí' : values.mascotas === 'false' ? 'No' : '-'}</span></div>
                                 <div><span className="font-semibold">Guardianía:</span> <span className="text-slate-600">{values.guardiania === 'true' ? 'Sí' : values.guardiania === 'false' ? 'No' : '-'}</span></div>
                                 <div><span className="font-semibold"># Imágenes seleccionadas:</span> <span className="text-slate-600">{selectedImages.length}</span></div>
+                                
+                                <hr className="my-3 border-slate-100" />
+                                <h4 className="font-bold text-slate-800 text-xs uppercase mb-2">Método de Pago</h4>
+                                <div><span className="font-semibold text-xs">Banco:</span> <span className="text-slate-600">{values.metodoPago?.tipoBanco || '-'}</span></div>
+                                <div><span className="font-semibold text-xs">Cuenta:</span> <span className="text-slate-600">{values.metodoPago?.cuentaBancaria || '-'}</span></div>
+                                <div><span className="font-semibold text-xs">Cédula:</span> <span className="text-slate-600">{values.metodoPago?.numeroCedula || '-'}</span></div>
                             </div>
                         </div>
                     </div>
