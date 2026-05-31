@@ -53,6 +53,12 @@ const buildOpenStreetMapEmbedUrl = (lat, lng) => {
     return `https://www.openstreetmap.org/export/embed.html?bbox=${minLng}%2C${minLat}%2C${maxLng}%2C${maxLat}&layer=mapnik&marker=${markerLat}%2C${markerLng}`;
 };
 
+const servicioOptions = [
+    { label: "Agua", value: "Agua" },
+    { label: "Luz", value: "Luz" },
+    { label: "Internet", value: "Internet" },
+];
+
 const extractMarkerCoordinates = (url) => {
     if (!url || typeof url !== "string") return null;
     const markerMatch = url.match(/marker=([-\d.]+)%2C([-\d.]+)/i) || url.match(/marker=([-\d.]+),([-\d.]+)/i);
@@ -605,33 +611,25 @@ export const Form = () => {
                         </div>
 
                         <div>
-                            <label className="mb-2 block text-sm font-semibold text-slate-700">Alicuota</label>
-                            <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("alicuota", { required: "Indica si aplica alícuota." })} />Sí</label>
-                                <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("alicuota", { required: "Indica si aplica alícuota." })} />No</label>
-                            </div>
-                            {errors.alicuota && <p className="mt-1 text-xs text-red-600">{errors.alicuota.message}</p>}
-                        </div>
-
-                        {alicuotaActiva && (
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-slate-700">Monto alícuota</label>
-                                <input type="number" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("alicoutaMonto", { 
-                                    required: alicuotaActiva ? "Debes indicar el monto de alícuota." : false, 
-                                    min: { value: 1, message: "Mínimo 1." },
-                                    max: { value: 999, message: "Máximo 3 cifras (999)." }
-                                })} />
-                                {errors.alicoutaMonto && <p className="mt-1 text-xs text-red-600">{errors.alicoutaMonto.message}</p>}
-                            </div>
-                        )}
-
-                        <div>
                             <label className="mb-2 block text-sm font-semibold text-slate-700">Mascotas</label>
                             <div className="flex gap-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
                                 <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="true" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />Sí</label>
                                 <label className="inline-flex items-center gap-2 text-sm text-slate-700"><input type="radio" value="false" {...register("mascotas", { required: "Indica si se permiten mascotas." })} />No</label>
                             </div>
                             {errors.mascotas && <p className="mt-1 text-xs text-red-600">{errors.mascotas.message}</p>}
+                        </div>
+
+                        <div className="md:col-span-2 lg:col-span-3">
+                            <h2 className="text-sm font-bold text-slate-700 mb-2">Servicios incluidos</h2>
+                            <div className="flex flex-wrap gap-4">
+                                {servicioOptions.map((servicio) => (
+                                    <label key={servicio.value} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                                        <input type="checkbox" value={servicio.label} {...register("serviciosIncluidos", { validate: (v) => v.length > 0 || "Selecciona al menos uno." })} />
+                                        {servicio.label}
+                                    </label>
+                                ))}
+                            </div>
+                            {errors.serviciosIncluidos && <p className="mt-2 text-xs text-red-600">{errors.serviciosIncluidos.message}</p>}
                         </div>
                     </div>
                 )}
