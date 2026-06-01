@@ -24,6 +24,10 @@ const Users = () => {
     const [documentoLightboxIndex, setDocumentoLightboxIndex] = useState(null);
     const [paginaActual, setPaginaActual] = useState(1);
     const [animando, setAnimando] = useState(false);
+    const [modalRechazoAbierto, setModalRechazoAbierto] = useState(false);
+    const [usuarioARechazar, setUsuarioARechazar] = useState(null);
+    const [motivoRechazo, setMotivoRechazo] = useState("");
+    const [enviandoRechazo, setEnviandoRechazo] = useState(false);
     const usuariosPorPagina = 6;
 
     const obtenerIdArrendatario = (valor) => {
@@ -207,6 +211,56 @@ const Users = () => {
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
+
+    const handleAbrirRechazo = (usuario) => {
+        setUsuarioARechazar(usuario);
+        setMotivoRechazo("");
+        setModalRechazoAbierto(true);
+    };
+
+    const cerrarModalRechazo = () => {
+        setModalRechazoAbierto(false);
+        setUsuarioARechazar(null);
+        setMotivoRechazo("");
+    };
+
+    const confirmarRechazo = async () => {
+        if (!motivoRechazo.trim()) {
+            toast.error("Por favor, ingresa el motivo del rechazo.");
+            return;
+        }
+
+        setEnviandoRechazo(true);
+        const usuarioId = usuarioARechazar?._id || usuarioARechazar?.id;
+
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const token = storedUser?.state?.token;
+
+            const url = `${import.meta.env.VITE_BACKEND_URL}/administrador/eliminar-arrendatario/${usuarioId}`;
+            await axios.delete(url, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                data: { motivo: motivoRechazo.trim() }
+            });
+
+            toast.success("Solicitud rechazada y usuario eliminado correctamente.");
+            
+            setUsers((prev) => prev.filter((u) => String(u?._id || u?.id) !== String(usuarioId)));
+            setArrendatariosNoConfirmadosIds((prev) => prev.filter((id) => String(id) !== String(usuarioId)));
+            
+            if (arrendatarioSeleccionado && String(arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id) === String(usuarioId)) {
+                cerrarDetalleArrendatario();
+            }
+            cerrarModalRechazo();
+        } catch (error) {
+            toast.error(error?.response?.data?.msg || "No se pudo rechazar la solicitud.");
+        } finally {
+            setEnviandoRechazo(false);
+        }
+    };
 
     const handleToggleEstadoUsuario = async (usuario) => {
         const usuarioId = usuario?._id || usuario?.id;
@@ -508,9 +562,21 @@ const Users = () => {
                                     <span className="text-[10px] font-bold text-slate-400 tracking-wider">{normalizarRol(user.rol)}</span>
                                 </div>
                             </div>
-                            <div className="space-y-1 text-slate-700 mb-4 flex-1">
-                                <p><span className="font-semibold">Correo:</span> {user.email || "No disponible"}</p>
-                                <p><span className="font-semibold">Teléfono:</span> {user.celular || "No disponible"}</p>
+                            <div className="space-y-2 text-slate-700 mb-4 flex-1">
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    <FaEnvelope className="shrink-0 text-slate-400 text-xs" />
+                                    <span className="text-sm truncate" title={user.email}>{user.email || "N/A"}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <FaPhone className="shrink-0 text-slate-400 text-xs" />
+                                    <span className="text-sm">{user.celular || "N/A"}</span>
+                                </div>
+                                {normalizarRol(user.rol) === "arrendatario" && arrendatariosNoConfirmadosIds.includes(user?._id || user?.id) && (
+                                    <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-amber-600 uppercase">
+                                        <FaClock className="animate-pulse" />
+                                        Pendiente de revisión
+                                    </div>
+                                )}
                             </div>
 
                             <div className="mt-auto flex justify-end items-center gap-3 pt-3 border-t border-slate-100">
@@ -525,6 +591,18 @@ const Users = () => {
                                 >
                                     <MdInfo className="h-5 w-5" />
                                 </button>
+                                {normalizarRol(user.rol) === "arrendatario" && arrendatariosNoConfirmadosIds.includes(user?._id || user?.id) && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleAbrirRechazo(user);
+                                        }}
+                                        className="rounded-full px-3.5 py-2 text-xs font-semibold border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-all shadow-sm"
+                                    >
+                                        Rechazar
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     onClick={(e) => {
@@ -854,6 +932,14 @@ const Users = () => {
                                                 ? "Guardando..."
                                                 : "Activar cuenta"}
                                         </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAbrirRechazo(arrendatarioSeleccionado)}
+                                            disabled={confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)}
+                                            className="mt-3 w-full rounded-2xl border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-700 hover:bg-red-100 transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            Rechazar solicitud
+                                        </button>
                                     </div>
                                 )}
                             </section>
@@ -915,6 +1001,50 @@ const Users = () => {
                             ›
                         </button>
                     )}
+                </div>,
+                document.body
+            )}
+
+            {modalRechazoAbierto && createPortal(
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+                    <div 
+                        className="w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-2xl border border-slate-200" 
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3 className="text-2xl font-black text-slate-900 mb-2">Rechazar solicitud</h3>
+                        <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                            Se eliminará la cuenta de <strong>{usuarioARechazar?.nombre} {usuarioARechazar?.apellido}</strong>. Ingresa el motivo para notificarle por correo electrónico.
+                        </p>
+                        
+                        <div className="space-y-2">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Motivo del rechazo</label>
+                            <textarea
+                                className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 min-h-[120px] resize-none transition-all"
+                                placeholder="Ej: Los documentos de identidad no son legibles o están incompletos..."
+                                value={motivoRechazo}
+                                onChange={(e) => setMotivoRechazo(e.target.value)}
+                            />
+                        </div>
+                        
+                        <div className="mt-8 flex gap-3">
+                            <button
+                                type="button"
+                                onClick={cerrarModalRechazo}
+                                disabled={enviandoRechazo}
+                                className="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={confirmarRechazo}
+                                disabled={enviandoRechazo || !motivoRechazo.trim()}
+                                className="flex-1 rounded-2xl bg-red-600 py-3 text-sm font-bold text-white hover:bg-red-700 shadow-lg shadow-red-200 transition-all active:scale-95 disabled:opacity-50"
+                            >
+                                {enviandoRechazo ? "Enviando..." : "Confirmar rechazo"}
+                            </button>
+                        </div>
+                    </div>
                 </div>,
                 document.body
             )}
