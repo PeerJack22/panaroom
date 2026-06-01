@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 
 const roleToPrefix = {
     administrador: 'administrador',
@@ -28,7 +29,11 @@ const Reset = () => {
     const [tokenback, setTokenBack] = useState(false);
     const [resolvedPrefix, setResolvedPrefix] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const nuevaPassword = watch("password");
 
     const changePassword = async (data) => {
         if (!token || !resolvedPrefix || isSubmitting) return;
@@ -109,12 +114,30 @@ const Reset = () => {
                 >
                     <div className="mb-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Nueva contraseña</label>
-                        <input
-                            type="password"
-                            placeholder="Ingresa tu nueva contraseña"
-                            {...register("password", { required: "La contraseña es obligatoria" })}
-                            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Ingresa tu nueva contraseña"
+                                {...register("password", { 
+                                    required: "La contraseña es obligatoria",
+                                    minLength: { value: 8, message: "Mínimo 8 caracteres" },
+                                    pattern: {
+                                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/,
+                                        message: "Debe incluir mayúscula, minúscula, número y carácter especial"
+                                    },
+                                    validate: val => val.trim().length > 0 || "No puede contener solo espacios"
+                                })}
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pr-10 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-blue-600 transition-colors"
+                                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showPassword ? <FaRegEyeSlash className="w-5 h-5" /> : <FaRegEye className="w-5 h-5" />}
+                            </button>
+                        </div>
                         {errors.password && (
                             <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
                         )}
@@ -122,12 +145,25 @@ const Reset = () => {
 
                     <div className="mb-6">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Confirmar contraseña</label>
-                        <input
-                            type="password"
-                            placeholder="Repite tu contraseña"
-                            {...register("confirmpassword", { required: "La confirmación es obligatoria" })}
-                            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Repite tu contraseña"
+                                {...register("confirmpassword", { 
+                                    required: "La confirmación es obligatoria",
+                                    validate: value => value === nuevaPassword || "Las contraseñas no coinciden"
+                                })}
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pr-10 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-blue-600 transition-colors"
+                                aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showConfirmPassword ? <FaRegEyeSlash className="w-5 h-5" /> : <FaRegEye className="w-5 h-5" />}
+                            </button>
+                        </div>
                         {errors.confirmpassword && (
                             <p className="text-sm text-red-600 mt-1">{errors.confirmpassword.message}</p>
                         )}
