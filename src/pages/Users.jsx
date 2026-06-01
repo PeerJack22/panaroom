@@ -225,13 +225,24 @@ const Users = () => {
     };
 
     const confirmarRechazo = async () => {
-        if (!motivoRechazo.trim()) {
-            toast.error("Por favor, ingresa el motivo del rechazo.");
+        const motivoTrimmed = motivoRechazo.trim();
+        if (motivoTrimmed.length < 20) {
+            toast.error("El motivo debe tener al menos 20 caracteres.");
+            return;
+        }
+        if (motivoTrimmed.length > 200) {
+            toast.error("El motivo no puede exceder los 200 caracteres.");
             return;
         }
 
-        setEnviandoRechazo(true);
         const usuarioId = usuarioARechazar?._id || usuarioARechazar?.id;
+        if (userDepartamentos[usuarioId] && userDepartamentos[usuarioId].length > 0) {
+            toast.error("No se puede rechazar este arrendatario porque tiene residencias asociadas.");
+            return;
+        }
+
+
+        setEnviandoRechazo(true);
 
         try {
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
@@ -1025,7 +1036,12 @@ const Users = () => {
                                 placeholder="Ej: Los documentos de identidad no son legibles o están incompletos..."
                                 value={motivoRechazo}
                                 onChange={(e) => setMotivoRechazo(e.target.value)}
+                                minLength={20}
+                                maxLength={200}
                             />
+                            <p className="text-xs text-slate-500 text-right mt-1">
+                                {motivoRechazo.length} / 200 caracteres
+                            </p>
                         </div>
                         
                         <div className="mt-8 flex gap-3">
@@ -1039,8 +1055,8 @@ const Users = () => {
                             </button>
                             <button
                                 type="button"
-                                onClick={confirmarRechazo}
-                                disabled={enviandoRechazo || !motivoRechazo.trim()}
+                                onClick={confirmarRechazo} // La validación se hace dentro de la función
+                                disabled={enviandoRechazo || motivoRechazo.trim().length < 20 || motivoRechazo.trim().length > 200}
                                 className="flex-1 rounded-2xl bg-red-600 py-3 text-sm font-bold text-white hover:bg-red-700 shadow-lg shadow-red-200 transition-all active:scale-95 disabled:opacity-50"
                             >
                                 {enviandoRechazo ? "Enviando..." : "Confirmar rechazo"}
