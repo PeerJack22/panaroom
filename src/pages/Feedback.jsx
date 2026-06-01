@@ -710,7 +710,7 @@ const Feedback = () => {
 
                                         {/* Botón de Acción al final */}
                                         <div className="mt-auto pt-2">
-                                            {(isAdmin || (isArrendatario && item.tipo === 'sugerencia')) && item.manejaEstado && !item.tieneRespuesta ? (
+                                            {isAdmin && item.manejaEstado && !item.tieneRespuesta ? (
                                                 <button
                                                     onClick={() => abrirModalComentario(item)}
                                                     className="w-full rounded-full bg-blue-600 py-2.5 text-xs font-bold text-white shadow-lg transition-all hover:bg-blue-700 active:scale-95"
