@@ -246,12 +246,11 @@ const Update = () => {
         });
         return result;
     }, [departamento, values]);
-    const totalSteps = 5;
+    const totalSteps = 6;
     const getFieldsForStep = (currentStep) => {
         if (currentStep === 1) {
             return ["titulo", "descripcion", "categoria"];
         }
-
         if (currentStep === 2) {
             return [
                 "direccion",
@@ -259,7 +258,6 @@ const Update = () => {
                 "urlMapa",
             ];
         }
-
         if (currentStep === 3) {
             return [
                 "numeroHabitaciones",
@@ -269,11 +267,9 @@ const Update = () => {
                 "bodega",
                 "guardiania",
                 "mascotas",
-                "disponible",
                 "serviciosIncluidos",
             ];
         }
-
         if (currentStep === 4) {
             return [
                 "precioMensual",
@@ -284,8 +280,13 @@ const Update = () => {
                 "metodoPago.numeroCedula",
             ];
         }
-
-        return [];
+        if (currentStep === 5) {
+            return []; // Images are not updated in this form, but it's a step
+        }
+        if (currentStep === 6) {
+            return []; // Confirmation step, no fields to validate
+        }
+        return []; // Fallback
     };
 
     const esPropietario = useMemo(() => {
@@ -639,12 +640,12 @@ const Update = () => {
 
             <div className="mb-8">
                 <div className="flex items-center justify-between gap-2">
-                    {[1, 2, 3, 4, 5].map((n) => (
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
                         <div key={n} className="flex items-center flex-1">
                             <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 ${n <= step ? "bg-blue-700 border-blue-700 text-white" : "bg-white border-slate-300 text-slate-500"}`}>
                                 {n}
                             </div>
-                            {n < 5 && (
+                            {n < 6 && (
                                 <div className={`h-1 flex-1 mx-2 rounded ${n < step ? "bg-blue-700" : "bg-slate-200"}`} />
                             )}
                         </div>
@@ -660,7 +661,8 @@ const Update = () => {
                         {step === 2 && "Ubicación"}
                         {step === 3 && "Características"}
                         {step === 4 && "Costos y Pago"}
-                        {step === 5 && "Confirmación"}
+                        {step === 5 && "Imágenes"}
+                        {step === 6 && "Confirmación"}
                     </legend>
 
                     {step === 1 && (
@@ -915,7 +917,13 @@ const Update = () => {
                         </div>
                     )}
 
-                    {step === 5 && (
+                    {step === 5 && ( // This step is for images, but update doesn't handle image uploads directly.
+                        <div className="text-center py-10">
+                            <p className="text-slate-500 italic">Las imágenes se gestionan desde la vista de detalles del departamento.</p>
+                        </div>
+                    )}
+
+                    {step === 6 && (
                         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                             <div className="md:col-span-2">
                                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cambios detectados</p>

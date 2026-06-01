@@ -932,14 +932,16 @@ const Users = () => {
                                                 ? "Guardando..."
                                                 : "Activar cuenta"}
                                         </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleAbrirRechazo(arrendatarioSeleccionado)}
-                                            disabled={confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)}
-                                            className="mt-3 w-full rounded-2xl border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-700 hover:bg-red-100 transition-all active:scale-95 disabled:opacity-50"
-                                        >
-                                            Rechazar solicitud
-                                        </button>
+                                        {arrendatariosNoConfirmadosIds.includes(arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAbrirRechazo(arrendatarioSeleccionado)}
+                                                disabled={confirmingArrendatarioId === (arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)}
+                                                className="mt-3 w-full rounded-2xl border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-700 hover:bg-red-100 transition-all active:scale-95 disabled:opacity-50"
+                                            >
+                                                Rechazar solicitud
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </section>
