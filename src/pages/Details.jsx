@@ -711,10 +711,10 @@ const Details = () => {
 
                 </div>
 
-                <section className="mb-6 grid gap-6 lg:grid-cols-2">
-                    <div className="rounded-2xl bg-gray-50 p-5 border border-gray-200">
+                <section className="mb-6 grid gap-6 lg:grid-cols-2 items-stretch">
+                    <div className="rounded-2xl bg-gray-50 p-5 border border-gray-200 flex flex-col">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Ubicación referencial</h2>
-                        <div className="overflow-hidden rounded-xl border border-gray-300 h-[320px] sm:h-[400px]">
+                        <div className="overflow-hidden rounded-xl border border-gray-300 flex-1 min-h-[320px] sm:min-h-[400px]">
                             <MapContainer
                                 key={`${mapCenter[0]}-${mapCenter[1]}`}
                                 center={mapCenter}
@@ -739,7 +739,7 @@ const Details = () => {
                         </p>
                     </div>
 
-                    <div className="rounded-2xl bg-gray-50 p-5 border border-gray-200">
+                    <div className="rounded-2xl bg-gray-50 p-5 border border-gray-200 flex flex-col">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Imágenes de la residencia</h2>
 
                         {departamento.imagenes?.length > 0 ? (

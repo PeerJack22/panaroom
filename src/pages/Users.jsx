@@ -42,6 +42,10 @@ const Users = () => {
         if (valor === "arrendador") return "arrendatario";
         return valor;
     };
+    const capitalizar = (s) => {
+        if (!s) return s;
+        return String(s).charAt(0).toUpperCase() + String(s).slice(1);
+    };
 
     const normalizarDocumentos = (documentos) => {
         // Aceptar diferentes formas en las que el backend puede devolver los documentos
@@ -570,7 +574,7 @@ const Users = () => {
                                     <h2 className="text-xl font-bold text-slate-900 leading-tight truncate">
                                         {user.nombre} {user.apellido}
                                     </h2>
-                                    <span className="text-[10px] font-bold text-slate-400 tracking-wider">{normalizarRol(user.rol)}</span>
+                                    <span className="text-[10px] font-bold text-slate-400 tracking-wider">{capitalizar(normalizarRol(user.rol))}</span>
                                 </div>
                             </div>
                             <div className="space-y-2 text-slate-700 mb-4 flex-1">
@@ -739,7 +743,7 @@ const Users = () => {
                                                 {estudianteSeleccionado.nombre} {estudianteSeleccionado.apellido}
                                             </h4>
                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 mt-1">
-                                                <FaBriefcase className="h-3 w-3" /> {normalizarRol(estudianteSeleccionado.rol)}
+                                                <FaBriefcase className="h-3 w-3" /> {capitalizar(normalizarRol(estudianteSeleccionado.rol))}
                                             </span>
                                         </div>
                                     </div>
@@ -819,7 +823,7 @@ const Users = () => {
                                 <p><span className="font-semibold">Email:</span> {arrendatarioSeleccionado.email || "No disponible"}</p>
                                 <p><span className="font-semibold">Teléfono:</span> {arrendatarioSeleccionado.celular || "No disponible"}</p>
                                 <p><span className="font-semibold">Dirección:</span> {arrendatarioSeleccionado.direccion || "No disponible"}</p>
-                                <p><span className="font-semibold">Rol:</span> {normalizarRol(arrendatarioSeleccionado.rol)}</p>
+                                <p><span className="font-semibold">Rol:</span> {capitalizar(normalizarRol(arrendatarioSeleccionado.rol))}</p>
                                 <p>
                                     <span className="font-semibold">Confirmación:</span>{" "}
                                     {arrendatariosNoConfirmadosIds.includes(arrendatarioSeleccionado?._id || arrendatarioSeleccionado?.id)
