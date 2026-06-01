@@ -14,7 +14,7 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     
     const { register, handleSubmit, formState: { errors } } = useForm()
-    const { token, setToken, setRol, setUser } = storeAuth();
+    const { setToken, setRol, setUser } = storeAuth();
 
     useEffect(() => {
         // Mantener el tipo de acceso actual en el estado; por defecto 'arrendatario'.
@@ -50,10 +50,25 @@ const loginUser = async (data) => {
         }
 
         if (!response) {
-            const backendMsg =
+            let backendMsg =
                 lastError?.response?.data?.msg ||
                 lastError?.response?.data?.message ||
                 'No se pudo iniciar sesión. Verifica tus credenciales.';
+
+            // Si el backend indica que el correo/cuenta no está verificada,
+            // añadir nota sobre posible desactivación por el administrador.
+            try {
+                const normal = String(backendMsg).toLowerCase();
+                if (normal.includes('verific') || normal.includes('no verificado') || normal.includes('no verificada')) {
+                    // Asegurar puntuación antes de anexar la nota
+                    backendMsg = backendMsg.trim();
+                    if (!/[.!?]$/.test(backendMsg)) backendMsg = backendMsg + '.';
+                    backendMsg = backendMsg + ' o el administrador desactivó tu cuenta.';
+                }
+            } catch {
+                // ignore and use original message
+            }
+
             toast.dismiss(loadingToast);
             toast.error(backendMsg);
             return;
