@@ -78,7 +78,7 @@ const Update = () => {
     const { fetchDataBackend } = useFetch();
     const { user, rol, token } = storeAuth();
     const [departamento, setDepartamento] = useState(location.state?.departamento || null);
-    const [cargando, setCargando] = useState(!location.state?.departamento);
+    const [cargando, setCargando] = useState(true);
     const [step, setStep] = useState(1);
 
     const {
@@ -132,7 +132,7 @@ const Update = () => {
         return valor !== undefined && valor !== null && String(valor).trim() !== "" ? String(valor) : "";
     };
     const resolveAlicuotaMonto = (source) => {
-        const valor = source?.alicoutaMonto ?? source?.montoAlicuota ?? source?.montoAlicuota;
+        const valor = source?.alicoutaMonto ?? source?.montoAlicuota;
         return valor !== undefined && valor !== null && String(valor).trim() !== "" ? String(valor) : "";
     };
     const resolveMetodoPago = (source) => {
@@ -372,11 +372,8 @@ const Update = () => {
                 guardiania: String(departamento?.guardiania ?? false),
                 metodoPago: resolveMetodoPago(departamento)
             });
-            // Asegurar que el campo numParqueaderos tenga el valor correcto en el formulario
-            setValue("numParqueaderos", resolveNumParqueaderos(departamento), { shouldDirty: false, shouldValidate: true });
-            setValue("alicoutaMonto", resolveAlicuotaMonto(departamento), { shouldDirty: false, shouldValidate: true });
-            setCargando(false);
         }
+        setCargando(false);
     }, [departamento, fetchDataBackend, id, reset, token, setValue]);
 
     useEffect(() => {
