@@ -296,7 +296,7 @@ const Chat = () => {
       }
     };
     cargar();
-  }, [contactoActivo, token, obtenerParamsContacto, normalizarMensaje]);
+  }, [contactoActivo, token, obtenerParamsContacto, normalizarMensaje, userId]);
 
   // socket
   useEffect(() => {
@@ -353,8 +353,6 @@ const Chat = () => {
           : m.estudianteId && String(m.estudianteId) !== String(userId) ? m.estudianteId
           : m.administradorId && String(m.administradorId) !== String(userId) ? m.administradorId
           : null;
-        const tipo = m.administradorId && String(m.administradorId) !== String(userId) ? 'administrador' 
-          : (m.arrendatarioId && String(m.arrendatarioId) !== String(userId) ? 'arrendatario' : 'estudiante');
         if (otherId) {
           setContactos((prev) => prev.map((c) => (
             String(c.id) === String(otherId)
@@ -625,7 +623,7 @@ const Chat = () => {
                 <div className="border-b border-slate-200 p-4 bg-gray-50 rounded-t-2xl flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-lg font-semibold">{contactoActivo?.nombre}</h3>
-                    {(departamentoActivoId || departamentoActivoNombre) && (
+                    {((isEstudiante || (isArrendatario && contactoActivo?.tipo === 'estudiante')) && (departamentoActivoId || departamentoActivoNombre)) && (
                       <div className="mt-2">
                         <button
                           type="button"
