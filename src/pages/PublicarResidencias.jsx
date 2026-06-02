@@ -56,6 +56,7 @@ export const PublicarResidencias = () => {
     const [documentosArrendatario, setDocumentosArrendatario] = useState([]);
     const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
     const [estadoSolicitud, setEstadoSolicitud] = useState({ tipo: "", mensaje: "" });
+    const [erroresCampos, setErroresCampos] = useState({});
     const [modalAyudaAbierto, setModalAyudaAbierto] = useState(false);
     const [datosSolicitud, setDatosSolicitud] = useState({
         nombre: "",
@@ -68,6 +69,13 @@ export const PublicarResidencias = () => {
     const manejarCambioSolicitud = (e) => {
         const { name, value } = e.target;
 
+        setErroresCampos((prev) => {
+            if (!prev[name]) return prev;
+            const siguientes = { ...prev };
+            delete siguientes[name];
+            return siguientes;
+        });
+
         if (name === "celular") {
             const soloDigitos = value.replace(/\D/g, "");
             setDatosSolicitud((prev) => ({ ...prev, [name]: soloDigitos }));
@@ -75,6 +83,50 @@ export const PublicarResidencias = () => {
         }
 
         setDatosSolicitud((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const validarCamposSolicitud = () => {
+        const nuevosErrores = {};
+
+        if (!datosSolicitud.nombre.trim()) {
+            nuevosErrores.nombre = "El nombre es obligatorio";
+        } else if (datosSolicitud.nombre.length > 10) {
+            nuevosErrores.nombre = "Máximo 10 caracteres";
+        } else if (!NAME_REGEX.test(datosSolicitud.nombre)) {
+            nuevosErrores.nombre = "Solo letras permitidas";
+        }
+
+        if (!datosSolicitud.apellido.trim()) {
+            nuevosErrores.apellido = "El apellido es obligatorio";
+        } else if (datosSolicitud.apellido.length > 10) {
+            nuevosErrores.apellido = "Máximo 10 caracteres";
+        } else if (!NAME_REGEX.test(datosSolicitud.apellido)) {
+            nuevosErrores.apellido = "Solo letras permitidas";
+        }
+
+        if (!datosSolicitud.direccion.trim()) {
+            nuevosErrores.direccion = "La dirección es obligatoria";
+        } else if (datosSolicitud.direccion.length > 20) {
+            nuevosErrores.direccion = "Máximo 20 caracteres";
+        }
+
+        if (!datosSolicitud.celular.trim()) {
+            nuevosErrores.celular = "El celular es obligatorio";
+        } else if (!PHONE_REGEX.test(datosSolicitud.celular)) {
+            nuevosErrores.celular = "Debe tener 10 dígitos";
+        }
+
+        if (!datosSolicitud.email.trim()) {
+            nuevosErrores.email = "El correo electrónico es obligatorio";
+        } else if (!EMAIL_REGEX.test(datosSolicitud.email)) {
+            nuevosErrores.email = "Ingresa un correo electrónico válido";
+        }
+
+        if (!documentosArrendatario.length) {
+            nuevosErrores.documentos = "Debes subir al menos un documento";
+        }
+
+        return nuevosErrores;
     };
 
     const manejarCambioDocumentos = async (e) => {
@@ -106,52 +158,17 @@ export const PublicarResidencias = () => {
         if (enviandoSolicitud) return;
 
         // Nota: se omite asignar mensaje de éxito aquí porque `response` aún no está definido
-
-        if (!datosSolicitud.nombre.trim() || datosSolicitud.nombre.length > 10 || !NAME_REGEX.test(datosSolicitud.nombre)) {
+        const nuevosErrores = validarCamposSolicitud();
+        if (Object.keys(nuevosErrores).length > 0) {
+            setErroresCampos(nuevosErrores);
             setEstadoSolicitud({
                 tipo: "error",
-                mensaje: "El nombre debe contener solo letras y máximo 10 caracteres.",
+                mensaje: "Corrige los campos marcados antes de continuar.",
             });
             return;
         }
 
-        if (!datosSolicitud.apellido.trim() || datosSolicitud.apellido.length > 10 || !NAME_REGEX.test(datosSolicitud.apellido)) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: "El apellido debe contener solo letras y máximo 10 caracteres.",
-            });
-            return;
-        }
-
-        if (!datosSolicitud.direccion.trim() || datosSolicitud.direccion.length > 20) {
-            setEstadoSolicitud({ tipo: "error", mensaje: "La dirección es obligatoria y no puede exceder los 20 caracteres." });
-            return;
-        }
-
-        if (!PHONE_REGEX.test(datosSolicitud.celular)) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: "El celular debe tener exactamente 10 dígitos numéricos.",
-            });
-            return;
-        }
-
-        if (!EMAIL_REGEX.test(datosSolicitud.email)) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: "Ingresa un correo electrónico válido.",
-            });
-            return;
-        }
-
-        if (!documentosArrendatario.length) {
-            setEstadoSolicitud({
-                tipo: "error",
-                mensaje: "Selecciona al menos un documento de identidad antes de enviar.",
-            });
-            return;
-        }
-
+        setErroresCampos({});
         setEnviandoSolicitud(true);
 
         try {
@@ -258,6 +275,7 @@ export const PublicarResidencias = () => {
                                     pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+"
                                     required
                                 />
+                                {erroresCampos.nombre && <p className="text-sm text-red-600 mt-1">{erroresCampos.nombre}</p>}
                             </div>
 
                             <div>
@@ -273,6 +291,7 @@ export const PublicarResidencias = () => {
                                     pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+"
                                     required
                                 />
+                                {erroresCampos.apellido && <p className="text-sm text-red-600 mt-1">{erroresCampos.apellido}</p>}
                             </div>
 
                             <div className="md:col-span-2">
@@ -287,6 +306,7 @@ export const PublicarResidencias = () => {
                                     maxLength={20}
                                     required
                                 />
+                                {erroresCampos.direccion && <p className="text-sm text-red-600 mt-1">{erroresCampos.direccion}</p>}
                             </div>
 
                             <div>
@@ -303,6 +323,7 @@ export const PublicarResidencias = () => {
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     required
                                 />
+                                {erroresCampos.celular && <p className="text-sm text-red-600 mt-1">{erroresCampos.celular}</p>}
                             </div>
 
                             <div>
@@ -317,6 +338,7 @@ export const PublicarResidencias = () => {
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     required
                                 />
+                                {erroresCampos.email && <p className="text-sm text-red-600 mt-1">{erroresCampos.email}</p>}
                             </div>
                         </div>
 
@@ -341,6 +363,7 @@ export const PublicarResidencias = () => {
                                     ¿Qué debo subir?
                                 </button>
                             </div>
+                            {erroresCampos.documentos && <p className="text-sm text-red-600 mt-1">{erroresCampos.documentos}</p>}
                         </div>
 
                         <div className="mb-6">

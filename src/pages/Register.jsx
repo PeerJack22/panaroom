@@ -25,11 +25,11 @@ export const Register = () => {
 
     return (
         <div
-            className="min-h-screen flex flex-col sm:flex-row bg-white"
+            className="min-h-screen sm:h-screen sm:overflow-hidden flex flex-col sm:flex-row bg-white"
             style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}
         >
             {/* Formulario */}
-            <div className="w-full sm:w-1/2 min-h-screen flex justify-center items-center px-6 md:px-8 py-10 bg-white">
+            <div className="w-full sm:w-1/2 sm:h-screen flex justify-center items-center px-6 md:px-8 py-6 md:py-8 bg-white">
                 <div className="w-full max-w-md">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center sm:text-left">
                         Formulario de Registro
@@ -49,8 +49,7 @@ export const Register = () => {
                                     {...register("nombre", { 
                                         required: "El nombre es obligatorio",
                                         maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" },
-                                        validate: val => val.trim().length > 0 || "El nombre no puede estar vacío"
+                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
                                     })}
                                 />
                                 {errors.nombre && <p className="text-sm text-red-600 mt-1">{errors.nombre.message}</p>}
@@ -65,8 +64,7 @@ export const Register = () => {
                                     {...register("apellido", { 
                                         required: "El apellido es obligatorio",
                                         maxLength: { value: 10, message: "Máximo 10 caracteres" },
-                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" },
-                                        validate: val => val.trim().length > 0 || "El apellido no puede estar vacío"
+                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
                                     })}
                                 />
                                 {errors.apellido && <p className="text-sm text-red-600 mt-1">{errors.apellido.message}</p>}
@@ -80,8 +78,7 @@ export const Register = () => {
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     {...register("direccion", { 
                                         required: "La dirección es obligatoria",
-                                        maxLength: { value: 20, message: "Máximo 20 caracteres" },
-                                        validate: val => val.trim().length > 0 || "La dirección no puede estar vacía"
+                                        maxLength: { value: 20, message: "Máximo 20 caracteres" }
                                     })}
                                 />
                                 {errors.direccion && <p className="text-sm text-red-600 mt-1">{errors.direccion.message}</p>}

@@ -145,7 +145,7 @@ export const Form = () => {
     const { user, token } = storeAuth();
 
     const values = watch();
-    const tieneParqueadero = values.parqueadero === "true";
+    const tieneParqueadero = watch("parqueadero") === "true";
     const alicuotaActiva = values.alicuota === "true";
     const currentMapUrl = watch("urlMapa");
     const [selectedPoint, setSelectedPoint] = useState(null);
