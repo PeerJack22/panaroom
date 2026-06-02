@@ -260,7 +260,7 @@ export const PublicarResidencias = () => {
                     </h1>
                     <small className="text-gray-500 block my-4 text-sm text-center">Llena con tus datos</small>
 
-                    <form onSubmit={enviarSolicitudArrendatario} className="space-y-3">
+                    <form onSubmit={enviarSolicitudArrendatario} className="space-y-3" noValidate>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
@@ -273,7 +273,6 @@ export const PublicarResidencias = () => {
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     maxLength={10}
                                     pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+"
-                                    required
                                 />
                                 {erroresCampos.nombre && <p className="text-sm text-red-600 mt-1">{erroresCampos.nombre}</p>}
                             </div>
@@ -289,7 +288,6 @@ export const PublicarResidencias = () => {
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     maxLength={10}
                                     pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+"
-                                    required
                                 />
                                 {erroresCampos.apellido && <p className="text-sm text-red-600 mt-1">{erroresCampos.apellido}</p>}
                             </div>
@@ -304,7 +302,6 @@ export const PublicarResidencias = () => {
                                     placeholder="Ingresa tu dirección de domicilio"
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     maxLength={20}
-                                    required
                                 />
                                 {erroresCampos.direccion && <p className="text-sm text-red-600 mt-1">{erroresCampos.direccion}</p>}
                             </div>
@@ -321,7 +318,6 @@ export const PublicarResidencias = () => {
                                     pattern="[0-9]{10}"
                                     maxLength={10}
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    required
                                 />
                                 {erroresCampos.celular && <p className="text-sm text-red-600 mt-1">{erroresCampos.celular}</p>}
                             </div>
@@ -336,7 +332,6 @@ export const PublicarResidencias = () => {
                                     placeholder="Ingresa tu correo electrónico"
                                     pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
-                                    required
                                 />
                                 {erroresCampos.email && <p className="text-sm text-red-600 mt-1">{erroresCampos.email}</p>}
                             </div>
