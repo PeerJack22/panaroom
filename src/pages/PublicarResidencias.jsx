@@ -139,16 +139,16 @@ export const PublicarResidencias = () => {
             return;
         }
 
-        const idCarga = toast.loading("Optimizando documentos...");
+        const idCarga = toast.loading("Subiendo documentos...");
         try {
             const comprimidos = await Promise.all(
                 nuevosArchivos.map(f => compressImage(f, { quality: 0.8 }))
             );
             setDocumentosArrendatario((prev) => [...prev, ...comprimidos]);
-            toast.update(idCarga, { render: "Documentos listos!", type: "success", isLoading: false, autoClose: 2000 });
+            toast.update(idCarga, { render: "Documentos listos", type: "success", isLoading: false, autoClose: 2000 });
         } catch (err) {
             console.error("Error al comprimir:", err);
-            toast.update(idCarga, { render: "Error al procesar archivos", type: "error", isLoading: false, autoClose: 3000 });
+            toast.update(idCarga, { render: "Error al subir documentos", type: "error", isLoading: false, autoClose: 3000 });
         }
         e.target.value = "";
     };

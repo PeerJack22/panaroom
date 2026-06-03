@@ -70,7 +70,7 @@ const FormularioPerfil = () => {
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const idCarga = toast.loading("Optimizando imagen de perfil...");
+            const idCarga = toast.loading("Subiendo imagen...");
             try {
                 const comprimida = await compressImage(file);
                 if (uploadedImagePreview && !uploadedImagePreview.includes("http")) {
@@ -81,10 +81,10 @@ const FormularioPerfil = () => {
                 
                 // Reemplazar el archivo en el estado de react-hook-form con el comprimido
                 setValue("imagenPerfil", [comprimida], { shouldValidate: true });
-                toast.update(idCarga, { render: "Imagen optimizada!", type: "success", isLoading: false, autoClose: 2000 });
+                toast.update(idCarga, { render: "Imagen subida", type: "success", isLoading: false, autoClose: 2000 });
             } catch (err) {
                 console.error("Error al procesar avatar:", err);
-                toast.update(idCarga, { render: "Error al procesar la imagen", type: "error", isLoading: false, autoClose: 3000 });
+                toast.update(idCarga, { render: "Error al subir la imagen", type: "error", isLoading: false, autoClose: 3000 });
             }
         }
     };
