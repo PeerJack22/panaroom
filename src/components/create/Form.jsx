@@ -744,7 +744,19 @@ export const Form = () => {
                                         const newFiles = Array.from(e.target.files || []);
                                         if (!newFiles.length) return;
 
-                                        if (selectedImages.length + newFiles.length > 4) {
+                                        const MAX_FILE_SIZE = 5 * 1024 * 1024;
+                                        const validFiles = newFiles.filter((file) => file.size <= MAX_FILE_SIZE);
+
+                                        if (validFiles.length !== newFiles.length) {
+                                            toast.error("Cada archivo debe pesar máximo 5 MB.");
+                                        }
+
+                                        if (!validFiles.length) {
+                                            e.target.value = "";
+                                            return;
+                                        }
+
+                                        if (selectedImages.length + validFiles.length > 4) {
                                             toast.warn("Solo se permiten hasta 4 imágenes.");
                                             e.target.value = "";
                                             return;
@@ -752,7 +764,7 @@ export const Form = () => {
 
                                         try {
                                             const compressedFiles = await Promise.all(
-                                                newFiles.map(f => compressImage(f, { quality: 0.8 }))
+                                                validFiles.map(f => compressImage(f, { quality: 0.8 }))
                                             );
 
                                             setSelectedImages((prev) => {

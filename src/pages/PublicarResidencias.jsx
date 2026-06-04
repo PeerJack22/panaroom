@@ -133,7 +133,19 @@ export const PublicarResidencias = () => {
         const nuevosArchivos = Array.from(e.target.files || []);
         if (!nuevosArchivos.length) return;
 
-        if (documentosArrendatario.length + nuevosArchivos.length > 5) {
+        const MAX_FILE_SIZE = 5 * 1024 * 1024;
+        const archivosValidos = nuevosArchivos.filter((archivo) => archivo.size <= MAX_FILE_SIZE);
+
+        if (archivosValidos.length !== nuevosArchivos.length) {
+            toast.error("Cada archivo debe pesar máximo 5 MB.");
+        }
+
+        if (!archivosValidos.length) {
+            e.target.value = "";
+            return;
+        }
+
+        if (documentosArrendatario.length + archivosValidos.length > 5) {
             toast.warn("Solo se permiten hasta 5 documentos en total.");
             e.target.value = "";
             return;
@@ -142,7 +154,7 @@ export const PublicarResidencias = () => {
         const idCarga = toast.loading("Subiendo documentos...");
         try {
             const comprimidos = await Promise.all(
-                nuevosArchivos.map(f => compressImage(f, { quality: 0.8 }))
+                archivosValidos.map(f => compressImage(f, { quality: 0.8 }))
             );
             setDocumentosArrendatario((prev) => [...prev, ...comprimidos]);
             toast.update(idCarga, { render: "Documentos listos", type: "success", isLoading: false, autoClose: 2000 });
@@ -395,17 +407,17 @@ export const PublicarResidencias = () => {
                         <h3 className="text-xl font-bold text-slate-900 mb-4 text-center">Documentos sugeridos</h3>
                         <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
                             <p className="font-semibold text-slate-800">
-                                Las imagenes deben ayudar a validar que su perfil es real y sus residencias.
+                                Las imagenes permiten validar que la información sea real.
                             </p>
                             <ul className="space-y-3">
                                 <li className="flex items-start gap-2">
-                                    <span className="text-blue-600 font-bold">•</span> Copia de cedula del propietario o responsable.
+                                    <span className="text-blue-600 font-bold">•</span> Copia de cédula del propietario o responsable.
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <span className="text-blue-600 font-bold">•</span> Planilla de luz, agua o internet del inmueble.
                                 </li>
                                 <li className="flex items-start gap-2">
-                                    <span className="text-blue-600 font-bold">•</span> Contrato, predio o documento que relacione la direccion.
+                                    <span className="text-blue-600 font-bold">•</span> Contrato, predio o documento que relacione la dirección.
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <span className="text-blue-600 font-bold">•</span> Fotos o respaldo adicional si aplica.

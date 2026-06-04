@@ -719,7 +719,7 @@ const Feedback = () => {
                                                 </button>
                                             ) : item.tieneRespuesta ? (
                                                 <span className="text-xs font-bold text-emerald-600 flex items-center justify-end gap-1">
-                                                    ✓ Respondido
+                                                    ✓ Contestado
                                                 </span>
                                             ) : null}
                                         </div>
@@ -835,7 +835,7 @@ const Feedback = () => {
                                     disabled={enviandoComentario || !comentarioAdmin.trim()}
                                     className="px-4 py-2 rounded-full text-white bg-green-600 hover:bg-green-700 font-semibold transition-colors disabled:opacity-50"
                                 >
-                                    {enviandoComentario ? "Enviando..." : "Enviar respuesta"}
+                                    {enviandoComentario ? "Enviando..." : "Enviar"}
                                 </button>
                             </div>
                         </div>
