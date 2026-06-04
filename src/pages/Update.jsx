@@ -708,7 +708,7 @@ const Update = () => {
                                 <label className="mb-2 block text-sm font-semibold text-slate-700">Dirección</label>
                                 <input type="text" className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100" {...register("direccion", {
                                     required: "La dirección es obligatoria.",
-                                    maxLength: { value: 80, message: "Máximo 80 caracteres." },
+                                    maxLength: { value: 35, message: "Máximo 35 caracteres." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })} />
                                 {errors.direccion && <p className="mt-1 text-xs text-red-600">{errors.direccion.message}</p>}

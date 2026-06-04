@@ -477,7 +477,7 @@ export const Form = () => {
                                 className="block w-full rounded-md border border-gray-300 py-1 px-2 text-gray-500 mb-5"
                                 {...register("direccion", { 
                                     required: "La dirección es obligatoria.",
-                                    maxLength: { value: 25, message: "Máximo 25 caracteres." },
+                                    maxLength: { value: 35, message: "Máximo 35 caracteres." },
                                     validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
                             />

@@ -202,6 +202,10 @@ const Table = () => {
         return esPropietarioDelDepartamento(dep) && !tieneEstudianteAsignado(dep);
     };
 
+    const puedeActualizarDepartamento = (dep) => {
+        return esPropietarioDelDepartamento(dep) && !tieneEstudianteAsignado(dep);
+    };
+
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters((prev) => ({ ...prev, [name]: value }));
@@ -863,7 +867,7 @@ const Table = () => {
                                             </span>
                                         )}
 
-                                        {esPropietarioDelDepartamento(dep) && (
+                                        {puedeActualizarDepartamento(dep) ? (
                                             <button
                                                 type="button"
                                                 title="Actualizar departamento"
@@ -872,6 +876,13 @@ const Table = () => {
                                             >
                                                 <MdEdit className="h-5 w-5" />
                                             </button>
+                                        ) : esPropietarioDelDepartamento(dep) && tieneEstudianteAsignado(dep) ? (
+                                            <span
+                                                title="No se puede actualizar porque tiene estudiante asignado"
+                                                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-3 py-1.5 text-slate-400 cursor-not-allowed"
+                                            >
+                                                <MdEdit className="h-5 w-5" />
+                                            </span>
                                         )}
 
                                         {puedeEliminarDepartamento(dep) ? (
