@@ -883,7 +883,7 @@ const Table = () => {
                                             >
                                                 <MdEdit className="h-5 w-5" />
                                             </span>
-                                        )}
+                                        ) : null}
 
                                         {puedeEliminarDepartamento(dep) ? (
                                             <button
