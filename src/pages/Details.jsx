@@ -150,6 +150,7 @@ const Details = () => {
         if (raw && typeof raw === "object") {
             return {
                 tipoBanco: raw?.tipoBanco || raw?.banco || dep?.tipoBanco || dep?.banco || "",
+                tipoCuenta: raw?.tipoCuenta || dep?.tipoCuenta || "",
                 cuentaBancaria: raw?.cuentaBancaria || raw?.numeroCuenta || dep?.cuentaBancaria || dep?.numeroCuenta || "",
                 numeroCedula: raw?.numeroCedula || raw?.cedula || dep?.numeroCedula || dep?.cedula || "",
             };
@@ -161,6 +162,7 @@ const Details = () => {
                 if (parsed && typeof parsed === "object") {
                     return {
                         tipoBanco: parsed?.tipoBanco || parsed?.banco || dep?.tipoBanco || dep?.banco || "",
+                        tipoCuenta: parsed?.tipoCuenta || dep?.tipoCuenta || "",
                         cuentaBancaria: parsed?.cuentaBancaria || parsed?.numeroCuenta || dep?.cuentaBancaria || dep?.numeroCuenta || "",
                         numeroCedula: parsed?.numeroCedula || parsed?.cedula || dep?.numeroCedula || dep?.cedula || "",
                     };
@@ -172,6 +174,7 @@ const Details = () => {
 
         return {
             tipoBanco: dep?.tipoBanco || dep?.banco || "",
+            tipoCuenta: dep?.tipoCuenta || "",
             cuentaBancaria: dep?.cuentaBancaria || dep?.numeroCuenta || "",
             numeroCedula: dep?.numeroCedula || dep?.cedula || "",
         };
@@ -661,7 +664,7 @@ const Details = () => {
                             {(() => {
                                 const metodoPago = resolveMetodoPago(departamento);
                                 const tieneMetodoPago = Boolean(
-                                    metodoPago.tipoBanco || metodoPago.cuentaBancaria || metodoPago.numeroCedula
+                                    metodoPago.tipoBanco || metodoPago.tipoCuenta || metodoPago.cuentaBancaria || metodoPago.numeroCedula
                                 );
 
                                 if (!tieneMetodoPago) return null;
@@ -673,6 +676,10 @@ const Details = () => {
                                             <div>
                                                 <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Tipo de banco</span>
                                                 <p className="text-gray-900">{metodoPago.tipoBanco || "No disponible"}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Tipo de cuenta</span>
+                                                <p className="text-gray-900">{metodoPago.tipoCuenta || "No disponible"}</p>
                                             </div>
                                             <div>
                                                 <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Cuenta bancaria</span>
