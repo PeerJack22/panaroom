@@ -48,7 +48,7 @@ export const Register = () => {
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     {...register("nombre", { 
                                         required: "El nombre es obligatorio",
-                                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                                        maxLength: { value: 15, message: "Máximo 15 caracteres" },
                                         pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
                                     })}
                                 />
@@ -63,7 +63,7 @@ export const Register = () => {
                                     className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                     {...register("apellido", { 
                                         required: "El apellido es obligatorio",
-                                        maxLength: { value: 10, message: "Máximo 10 caracteres" },
+                                        maxLength: { value: 15, message: "Máximo 15 caracteres" },
                                         pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/, message: "Solo letras permitidas" }
                                     })}
                                 />

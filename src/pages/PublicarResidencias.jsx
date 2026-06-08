@@ -90,16 +90,16 @@ export const PublicarResidencias = () => {
 
         if (!datosSolicitud.nombre.trim()) {
             nuevosErrores.nombre = "El nombre es obligatorio";
-        } else if (datosSolicitud.nombre.length > 10) {
-            nuevosErrores.nombre = "Máximo 10 caracteres";
+        } else if (datosSolicitud.nombre.length > 15) {
+            nuevosErrores.nombre = "Máximo 15 caracteres";
         } else if (!NAME_REGEX.test(datosSolicitud.nombre)) {
             nuevosErrores.nombre = "Solo letras permitidas";
         }
 
         if (!datosSolicitud.apellido.trim()) {
             nuevosErrores.apellido = "El apellido es obligatorio";
-        } else if (datosSolicitud.apellido.length > 10) {
-            nuevosErrores.apellido = "Máximo 10 caracteres";
+        } else if (datosSolicitud.apellido.length > 15) {
+            nuevosErrores.apellido = "Máximo 15 caracteres";
         } else if (!NAME_REGEX.test(datosSolicitud.apellido)) {
             nuevosErrores.apellido = "Solo letras permitidas";
         }
