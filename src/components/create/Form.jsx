@@ -59,6 +59,21 @@ const servicioOptions = [
     { label: "Internet", value: "Internet" },
 ];
 
+const BANCOS_ECUADOR = [
+    "Banco Pichincha",
+    "Banco Guayaquil",
+    "Banco del Pacífico",
+    "Produbanco",
+    "Banco Bolivariano",
+    "Banco Internacional",
+    "Banco de Machala",
+    "Banco del Austro",
+    "Banco Solidario",
+    "Cooperativa JEP",
+    "Cooperativa Alianza del Valle",
+    "Cooperativa 29 de Octubre",
+];
+
 const extractMarkerCoordinates = (url) => {
     if (!url || typeof url !== "string") return null;
     const markerMatch = url.match(/marker=([-\d.]+)%2C([-\d.]+)/i) || url.match(/marker=([-\d.]+),([-\d.]+)/i);
@@ -129,6 +144,7 @@ export const Form = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [selectedImages, setSelectedImages] = useState([]);
+    const [otroBanco, setOtroBanco] = useState(false);
     const totalSteps = 6;
     const {
         register,
@@ -345,6 +361,7 @@ export const Form = () => {
         formData.append("metodoPago[tipoBanco]", data.metodoPago?.tipoBanco || "");
         formData.append("metodoPago[cuentaBancaria]", data.metodoPago?.cuentaBancaria || "");
         formData.append("metodoPago[numeroCedula]", data.metodoPago?.numeroCedula || "");
+        formData.append("metodoPago[tipoCuenta]", data.metodoPago?.tipoCuenta || "");
         formData.append("metodoPago[qrPago][url]", "null");
         formData.append("metodoPago[qrPago][public_id]", "null");
 
@@ -685,18 +702,66 @@ export const Form = () => {
 
                         <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                             <h3 className="text-sm font-bold uppercase text-slate-700">Método de pago</h3>
-                            <input
-                                type="text"
-                                placeholder="Tipo de banco"
-                                maxLength={40}
-                                className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                                {...register("metodoPago.tipoBanco", {
-                                    required: "Debes indicar el tipo de banco.",
-                                    maxLength: { value: 40, message: "Máximo 40 caracteres." },
-                                    pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, message: "Solo se permiten letras." },
-                                })}
-                            />
+                            
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500">Seleccionar Banco</label>
+                                <select
+                                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                    value={otroBanco ? "Otro" : (watch("metodoPago.tipoBanco") || "")}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val === "Otro") {
+                                            setOtroBanco(true);
+                                            setValue("metodoPago.tipoBanco", "");
+                                        } else {
+                                            setOtroBanco(false);
+                                            setValue("metodoPago.tipoBanco", val);
+                                            clearErrors("metodoPago.tipoBanco");
+                                        }
+                                    }}
+                                >
+                                    <option value="" disabled>Seleccionar banco...</option>
+                                    {BANCOS_ECUADOR.map((banco) => (
+                                        <option key={banco} value={banco}>{banco}</option>
+                                    ))}
+                                    <option value="Otro">Otro (Especificar)</option>
+                                </select>
+                            </div>
+
+                            {(otroBanco || (watch("metodoPago.tipoBanco") && !BANCOS_ECUADOR.includes(watch("metodoPago.tipoBanco")))) && (
+                                <input
+                                    type="text"
+                                    placeholder="Nombre del banco"
+                                    maxLength={45}
+                                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                    {...register("metodoPago.tipoBanco", {
+                                        required: "Debes indicar el tipo de banco.",
+                                        maxLength: { value: 45, message: "Máximo 45 caracteres." },
+                                        pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s0-9]+$/, message: "Solo se permiten letras y números." },
+                                    })}
+                                />
+                            )}
                             {errors?.metodoPago?.tipoBanco && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.tipoBanco.message}</p>}
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-500">Tipo de Cuenta</label>
+                                <select
+                                    className="block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                    {...register("metodoPago.tipoCuenta", {
+                                        required: "Debes indicar el tipo de cuenta.",
+                                        validate: (value) => ["Ahorros", "Corriente"].includes(value) || "Tipo de cuenta inválido.",
+                                    })}
+                                >
+                                    <option value="" disabled>Seleccionar tipo de cuenta...</option>
+                                    <option value="Ahorros">Ahorros</option>
+                                    <option value="Corriente">Corriente</option>
+                                </select>
+                            </div>
+                            {errors?.metodoPago?.tipoCuenta && (
+                                <p className="mt-1 text-xs text-red-600">
+                                    {errors.metodoPago.tipoCuenta.message}
+                                </p>
+                            )}
 
                             <input
                                 type="text"
@@ -708,6 +773,7 @@ export const Form = () => {
                                     required: "Debes indicar el número de cuenta.",
                                     maxLength: { value: 20, message: "Máximo 20 caracteres." },
                                     pattern: { value: /^\d*$/, message: "Solo se permiten números." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
                             />
                             {errors?.metodoPago?.cuentaBancaria && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.cuentaBancaria.message}</p>}
@@ -722,6 +788,7 @@ export const Form = () => {
                                     required: "Debes indicar la cédula.",
                                     maxLength: { value: 15, message: "Máximo 15 caracteres." },
                                     pattern: { value: /^\d*$/, message: "Solo se permiten números." },
+                                    validate: val => val.trim().length > 0 || "No puede estar vacío."
                                 })}
                             />
                             {errors?.metodoPago?.numeroCedula && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.numeroCedula.message}</p>}
@@ -874,6 +941,7 @@ export const Form = () => {
                                 <hr className="my-3 border-slate-100" />
                                 <h4 className="font-bold text-slate-800 text-xs uppercase mb-2">Método de Pago</h4>
                                 <div><span className="font-semibold text-xs">Banco:</span> <span className="text-slate-600">{values.metodoPago?.tipoBanco || '-'}</span></div>
+                                <div><span className="font-semibold text-xs">Tipo de Cuenta:</span> <span className="text-slate-600">{values.metodoPago?.tipoCuenta || '-'}</span></div>
                                 <div><span className="font-semibold text-xs">Cuenta:</span> <span className="text-slate-600">{values.metodoPago?.cuentaBancaria || '-'}</span></div>
                                 <div><span className="font-semibold text-xs">Cédula:</span> <span className="text-slate-600">{values.metodoPago?.numeroCedula || '-'}</span></div>
                             </div>

@@ -71,6 +71,21 @@ const servicioOptions = [
     { label: "Internet", value: "Internet" },
 ];
 
+const BANCOS_ECUADOR = [
+    "Banco Pichincha",
+    "Banco Guayaquil",
+    "Banco del Pacífico",
+    "Produbanco",
+    "Banco Bolivariano",
+    "Banco Internacional",
+    "Banco de Machala",
+    "Banco del Austro",
+    "Banco Solidario",
+    "Cooperativa JEP",
+    "Cooperativa Alianza del Valle",
+    "Cooperativa 29 de Octubre",
+];
+
 const Update = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -79,6 +94,7 @@ const Update = () => {
     const { user, rol, token } = storeAuth();
     const [departamento, setDepartamento] = useState(location.state?.departamento || null);
     const [cargando, setCargando] = useState(true);
+    const [otroBanco, setOtroBanco] = useState(false);
     const [step, setStep] = useState(1);
 
     const {
@@ -112,6 +128,7 @@ const Update = () => {
             guardiania: "false",
             metodoPago: {
                 tipoBanco: "",
+                tipoCuenta: "",
                 cuentaBancaria: "",
                 numeroCedula: ""
             }
@@ -140,6 +157,7 @@ const Update = () => {
         if (raw && typeof raw === "object") {
             return {
                 tipoBanco: raw?.tipoBanco || raw?.banco || "",
+                tipoCuenta: raw?.tipoCuenta || "",
                 cuentaBancaria: raw?.cuentaBancaria || raw?.numeroCuenta || "",
                 numeroCedula: raw?.numeroCedula || raw?.cedula || "",
             };
@@ -151,6 +169,7 @@ const Update = () => {
                 if (parsed && typeof parsed === "object") {
                     return {
                         tipoBanco: parsed?.tipoBanco || parsed?.banco || "",
+                        tipoCuenta: parsed?.tipoCuenta || "",
                         cuentaBancaria: parsed?.cuentaBancaria || parsed?.numeroCuenta || "",
                         numeroCedula: parsed?.numeroCedula || parsed?.cedula || "",
                     };
@@ -162,6 +181,7 @@ const Update = () => {
 
         return {
             tipoBanco: source?.tipoBanco || source?.banco || "",
+            tipoCuenta: source?.tipoCuenta || "",
             cuentaBancaria: source?.cuentaBancaria || source?.numeroCuenta || "",
             numeroCedula: source?.numeroCedula || source?.cedula || "",
         };
@@ -192,6 +212,7 @@ const Update = () => {
             numParqueaderos: 'Número de parqueaderos',
             guardiania: 'Guardianía',
             'metodoPago.tipoBanco': 'Tipo de banco',
+            'metodoPago.tipoCuenta': 'Tipo de cuenta',
             'metodoPago.cuentaBancaria': 'Cuenta bancaria',
             'metodoPago.numeroCedula': 'Cédula método de pago',
         };
@@ -280,6 +301,7 @@ const Update = () => {
                 "alicuota",
                 ...(alicuotaActiva ? ["alicoutaMonto"] : []),
                 "metodoPago.tipoBanco",
+                "metodoPago.tipoCuenta",
                 "metodoPago.cuentaBancaria",
                 "metodoPago.numeroCedula",
             ];
@@ -371,6 +393,14 @@ const Update = () => {
                 numParqueaderos: resolveNumParqueaderos(departamento),
                 guardiania: String(departamento?.guardiania ?? false),
                 metodoPago: resolveMetodoPago(departamento)
+            });
+
+            // Inicializar el estado de "Otro Banco" si el valor actual no está en la lista predefinida
+            const bancoActual = departamento?.metodoPago?.tipoBanco || departamento?.tipoBanco || "";
+            setTimeout(() => {
+                if (bancoActual && !BANCOS_ECUADOR.includes(bancoActual)) {
+                    setOtroBanco(true);
+                }
             });
         }
         setCargando(false);
@@ -543,6 +573,7 @@ const Update = () => {
             guardiania: String(data.guardiania) === "true",
             metodoPago: {
                 tipoBanco: String(data?.metodoPago?.tipoBanco || "").trim(),
+                tipoCuenta: String(data?.metodoPago?.tipoCuenta || "").trim(),
                 cuentaBancaria: String(data?.metodoPago?.cuentaBancaria || "").trim(),
                 numeroCedula: String(data?.metodoPago?.numeroCedula || "").trim(),
                 qrPago: {
@@ -882,8 +913,50 @@ const Update = () => {
                             </div>
                             <div className="space-y-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                                 <h3 className="text-sm font-bold text-slate-700 uppercase">Método de pago</h3>
-                                <input type="text" placeholder="Tipo de banco" maxLength={40} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { maxLength: { value: 40, message: "Máximo 40 caracteres." }, pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, message: "Solo se permiten letras." } })} />
+
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-slate-500">Entidad Bancaria</label>
+                                    <select
+                                        className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm text-slate-800 outline-none"
+                                        value={otroBanco ? "Otro" : (watch("metodoPago.tipoBanco") || "")}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (val === "Otro") {
+                                                setOtroBanco(true);
+                                                setValue("metodoPago.tipoBanco", "");
+                                            } else {
+                                                setOtroBanco(false);
+                                                setValue("metodoPago.tipoBanco", val);
+                                                clearErrors("metodoPago.tipoBanco");
+                                            }
+                                        }}
+                                    >
+                                        <option value="" disabled>Seleccionar banco...</option>
+                                        {BANCOS_ECUADOR.map(b => <option key={b} value={b}>{b}</option>)}
+                                        <option value="Otro">Otro (Especificar)</option>
+                                    </select>
+                                </div>
+
+                                {otroBanco && (
+                                    <input type="text" placeholder="Nombre del banco" maxLength={45} className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm" {...register("metodoPago.tipoBanco", { required: "Indica el nombre del banco.", maxLength: { value: 45, message: "Máximo 45 caracteres." }, pattern: { value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s0-9]+$/, message: "Solo se permiten letras y números." } })} />
+                                )}
                                 {errors?.metodoPago?.tipoBanco && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.tipoBanco.message}</p>}
+
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-slate-500">Tipo de Cuenta</label>
+                                    <select
+                                        className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm text-slate-800 outline-none"
+                                        {...register("metodoPago.tipoCuenta", {
+                                            required: "Debes indicar el tipo de cuenta.",
+                                        })}
+                                    >
+                                        <option value="" disabled>Seleccionar tipo de cuenta...</option>
+                                        <option value="Ahorros">Ahorros</option>
+                                        <option value="Corriente">Corriente</option>
+                                    </select>
+                                </div>
+                                {errors?.metodoPago?.tipoCuenta && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.tipoCuenta.message}</p>}
+
                                 <input
                                     type="text"
                                     inputMode="numeric"
@@ -891,8 +964,10 @@ const Update = () => {
                                     maxLength={20}
                                     className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm"
                                     {...register("metodoPago.cuentaBancaria", {
+                                        required: "El número de cuenta es obligatorio.",
                                         maxLength: { value: 20, message: "Máximo 20 caracteres." },
                                         pattern: { value: /^\d*$/, message: "Solo se permiten números." },
+                                        validate: val => val.trim().length > 0 || "No puede estar vacío."
                                     })}
                                 />
                                 {errors?.metodoPago?.cuentaBancaria && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.cuentaBancaria.message}</p>}
@@ -903,8 +978,10 @@ const Update = () => {
                                     maxLength={15}
                                     className="block w-full rounded-xl border border-slate-300 px-4 py-2 text-sm"
                                     {...register("metodoPago.numeroCedula", {
+                                        required: "La cédula es obligatoria.",
                                         maxLength: { value: 15, message: "Máximo 15 caracteres." },
                                         pattern: { value: /^\d*$/, message: "Solo se permiten números." },
+                                        validate: val => val.trim().length > 0 || "No puede estar vacío."
                                     })}
                                 />
                                 {errors?.metodoPago?.numeroCedula && <p className="mt-1 text-xs text-red-600">{errors.metodoPago.numeroCedula.message}</p>}
