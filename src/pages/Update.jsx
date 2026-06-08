@@ -576,6 +576,10 @@ const Update = () => {
                 tipoCuenta: String(data?.metodoPago?.tipoCuenta || "").trim(),
                 cuentaBancaria: String(data?.metodoPago?.cuentaBancaria || "").trim(),
                 numeroCedula: String(data?.metodoPago?.numeroCedula || "").trim(),
+                qrPago: {
+                    url: null,
+                    public_id: null,
+                },
             }
         };
 
