@@ -221,7 +221,7 @@ const Update = () => {
             'titulo','descripcion','categoria','direccion','precioMensual','numeroHabitaciones','numeroBanos','serviciosIncluidos',
             'alicuota','alicoutaMonto','mascotas','urlMapa','referencia','bodega','parqueadero','numParqueaderos','guardiania'
         ];
-        fields.push('metodoPago.tipoBanco', 'metodoPago.cuentaBancaria', 'metodoPago.numeroCedula');
+        fields.push('metodoPago.tipoBanco', 'metodoPago.tipoCuenta', 'metodoPago.cuentaBancaria', 'metodoPago.numeroCedula');
 
         const normalize = (key, val) => {
             if (key === 'precioMensual' || key === 'numeroHabitaciones' || key === 'numeroBanos' || key === 'alicoutaMonto' || key === 'numParqueaderos') {
@@ -576,10 +576,6 @@ const Update = () => {
                 tipoCuenta: String(data?.metodoPago?.tipoCuenta || "").trim(),
                 cuentaBancaria: String(data?.metodoPago?.cuentaBancaria || "").trim(),
                 numeroCedula: String(data?.metodoPago?.numeroCedula || "").trim(),
-                qrPago: {
-                    url: null,
-                    public_id: null,
-                },
             }
         };
 

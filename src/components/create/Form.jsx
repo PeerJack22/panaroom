@@ -194,7 +194,7 @@ export const Form = () => {
         1: ["titulo", "descripcion", "categoria"],
         2: ["direccion", "referencia", "urlMapa"],
         3: ["numeroHabitaciones", "numeroBanos", "parqueadero", "bodega", "guardiania", "mascotas", "serviciosIncluidos", ...(tieneParqueadero ? ["numParqueaderos"] : [])],
-        4: ["precioMensual", "alicuota", "alicoutaMonto", "metodoPago.tipoBanco", "metodoPago.cuentaBancaria", "metodoPago.numeroCedula"],
+        4: ["precioMensual", "alicuota", "alicoutaMonto", "metodoPago.tipoBanco", "metodoPago.tipoCuenta", "metodoPago.cuentaBancaria", "metodoPago.numeroCedula"],
         5: ["imagen"],
     };
 
@@ -358,12 +358,13 @@ export const Form = () => {
             formData.append("imagenes", img);
         });
 
-        formData.append("metodoPago[tipoBanco]", data.metodoPago?.tipoBanco || "");
-        formData.append("metodoPago[cuentaBancaria]", data.metodoPago?.cuentaBancaria || "");
-        formData.append("metodoPago[numeroCedula]", data.metodoPago?.numeroCedula || "");
-        formData.append("metodoPago[tipoCuenta]", data.metodoPago?.tipoCuenta || "");
-        formData.append("metodoPago[qrPago][url]", "null");
-        formData.append("metodoPago[qrPago][public_id]", "null");
+        const metodoPago = {
+            tipoBanco: String(data.metodoPago?.tipoBanco || "").trim(),
+            tipoCuenta: String(data.metodoPago?.tipoCuenta || "").trim(),
+            cuentaBancaria: String(data.metodoPago?.cuentaBancaria || "").trim(),
+            numeroCedula: String(data.metodoPago?.numeroCedula || "").trim(),
+        };
+        formData.append("metodoPago", JSON.stringify(metodoPago));
 
         try {
             const url = `${import.meta.env.VITE_BACKEND_URL}/departamento/registro`;
