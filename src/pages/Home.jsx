@@ -1127,19 +1127,19 @@ export const Home = () => {
                                 <div className="flex items-center gap-2">
                                     <FaEnvelope className="text-sm text-slate-400" />
                                     <a
-                                        href="mailto:soporte@panaroom.com"
+                                        href="mailto:paulo.cisneros@epn.edu.ec"
                                         className="text-xs text-slate-300 hover:text-white transition-colors"
                                     >
-                                        soporte@panaroom.com
+                                        paulo.cisneros@epn.edu.ec
                                     </a>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <FaWhatsapp className="text-sm text-slate-400" />
                                     <a
-                                        href="https://wa.me/593999999999" target="_blank" rel="noopener noreferrer"
+                                        href="https://wa.me/593960075231" target="_blank" rel="noopener noreferrer"
                                         className="text-xs text-slate-300 hover:text-white transition-colors"
                                     >
-                                        +593 99 999 9999
+                                        +593 96 007 5231
                                     </a>
                                 </div>
                             </div>
