@@ -341,7 +341,7 @@ export const PublicarResidencias = () => {
                                     name="email"
                                     value={datosSolicitud.email}
                                     onChange={manejarCambioSolicitud}
-                                    placeholder="Ingresa tu correo electrónico"
+                                    placeholder="Ingresa tu correo"
                                     pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
                                     className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none hover:border-blue-500 transition-colors shadow-sm"
                                 />
