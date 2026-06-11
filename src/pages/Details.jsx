@@ -161,14 +161,14 @@ const Details = () => {
     };
 
     const resolveMetodoPago = (dep) => {
-        const raw = dep?.metodoPago || dep;
+        const raw = dep?.metodoPago; // Solo considerar metodoPago, no el dep completo
 
         if (raw && typeof raw === "object") {
             return {
-                tipoBanco: String(raw?.tipoBanco || raw?.banco || ""),
-                tipoCuenta: String(raw?.tipoCuenta || ""),
-                cuentaBancaria: String(raw?.cuentaBancaria || raw?.numeroCuenta || ""),
-                numeroCedula: String(raw?.numeroCedula || raw?.cedula || ""),
+                tipoBanco: String(raw?.tipoBanco || raw?.banco || "").trim(),
+                tipoCuenta: String(raw?.tipoCuenta || "").trim(),
+                cuentaBancaria: String(raw?.cuentaBancaria || raw?.numeroCuenta || "").trim(),
+                numeroCedula: String(raw?.numeroCedula || raw?.cedula || "").trim(),
             };
         }
 
@@ -177,10 +177,10 @@ const Details = () => {
                 const parsed = JSON.parse(raw);
                 if (parsed && typeof parsed === "object") {
                     return {
-                        tipoBanco: String(parsed?.tipoBanco || parsed?.banco || ""),
-                        tipoCuenta: String(parsed?.tipoCuenta || ""),
-                        cuentaBancaria: String(parsed?.cuentaBancaria || parsed?.numeroCuenta || ""),
-                        numeroCedula: String(parsed?.numeroCedula || parsed?.cedula || ""),
+                        tipoBanco: String(parsed?.tipoBanco || parsed?.banco || "").trim(),
+                        tipoCuenta: String(parsed?.tipoCuenta || "").trim(),
+                        cuentaBancaria: String(parsed?.cuentaBancaria || parsed?.numeroCuenta || "").trim(),
+                        numeroCedula: String(parsed?.numeroCedula || parsed?.cedula || "").trim(),
                     };
                 }
             } catch {
@@ -189,10 +189,10 @@ const Details = () => {
         }
 
         return {
-            tipoBanco: String(dep?.tipoBanco || dep?.banco || ""),
-            tipoCuenta: String(dep?.tipoCuenta || ""),
-            cuentaBancaria: String(dep?.cuentaBancaria || dep?.numeroCuenta || ""),
-            numeroCedula: String(dep?.numeroCedula || dep?.cedula || ""),
+            tipoBanco: "",
+            tipoCuenta: "",
+            cuentaBancaria: "",
+            numeroCedula: "",
         };
     };
 
@@ -397,7 +397,7 @@ const Details = () => {
         }
     };
 
-    useEffect(() => {
+    useEffect(() => { // <-- Añadido token a las dependencias
         const fetchDepartamento = async () => {
         setCargando(true);
         try {
@@ -551,7 +551,7 @@ const Details = () => {
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [imagenActiva, departamento?.imagenes?.length]);
 
-    if (!departamento) {
+    if (cargando || !departamento) { // <-- Usamos cargando para la condición de renderizado
         return (
         <div className="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 text-center">
             <span className="font-medium">Cargando datos del departamento...</span>
