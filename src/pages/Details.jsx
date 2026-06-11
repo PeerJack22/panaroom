@@ -11,6 +11,8 @@ import { Marker, MapContainer, TileLayer } from "react-leaflet";
 import { createPortal } from "react-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { FaUser, FaEnvelope, FaPhone, FaLocationDot } from "react-icons/fa6";
+import { MdClose } from 'react-icons/md';
 import L from "leaflet";
 
 import 'swiper/css';
@@ -79,10 +81,23 @@ const Details = () => {
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
     const [modoComentario, setModoComentario] = useState(null);
+    const [modalEstudianteVisible, setModalEstudianteVisible] = useState(false);
+    const [datosEstudiante, setDatosEstudiante] = useState(null);
+    const [cargandoEstudiante, setCargandoEstudiante] = useState(false);
     const [tipoComentario, setTipoComentario] = useState("queja");
     const [calificacion, setCalificacion] = useState(0);
     const [comentarios, setComentarios] = useState([]);
     const carruselMiniaturasRef = useRef(null);
+
+    const esDuenio = useMemo(() => {
+        if (!departamento || !user) return false;
+        const ownerId = typeof departamento.arrendatario === "object"
+            ? (departamento.arrendatario._id || departamento.arrendatario.id)
+            : departamento.arrendatario;
+        const currentUserId = user?._id || user?.id;
+        if (!ownerId || !currentUserId) return false;
+        return String(ownerId) === String(currentUserId);
+    }, [departamento, user]);
 
     const isEstudiante = rol === 'estudiante';
     const isAdministrador = rol === 'administrador';
@@ -191,6 +206,49 @@ const Details = () => {
         setModoComentario("comentario");
         setTipoComentario("queja");
         reset();
+    };
+
+    const abrirModalEstudiante = async () => {
+        setModalEstudianteVisible(true);
+        const est = departamento?.estudiante || departamento?.estudianteId;
+        
+        // Si ya es un objeto con datos básicos
+        if (est && typeof est === 'object' && (est.nombre || est.email)) {
+            setDatosEstudiante(est);
+            return;
+        }
+
+        const estudianteId = typeof est === "object" ? (est?._id || est?.id) : est;
+        if (!estudianteId) return;
+
+        setCargandoEstudiante(true);
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("auth-token"));
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${storedUser?.state?.token}`,
+            };
+            
+            // Intentamos obtenerlo de un endpoint individual (estándar)
+            const url = `${import.meta.env.VITE_BACKEND_URL}/estudiante/${estudianteId}`;
+            const response = await fetchDataBackend(url, null, "GET", headers);
+            const data = Array.isArray(response) ? response[0] : (response?.data || response);
+            
+            if (data && (data.nombre || data.email)) {
+                setDatosEstudiante(data);
+            } else {
+                // Fallback: si no funciona el individual, intentar buscar en la lista general de estudiantes
+                const listUrl = `${import.meta.env.VITE_BACKEND_URL}/estudiantes`;
+                const listResp = await fetchDataBackend(listUrl, null, "GET", headers);
+                const lista = Array.isArray(listResp) ? listResp : (listResp?.data || listResp?.estudiantes || []);
+                const found = lista.find(s => String(s._id || s.id) === String(estudianteId));
+                if (found) setDatosEstudiante(found);
+            }
+        } catch (error) {
+            console.error("[Details] Error al cargar datos del estudiante:", error);
+        } finally {
+            setCargandoEstudiante(false);
+        }
     };
 
     const abrirModalTerminarContrato = async () => {
@@ -622,6 +680,22 @@ const Details = () => {
                                     </div>
                                 )}
                             </div>
+
+                            {tieneEstudianteAsignado && (isAdministrador || (isArrendatario && esDuenio)) && (
+                                <div className="mt-2 p-3 rounded-xl border border-blue-100 bg-blue-50/50 flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                                        <span className="text-xs font-bold text-blue-700 uppercase tracking-tight">Estudiante asignado</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={abrirModalEstudiante}
+                                        className="rounded-full bg-white border border-blue-200 px-3 py-1 text-xs font-bold text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                    >
+                                        Ver información
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-gray-200">
@@ -1013,6 +1087,90 @@ const Details = () => {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>,
+                    document.body
+                )}
+
+                {modalEstudianteVisible && createPortal(
+                    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm" onClick={() => setModalEstudianteVisible(false)}>
+                        <div className="relative w-full max-w-md rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-white">
+                                <h3 className="text-xl font-black text-slate-900">Datos del Estudiante</h3>
+                                <button type="button" onClick={() => setModalEstudianteVisible(false)} className="p-2 rounded-full text-slate-400 hover:bg-slate-100 transition-all">
+                                    <MdClose className="h-6 w-6" />
+                                </button>
+                            </div>
+                            
+                            <div className="p-6">
+                                {cargandoEstudiante ? (
+                                    <div className="py-10 text-center text-slate-500">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
+                                        Cargando información...
+                                    </div>
+                                ) : datosEstudiante ? (
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                                                <FaUser className="h-8 w-8" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-lg font-bold text-slate-900 leading-tight">
+                                                    {datosEstudiante.nombre} {datosEstudiante.apellido}
+                                                </h4>
+                                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Estudiante Activo</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4 pt-4 border-t border-slate-100">
+                                            <div className="flex items-center gap-3 text-slate-600">
+                                                <FaEnvelope className="h-4 w-4 text-slate-400" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Correo electrónico</span>
+                                                    <span className="text-sm font-medium">{datosEstudiante.email}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-slate-600">
+                                                <FaPhone className="h-4 w-4 text-slate-400" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Teléfono</span>
+                                                    <span className="text-sm font-medium">{datosEstudiante.celular || "No disponible"}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-slate-600">
+                                                <FaLocationDot className="h-4 w-4 text-slate-400" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Dirección</span>
+                                                    <span className="text-sm font-medium">{datosEstudiante.direccion || "No disponible"}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <button 
+                                            type="button" 
+                                            onClick={() => {
+                                                setModalEstudianteVisible(false);
+                                                navigate("/dashboard/chat", {
+                                                    state: {
+                                                        contactoId: datosEstudiante?._id || datosEstudiante?.id,
+                                                        contactoTipo: "estudiante",
+                                                        contactoNombre: `${datosEstudiante?.nombre || ""} ${datosEstudiante?.apellido || ""}`.trim(),
+                                                        departamentoId: departamento?._id,
+                                                        departamentoNombre: departamento?.titulo,
+                                                    }
+                                                });
+                                            }}
+                                            className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl transition-all shadow-lg shadow-blue-200"
+                                        >
+                                            Chatear con estudiante
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="py-10 text-center text-slate-500">
+                                        No se pudo cargar la información detallada del estudiante.
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>,
                     document.body
