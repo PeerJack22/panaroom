@@ -98,15 +98,27 @@ const Chat = () => {
     if (isArrendatario) {
       params.arrendatarioId = userId;
       if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
-      if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
+      if (contacto?.tipo === "estudiante") {
+        params.estudianteId = contacto.id;
+        if (contacto.departamentoId) params.departamentoId = contacto.departamentoId;
+      }
     } else if (isEstudiante) {
       params.estudianteId = userId;
       if (contacto?.tipo === "administrador") params.administradorId = contacto.id;
-      if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
+      if (contacto?.tipo === "arrendatario") {
+        params.arrendatarioId = contacto.id;
+        if (contacto.departamentoId) params.departamentoId = contacto.departamentoId;
+      }
     } else if (isAdministrador) {
       params.administradorId = userId;
-      if (contacto?.tipo === "arrendatario") params.arrendatarioId = contacto.id;
-      if (contacto?.tipo === "estudiante") params.estudianteId = contacto.id;
+      if (contacto?.tipo === "arrendatario") {
+        params.arrendatarioId = contacto.id;
+        if (contacto.departamentoId) params.departamentoId = contacto.departamentoId;
+      }
+      if (contacto?.tipo === "estudiante") {
+        params.estudianteId = contacto.id;
+        if (contacto.departamentoId) params.departamentoId = contacto.departamentoId;
+      }
     }
     return params;
   }, [isAdministrador, isArrendatario, isEstudiante, userId]);
