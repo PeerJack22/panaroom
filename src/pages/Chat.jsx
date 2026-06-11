@@ -198,32 +198,37 @@ const Chat = () => {
   }, [token, userId, isArrendatario, isEstudiante, isAdministrador, cargarUltimoMensajeContacto]);
 
   useEffect(() => {
-    if (!contactos.length) return;
+    let contactoParaActivar = null;
 
-    // Determinar si hay un contacto de destino proveniente de la navegación (state)
-    let siguienteContacto = null;
-    let esDesdeNavegacionDirecta = false;
-
+    // 1. Prioridad: Destino específico desde la navegación (ej. desde Details.jsx o abrirChatAdministrador)
     if (abrirChatAdministrador) {
-      siguienteContacto = contactos.find((c) => c.tipo === 'administrador') || null;
-      esDesdeNavegacionDirecta = true;
-    }
-
-    if (!siguienteContacto && contactoDestinoId && contactoDestinoTipo) {
-      const existente = contactos.find(
+      // Crear un contacto de administrador temporal si no se encuentra en los contactos cargados aún
+      contactoParaActivar = contactos.find((c) => c.tipo === 'administrador') || {
+        id: 'admin_default_id', // Un ID de marcador de posición para el administrador si no se encuentra
+        tipo: 'administrador',
+        nombre: 'Administrador',
+        unread: 0,
+        departamentoId: null,
+        departamentoNombre: null,
+      };
+    } else if (contactoDestinoId && contactoDestinoTipo) {
+      // Intentar encontrar en los contactos cargados primero
+      const existenteEnContactos = contactos.find(
         (c) => String(c.id) === String(contactoDestinoId) && String(c.tipo) === String(contactoDestinoTipo)
       );
 
-      if (existente) {
+      if (existenteEnContactos) {
         // Actualizamos el departamentoId con el que viene del state (ej: desde Details.jsx)
         // Esto permite cambiar el contexto del chat si el estudiante pregunta por otra propiedad del mismo dueño.
-        siguienteContacto = {
-          ...existente,
-          departamentoId: departamentoId || existente.departamentoId,
-          departamentoNombre: departamentoNombre || existente.departamentoNombre
+        contactoParaActivar = {
+          ...existenteEnContactos,
+          // Priorizar la información del departamento de location.state si se proporciona
+          departamentoId: departamentoId || existenteEnContactos.departamentoId,
+          departamentoNombre: departamentoNombre || existenteEnContactos.departamentoNombre,
         };
       } else {
-        siguienteContacto = {
+        // Crear un contacto temporal si no se encuentra en los contactos cargados aún
+        contactoParaActivar = {
           id: contactoDestinoId,
           tipo: contactoDestinoTipo,
           nombre: contactoDestinoNombre || 'Contacto',
@@ -232,26 +237,37 @@ const Chat = () => {
           departamentoNombre: departamentoNombre || null,
         };
       }
-      esDesdeNavegacionDirecta = true;
     }
 
-    // Lógica de activación:
-    // 1. Si venimos con un destino explícito (desde navegación), forzamos la actualización si cambió algo.
-    // 2. Si no hay contacto activo, ponemos uno por defecto.
-    if (esDesdeNavegacionDirecta && siguienteContacto) {
-      const idDistinto = String(siguienteContacto.id) !== String(contactoActivo?.id);
-      const deptoDistinto = siguienteContacto.departamentoId !== contactoActivo?.departamentoId;
-      
-      if (idDistinto || deptoDistinto) {
-        setContactoActivo(siguienteContacto);
+    // 2. Si se encontró un contacto para activar y es diferente al actual, o si el actual es nulo
+    if (contactoParaActivar) {
+      const idDistinto = String(contactoParaActivar.id) !== String(contactoActivo?.id);
+      const deptoDistinto = contactoParaActivar.departamentoId !== contactoActivo?.departamentoId;
+      const tipoDistinto = contactoParaActivar.tipo !== contactoActivo?.tipo; // Añadido para manejar el chat de administrador correctamente
+
+      if (idDistinto || deptoDistinto || tipoDistinto || !contactoActivo) {
+        setContactoActivo(contactoParaActivar);
       }
-    } else if (!contactoActivo) {
-      const porDefecto = isArrendatario 
-        ? (contactos.find((c) => c.tipo === 'estudiante') || contactos[0]) 
+    } else if (!contactoActivo && contactos.length > 0) {
+      // 3. Si no hay destino específico y no hay contacto activo, y los contactos ya cargaron, establecer uno por defecto
+      const porDefecto = isArrendatario
+        ? (contactos.find((c) => c.tipo === 'estudiante') || contactos[0])
         : contactos[0];
-      if (porDefecto) setContactoActivo(porDefecto);
+      if (porDefecto) {
+        setContactoActivo(porDefecto);
+      }
     }
-  }, [abrirChatAdministrador, contactoActivo, contactoDestinoId, contactoDestinoNombre, contactoDestinoTipo, contactos, departamentoId, departamentoNombre, isArrendatario, location.state]);
+  }, [
+    contactos, // Dependencia: cuando los contactos se cargan, reevaluar
+    contactoActivo, // Dependencia: para verificar si el contacto activo actual necesita actualización
+    abrirChatAdministrador,
+    contactoDestinoId,
+    contactoDestinoTipo,
+    contactoDestinoNombre,
+    departamentoId,
+    departamentoNombre,
+    isArrendatario,
+  ]);
 
   // cargar historial cuando cambia contacto
   useEffect(() => {
