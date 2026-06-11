@@ -81,6 +81,7 @@ const Details = () => {
     const [enviandoQueja, setEnviandoQueja] = useState(false);
     const [terminandoContrato, setTerminandoContrato] = useState(false);
     const [modoComentario, setModoComentario] = useState(null);
+    const [cargando, setCargando] = useState(true);
     const [modalEstudianteVisible, setModalEstudianteVisible] = useState(false);
     const [datosEstudiante, setDatosEstudiante] = useState(null);
     const [cargandoEstudiante, setCargandoEstudiante] = useState(false);
@@ -160,14 +161,14 @@ const Details = () => {
     };
 
     const resolveMetodoPago = (dep) => {
-        const raw = dep?.metodoPago;
+        const raw = dep?.metodoPago || dep;
 
         if (raw && typeof raw === "object") {
             return {
-                tipoBanco: raw?.tipoBanco || raw?.banco || dep?.tipoBanco || dep?.banco || "",
-                tipoCuenta: raw?.tipoCuenta || dep?.tipoCuenta || "",
-                cuentaBancaria: raw?.cuentaBancaria || raw?.numeroCuenta || dep?.cuentaBancaria || dep?.numeroCuenta || "",
-                numeroCedula: raw?.numeroCedula || raw?.cedula || dep?.numeroCedula || dep?.cedula || "",
+                tipoBanco: String(raw?.tipoBanco || raw?.banco || ""),
+                tipoCuenta: String(raw?.tipoCuenta || ""),
+                cuentaBancaria: String(raw?.cuentaBancaria || raw?.numeroCuenta || ""),
+                numeroCedula: String(raw?.numeroCedula || raw?.cedula || ""),
             };
         }
 
@@ -176,10 +177,10 @@ const Details = () => {
                 const parsed = JSON.parse(raw);
                 if (parsed && typeof parsed === "object") {
                     return {
-                        tipoBanco: parsed?.tipoBanco || parsed?.banco || dep?.tipoBanco || dep?.banco || "",
-                        tipoCuenta: parsed?.tipoCuenta || dep?.tipoCuenta || "",
-                        cuentaBancaria: parsed?.cuentaBancaria || parsed?.numeroCuenta || dep?.cuentaBancaria || dep?.numeroCuenta || "",
-                        numeroCedula: parsed?.numeroCedula || parsed?.cedula || dep?.numeroCedula || dep?.cedula || "",
+                        tipoBanco: String(parsed?.tipoBanco || parsed?.banco || ""),
+                        tipoCuenta: String(parsed?.tipoCuenta || ""),
+                        cuentaBancaria: String(parsed?.cuentaBancaria || parsed?.numeroCuenta || ""),
+                        numeroCedula: String(parsed?.numeroCedula || parsed?.cedula || ""),
                     };
                 }
             } catch {
@@ -188,10 +189,10 @@ const Details = () => {
         }
 
         return {
-            tipoBanco: dep?.tipoBanco || dep?.banco || "",
-            tipoCuenta: dep?.tipoCuenta || "",
-            cuentaBancaria: dep?.cuentaBancaria || dep?.numeroCuenta || "",
-            numeroCedula: dep?.numeroCedula || dep?.cedula || "",
+            tipoBanco: String(dep?.tipoBanco || dep?.banco || ""),
+            tipoCuenta: String(dep?.tipoCuenta || ""),
+            cuentaBancaria: String(dep?.cuentaBancaria || dep?.numeroCuenta || ""),
+            numeroCedula: String(dep?.numeroCedula || dep?.cedula || ""),
         };
     };
 
@@ -398,6 +399,7 @@ const Details = () => {
 
     useEffect(() => {
         const fetchDepartamento = async () => {
+        setCargando(true);
         try {
             const storedUser = JSON.parse(localStorage.getItem("auth-token"));
             const headers = {
@@ -768,7 +770,7 @@ const Details = () => {
                                 );
                             })()}
 
-                            {(isAdministrador || (isEstudiante && !tieneEstudianteAsignado)) && (
+                            {propietario && (isAdministrador || (isEstudiante && !tieneEstudianteAsignado)) && (
                                 <button
                                     type="button"
                                     onClick={() => navigate("/dashboard/chat", {
